@@ -29,10 +29,10 @@ devtools:
 #Logging
 logging.level:
   root: info
-  org.springframework:
+  com.m9d:
     web: info
     security: info
     boot: info
-  org.hibernate:
+  com.hibernate:
     SQL: debug
-  org.swmaestro.demo: debug
+  com.m9d.sroom: debug
