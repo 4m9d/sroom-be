@@ -5,7 +5,7 @@
 1. **`java` 설치하기**
 
    ```bash
-    brew install adoptopenjdk11
+    brew install --cask adoptopenjdk11
     ```
 
 2. **intellij 설치하기**
