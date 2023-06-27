@@ -1,9 +1,10 @@
 package com.m9d.sroom.config.error;
 
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 
-@Getter
+@Data
 public class ErrorResponse {
 
     private String statusCode;

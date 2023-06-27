@@ -2,7 +2,7 @@ GET https://www.googleapis.com/youtube/v3/search?part=id,snippet&fields=nextPage
 Accept: application/json
 
 ###
-GET http://localhost:8080/api/lectures?
+GET http://localhost:8080/api/lectures
 Accept: application/json
 
 ###

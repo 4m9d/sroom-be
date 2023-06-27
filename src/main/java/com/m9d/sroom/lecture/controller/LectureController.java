@@ -3,8 +3,15 @@ package com.m9d.sroom.lecture.controller;
 import com.m9d.sroom.lecture.dto.response.KeywordSearchRes;
 import com.m9d.sroom.lecture.service.LectureService;
 import com.m9d.sroom.lecture.service.YoutubeService;
-import io.swagger.annotations.*;
-import lombok.Getter;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("api")
+@RequestMapping("/api")
 @Slf4j
 public class LectureController {
 
@@ -23,16 +30,17 @@ public class LectureController {
     private final YoutubeService youtubeService;
 
     @GetMapping("/lectures")
-    @ApiOperation(value = "강의 키워드 검색", notes = "키워드를 입력받아 유튜브 강의를 검색한다.", httpMethod = "GET", response = ResponseEntity.class, consumes = "application/json", tags = "강의 검색")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "keyword", value = "검색할 키워드", required = true, dataType = "string", paramType = "query", example = "네트워크"),
-            @ApiImplicitParam(name = "limit", value = "결과의 최대 개수", required = false, dataType = "int", paramType = "query", defaultValue = "10", example = "5"),
-            @ApiImplicitParam(name = "nextPageToken", value = "다음 페이지 토큰", required = false, dataType = "string", paramType = "query", example = "QAUQAA"),
-            @ApiImplicitParam(name = "prevPageToken", value = "이전 페이지 토큰", required = false, dataType = "string", paramType = "query", example = "CAUQAA")
+    @Tag(name = "강의 검")
+    @Operation(summary = "강의 키워드 검색", description = "키워드를 입력받아 유튜브 강의를 검색한다.")
+    @Parameters({
+            @Parameter(in = ParameterIn.QUERY, name = "keyword", description = "검색할 키워드", required = true, example = "네트워크"),
+            @Parameter(in = ParameterIn.QUERY, name = "limit", description = "결과의 최대 개수", required = false, example = "5"),
+            @Parameter(in = ParameterIn.QUERY, name = "nextPageToken", description = "다음 페이지 토큰", required = false, example = "QAUQAA"),
+            @Parameter(in = ParameterIn.QUERY, name = "prevPageToken", description = "이전 페이지 토큰", required = false, example = "CAUQAA")
     })
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "성공적으로 검색 결과를 반환하였습니다.", response = KeywordSearchRes.class),
-            @ApiResponse(code = 400, message = "Required request parameter 'keyword' for method parameter type String is not present")
+            @ApiResponse(responseCode = "200", description = "성공적으로 검색 결과를 반환하였습니다.", content = @Content(schema = @Schema(implementation = KeywordSearchRes.class))),
+            @ApiResponse(responseCode = "400", description = "keyword가 입력되지 않았습니다.", content = @Content)
     })
     public ResponseEntity<KeywordSearchRes> getLecturesByKeyword(@RequestParam(name = "keyword", required = true) String keyword,
                                                                  @RequestParam(name = "limit", required = false, defaultValue = "10") int limit,
