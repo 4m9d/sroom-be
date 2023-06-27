@@ -1,8 +1,18 @@
-GET http://localhost:8080/lectures/a
+GET https://www.googleapis.com/youtube/v3/search?part=id,snippet&fields=nextPageToken,prevPageToken,pageInfo,items(id,snippet(title,channelTitle,thumbnails,description,publishTime))&maxResults=10&key=AIzaSyDnRkziwFWZfRDLhq7xPf14tHXsFri-ONg&q=css
 Accept: application/json
 
 ###
-GET http://localhost:8080/lectures?keyword=네트워크
+GET http://localhost:8080/lectures?keyword=르세라핌
 Accept: application/json
 
 ###
+GET http://localhost:8080/lectures?keyword=css?&limit=5
+Accept: application/json
+
+###
+GET http://localhost:8080/lectures?keyword=css&nextPageToken=CAoQAA
+Accept: application/json
+
+###
+GET http://localhost:8080/lectures?keyword=css&prevPageToken=CAUQAQ
+Accept: application/json
