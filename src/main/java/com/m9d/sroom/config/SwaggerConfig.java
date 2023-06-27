@@ -32,8 +32,8 @@ public class SwaggerConfig {
                 .groupName("4m9d")
                 .apiInfo(this.apiInfo())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.m9d.sroom.controller"))
-                .paths(PathSelectors.ant("/**"))
+                .apis(RequestHandlerSelectors.basePackage("com.m9d.sroom"))
+                .paths(PathSelectors.any())
                 .build();
     }
 }
