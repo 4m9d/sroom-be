@@ -1,25 +1,25 @@
 package com.m9d.sroom.lecture.dto.response;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 
 import java.util.List;
 
+@Schema(description = "검색 결과 강의 리스트")
 @Data
 public class KeywordSearchRes {
 
-    @ApiModelProperty(value = "응답 개수", example = "4")
+    @Schema(description = "응답 개수")
     private int resultPerPage;
 
-    @ApiModelProperty(value = "다음페이지 조회 토큰", example = "CAQQAA")
+    @Schema(description = "다음페이지 조회 토큰", example = "CAQQAA")
     private String nextPageToken;
 
-    @ApiModelProperty(value = "이전페이지 조회 토큰", example = "TAQVQA")
+    @Schema(description = "이전페이지 조회 토큰", example = "QAQQAA")
     private String prevPageToken;
 
-    @ApiModelProperty(value = "조회된 강의 리스트")
+    @Schema(description = "조회된 강의 리스트")
     private List<Lecture> lectures;
 
     @Builder

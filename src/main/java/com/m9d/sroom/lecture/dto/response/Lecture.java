@@ -1,32 +1,32 @@
 package com.m9d.sroom.lecture.dto.response;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
 
+@Schema(description = "검색된 개별 강의 정보")
 @Data
 public class Lecture{
 
-    @ApiModelProperty(value = "강의 제목", example = "네트워크 기초(개정판)")
+    @Schema(description = "강의 제목", example = "네트워크 기초(개정판)")
     private String lectureTitle;
 
-    @ApiModelProperty(value = "강의 설", example = "OSI 7계층에서 각 계층의 다양한 프로토콜들을 통해서 배우는 네트워크 기초에 대한 강의입니다.")
+    @Schema(description = "강의 설명", example = "OSI 7계층에서 각 계층의 다양한 프로토콜들을 통해서 배우는 네트워크 기초에 대한 강의입니다.")
     private String description;
 
-    @ApiModelProperty(value = "강의 ID", example = "PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi")
+    @Schema(description = "강의 ID", example = "PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi")
     private String lectureId;
 
-    @ApiModelProperty(value = "플레이리스트 여부", example = "true")
+    @Schema(description = "플레이리스트 여부", example = "true")
     private boolean isPlaylist;
 
-    @ApiModelProperty(value = "강의 평점", example = "4.3")
+    @Schema(description = "강의 평점", example = "4.3")
     private double rating;
 
-    @ApiModelProperty(value = "후기 개수", example = "44")
+    @Schema(description = "후기 개수", example = "44")
     private int reviewCount;
 
-    @ApiModelProperty(value = "강의 썸네일", example = "https://i.ytimg.com/vi/Av9UFzl_wis/hqdefault.jpg")
+    @Schema(description = "강의 썸네일", example = "https://i.ytimg.com/vi/Av9UFzl_wis/hqdefault.jpg")
     private String thumbnail;
 
     @Builder

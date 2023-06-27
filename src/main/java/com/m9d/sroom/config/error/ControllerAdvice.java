@@ -2,6 +2,7 @@ package com.m9d.sroom.config.error;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingRequestValueException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -73,7 +74,7 @@ public class ControllerAdvice {
         return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
     }
 
-    @ExceptionHandler(MissingServletRequestParameterException.class)
+    @ExceptionHandler(MissingRequestValueException.class)
     public ResponseEntity<ErrorResponse> missingParams(MissingServletRequestParameterException e) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .statusCode("400")
@@ -82,5 +83,4 @@ public class ControllerAdvice {
 
         return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
     }
-
 }
