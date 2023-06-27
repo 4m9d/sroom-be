@@ -26,9 +26,9 @@ public class LectureController {
     @ApiOperation(value = "강의 키워드 검색", notes = "키워드를 입력받아 유튜브 강의를 검색한다.", httpMethod = "GET", response = ResponseEntity.class, consumes = "application/json", tags = "강의 검색")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "keyword", value = "검색할 키워드", required = true, dataType = "string", paramType = "query", example = "네트워크"),
-            @ApiImplicitParam(name = "limit", value = "결과의 최대 개수", required = false, dataType = "int", paramType = "query", defaultValue = "10", example = "CAUQAA"),
+            @ApiImplicitParam(name = "limit", value = "결과의 최대 개수", required = false, dataType = "int", paramType = "query", defaultValue = "10", example = "5"),
             @ApiImplicitParam(name = "nextPageToken", value = "다음 페이지 토큰", required = false, dataType = "string", paramType = "query", example = "QAUQAA"),
-            @ApiImplicitParam(name = "prevPageToken", value = "이전 페이지 토큰", required = false, dataType = "string", paramType = "query")
+            @ApiImplicitParam(name = "prevPageToken", value = "이전 페이지 토큰", required = false, dataType = "string", paramType = "query", example = "CAUQAA")
     })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "성공적으로 검색 결과를 반환하였습니다.", response = KeywordSearchRes.class),
