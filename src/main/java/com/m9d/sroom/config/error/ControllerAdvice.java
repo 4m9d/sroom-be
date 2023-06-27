@@ -72,4 +72,15 @@ public class ControllerAdvice {
 
         return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
     }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ErrorResponse> handleMissingParams(MissingServletRequestParameterException e) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .statusCode("400")
+                .message(e.getMessage())
+                .build();
+
+        return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
+    }
+
 }
