@@ -32,7 +32,7 @@ public class LectureController {
     })
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "성공적으로 검색 결과를 반환하였습니다.", response = KeywordSearchRes.class),
-            @ApiResponse(code = 400, message = "요청이 유효하지 않습니다 - 필수 파라미터 { keyword } 가 누락되었습니다.")
+            @ApiResponse(code = 400, message = "Required request parameter 'keyword' for method parameter type String is not present")
     })
     public ResponseEntity<KeywordSearchRes> getLecturesByKeyword(@RequestParam(name = "keyword", required = true) String keyword,
                                                                  @RequestParam(name = "limit", required = false, defaultValue = "10") int limit,
