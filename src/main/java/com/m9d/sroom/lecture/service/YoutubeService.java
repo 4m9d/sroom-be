@@ -38,9 +38,10 @@ public class YoutubeService {
         String fieldsQuery = "&fields=nextPageToken,prevPageToken,pageInfo,items(id,snippet(title,channelTitle,thumbnails,description,publishTime))";
         String maxResultsQuery = "&maxResults=".concat(String.valueOf(limit));
         String apikeyQuery = "&key=".concat(Secret.getGoogleCloudApiKey());
+        String typeQuery = "&type=playlist,video";
         String qQuery = "&q=".concat(keyword);
 
-        url = url.concat(partQuery).concat(fieldsQuery).concat(maxResultsQuery).concat(apikeyQuery).concat(qQuery);
+        url = url.concat(partQuery).concat(fieldsQuery).concat(maxResultsQuery).concat(typeQuery).concat(apikeyQuery).concat(qQuery);
         if (pageTokenOrNull != null) {
             String pageTokenQuery = "&pageToken=".concat(pageTokenOrNull);
             url = url.concat(pageTokenQuery);
