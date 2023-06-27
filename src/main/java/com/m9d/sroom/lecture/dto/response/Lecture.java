@@ -16,6 +16,8 @@ public class Lecture{
 
     @ApiModelProperty(value = "강의 ID", example = "PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi")
     private String lectureId;
+
+    @ApiModelProperty(value = "플레이리스트 여부", example = "true")
     private boolean isPlaylist;
 
     @ApiModelProperty(value = "강의 평점", example = "4.3")
