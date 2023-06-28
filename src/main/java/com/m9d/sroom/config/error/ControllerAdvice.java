@@ -75,7 +75,7 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler(MissingRequestValueException.class)
-    public ResponseEntity<ErrorResponse> missingParams(MissingServletRequestParameterException e) {
+    public ResponseEntity<ErrorResponse> missingValues(MissingRequestValueException e) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .statusCode("400")
                 .message(e.getMessage())
