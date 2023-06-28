@@ -1,0 +1,229 @@
+openapi: 3.0.1
+info:
+  title: SROOM 프로젝트
+  description: RESTful API
+  version: v1.0.0
+servers:
+- url: http://localhost:8080
+  description: Generated server url
+paths:
+  /lectures:
+    get:
+      tags:
+      - 강의 검
+      summary: 강의 키워드 검색
+      description: 키워드를 입력받아 유튜브 강의를 검색한다.
+      operationId: getLecturesByKeyword
+      parameters:
+      - name: keyword
+        in: query
+        description: 검색할 키워드
+        required: true
+        schema:
+          type: string
+        example: 네트워크
+      - name: limit
+        in: query
+        description: 결과의 최대 개수
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 10
+        example: 5
+      - name: nextPageToken
+        in: query
+        description: 다음 페이지 토큰
+        required: false
+        schema:
+          type: string
+        example: QAUQAA
+      - name: prevPageToken
+        in: query
+        description: 이전 페이지 토큰
+        required: false
+        schema:
+          type: string
+        example: CAUQAA
+      responses:
+        "400":
+          description: keyword가 입력되지 않았습니다.
+        "200":
+          description: 성공적으로 검색 결과를 반환하였습니다.
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/KeywordSearchRes'
+  /lectures/{lectureId}:
+    get:
+      tags:
+      - 강의 상세 정보
+      summary: 강의 상세 정보 조회
+      description: 강의 ID를 이용하여 강의의 상세 정보를 조회한다.
+      operationId: getLectureDetail
+      parameters:
+      - name: lectureId
+        in: path
+        description: 강의 ID
+        required: true
+        schema:
+          type: string
+        example: OEV8gMkCHXQ
+      - name: is_playlist
+        in: query
+        description: 플레이리스트 여부
+        required: true
+        schema:
+          type: boolean
+        example: false
+      - name: index_limit
+        in: query
+        description: 결과의 최대 개수
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 10
+        example: 10
+      - name: review_limit
+        in: query
+        description: 리뷰의 최대 개수
+        required: false
+        schema:
+          type: integer
+          format: int32
+          default: 10
+        example: 10
+      responses:
+        "404":
+          description: 입력한 lectureId에 해당하는 강의가 없습니다.
+        "400":
+          description: lectureId 혹은 is_playlist가 입력되지 않았습니다.
+        "200":
+          description: 성공적으로 강의 상세 정보를 반환하였습니다.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/VideoDetail'
+components:
+  schemas:
+    KeywordSearchRes:
+      type: object
+      properties:
+        resultPerPage:
+          type: integer
+          description: 응답 개수
+          format: int32
+          example: 5
+        nextPageToken:
+          type: string
+          description: 다음페이지 조회 토큰
+          example: CAQQAA
+        prevPageToken:
+          type: string
+          description: 이전페이지 조회 토큰
+          example: QAQQAA
+        lectures:
+          type: array
+          description: 조회된 강의 리스트
+          items:
+            $ref: '#/components/schemas/Lecture'
+      description: 검색 결과 강의 리스트
+    Lecture:
+      type: object
+      properties:
+        lectureTitle:
+          type: string
+          description: 강의 제목
+          example: 네트워크 기초(개정판)
+        description:
+          type: string
+          description: 강의 설명
+          example: OSI 7계층에서 각 계층의 다양한 프로토콜들을 통해서 배우는 네트워크 기초에 대한 강의입니다.
+        lectureId:
+          type: string
+          description: 강의 ID
+          example: PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi
+        rating:
+          type: number
+          description: 강의 평점
+          format: double
+          example: 4.3
+        reviewCount:
+          type: integer
+          description: 후기 개수
+          format: int32
+          example: 44
+        thumbnail:
+          type: string
+          description: 강의 썸네일
+          example: https://i.ytimg.com/vi/Av9UFzl_wis/hqdefault.jpg
+        isPlaylist:
+          type: boolean
+          description: 플레이리스트 여부
+          example: true
+      description: 검색된 개별 강의 정보
+    ReviewBrief:
+      type: object
+      properties:
+        index:
+          type: integer
+          format: int32
+        reviewContent:
+          type: string
+        submittedRating:
+          type: integer
+          format: int32
+      description: 강의 리뷰 목록
+    VideoDetail:
+      type: object
+      properties:
+        lectureId:
+          type: string
+          description: 강의 ID
+          example: OEV8gMkCHXQ
+        lectureTitle:
+          type: string
+          description: 강의 제목
+          example: 네트워크 기초(개정판)
+        channel:
+          type: string
+          description: 채널 이름
+          example: OpenAI
+        description:
+          type: string
+          description: 강의 설명
+          example: OSI 7계층에서 각 계층의 다양한 프로토콜들을 통해서 배우는 네트워크 기초에 대한 강의입니다.
+        viewCount:
+          type: integer
+          description: 조회 수
+          format: int64
+          example: 10234
+        publishedAt:
+          type: string
+          description: 게시일
+          example: 2023-06-28
+        rating:
+          type: number
+          description: 강의 평점
+          format: double
+          example: 4.3
+        reviewCount:
+          type: integer
+          description: 후기 개수
+          format: int32
+          example: 44
+        thumbnail:
+          type: string
+          description: 강의 썸네일
+          example: https://i.ytimg.com/vi/OEV8gMkCHXQ/maxresdefault.jpg
+        reviews:
+          type: array
+          description: 강의 리뷰 목록
+          items:
+            $ref: '#/components/schemas/ReviewBrief'
+        isPlaylist:
+          type: boolean
+          description: 플레이리스트 여부
+          example: false
+      description: 동영상 상세 정보
