@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Configuration;
  */
 // @Profile({ "dev", "local" })
 @Configuration
-@OpenAPIDefinition(info = @io.swagger.v3.oas.annotations.info.Info(title = "My API", version = "1.0", description = "API documentation"))
 public class SwaggerConfig {
 
     @Bean

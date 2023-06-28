@@ -51,6 +51,19 @@ public class LectureController {
 
 
     @GetMapping("/{lectureId}")
+    @Tag(name = "강의 상세 정보")
+    @Operation(summary = "강의 상세 정보 조회", description = "강의 ID를 이용하여 강의의 상세 정보를 조회한다.")
+    @Parameters({
+            @Parameter(in = ParameterIn.PATH, name = "lectureId", description = "강의 ID", required = true, example = "OEV8gMkCHXQ"),
+            @Parameter(in = ParameterIn.QUERY, name = "is_playlist", description = "플레이리스트 여부", required = true, example = "false"),
+            @Parameter(in = ParameterIn.QUERY, name = "index_limit", description = "결과의 최대 개수", required = false, example = "10"),
+            @Parameter(in = ParameterIn.QUERY, name = "review_limit", description = "리뷰의 최대 개수", required = false, example = "10")
+    })
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "성공적으로 강의 상세 정보를 반환하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = VideoDetail.class))}),
+            @ApiResponse(responseCode = "400", description = "lectureId 혹은 is_playlist가 입력되지 않았습니다.", content = @Content),
+            @ApiResponse(responseCode = "404", description = "입력한 lectureId에 해당하는 강의가 없습니다.", content = @Content)
+    })
     public ResponseEntity<?> getLectureDetail(@PathVariable(name = "lectureId", required = true) String lectureId,
                                               @RequestParam(name = "is_playlist", required = true) boolean isPlaylist,
                                               @RequestParam(name = "index_limit", required = false, defaultValue = "10") int indexLimit,
