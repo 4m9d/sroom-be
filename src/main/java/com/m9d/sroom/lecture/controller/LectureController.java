@@ -1,6 +1,8 @@
 package com.m9d.sroom.lecture.controller;
 
 import com.m9d.sroom.lecture.dto.response.KeywordSearchRes;
+import com.m9d.sroom.lecture.dto.response.PlaylistDetail;
+import com.m9d.sroom.lecture.dto.response.VideoDetail;
 import com.m9d.sroom.lecture.service.LectureService;
 import com.m9d.sroom.lecture.service.YoutubeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -15,21 +17,18 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/lectures")
 @Slf4j
 public class LectureController {
 
     private final LectureService lectureService;
     private final YoutubeService youtubeService;
 
-    @GetMapping("/lectures")
+    @GetMapping("")
     @Tag(name = "강의 검")
     @Operation(summary = "강의 키워드 검색", description = "키워드를 입력받아 유튜브 강의를 검색한다.")
     @Parameters({
@@ -48,5 +47,24 @@ public class LectureController {
                                                                  @RequestParam(name = "prevPageToken", required = false) String prevPageToken) throws Exception {
         KeywordSearchRes keywordSearchRes = youtubeService.searchByKeyword(keyword, limit, nextPageToken, prevPageToken);
         return ResponseEntity.ok(keywordSearchRes);
+    }
+
+
+    @GetMapping("/{lectureId}")
+    public ResponseEntity<?> getLectureDetail(@PathVariable(name = "lectureId", required = true) String lectureId,
+                                              @RequestParam(name = "is_playlist", required = true) boolean isPlaylist,
+                                              @RequestParam(name = "index_limit", required = false, defaultValue = "10") int indexLimit,
+                                              @RequestParam(name = "review_limit", required = false, defaultValue = "10") int reviewLimit) throws Exception {
+//        if(isPlaylist){
+//            PlaylistDetail playlistDetail = youtubeService.getPlaylistDetail(lectureId,indexLimit,reviewLimit);
+//            return ResponseEntity.ok(playlistDetail);
+//        }
+//        else {
+//            VideoDetail videoDetail = youtubeService.getVideoDetail(lectureId, indexLimit, reviewLimit);
+//            return ResponseEntity.ok(videoDetail);
+//        }
+
+        VideoDetail videoDetail = youtubeService.getVideoDetail(lectureId, indexLimit, reviewLimit);
+        return ResponseEntity.ok(videoDetail);
     }
 }

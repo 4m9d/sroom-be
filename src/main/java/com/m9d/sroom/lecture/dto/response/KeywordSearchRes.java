@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 public class KeywordSearchRes {
 
-    @Schema(description = "응답 개수")
+    @Schema(description = "응답 개수", example = "5")
     private int resultPerPage;
 
     @Schema(description = "다음페이지 조회 토큰", example = "CAQQAA")
