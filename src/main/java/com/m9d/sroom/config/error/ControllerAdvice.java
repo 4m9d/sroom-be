@@ -1,7 +1,9 @@
 package com.m9d.sroom.config.error;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingRequestValueException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -83,4 +85,24 @@ public class ControllerAdvice {
 
         return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
     }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<?> customHandleMissingRequestValue(MissingServletRequestParameterException ex) {
+        String name = ex.getParameterName();
+        String type = ex.getParameterType();
+
+        String error = String.format("필수 파라미터인 '%s'(%s)가 누락되었습니다.", name, type);
+
+        // 예외 메시지를 담은 새로운 예외 객체를 생성하여 반환
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+    @ExceptionHandler(MissingPathVariableException.class)
+    public ResponseEntity<?> customHandleMissingPathVariable(MissingPathVariableException ex) {
+        String name = ex.getVariableName();
+        String error = String.format("필수 경로 변수인 '%s'가 누락되었습니다.", name);
+
+        // 예외 메시지를 담은 새로운 예외 객체를 생성하여 반환
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
 }

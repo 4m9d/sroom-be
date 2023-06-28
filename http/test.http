@@ -11,6 +11,6 @@ GET https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,sta
 Accept: application/json
 
 ### [sroom] 강의 상세검색 API
-GET http://localhost:8080/lectures/OEV8gMkCHXQ?is_playlist=false
+GET http://localhost:8080/lectures/OEV8gMkCHXQ
 Accept: application/json
 
