@@ -6,6 +6,7 @@ import com.m9d.sroom.config.secret.Secret;
 import com.m9d.sroom.lecture.dto.response.KeywordSearchRes;
 import com.m9d.sroom.lecture.dto.response.Lecture;
 import com.m9d.sroom.lecture.dto.response.VideoDetail;
+import com.m9d.sroom.lecture.exception.VideoNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,10 @@ public class YoutubeService {
 
         String url = createVideoDetailURI(lectureId);
         JsonNode resultNode = requestToYoutube(url);
+
+        if(resultNode.get("pageInfo").get("totalResults").asInt()==0){
+            throw new VideoNotFoundException();
+        }
 
         VideoDetail videoDetail = buildVideoDetailResponse(resultNode, indexLimit, reviewLimit);
         return videoDetail;
