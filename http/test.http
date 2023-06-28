@@ -3,14 +3,16 @@ GET https://www.googleapis.com/youtube/v3/search?part=id,snippet&fields=nextPage
 Accept: application/json
 
 ### [sroom] 강의 키워드 검색 API
-GET http://localhost:8080/lectures?keyword=css?&limit=5
+GET http://localhost:8080/lectures?keyword=네트워크?&limit=5
 Accept: application/json
 
-### [youtube] 강의 상세검색 API
+### [youtube] 동영상 상세검색 API
 GET https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics,status&fields=pageInfo(totalResults),items(id,snippet(publishedAt,title,description,thumbnails,channelTitle,defaultAudioLanguage),contentDetails(duration,dimension),status(uploadStatus,embeddable),statistics(viewCount))&id=OEV8gMkCHXQ&key=AIzaSyDnRkziwFWZfRDLhq7xPf14tHXsFri-ONg
 Accept: application/json
 
-### [sroom] 강의 상세검색 API
-GET http://localhost:8080/lectures/OEV8gMkCHXQ
-Accept: application/json
+### [youtube] 재생목록 상세검색 API
+GET https://www.googleapis.com/youtube/v3/playlists?part=id,snippet,status,contentDetails&key=AIzaSyDnRkziwFWZfRDLhq7xPf14tHXsFri-ONg&id=PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi
 
+### [sroom] 강의 상세검색 API
+GET http://localhost:8080/lectures/PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi?is_playlist=true
+Accept: application/json
