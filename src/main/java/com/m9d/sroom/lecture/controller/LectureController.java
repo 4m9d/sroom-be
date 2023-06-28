@@ -1,6 +1,7 @@
 package com.m9d.sroom.lecture.controller;
 
 import com.m9d.sroom.lecture.dto.response.KeywordSearchRes;
+import com.m9d.sroom.lecture.dto.response.PlaylistDetail;
 import com.m9d.sroom.lecture.dto.response.VideoDetail;
 import com.m9d.sroom.lecture.service.LectureService;
 import com.m9d.sroom.lecture.service.YoutubeService;
@@ -67,15 +68,10 @@ public class LectureController {
                                               @RequestParam(name = "is_playlist", required = true) boolean isPlaylist,
                                               @RequestParam(name = "index_limit", required = false, defaultValue = "10") int indexLimit,
                                               @RequestParam(name = "review_limit", required = false, defaultValue = "10") int reviewLimit) throws Exception {
-//        if(isPlaylist){
-//            PlaylistDetail playlistDetail = youtubeService.getPlaylistDetail(lectureId,indexLimit,reviewLimit);
-//            return ResponseEntity.ok(playlistDetail);
-//        }
-//        else {
-//            VideoDetail videoDetail = youtubeService.getVideoDetail(lectureId, indexLimit, reviewLimit);
-//            return ResponseEntity.ok(videoDetail);
-//        }
-
+        if(isPlaylist){
+            PlaylistDetail playlistDetail = youtubeService.getPlaylistDetail(lectureId);
+            return ResponseEntity.ok(playlistDetail);
+        }
         VideoDetail videoDetail = youtubeService.getVideoDetail(lectureId, indexLimit, reviewLimit);
         return ResponseEntity.ok(videoDetail);
     }
