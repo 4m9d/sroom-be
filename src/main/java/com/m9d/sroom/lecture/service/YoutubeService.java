@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.m9d.sroom.config.secret.Secret;
 import com.m9d.sroom.lecture.dto.response.KeywordSearchRes;
 import com.m9d.sroom.lecture.dto.response.Lecture;
+import com.m9d.sroom.lecture.dto.response.VideoDetail;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,11 +24,20 @@ public class YoutubeService {
 
     public KeywordSearchRes searchByKeyword(String keyword, int limit, String nextPageToken, String prevPageToken) throws Exception {
 
-        String uri = createSearchURI(keyword, limit, nextPageToken, prevPageToken);
-        JsonNode resultNode = SearchRequestToYoutube(uri);
+        String url = createSearchURI(keyword, limit, nextPageToken, prevPageToken);
+        JsonNode resultNode = requestToYoutube(url);
 
-        KeywordSearchRes keywordSearchRes = buildResponse(resultNode);
+        KeywordSearchRes keywordSearchRes = buildLectureListResponse(resultNode);
         return keywordSearchRes;
+    }
+
+    public VideoDetail getVideoDetail(String lectureId, int indexLimit, int reviewLimit) throws Exception {
+
+        String url = createVideoDetailURI(lectureId);
+        JsonNode resultNode = requestToYoutube(url);
+
+        VideoDetail videoDetail = buildVideoDetailResponse(resultNode, indexLimit, reviewLimit);
+        return videoDetail;
     }
 
     public String createSearchURI(String keyword, int limit, String nextPageToken, String prevPageToken) {
@@ -46,15 +56,28 @@ public class YoutubeService {
             String pageTokenQuery = "&pageToken=".concat(pageTokenOrNull);
             url = url.concat(pageTokenQuery);
         }
-        log.info("youtube request uri:" + url);
+        log.info("youtube keyword search request uri:" + url);
         return url;
     }
 
-    public JsonNode SearchRequestToYoutube(String uri) throws Exception {
+    private String createVideoDetailURI(String lectureId) {
+        String url = "https://www.googleapis.com/youtube/v3/videos?";
+
+        String partQuery = "part=snippet,contentDetails,statistics,status";
+        String fieldsQuery = "&fields=pageInfo(totalResults),items(id,snippet(publishedAt,title,description,thumbnails,channelTitle,defaultAudioLanguage),contentDetails(duration,dimension),status(uploadStatus,embeddable),statistics(viewCount))";
+        String lectureIdQuery = "&id=".concat(lectureId);
+        String keyQuery = "&key=".concat(Secret.getGoogleCloudApiKey());
+
+        url = url.concat(partQuery).concat(fieldsQuery).concat(lectureIdQuery).concat(keyQuery);
+        log.info("youtube video detail request url : " + url);
+        return url;
+    }
+
+    public JsonNode requestToYoutube(String url) throws Exception {
         HttpClient client = HttpClient.newHttpClient();
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(uri))
+                .uri(URI.create(url))
                 .header("Content-Type", "application/json")
                 .GET()
                 .build();
@@ -64,16 +87,17 @@ public class YoutubeService {
         JsonNode jsonResponse = objectMapper.readTree(response.body());
         return jsonResponse;
     }
-    public KeywordSearchRes buildResponse(JsonNode resultNode){
+
+    public KeywordSearchRes buildLectureListResponse(JsonNode resultNode) {
         List<Lecture> lectureList = new ArrayList<>();
         for (JsonNode item : resultNode.get("items")) {
             JsonNode snippetNode = item.get("snippet");
             boolean isPlaylist = item.get("id").get("kind").asText().equals("youtube#playlist");
 
             String lectureId;
-            if(isPlaylist){
+            if (isPlaylist) {
                 lectureId = item.get("id").get("playlistId").asText();
-            }else{
+            } else {
                 lectureId = item.get("id").get("videoId").asText();
             }
 
@@ -96,6 +120,42 @@ public class YoutubeService {
                 .lectures(lectureList)
                 .build();
         return keywordSearchRes;
+    }
+
+    private VideoDetail buildVideoDetailResponse(JsonNode resultNode, int indexLimit, int reviewLimit) {
+
+        JsonNode snippetJsonNode = resultNode.get("items").get(0).get("snippet");
+        String thumbnailWithHighestWidth = selectThumbnailWithHighestWidth(snippetJsonNode.get("thumbnails"));
+
+        VideoDetail videoDetail = VideoDetail.builder()
+                .lectureId(resultNode.get("items").get(0).get("id").asText())
+                .lectureTitle(snippetJsonNode.get("title").asText())
+                .channel(snippetJsonNode.get("channelTitle").asText())
+                .description(snippetJsonNode.get("description").asText())
+                .isPlaylist(false)
+                .viewCount(resultNode.get("items").get(0).get("statistics").get("viewCount").asInt())
+                .publishedAt(snippetJsonNode.get("publishedAt").asText().substring(0, 10))
+                .thumbnail(thumbnailWithHighestWidth)
+                .build();
+
+        return videoDetail;
+    }
+
+    public static String selectThumbnailWithHighestWidth(JsonNode thumbnailsNode) {
+        int maxWidth = 0;
+        String selectedThumbnailUrl = "";
+
+        for (JsonNode thumbnailNode : thumbnailsNode) {
+            int width = thumbnailNode.get("width").asInt();
+            String url = thumbnailNode.get("url").asText();
+
+            if (width > maxWidth) {
+                maxWidth = width;
+                selectedThumbnailUrl = url;
+            }
+        }
+
+        return selectedThumbnailUrl;
     }
 
     public String chooseTokenOrNull(String nextPageToken, String prevPageToken) {
