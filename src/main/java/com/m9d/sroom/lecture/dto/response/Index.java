@@ -7,14 +7,14 @@ import lombok.Data;
 public class Index {
     private int index;
     private String lectureId;
+    private String thumbnail;
     private String lectureTitle;
-    private int lectureDuration;
 
     @Builder
-    public Index(int index, String lectureId, String lectureTitle, int lectureDuration) {
+    public Index(int index, String lectureId, String thumbnail, String lectureTitle) {
         this.index = index;
         this.lectureId = lectureId;
+        this.thumbnail = thumbnail;
         this.lectureTitle = lectureTitle;
-        this.lectureDuration = lectureDuration;
     }
 }

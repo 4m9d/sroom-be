@@ -68,11 +68,11 @@ public class LectureController {
                                               @RequestParam(name = "is_playlist", required = true) boolean isPlaylist,
                                               @RequestParam(name = "index_limit", required = false, defaultValue = "10") int indexLimit,
                                               @RequestParam(name = "review_limit", required = false, defaultValue = "10") int reviewLimit) throws Exception {
-        if(isPlaylist){
-            PlaylistDetail playlistDetail = youtubeService.getPlaylistDetail(lectureId);
+        if (isPlaylist) {
+            PlaylistDetail playlistDetail = youtubeService.getPlaylistDetail(lectureId, indexLimit);
             return ResponseEntity.ok(playlistDetail);
         }
-        VideoDetail videoDetail = youtubeService.getVideoDetail(lectureId, indexLimit, reviewLimit);
+        VideoDetail videoDetail = youtubeService.getVideoDetail(lectureId, reviewLimit);
         return ResponseEntity.ok(videoDetail);
     }
 }
