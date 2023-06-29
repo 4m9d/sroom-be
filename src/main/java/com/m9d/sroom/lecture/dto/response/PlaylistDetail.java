@@ -20,11 +20,12 @@ public class PlaylistDetail {
     private double rating;
     private int reviewCount;
     private String thumbnail;
+    private String indexNextPageToken;
     private List<Index> indexes;
     private List<ReviewBrief> reviews;
 
     @Builder
-    public PlaylistDetail(String lectureId, String lecturedTitle, String channel, String description, boolean isPlaylist, String publishedAt, int lectureCount, double rating, int reviewCount, String thumbnail, List<Index> indexes, List<ReviewBrief> reviews) {
+    public PlaylistDetail(String lectureId, String lecturedTitle, String channel, String description, boolean isPlaylist, String publishedAt, int lectureCount, double rating, int reviewCount, String thumbnail, String indexNextPageToken, List<Index> indexes, List<ReviewBrief> reviews) {
         this.lectureId = lectureId;
         this.lecturedTitle = lecturedTitle;
         this.channel = channel;
@@ -35,6 +36,7 @@ public class PlaylistDetail {
         this.rating = rating;
         this.reviewCount = reviewCount;
         this.thumbnail = thumbnail;
+        this.indexNextPageToken = indexNextPageToken;
         this.indexes = indexes;
         this.reviews = reviews;
     }
