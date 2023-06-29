@@ -16,3 +16,6 @@ GET https://www.googleapis.com/youtube/v3/playlists?part=id,snippet,status,conte
 ### [sroom] 강의 상세검색 API
 GET http://localhost:8080/lectures/PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi?is_playlist=true
 Accept: application/json
+
+### [youtube] 재생목록 아이템 검색 API
+GET https://www.googleapis.com/youtube/v3/playlistItems?part=id,snippet,status,contentDetails&playlistId=PLANgXIaQPqHIKr_m-6wJtCjzG7rn_qu5e&key=AIzaSyDnRkziwFWZfRDLhq7xPf14tHXsFri-ONg
