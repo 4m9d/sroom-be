@@ -60,7 +60,7 @@ public class LectureController {
             @Parameter(in = ParameterIn.QUERY, name = "review_limit", description = "리뷰의 최대 개수", required = false, example = "10")
     })
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공적으로 강의 상세 정보를 반환하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = VideoDetail.class))}),
+            @ApiResponse(responseCode = "200", description = "성공적으로 강의 상세 정보를 반환하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(oneOf = {PlaylistDetail.class, VideoDetail.class}))}),
             @ApiResponse(responseCode = "400", description = "필수 파라미터인 'is_playlist'(boolean)가 누락되었습니다.", content = @Content),
             @ApiResponse(responseCode = "404", description = "입력한 lectureId에 해당하는 강의가 없습니다.", content = @Content)
     })
