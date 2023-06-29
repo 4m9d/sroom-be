@@ -215,7 +215,7 @@ public class YoutubeService {
 
         PlaylistDetail playlistDetail = PlaylistDetail.builder()
                 .lectureId(playlistNode.get("items").get(0).get("id").asText())
-                .lecturedTitle(snippetJsonNode.get("title").asText())
+                .lectureTitle(snippetJsonNode.get("title").asText())
                 .channel(snippetJsonNode.get("channelTitle").asText())
                 .description(snippetJsonNode.get("description").asText())
                 .isPlaylist(true)
