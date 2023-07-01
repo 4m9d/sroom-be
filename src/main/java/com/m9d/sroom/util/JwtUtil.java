@@ -4,12 +4,14 @@ import com.m9d.sroom.member.domain.Member;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.Date;
 
+@Configuration
 public class JwtUtil {
 
-    @Value("${secrets.jwt-secret}")
+    @Value("${jwt-secret}")
     private String jwtSecret;
 
     public String generateAccessToken(Member member) {
