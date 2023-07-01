@@ -22,8 +22,8 @@ import java.util.*;
 public class MemberService {
 
     private GoogleIdTokenVerifier googleIdTokenVerifier;
-    private MemberRepository memberRepository;
-    private JwtUtil jwtUtil;
+    private final MemberRepository memberRepository;
+    private final JwtUtil jwtUtil;
 
     @Transactional
     public Map<String, String> authenticateUser(String clientId, String googleIdToken) throws Exception {
