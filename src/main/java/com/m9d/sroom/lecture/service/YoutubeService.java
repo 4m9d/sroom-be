@@ -2,13 +2,13 @@ package com.m9d.sroom.lecture.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.m9d.sroom.config.secret.Secret;
 import com.m9d.sroom.lecture.dto.response.*;
 import com.m9d.sroom.lecture.exception.PlaylistItemNotFoundException;
 import com.m9d.sroom.lecture.exception.PlaylistNotFoundException;
 import com.m9d.sroom.lecture.exception.VideoNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
@@ -22,6 +22,9 @@ import java.util.List;
 @Service
 @Slf4j
 public class YoutubeService {
+
+    @Value("${google-cloud-api-key}")
+    private String googleCloudApiKey;
 
     public KeywordSearchRes searchByKeyword(String keyword, int limit, String nextPageToken, String prevPageToken) throws Exception {
 
@@ -72,7 +75,7 @@ public class YoutubeService {
         String partQuery = "part=id,snippet";
         String fieldsQuery = "&fields=nextPageToken,prevPageToken,pageInfo,items(id,snippet(title,channelTitle,thumbnails,description,publishTime))";
         String maxResultsQuery = "&maxResults=".concat(String.valueOf(limit));
-        String apikeyQuery = "&key=".concat(Secret.getGoogleCloudApiKey());
+        String apikeyQuery = "&key=".concat(googleCloudApiKey);
         String typeQuery = "&type=playlist,video";
         String qQuery = "&q=".concat(keyword);
 
@@ -90,7 +93,7 @@ public class YoutubeService {
         String partQuery = "part=snippet,contentDetails,statistics,status";
         String fieldsQuery = "&fields=pageInfo(totalResults),items(id,snippet(publishedAt,title,description,thumbnails,channelTitle,defaultAudioLanguage),contentDetails(duration,dimension),status(uploadStatus,embeddable),statistics(viewCount))";
         String lectureIdQuery = "&id=".concat(lectureId);
-        String keyQuery = "&key=".concat(Secret.getGoogleCloudApiKey());
+        String keyQuery = "&key=".concat(googleCloudApiKey);
 
         url = url.concat(partQuery).concat(fieldsQuery).concat(lectureIdQuery).concat(keyQuery);
         return url;
@@ -102,7 +105,7 @@ public class YoutubeService {
         String partQuery = "part=id,snippet,status,contentDetails";
         String fieldsQuery = "&fields=pageInfo,items(id,snippet(publishedAt,title,description,thumbnails,channelTitle),status,contentDetails)";
         String lectureIdQuery = "&id=".concat(lectureId);
-        String keyQuery = "&key=".concat(Secret.getGoogleCloudApiKey());
+        String keyQuery = "&key=".concat(googleCloudApiKey);
 
         url = url.concat(partQuery).concat(fieldsQuery).concat(lectureIdQuery).concat(keyQuery);
         return url;
@@ -115,7 +118,7 @@ public class YoutubeService {
         String fieldsQuery = "&fields=pageInfo,nextPageToken,prevPageToken,items(snippet(title,position,resourceId,thumbnails),status)";
         String maxResultsQuery = "&maxResults=".concat(String.valueOf(limit));
         String playlistIdQuery = "&playlistId=".concat(lectureId);
-        String keyQuery = "&key=".concat(Secret.getGoogleCloudApiKey());
+        String keyQuery = "&key=".concat(googleCloudApiKey);
 
         url = url.concat(partQuery).concat(fieldsQuery).concat(maxResultsQuery).concat(playlistIdQuery).concat(keyQuery);
         return url;

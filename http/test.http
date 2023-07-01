@@ -19,3 +19,8 @@ Accept: application/json
 
 ### [youtube] 재생목록 아이템 검색 API
 GET https://www.googleapis.com/youtube/v3/playlistItems?part=id,snippet,status,contentDetails&playlistId=PLANgXIaQPqHIKr_m-6wJtCjzG7rn_qu5e&key=AIzaSyDnRkziwFWZfRDLhq7xPf14tHXsFri-ONg
+
+### [sroom] 로그인
+POST http://localhost:8080/members/login
+Content-Type: application/json
+

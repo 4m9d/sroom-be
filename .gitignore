@@ -63,4 +63,4 @@ replay_pid*
 .DS_Store
 
 # Secret
-**/secret/
+secure.properties
