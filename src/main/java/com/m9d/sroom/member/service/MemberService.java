@@ -7,8 +7,10 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.m9d.sroom.member.domain.Member;
+import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.member.repository.MemberRepository;
 import com.m9d.sroom.util.JwtUtil;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,14 +30,16 @@ public class MemberService {
     private String clientId;
 
     @Transactional
-    public Map<String, String> authenticateMember(String googleIdToken) throws Exception {
+    public Login authenticateMember(String credential) throws Exception {
         HttpTransport transport = new NetHttpTransport();
         JacksonFactory jsonFactory = new JacksonFactory();
+
+        System.out.println(credential);
 
         GoogleIdTokenVerifier verifier = new Builder(transport,jsonFactory)
                 .setAudience(Collections.singletonList(clientId))
                 .build();
-        GoogleIdToken idToken = verifier.verify(googleIdToken);
+        GoogleIdToken idToken = verifier.verify(credential);
         GoogleIdToken.Payload payload = idToken.getPayload();
         String memberCode = payload.getSubject();
         Optional<Member> memberOptional = memberRepository.findByMemberCode(memberCode);
@@ -54,11 +58,15 @@ public class MemberService {
 
         memberRepository.saveRefreshToken(member.getMemberId(), refreshToken);
 
-        Map<String, String> tokens = new HashMap<>();
-        tokens.put("access_token", accessToken);
-        tokens.put("refresh_token", refreshToken);
+        Login login = Login.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .expireIn(jwtUtil.getExpirationTimeFromToken(accessToken))
+                .memberName(member.getMemberName())
+                .bio("")
+                .build();
 
-        return tokens;
+        return login;
     }
 
     public String generateMemberName() {
