@@ -1,6 +1,5 @@
 package com.m9d.sroom.member.service;
 
-import com.fasterxml.jackson.core.JsonFactory;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier.Builder;
@@ -11,6 +10,7 @@ import com.m9d.sroom.member.domain.Member;
 import com.m9d.sroom.member.repository.MemberRepository;
 import com.m9d.sroom.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,12 +21,14 @@ import java.util.*;
 @Service
 public class MemberService {
 
-    private GoogleIdTokenVerifier googleIdTokenVerifier;
     private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
 
+    @Value("${client-id}")
+    private String clientId;
+
     @Transactional
-    public Map<String, String> authenticateUser(String clientId, String googleIdToken) throws Exception {
+    public Map<String, String> authenticateMember(String googleIdToken) throws Exception {
         HttpTransport transport = new NetHttpTransport();
         JacksonFactory jsonFactory = new JacksonFactory();
 
