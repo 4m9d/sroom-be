@@ -6,8 +6,10 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier.Builde
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.api.client.json.webtoken.JsonWebToken;
 import com.m9d.sroom.member.domain.Member;
 import com.m9d.sroom.member.dto.response.Login;
+import com.m9d.sroom.member.exception.CredentialUnauthorizedException;
 import com.m9d.sroom.member.repository.MemberRepository;
 import com.m9d.sroom.util.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -34,13 +36,17 @@ public class MemberService {
         HttpTransport transport = new NetHttpTransport();
         JacksonFactory jsonFactory = new JacksonFactory();
 
-        System.out.println(credential);
-
-        GoogleIdTokenVerifier verifier = new Builder(transport,jsonFactory)
+        GoogleIdTokenVerifier verifier = new Builder(transport, jsonFactory)
                 .setAudience(Collections.singletonList(clientId))
                 .build();
         GoogleIdToken idToken = verifier.verify(credential);
-        GoogleIdToken.Payload payload = idToken.getPayload();
+        GoogleIdToken.Payload payload;
+
+        try {
+            payload = idToken.getPayload();
+        } catch (NullPointerException e) {
+            throw new CredentialUnauthorizedException();
+        }
         String memberCode = payload.getSubject();
         Optional<Member> memberOptional = memberRepository.findByMemberCode(memberCode);
         Member member;
