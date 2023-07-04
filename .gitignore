@@ -64,3 +64,4 @@ replay_pid*
 
 # Secret
 secure.properties
+*.sql
