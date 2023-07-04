@@ -21,7 +21,6 @@ public class MemberRepository {
     }
 
     public void save(String memberCode, String memberName) {
-        System.out.println("asdfasdfasdfvv");
         String sql = "INSERT INTO MEMBER(member_code, member_name) values(?, ?)";
         jdbcTemplate.update(sql, memberCode, memberName);
     }
@@ -32,7 +31,6 @@ public class MemberRepository {
     }
 
     public Optional<Member> findByMemberCode(String memberCode) {
-        System.out.println("asdf");
         String sql = "SELECT * FROM MEMBER WHERE member_code = ?";
         List<Member> members = jdbcTemplate.query(sql, new Object[]{memberCode}, memberRowMapper);
         return members.isEmpty() ? Optional.empty() : Optional.of(members.get(0));

@@ -33,12 +33,14 @@ public class MemberService {
     public Login authenticateMember(String credential) throws Exception {
         GoogleIdToken.Payload payload = getPayloadFromCredential(credential);
         String memberCode = getMemberCodeFromPayload(payload);
-
         Member member = findOrCreateMember(memberCode);
+        return generateLogin(member);
+    }
 
+    @Transactional
+    public Login generateLogin(Member member) {
         String accessToken = jwtUtil.generateAccessToken(member);
         String refreshToken = jwtUtil.generateRefreshToken(member);
-
         memberRepository.saveRefreshToken(member.getMemberId(), refreshToken);
 
         Login login = Login.builder()
@@ -48,7 +50,6 @@ public class MemberService {
                 .memberName(member.getMemberName())
                 .bio("")
                 .build();
-
         return login;
     }
 

@@ -15,14 +15,14 @@ public class JwtUtil {
     @Value("${jwt-secret}")
     private String jwtSecret;
 
-    private static final long ACCESS_TOKEN_EXPIRATION_PERIOD = 1000L * 60 * 60 * 10; // 10시간
-    private static final long REFRESH_TOKEN_EXPIRATION_PERIOD = 1000L * 60 * 60 * 24 * 7; // 7일
+    public static final long ACCESS_TOKEN_EXPIRATION_PERIOD = 1000L * 60 * 60 * 10; // 10시간 유효
+    public static final long REFRESH_TOKEN_EXPIRATION_PERIOD = 1000L * 60 * 60 * 24 * 7; // 7일 유효
 
     public String generateAccessToken(Member member) {
         return Jwts.builder()
                 .setSubject(member.getMemberCode())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10))
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_PERIOD))
                 .signWith(SignatureAlgorithm.HS256, jwtSecret)
                 .compact();
     }
@@ -31,7 +31,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .setSubject(member.getMemberCode())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_PERIOD)) // 7일 유효 토큰
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_PERIOD))
                 .signWith(SignatureAlgorithm.HS256, jwtSecret).compact();
     }
 
