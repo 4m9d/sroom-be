@@ -33,12 +33,16 @@ dependencies {
 	implementation 'com.google.http-client:google-http-client-jackson2:1.39.2'
 
 	implementation 'junit:junit:4.13.2'
-	implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.3'
+	implementation 'org.mariadb.jdbc:mariadb-java-client:3.0.8'
 
 
 	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation "org.testcontainers:testcontainers:1.17.6"
+	testImplementation "org.testcontainers:mariadb:1.17.6"
+	testImplementation "org.testcontainers:junit-jupiter:1.17.6"
+
 }
 
 tasks.named('test') {
