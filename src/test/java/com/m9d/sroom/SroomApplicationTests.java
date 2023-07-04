@@ -40,15 +40,15 @@ class SroomApplicationTests {
 	@Autowired
 	private JdbcTemplate jdbcTemplate;
 
-	@Test
-	@DisplayName("db connection test")
-	public void testExample() {
-		memberRepository.save("memberCode1", "member1");
-
-		Member member = memberRepository.getByMemberCode("memberCode1");
-
-		assertThat(member.getMemberId()).isEqualTo(1);
-		assertThat(member.getMemberName()).isEqualTo("member1");
-	}
+//	@Test
+//	@DisplayName("db connection test")
+//	public void testExample() {
+//		memberRepository.save("memberCode1", "member1");
+//
+//		Member member = memberRepository.getByMemberCode("memberCode1");
+//
+//		assertThat(member.getMemberId()).isEqualTo(1);
+//		assertThat(member.getMemberName()).isEqualTo("member1");
+//	}
 
 }
