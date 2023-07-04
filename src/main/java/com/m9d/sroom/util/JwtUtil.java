@@ -8,14 +8,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @Configuration
 public class JwtUtil {
 
     @Value("${jwt-secret}")
     private String jwtSecret;
+
+    private static final long ACCESS_TOKEN_EXPIRATION_PERIOD = 1000L * 60 * 60 * 10; // 10시간
+    private static final long REFRESH_TOKEN_EXPIRATION_PERIOD = 1000L * 60 * 60 * 24 * 7; // 7일
 
     public String generateAccessToken(Member member) {
         return Jwts.builder()
@@ -30,7 +31,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .setSubject(member.getMemberCode())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24 * 7)) // 7일 유효 토큰
+                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_PERIOD)) // 7일 유효 토큰
                 .signWith(SignatureAlgorithm.HS256, jwtSecret).compact();
     }
 
