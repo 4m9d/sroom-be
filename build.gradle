@@ -33,8 +33,7 @@ dependencies {
 	implementation 'com.google.http-client:google-http-client-jackson2:1.39.2'
 
 	implementation 'junit:junit:4.13.2'
-
-	implementation 'mysql:mysql-connector-java:8.0.33'
+	implementation 'org.mariadb.jdbc:mariadb-java-client:2.7.3'
 
 
 	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
