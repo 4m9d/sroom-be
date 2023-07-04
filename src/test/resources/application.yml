@@ -1,0 +1,38 @@
+server:
+  port: 8080
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+  error:
+    whitelabel:
+      enabled: false
+spring:
+  #Mariadb
+  datasource:
+    url: ${url}
+    username: ${username}
+    password:
+  #    hikari:
+  #      connection-timeout: 250
+  #      max-lifetime: 500
+  mvc:
+    view:
+      suffix: .html
+
+#Devtool
+devtools:
+  livereload:
+    enabled: true
+
+#Logging
+logging.level:
+  root: info
+  com.m9d:
+    web: info
+    security: info
+    boot: info
+  com.hibernate:
+    SQL: debug
+  com.m9d.sroom: debug
