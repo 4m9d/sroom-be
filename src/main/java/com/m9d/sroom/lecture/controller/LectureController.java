@@ -29,7 +29,7 @@ public class LectureController {
     private final YoutubeService youtubeService;
 
     @GetMapping("")
-    @Tag(name = "강의 검")
+    @Tag(name = "강의 검색")
     @Operation(summary = "강의 키워드 검색", description = "키워드를 입력받아 유튜브 강의를 검색한다.")
     @Parameters({
             @Parameter(in = ParameterIn.QUERY, name = "keyword", description = "검색할 키워드", required = true, example = "네트워크"),
@@ -51,7 +51,7 @@ public class LectureController {
 
 
     @GetMapping("/{lectureId}")
-    @Tag(name = "강의 상세 정보")
+    @Tag(name = "강의 검색")
     @Operation(summary = "강의 상세 정보 조회", description = "강의 ID를 이용하여 강의의 상세 정보를 조회한다.")
     @Parameters({
             @Parameter(in = ParameterIn.PATH, name = "lectureId", description = "강의 ID", required = true, example = "OEV8gMkCHXQ"),
