@@ -13,7 +13,7 @@ import java.util.List;
 public class VideoDetail {
 
     @Schema(description = "강의 ID", example = "OEV8gMkCHXQ")
-    private String lectureId;
+    private String lectureCode;
 
     @Schema(description = "강의 제목", example = "네트워크 기초(개정판)")
     private String lectureTitle;
@@ -47,8 +47,8 @@ public class VideoDetail {
     private List<ReviewBrief> reviews;
 
     @Builder
-    public VideoDetail(String lectureId, String lectureTitle, String channel, String description, boolean isPlaylist, long viewCount, String publishedAt, double rating, int reviewCount, String thumbnail, List<ReviewBrief> reviews) {
-        this.lectureId = lectureId;
+    public VideoDetail(String lectureCode, String lectureTitle, String channel, String description, boolean isPlaylist, long viewCount, String publishedAt, double rating, int reviewCount, String thumbnail, List<ReviewBrief> reviews) {
+        this.lectureCode = lectureCode;
         this.lectureTitle = lectureTitle;
         this.channel = channel;
         this.description = description;

@@ -35,9 +35,9 @@ public class YoutubeService {
         return keywordSearchRes;
     }
 
-    public VideoDetail getVideoDetail(String lectureId, int reviewLimit) throws Exception {
+    public VideoDetail getVideoDetail(String lectureCode, int reviewLimit) throws Exception {
 
-        String url = createVideoDetailURl(lectureId);
+        String url = createVideoDetailURl(lectureCode);
         JsonNode resultNode = requestToYoutube(url);
 
         if (resultNode.get("pageInfo").get("totalResults").asInt() == 0) {
@@ -48,16 +48,16 @@ public class YoutubeService {
         return videoDetail;
     }
 
-    public PlaylistDetail getPlaylistDetail(String lectureId, int indexLimit) throws Exception {
+    public PlaylistDetail getPlaylistDetail(String lectureCode, int indexLimit) throws Exception {
 
-        String playlistDetailUrl = createPlaylistDetailUrl(lectureId);
+        String playlistDetailUrl = createPlaylistDetailUrl(lectureCode);
         JsonNode playlistNode = requestToYoutube(playlistDetailUrl);
 
         if (playlistNode.get("pageInfo").get("totalResults").asInt() == 0) {
             throw new PlaylistNotFoundException();
         }
 
-        String indexUrl = createPlaylistItems(lectureId, indexLimit);
+        String indexUrl = createPlaylistItems(lectureCode, indexLimit);
         JsonNode indexNode = requestToYoutube(indexUrl);
 
         if (indexNode.get("pageInfo").get("totalResults").asInt() == 0) {
@@ -87,40 +87,40 @@ public class YoutubeService {
         return url;
     }
 
-    private String createVideoDetailURl(String lectureId) {
+    private String createVideoDetailURl(String lectureCode) {
         String url = "https://www.googleapis.com/youtube/v3/videos?";
 
         String partQuery = "part=snippet,contentDetails,statistics,status";
         String fieldsQuery = "&fields=pageInfo(totalResults),items(id,snippet(publishedAt,title,description,thumbnails,channelTitle,defaultAudioLanguage),contentDetails(duration,dimension),status(uploadStatus,embeddable),statistics(viewCount))";
-        String lectureIdQuery = "&id=".concat(lectureId);
+        String lectureCodeQuery = "&id=".concat(lectureCode);
         String keyQuery = "&key=".concat(googleCloudApiKey);
 
-        url = url.concat(partQuery).concat(fieldsQuery).concat(lectureIdQuery).concat(keyQuery);
+        url = url.concat(partQuery).concat(fieldsQuery).concat(lectureCodeQuery).concat(keyQuery);
         return url;
     }
 
-    private String createPlaylistDetailUrl(String lectureId) {
+    private String createPlaylistDetailUrl(String lectureCode) {
         String url = "https://www.googleapis.com/youtube/v3/playlists?";
 
         String partQuery = "part=id,snippet,status,contentDetails";
         String fieldsQuery = "&fields=pageInfo,items(id,snippet(publishedAt,title,description,thumbnails,channelTitle),status,contentDetails)";
-        String lectureIdQuery = "&id=".concat(lectureId);
+        String lectureCodeQuery = "&id=".concat(lectureCode);
         String keyQuery = "&key=".concat(googleCloudApiKey);
 
-        url = url.concat(partQuery).concat(fieldsQuery).concat(lectureIdQuery).concat(keyQuery);
+        url = url.concat(partQuery).concat(fieldsQuery).concat(lectureCodeQuery).concat(keyQuery);
         return url;
     }
 
-    private String createPlaylistItems(String lectureId, int limit) {
+    private String createPlaylistItems(String lectureCode, int limit) {
         String url = "https://www.googleapis.com/youtube/v3/playlistItems?";
 
         String partQuery = "part=snippet,status";
         String fieldsQuery = "&fields=pageInfo,nextPageToken,prevPageToken,items(snippet(title,position,resourceId,thumbnails),status)";
         String maxResultsQuery = "&maxResults=".concat(String.valueOf(limit));
-        String playlistIdQuery = "&playlistId=".concat(lectureId);
+        String playlistCodeQuery = "&playlistId=".concat(lectureCode);
         String keyQuery = "&key=".concat(googleCloudApiKey);
 
-        url = url.concat(partQuery).concat(fieldsQuery).concat(maxResultsQuery).concat(playlistIdQuery).concat(keyQuery);
+        url = url.concat(partQuery).concat(fieldsQuery).concat(maxResultsQuery).concat(playlistCodeQuery).concat(keyQuery);
         return url;
     }
 
@@ -146,18 +146,18 @@ public class YoutubeService {
             boolean isPlaylist = item.get("id").get("kind").asText().equals("youtube#playlist");
             String thumbnailWithHighestWidth = selectThumbnailWithHighestWidth(snippetNode.get("thumbnails"));
 
-            String lectureId;
+            String lectureCode;
             if (isPlaylist) {
-                lectureId = item.get("id").get("playlistId").asText();
+                lectureCode = item.get("id").get("playlistId").asText();
             } else {
-                lectureId = item.get("id").get("videoId").asText();
+                lectureCode = item.get("id").get("videoId").asText();
             }
 
             Lecture lecture = Lecture.builder()
                     .lectureTitle(snippetNode.get("title").asText())
                     .description(snippetNode.get("description").asText())
                     .channel(snippetNode.get("channelTitle").asText())
-                    .lectureId(lectureId)
+                    .lectureCode(lectureCode)
                     .isPlaylist(isPlaylist)
                     .thumbnail(thumbnailWithHighestWidth)
                     .build();
@@ -181,7 +181,7 @@ public class YoutubeService {
         String thumbnailWithHighestWidth = selectThumbnailWithHighestWidth(snippetJsonNode.get("thumbnails"));
 
         VideoDetail videoDetail = VideoDetail.builder()
-                .lectureId(resultNode.get("items").get(0).get("id").asText())
+                .lectureCode(resultNode.get("items").get(0).get("id").asText())
                 .lectureTitle(snippetJsonNode.get("title").asText())
                 .channel(snippetJsonNode.get("channelTitle").asText())
                 .description(snippetJsonNode.get("description").asText())
@@ -207,7 +207,7 @@ public class YoutubeService {
                 String itemThumbnailWithHighestWidth = selectThumbnailWithHighestWidth(snippetJsonNode.get("thumbnails"));
                 Index index = Index.builder()
                         .index(snippetNode.get("position").asInt())
-                        .lectureId(snippetNode.get("resourceId").get("videoId").asText())
+                        .lectureCode(snippetNode.get("resourceId").get("videoId").asText())
                         .lectureTitle(snippetNode.get("title").asText())
                         .thumbnail(itemThumbnailWithHighestWidth)
                         .build();
@@ -218,7 +218,7 @@ public class YoutubeService {
 
 
         PlaylistDetail playlistDetail = PlaylistDetail.builder()
-                .lectureId(playlistNode.get("items").get(0).get("id").asText())
+                .lectureCode(playlistNode.get("items").get(0).get("id").asText())
                 .lectureTitle(snippetJsonNode.get("title").asText())
                 .channel(snippetJsonNode.get("channelTitle").asText())
                 .description(snippetJsonNode.get("description").asText())

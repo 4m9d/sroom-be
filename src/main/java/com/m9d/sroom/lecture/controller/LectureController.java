@@ -50,11 +50,11 @@ public class LectureController {
     }
 
 
-    @GetMapping("/{lectureId}")
+    @GetMapping("/{lectureCode}")
     @Tag(name = "강의 검색")
     @Operation(summary = "강의 상세 정보 조회", description = "강의 ID를 이용하여 강의의 상세 정보를 조회한다.")
     @Parameters({
-            @Parameter(in = ParameterIn.PATH, name = "lectureId", description = "강의 ID", required = true, example = "OEV8gMkCHXQ"),
+            @Parameter(in = ParameterIn.PATH, name = "lectureCode", description = "강의 코드", required = true, example = "OEV8gMkCHXQ"),
             @Parameter(in = ParameterIn.QUERY, name = "is_playlist", description = "플레이리스트 여부", required = true, example = "false"),
             @Parameter(in = ParameterIn.QUERY, name = "index_limit", description = "결과의 최대 개수", required = false, example = "10"),
             @Parameter(in = ParameterIn.QUERY, name = "review_limit", description = "리뷰의 최대 개수", required = false, example = "10")
@@ -62,17 +62,17 @@ public class LectureController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공적으로 강의 상세 정보를 반환하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(oneOf = {PlaylistDetail.class, VideoDetail.class}))}),
             @ApiResponse(responseCode = "400", description = "필수 파라미터인 'is_playlist'(boolean)가 누락되었습니다.", content = @Content),
-            @ApiResponse(responseCode = "404", description = "입력한 lectureId에 해당하는 강의가 없습니다.", content = @Content)
+            @ApiResponse(responseCode = "404", description = "입력한 lectureCode에 해당하는 강의가 없습니다.", content = @Content)
     })
-    public ResponseEntity<?> getLectureDetail(@PathVariable(name = "lectureId", required = true) String lectureId,
+    public ResponseEntity<?> getLectureDetail(@PathVariable(name = "lectureCode", required = true) String lectureCode,
                                               @RequestParam(name = "is_playlist", required = true) boolean isPlaylist,
                                               @RequestParam(name = "index_limit", required = false, defaultValue = "10") int indexLimit,
                                               @RequestParam(name = "review_limit", required = false, defaultValue = "10") int reviewLimit) throws Exception {
         if (isPlaylist) {
-            PlaylistDetail playlistDetail = youtubeService.getPlaylistDetail(lectureId, indexLimit);
+            PlaylistDetail playlistDetail = youtubeService.getPlaylistDetail(lectureCode, indexLimit);
             return ResponseEntity.ok(playlistDetail);
         }
-        VideoDetail videoDetail = youtubeService.getVideoDetail(lectureId, reviewLimit);
+        VideoDetail videoDetail = youtubeService.getVideoDetail(lectureCode, reviewLimit);
         return ResponseEntity.ok(videoDetail);
     }
 }

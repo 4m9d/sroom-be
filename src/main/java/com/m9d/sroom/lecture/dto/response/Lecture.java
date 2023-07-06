@@ -19,7 +19,7 @@ public class Lecture{
     private String channel;
 
     @Schema(description = "강의 ID", example = "PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi")
-    private String lectureId;
+    private String lectureCode;
 
     @Schema(description = "플레이리스트 여부", example = "true")
     @JsonProperty("isPlaylist")
@@ -36,11 +36,11 @@ public class Lecture{
 
     @Builder
 
-    public Lecture(String lectureTitle, String description, String channel, String lectureId, boolean isPlaylist, double rating, int reviewCount, String thumbnail) {
+    public Lecture(String lectureTitle, String description, String channel, String lectureCode, boolean isPlaylist, double rating, int reviewCount, String thumbnail) {
         this.lectureTitle = lectureTitle;
         this.description = description;
         this.channel = channel;
-        this.lectureId = lectureId;
+        this.lectureCode = lectureCode;
         this.isPlaylist = isPlaylist;
         this.rating = rating;
         this.reviewCount = reviewCount;
