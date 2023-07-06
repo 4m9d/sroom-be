@@ -1,4 +1,4 @@
-package com.m9d.sroom.lecture.dto.response;
+package com.m9d.sroom.lecture.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;

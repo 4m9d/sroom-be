@@ -4,8 +4,6 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.m9d.sroom.member.domain.Member;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.util.ServiceTest;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +49,7 @@ public class MemberServiceTest extends ServiceTest {
 
         //then
         assertTrue(delta < 5);
+        assertThat(login.getMemberName()).isEqualTo(member.getMemberName());
     }
 
 

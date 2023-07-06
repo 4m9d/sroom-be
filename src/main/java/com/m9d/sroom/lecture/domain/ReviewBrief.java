@@ -1,4 +1,4 @@
-package com.m9d.sroom.lecture.dto.response;
+package com.m9d.sroom.lecture.domain;
 
 import lombok.Builder;
 import lombok.Data;

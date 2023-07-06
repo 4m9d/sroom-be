@@ -1,4 +1,4 @@
-package com.m9d.sroom.lecture.dto.response;
+package com.m9d.sroom.lecture.domain;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

@@ -1,10 +1,8 @@
 package com.m9d.sroom.config.error;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MissingPathVariableException;
-import org.springframework.web.bind.MissingRequestValueException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -105,4 +103,12 @@ public class ControllerAdvice {
         return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
     }
 
+    @ExceptionHandler(InvalidParameterException.class)
+    public ResponseEntity<?> InvalidParameterException(InvalidParameterException e) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .statusCode("400")
+                .message(e.getMessage())
+                .build();
+        return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
+    }
 }
