@@ -156,6 +156,7 @@ public class YoutubeService {
             Lecture lecture = Lecture.builder()
                     .lectureTitle(snippetNode.get("title").asText())
                     .description(snippetNode.get("description").asText())
+                    .channel(snippetNode.get("channelTitle").asText())
                     .lectureId(lectureId)
                     .isPlaylist(isPlaylist)
                     .thumbnail(thumbnailWithHighestWidth)

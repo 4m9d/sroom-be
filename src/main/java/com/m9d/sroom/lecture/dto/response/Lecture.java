@@ -15,6 +15,9 @@ public class Lecture{
     @Schema(description = "강의 설명", example = "OSI 7계층에서 각 계층의 다양한 프로토콜들을 통해서 배우는 네트워크 기초에 대한 강의입니다.")
     private String description;
 
+    @Schema(description = "채널", example = "따라하면서 배우는 IT")
+    private String channel;
+
     @Schema(description = "강의 ID", example = "PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi")
     private String lectureId;
 
@@ -32,9 +35,11 @@ public class Lecture{
     private String thumbnail;
 
     @Builder
-    public Lecture(String lectureTitle, String description, String lectureId, boolean isPlaylist, double rating, int reviewCount, String thumbnail) {
+
+    public Lecture(String lectureTitle, String description, String channel, String lectureId, boolean isPlaylist, double rating, int reviewCount, String thumbnail) {
         this.lectureTitle = lectureTitle;
         this.description = description;
+        this.channel = channel;
         this.lectureId = lectureId;
         this.isPlaylist = isPlaylist;
         this.rating = rating;
