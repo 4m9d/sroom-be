@@ -1,5 +1,6 @@
 package com.m9d.sroom.lecture.dto.response;
 
+import com.m9d.sroom.lecture.domain.Lecture;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
@@ -8,7 +9,7 @@ import java.util.List;
 
 @Schema(description = "검색 결과 강의 리스트")
 @Data
-public class KeywordSearchRes {
+public class KeywordSearch {
 
     @Schema(description = "응답 개수", example = "5")
     private int resultPerPage;
@@ -23,7 +24,7 @@ public class KeywordSearchRes {
     private List<Lecture> lectures;
 
     @Builder
-    public KeywordSearchRes(int resultPerPage, String nextPageToken, String prevPageToken, List<Lecture> lectures) {
+    public KeywordSearch(int resultPerPage, String nextPageToken, String prevPageToken, List<Lecture> lectures) {
         this.resultPerPage = resultPerPage;
         this.nextPageToken = nextPageToken;
         this.prevPageToken = prevPageToken;

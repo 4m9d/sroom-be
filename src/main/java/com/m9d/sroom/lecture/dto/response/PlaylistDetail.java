@@ -1,6 +1,7 @@
 package com.m9d.sroom.lecture.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.m9d.sroom.lecture.domain.ReviewBrief;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
@@ -12,7 +13,7 @@ import java.util.List;
 public class PlaylistDetail {
 
     @Schema(description = "재생목록 ID", example = "PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi")
-    private String lectureId;
+    private String lectureCode;
 
     @Schema(description = "재생목록 제목", example = "네트워크 기초(개정판)")
     private String lectureTitle;
@@ -42,18 +43,15 @@ public class PlaylistDetail {
     @Schema(description = "재생목록 썸네일", example = "https://i.ytimg.com/vi/Av9UFzl_wis/hqdefault.jpg")
     private String thumbnail;
 
-    @Schema(description = "목차 다음 페이지 토큰", example = "CAoQAA")
-    private String indexNextPageToken;
-
     @Schema(description = "강의 목차 정보")
-    private List<Index> indexes;
+    private IndexList indexList;
 
     @Schema(description = "강의 후기 요약 정보")
     private List<ReviewBrief> reviews;
 
     @Builder
-    public PlaylistDetail(String lectureId, String lectureTitle, String channel, String description, boolean isPlaylist, String publishedAt, int lectureCount, double rating, int reviewCount, String thumbnail, String indexNextPageToken, List<Index> indexes, List<ReviewBrief> reviews) {
-        this.lectureId = lectureId;
+    public PlaylistDetail(String lectureCode, String lectureTitle, String channel, String description, boolean isPlaylist, String publishedAt, int lectureCount, double rating, int reviewCount, String thumbnail, IndexList indexList, List<ReviewBrief> reviews) {
+        this.lectureCode = lectureCode;
         this.lectureTitle = lectureTitle;
         this.channel = channel;
         this.description = description;
@@ -63,8 +61,7 @@ public class PlaylistDetail {
         this.rating = rating;
         this.reviewCount = reviewCount;
         this.thumbnail = thumbnail;
-        this.indexNextPageToken = indexNextPageToken;
-        this.indexes = indexes;
+        this.indexList = indexList;
         this.reviews = reviews;
     }
 }

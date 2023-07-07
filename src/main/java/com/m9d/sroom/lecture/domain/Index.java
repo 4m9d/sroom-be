@@ -1,4 +1,4 @@
-package com.m9d.sroom.lecture.dto.response;
+package com.m9d.sroom.lecture.domain;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -12,7 +12,7 @@ public class Index {
     private int index;
 
     @Schema(description = "강의 ID", example = "PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi")
-    private String lectureId;
+    private String lectureCode;
 
     @Schema(description = "강의 썸네일", example = "https://i.ytimg.com/vi/Av9UFzl_wis/hqdefault.jpg")
     private String thumbnail;
@@ -21,9 +21,9 @@ public class Index {
     private String lectureTitle;
 
     @Builder
-    public Index(int index, String lectureId, String thumbnail, String lectureTitle) {
+    public Index(int index, String lectureCode, String thumbnail, String lectureTitle) {
         this.index = index;
-        this.lectureId = lectureId;
+        this.lectureCode = lectureCode;
         this.thumbnail = thumbnail;
         this.lectureTitle = lectureTitle;
     }
