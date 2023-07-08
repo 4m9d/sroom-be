@@ -111,4 +111,13 @@ public class ControllerAdvice {
                 .build();
         return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> IllegalArgumentException(IllegalArgumentException e) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .statusCode("400")
+                .message(e.getMessage())
+                .build();
+        return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
+    }
 }
