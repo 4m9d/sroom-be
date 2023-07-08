@@ -17,7 +17,7 @@ public class LectureRepository {
     }
 
     public List<ReviewBrief> getReviewBriefList(String lectureCode, int reviewOffset, int reviewLimit) {
-        String sql = "SELECT id, content, submitted_rating FROM REVIEW WHERE lecture_code = ? ORDER BY submitted_date DESC LIMIT ? OFFSET ?";
+        String sql = "SELECT review_id, content, submitted_rating FROM REVIEW WHERE source_code = ? ORDER BY submitted_date DESC LIMIT ? OFFSET ?";
         List<ReviewBrief> reviewBriefList = jdbcTemplate.query(sql, new Object[]{lectureCode, reviewLimit, reviewOffset},
                 (rs, rowNum) -> ReviewBrief.builder()
                         .index(rowNum + reviewOffset)

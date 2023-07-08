@@ -73,7 +73,7 @@ public class LectureController {
                                               @RequestParam(name = "is_playlist", required = true) boolean isPlaylist,
                                               @RequestParam(name = "index_only", required = false, defaultValue = "false") boolean indexOnly,
                                               @RequestParam(name = "index_limit", required = false, defaultValue = "10") int indexLimit,
-                                              @RequestParam(name = "index_next_token", required = false, defaultValue = "0") String indexNextToken,
+                                              @RequestParam(name = "index_next_token", required = false) String indexNextToken,
                                               @RequestParam(name = "review_only", required = false, defaultValue = "false") boolean reviewOnly,
                                               @RequestParam(name = "review_offset", required = false, defaultValue = "0") int reviewOffset,
                                               @RequestParam(name = "review_limit", required = false, defaultValue = "10") int reviewLimit) throws Exception {

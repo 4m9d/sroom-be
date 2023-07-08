@@ -1,7 +1,9 @@
 package com.m9d.sroom.util;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.m9d.sroom.SroomApplicationTests;
+import com.m9d.sroom.lecture.service.YoutubeService;
 import com.m9d.sroom.member.domain.Member;
 import com.m9d.sroom.member.repository.MemberRepository;
 import com.m9d.sroom.member.service.MemberService;
@@ -25,6 +27,12 @@ public class ServiceTest extends SroomApplicationTests {
 
     @Autowired
     protected JwtUtil jwtUtil;
+
+    @Autowired
+    protected YoutubeService youtubeService;
+
+    @Autowired
+    protected ObjectMapper objectMapper;
 
     protected GoogleIdToken.Payload getGoogleIdTokenPayload() {
         GoogleIdToken.Payload payload = new GoogleIdToken.Payload();
