@@ -21,6 +21,8 @@ public class YoutubeService {
     private String googleCloudApiKey;
 
     public JsonNode requestToYoutube(String url) throws Exception {
+        validateUrl(url);
+
         HttpClient client = HttpClient.newHttpClient();
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -33,6 +35,12 @@ public class YoutubeService {
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonResponse = objectMapper.readTree(response.body());
         return jsonResponse;
+    }
+
+    private void validateUrl(String url) {
+        if (url.contains(" ")) {
+            throw new IllegalArgumentException("url에는 띄어쓰기가 허용되지 않습니다.");
+        }
     }
 
     public JsonNode getLectureListFromYoutube(String keyword, int limit, String nextPageToken, String prevPageToken) throws Exception {

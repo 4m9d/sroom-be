@@ -119,11 +119,28 @@ public class LectureControllerTest extends ControllerTest {
     }
 
     @Test
+    @DisplayName("강의코드에 띄어쓰기를 포함하면 400에러가 발생합니다.")
+    void shouldReturnBadRequestSpacingLectureCode() throws Exception {
+        //given
+        Login login = getNewLogin();
+        String lectureCode = "띄 어 쓰 기 가 득 한 강 의 코 드";
+        String isPlaylist = "false";
+
+        //expected
+        mockMvc.perform(get("/lectures/{lectureCode}", lectureCode)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", login.getAccessToken())
+                        .queryParam("is_playlist", isPlaylist))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message", is("url에는 띄어쓰기가 허용되지 않습니다.")));
+    }
+
+    @Test
     @DisplayName("부적절한 영상 코드를 입력하면 not found error가 발생합니다.")
     void shouldReturnNotFoundErrorInvalidVideoCode() throws Exception {
         //given
         Login login = getNewLogin();
-        String lectureCode = "부적절한 영상코드";
+        String lectureCode = "부적절한영상코드";
         String isPlaylist = "false";
 
         //expected
