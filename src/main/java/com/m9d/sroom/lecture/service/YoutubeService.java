@@ -86,11 +86,11 @@ public class YoutubeService {
         String maxResultsQuery = "&maxResults=".concat(String.valueOf(limit));
         String playlistCodeQuery = "&playlistId=".concat(lectureCode);
         String keyQuery = "&key=".concat(googleCloudApiKey);
-        String pageTokenQuery = "&pageToken=".concat(nextToken);
 
         url = url.concat(partQuery).concat(fieldsQuery).concat(maxResultsQuery).concat(playlistCodeQuery).concat(keyQuery);
 
         if (nextToken != null) {
+            String pageTokenQuery = "&pageToken=".concat(nextToken);
             url = url.concat(pageTokenQuery);
         }
 

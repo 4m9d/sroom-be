@@ -15,24 +15,24 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 public
 class SroomApplicationTests {
 
-	@Autowired
-	private MemberRepository memberRepository;
+    @Autowired
+    private MemberRepository memberRepository;
 
-	@Container
-	static MariaDBContainer<?> mariaDBContainer = new MariaDBContainer<>("mariadb:10.5.8")
-			.withDatabaseName("sroom")
-			.withUsername("root")
-			.withPassword("")
-			.withInitScript("schema.sql");
+    @Container
+    static MariaDBContainer<?> mariaDBContainer = new MariaDBContainer<>("mariadb:10.5.8")
+            .withDatabaseName("sroom")
+            .withUsername("root")
+            .withPassword("")
+            .withInitScript("schema.sql");
 
-	@DynamicPropertySource
-	static void registerPgProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.datasource.url", mariaDBContainer::getJdbcUrl);
-		registry.add("spring.datasource.username", mariaDBContainer::getUsername);
-		registry.add("spring.datasource.password", mariaDBContainer::getPassword);
-	}
+    @DynamicPropertySource
+    static void registerPgProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", mariaDBContainer::getJdbcUrl);
+        registry.add("spring.datasource.username", mariaDBContainer::getUsername);
+        registry.add("spring.datasource.password", mariaDBContainer::getPassword);
+    }
 
-	@Autowired
-	private JdbcTemplate jdbcTemplate;
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
 }
