@@ -48,12 +48,12 @@ public class JwtUtil {
 
         Map<String, Object> details = new HashMap<>();
         details.put("expirationTime", claims.getExpiration().getTime() / 1000); // convert to Unix time
-        details.put("subject", claims.getSubject());
+        details.put("memberId", claims.getSubject());
 
         return details; // convert to Unix time
     }
 
-    public Long getMemberId() {
+    public Long getMemberIdFromRequest() {
         ServletRequestAttributes request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
         return Long.valueOf((String) request.getRequest().getAttribute("memberId"));
     }

@@ -1,8 +1,10 @@
 package com.m9d.sroom.member.repository;
 
 import com.m9d.sroom.member.domain.Member;
+import com.m9d.sroom.member.exception.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -41,6 +43,7 @@ public class MemberRepository {
                 .memberCode(rs.getString("member_code"))
                 .memberName(rs.getString("member_name"))
                 .memberId(rs.getLong("member_id"))
+                .bio(rs.getString("bio"))
                 .build();
         return member;
     };
@@ -48,5 +51,21 @@ public class MemberRepository {
     public void saveRefreshToken(Long memberId, String refreshToken) {
         String sql = "UPDATE MEMBER SET refresh_token = ? WHERE member_id = ?";
         jdbcTemplate.update(sql, refreshToken, memberId);
+    }
+
+    public Optional<Member> findByMemberId(Long memberId) {
+        String sql = "SELECT * FROM MEMBER WHERE member_id = ?";
+        List<Member> members = jdbcTemplate.query(sql, new Object[]{memberId}, memberRowMapper);
+        return members.isEmpty() ? Optional.empty() : Optional.of(members.get(0));
+    }
+
+    public String getRefreshById(Long memberId) {
+        String sql = "SELECT refresh_token FROM MEMBER WHERE member_id = ?";
+        try {
+            String refreshToken = jdbcTemplate.queryForObject(sql, new Object[]{memberId}, String.class);
+            return refreshToken;
+        } catch (EmptyResultDataAccessException e) {
+            throw new MemberNotFoundException();
+        }
     }
 }

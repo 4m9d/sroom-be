@@ -7,11 +7,13 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.m9d.sroom.member.domain.Member;
+import com.m9d.sroom.member.dto.request.RefreshToken;
 import com.m9d.sroom.member.dto.response.Login;
-import com.m9d.sroom.member.exception.CredentialUnauthorizedException;
+import com.m9d.sroom.member.exception.*;
 import com.m9d.sroom.member.repository.MemberRepository;
 import com.m9d.sroom.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,7 @@ import java.util.*;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class MemberService {
 
     private final MemberRepository memberRepository;
@@ -33,7 +36,14 @@ public class MemberService {
     public Login authenticateMember(String credential) throws Exception {
         GoogleIdToken.Payload payload = getPayloadFromCredential(credential);
         String memberCode = getMemberCodeFromPayload(payload);
-        Member member = findOrCreateMember(memberCode);
+        Member member = findOrCreateMemberByMemberCode(memberCode);
+        return generateLogin(member);
+    }
+
+    @Transactional
+    public Login renewTokens(Long memberId) {
+        Member member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(MemberNotFoundException::new);
         return generateLogin(member);
     }
 
@@ -48,7 +58,7 @@ public class MemberService {
                 .refreshToken(refreshToken)
                 .expireIn((Long) jwtUtil.getDetailFromToken(accessToken).get("expirationTime"))
                 .memberName(member.getMemberName())
-                .bio("")
+                .bio(member.getBio())
                 .build();
         return login;
     }
@@ -76,7 +86,7 @@ public class MemberService {
     }
 
     @Transactional
-    public Member findOrCreateMember(String memberCode) {
+    public Member findOrCreateMemberByMemberCode(String memberCode) {
         return memberRepository.findByMemberCode(memberCode)
                 .orElseGet(() -> createNewMember(memberCode));
     }
@@ -98,4 +108,23 @@ public class MemberService {
         return memberName;
     }
 
+    @Transactional
+    public Login verifyRefreshTokenAndReturnLogin(Long memberId, RefreshToken refreshToken) {
+        Map<String, Object> refreshTokenDetail = jwtUtil.getDetailFromToken(refreshToken.getRefreshToken());
+
+        if ((Long) refreshTokenDetail.get("expirationTime") <= System.currentTimeMillis() / 1000) {
+            throw new TokenExpiredException("refresh");
+        }
+        if (memberId != refreshTokenDetail.get("memberId")) {
+            throw new MemberNotMatchException();
+        }
+
+        String refreshTokenFromDB = memberRepository.getRefreshById(memberId);
+        if (refreshTokenFromDB != refreshToken.getRefreshToken()) {
+            throw new RefreshRenewedException();
+        }
+
+        Login login = renewTokens(memberId);
+        return login;
+    }
 }

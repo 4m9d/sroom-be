@@ -44,7 +44,7 @@ public class ServiceTest extends SroomApplicationTests {
 
     protected Member getNewMember() {
         String memberCode = memberService.getMemberCodeFromPayload(getGoogleIdTokenPayload());
-        return memberService.findOrCreateMember(memberCode);
+        return memberService.findOrCreateMemberByMemberCode(memberCode);
     }
 
 }

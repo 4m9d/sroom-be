@@ -54,7 +54,7 @@ public class ControllerTest extends SroomApplicationTests {
         String expectedMemberCode = "106400356559989163499";
         String memberCode = memberService.getMemberCodeFromPayload(payload.setSubject(expectedMemberCode));
 
-        return memberService.findOrCreateMember(memberCode);
+        return memberService.findOrCreateMemberByMemberCode(memberCode);
     }
 
     protected KeywordSearch getKeywordSearch(Login login, String keyword) throws Exception {

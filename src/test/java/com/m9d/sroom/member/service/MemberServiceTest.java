@@ -28,7 +28,7 @@ public class MemberServiceTest extends ServiceTest {
 
 
         //when
-        memberService.findOrCreateMember(memberCode);
+        memberService.findOrCreateMemberByMemberCode(memberCode);
         String actualResult = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM MEMBER WHERE MEMBER_CODE = ?", String.class, memberCode);
 
 

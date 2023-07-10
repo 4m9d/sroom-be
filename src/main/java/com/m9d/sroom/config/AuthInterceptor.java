@@ -1,6 +1,6 @@
 package com.m9d.sroom.config;
 
-import com.m9d.sroom.member.exception.AccessTokenExpiredException;
+import com.m9d.sroom.member.exception.TokenExpiredException;
 import com.m9d.sroom.member.exception.InvalidAccessTokenException;
 import com.m9d.sroom.member.exception.NoAuthorizationTokenException;
 import com.m9d.sroom.util.JwtUtil;
@@ -66,10 +66,10 @@ public class AuthInterceptor implements HandlerInterceptor {
             // Validate the token
             if ((Long) jwtDetail.get("expirationTime") <= System.currentTimeMillis() / 1000) {
                 log.debug("Token has expired");
-                throw new AccessTokenExpiredException();
+                throw new TokenExpiredException("access");
             }
 
-            request.setAttribute("memberId", jwtDetail.get("subject"));
+            request.setAttribute("memberId", jwtDetail.get("memberId"));
 
         } catch (Exception e) {
             log.error("Error validating token", e);

@@ -1,6 +1,7 @@
 package com.m9d.sroom.member.controller;
 
 import com.m9d.sroom.member.dto.request.GoogleIdKey;
+import com.m9d.sroom.member.dto.request.RefreshToken;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.member.service.MemberService;
 import com.m9d.sroom.util.JwtUtil;
@@ -39,9 +40,10 @@ public class MemberController {
     }
 
     @Auth
-    @GetMapping("/test")
-    public ResponseEntity<?> authTest() {
-        System.out.println(jwtUtil.getMemberId());
-        return ResponseEntity.ok().build();
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refresh(@RequestBody RefreshToken refreshToken) {
+        Long memberId = jwtUtil.getMemberIdFromRequest();
+        Login login = memberService.verifyRefreshTokenAndReturnLogin(memberId, refreshToken);
+        return ResponseEntity.ok(login);
     }
 }

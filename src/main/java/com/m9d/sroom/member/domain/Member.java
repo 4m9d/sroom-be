@@ -19,9 +19,10 @@ public class Member {
     private int status;
 
     @Builder
-    public Member(Long memberId, String memberCode, String memberName) {
+    public Member(Long memberId, String memberCode, String memberName, String bio) {
         this.memberId = memberId;
         this.memberCode = memberCode;
         this.memberName = memberName;
+        this.bio = bio;
     }
 }
