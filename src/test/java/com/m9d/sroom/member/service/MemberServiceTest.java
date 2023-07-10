@@ -2,6 +2,7 @@ package com.m9d.sroom.member.service;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.m9d.sroom.member.domain.Member;
+import com.m9d.sroom.member.dto.request.RefreshToken;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.util.ServiceTest;
 import org.junit.jupiter.api.DisplayName;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Transactional
@@ -50,6 +52,22 @@ public class MemberServiceTest extends ServiceTest {
         //then
         assertTrue(delta < 5);
         assertThat(login.getMemberName()).isEqualTo(member.getMemberName());
+    }
+
+    @Test
+    @DisplayName("올바른 refresh token을 입력하면 갱신에 성공합니다.")
+    void renewRefreshToken200() {
+        //givien
+        Member member = getNewMember();
+        Login login = memberService.generateLogin(member);
+
+        //when
+        Login reLogin = memberService.verifyRefreshTokenAndReturnLogin(
+                member.getMemberId(),
+                RefreshToken.builder().refreshToken(login.getRefreshToken()).build());
+
+        //then
+        assertNotEquals(member.getRefreshToken(), reLogin.getRefreshToken());
     }
 
 
