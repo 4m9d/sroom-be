@@ -3,12 +3,14 @@ package com.m9d.sroom.member.controller;
 import com.m9d.sroom.member.dto.request.GoogleIdKey;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.member.service.MemberService;
+import com.m9d.sroom.util.annotation.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -32,5 +34,11 @@ public class MemberController {
     })
     public ResponseEntity<?> login(@RequestBody GoogleIdKey googleIdKey) throws Exception {
         return ResponseEntity.ok(memberService.authenticateMember(googleIdKey.getCredential()));
+    }
+
+    @Auth
+    @GetMapping("/test")
+    public ResponseEntity<?> authTest() {
+        return ResponseEntity.ok().build();
     }
 }

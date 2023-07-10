@@ -1,4 +1,4 @@
-package com.m9d.sroom.config;
+package com.m9d.sroom.util.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;

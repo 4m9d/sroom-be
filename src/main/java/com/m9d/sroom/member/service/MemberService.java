@@ -46,7 +46,7 @@ public class MemberService {
         Login login = Login.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .expireIn(jwtUtil.getExpirationTimeFromToken(accessToken))
+                .expireIn((Long) jwtUtil.getDetailFromToken(accessToken).get("expirationTime"))
                 .memberName(member.getMemberName())
                 .bio("")
                 .build();
