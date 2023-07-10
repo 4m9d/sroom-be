@@ -115,12 +115,12 @@ public class MemberService {
         if ((Long) refreshTokenDetail.get("expirationTime") <= System.currentTimeMillis() / 1000) {
             throw new TokenExpiredException("refresh");
         }
-        if (memberId != refreshTokenDetail.get("memberId")) {
+        if (!memberId.equals(Long.valueOf((String) refreshTokenDetail.get("memberId")))) {
             throw new MemberNotMatchException();
         }
 
         String refreshTokenFromDB = memberRepository.getRefreshById(memberId);
-        if (refreshTokenFromDB != refreshToken.getRefreshToken()) {
+        if (!refreshTokenFromDB.equals(refreshToken.getRefreshToken())) {
             throw new RefreshRenewedException();
         }
 
