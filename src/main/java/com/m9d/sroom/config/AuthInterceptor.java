@@ -46,7 +46,6 @@ public class AuthInterceptor implements HandlerInterceptor {
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         Auth auth = handlerMethod.getMethodAnnotation(Auth.class);
         if (auth == null) {
-            log.debug("No auth interceptor");
             return true;
         }
 
@@ -80,13 +79,13 @@ public class AuthInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable ModelAndView modelAndView) throws Exception {
-        log.info("AuthInterceptor.postHandle");
-
-        // Controller 내 메소드가 실행된 후, JSON Response가 Frontend로 전달되기 전에 항상 실행될 코드가 있다면 여기에 추가한다.
-        log.info("Executed the AuthInterceptor after running Controller's method.");
-
-    }
+//    @Override
+//    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable ModelAndView modelAndView) throws Exception {
+//        log.info("AuthInterceptor.postHandle");
+//
+//        // Controller 내 메소드가 실행된 후, JSON Response가 Frontend로 전달되기 전에 항상 실행될 코드가 있다면 여기에 추가한다.
+//        log.info("Executed the AuthInterceptor after running Controller's method.");
+//
+//    }
 
 }

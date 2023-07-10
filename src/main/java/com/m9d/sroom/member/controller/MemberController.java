@@ -3,6 +3,7 @@ package com.m9d.sroom.member.controller;
 import com.m9d.sroom.member.dto.request.GoogleIdKey;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.member.service.MemberService;
+import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/login")
     @Tag(name = "로그인")
@@ -39,6 +41,7 @@ public class MemberController {
     @Auth
     @GetMapping("/test")
     public ResponseEntity<?> authTest() {
+        System.out.println(jwtUtil.getMemberId());
         return ResponseEntity.ok().build();
     }
 }

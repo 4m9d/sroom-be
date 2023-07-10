@@ -6,7 +6,10 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +40,6 @@ public class JwtUtil {
                 .compact();
     }
 
-
     public Map<String, Object> getDetailFromToken(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(jwtSecret)
@@ -49,5 +51,10 @@ public class JwtUtil {
         details.put("subject", claims.getSubject());
 
         return details; // convert to Unix time
+    }
+
+    public Long getMemberId() {
+        ServletRequestAttributes request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
+        return Long.valueOf((String) request.getRequest().getAttribute("memberId"));
     }
 }
