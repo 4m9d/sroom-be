@@ -35,7 +35,6 @@ public class Lecture{
     private String thumbnail;
 
     @Builder
-
     public Lecture(String lectureTitle, String description, String channel, String lectureCode, boolean isPlaylist, double rating, int reviewCount, String thumbnail) {
         this.lectureTitle = lectureTitle;
         this.description = description;

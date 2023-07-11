@@ -14,9 +14,6 @@ spring:
     url: ${url}
     username: ${username}
     password:
-  #    hikari:
-  #      connection-timeout: 250
-  #      max-lifetime: 500
   mvc:
     view:
       suffix: .html

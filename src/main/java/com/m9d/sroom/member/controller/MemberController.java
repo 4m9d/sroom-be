@@ -1,14 +1,18 @@
 package com.m9d.sroom.member.controller;
 
 import com.m9d.sroom.member.dto.request.GoogleIdKey;
+import com.m9d.sroom.member.dto.request.RefreshToken;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.member.service.MemberService;
+import com.m9d.sroom.util.JwtUtil;
+import com.m9d.sroom.util.annotation.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/login")
     @Tag(name = "로그인")
@@ -32,5 +37,16 @@ public class MemberController {
     })
     public ResponseEntity<?> login(@RequestBody GoogleIdKey googleIdKey) throws Exception {
         return ResponseEntity.ok(memberService.authenticateMember(googleIdKey.getCredential()));
+    }
+
+    @Auth
+    @PostMapping("/refresh")
+    @Tag(name = "로그인")
+    @Operation(summary = "access token 갱신", description = "refresh token을 사용하여 로그인을 유지합니다.")
+@ApiResponse(responseCode = "200", description = "토큰 갱신에 성공하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(allOf = Login.class))})
+    public ResponseEntity<?> refresh(@RequestBody RefreshToken refreshToken) {
+        Long memberId = jwtUtil.getMemberIdFromRequest();
+        Login login = memberService.verifyRefreshTokenAndReturnLogin(memberId, refreshToken);
+        return ResponseEntity.ok(login);
     }
 }

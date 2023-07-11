@@ -15,20 +15,20 @@ public class Login {
     private String refreshToken;
 
     @Schema(description = "만료 시간(초)", example = "1688398507")
-    private Long expireIn;
+    private Long expireAt;
 
     @Schema(description = "멤버 이름", example = "user_978538")
-    private String memberName;
+    private String name;
 
     @Schema(description = "사용자 한줄소개")
     private String bio;
 
     @Builder
-    public Login(String accessToken, String refreshToken, Long expireIn, String memberName, String bio) {
+    public Login(String accessToken, String refreshToken, Long expireAt, String name, String bio) {
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;
-        this.expireIn = expireIn;
-        this.memberName = memberName;
+        this.expireAt = expireAt;
+        this.name = name;
         this.bio = bio;
     }
 }

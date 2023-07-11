@@ -65,7 +65,7 @@ public class LectureController {
             @Parameter(in = ParameterIn.QUERY, name = "review_limit", description = "후기의 최대 개수", required = false, example = "10")
     })
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "성공적으로 강의 상세 정보를 반환하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(oneOf = {PlaylistDetail.class, VideoDetail.class}))}),
+            @ApiResponse(responseCode = "200", description = "성공적으로 강의 상세 정보를 반환하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(oneOf = {PlaylistDetail.class, VideoDetail.class, IndexInfo.class}))}),
             @ApiResponse(responseCode = "400", description = "필수 파라미터인 'is_playlist'(boolean)가 누락되었습니다.", content = @Content),
             @ApiResponse(responseCode = "404", description = "입력한 lectureCode에 해당하는 강의가 없습니다.", content = @Content)
     })
@@ -73,7 +73,7 @@ public class LectureController {
                                               @RequestParam(name = "is_playlist", required = true) boolean isPlaylist,
                                               @RequestParam(name = "index_only", required = false, defaultValue = "false") boolean indexOnly,
                                               @RequestParam(name = "index_limit", required = false, defaultValue = "10") int indexLimit,
-                                              @RequestParam(name = "index_next_token", required = false, defaultValue = "0") String indexNextToken,
+                                              @RequestParam(name = "index_next_token", required = false) String indexNextToken,
                                               @RequestParam(name = "review_only", required = false, defaultValue = "false") boolean reviewOnly,
                                               @RequestParam(name = "review_offset", required = false, defaultValue = "0") int reviewOffset,
                                               @RequestParam(name = "review_limit", required = false, defaultValue = "10") int reviewLimit) throws Exception {
@@ -84,8 +84,8 @@ public class LectureController {
             throw new VideoIndexParamException();
         }
         if (indexOnly) {
-            IndexList indexList = lectureService.getPlaylistItems(lectureCode, indexNextToken, indexLimit);
-            return ResponseEntity.ok(indexList);
+            IndexInfo indexInfo = lectureService.getPlaylistItems(lectureCode, indexNextToken, indexLimit);
+            return ResponseEntity.ok(indexInfo);
         }
         if (reviewOnly) {
             List<ReviewBrief> reviewBriefList = lectureService.getReviewBriefList(lectureCode, reviewOffset, reviewLimit);

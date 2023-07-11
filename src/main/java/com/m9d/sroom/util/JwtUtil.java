@@ -6,8 +6,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
 public class JwtUtil {
@@ -19,28 +24,37 @@ public class JwtUtil {
     public static final long REFRESH_TOKEN_EXPIRATION_PERIOD = 1000L * 60 * 60 * 24 * 7; // 7일 유효
 
     public String generateAccessToken(Member member) {
+        return generateToken(member.getMemberId(), ACCESS_TOKEN_EXPIRATION_PERIOD);
+    }
+
+    public String generateRefreshToken(Member member) {
+        return generateToken(member.getMemberId(), REFRESH_TOKEN_EXPIRATION_PERIOD);
+    }
+
+    private String generateToken(Object subject, long expirationPeriod) {
         return Jwts.builder()
-                .setSubject(member.getMemberCode())
+                .setSubject(String.valueOf(subject))
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRATION_PERIOD))
+                .setExpiration(new Date(System.currentTimeMillis() + expirationPeriod))
                 .signWith(SignatureAlgorithm.HS256, jwtSecret)
                 .compact();
     }
 
-    public String generateRefreshToken(Member member) {
-        return Jwts.builder()
-                .setSubject(member.getMemberCode())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXPIRATION_PERIOD))
-                .signWith(SignatureAlgorithm.HS256, jwtSecret).compact();
-    }
-
-    public Long getExpirationTimeFromToken(String token) {
+    public Map<String, Object> getDetailFromToken(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(jwtSecret)
                 .parseClaimsJws(token)
                 .getBody();
 
-        return claims.getExpiration().getTime() / 1000; // convert to Unix time
+        Map<String, Object> details = new HashMap<>();
+        details.put("expirationTime", claims.getExpiration().getTime() / 1000); // convert to Unix time
+        details.put("memberId", claims.getSubject());
+
+        return details; // convert to Unix time
+    }
+
+    public Long getMemberIdFromRequest() {
+        ServletRequestAttributes request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes());
+        return Long.valueOf((String) request.getRequest().getAttribute("memberId"));
     }
 }
