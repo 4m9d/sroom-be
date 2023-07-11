@@ -44,13 +44,13 @@ public class PlaylistDetail {
     private String thumbnail;
 
     @Schema(description = "강의 목차 정보")
-    private IndexList indexList;
+    private IndexInfo indexInfo;
 
     @Schema(description = "강의 후기 요약 정보")
     private List<ReviewBrief> reviews;
 
     @Builder
-    public PlaylistDetail(String lectureCode, String lectureTitle, String channel, String description, boolean isPlaylist, String publishedAt, int lectureCount, double rating, int reviewCount, String thumbnail, IndexList indexList, List<ReviewBrief> reviews) {
+    public PlaylistDetail(String lectureCode, String lectureTitle, String channel, String description, boolean isPlaylist, String publishedAt, int lectureCount, double rating, int reviewCount, String thumbnail, IndexInfo indexInfo, List<ReviewBrief> reviews) {
         this.lectureCode = lectureCode;
         this.lectureTitle = lectureTitle;
         this.channel = channel;
@@ -61,7 +61,7 @@ public class PlaylistDetail {
         this.rating = rating;
         this.reviewCount = reviewCount;
         this.thumbnail = thumbnail;
-        this.indexList = indexList;
+        this.indexInfo = indexInfo;
         this.reviews = reviews;
     }
 }

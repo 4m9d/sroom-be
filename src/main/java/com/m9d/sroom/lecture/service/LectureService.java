@@ -60,7 +60,7 @@ public class LectureService {
         return playlistDetail;
     }
 
-    public IndexList getPlaylistItems(String lectureCode, String indexNextToken, int indexLimit) throws Exception {
+    public IndexInfo getPlaylistItems(String lectureCode, String indexNextToken, int indexLimit) throws Exception {
 
         JsonNode indexNode = youtubeService.getPlaylistItemsFromYoutube(lectureCode, indexNextToken, indexLimit);
 
@@ -68,8 +68,8 @@ public class LectureService {
             throw new PlaylistItemNotFoundException();
         }
 
-        IndexList indexList = buildIndexListResponse(indexNode);
-        return indexList;
+        IndexInfo indexInfo = buildIndexInfoResponse(indexNode);
+        return indexInfo;
     }
 
     public List<ReviewBrief> getReviewBriefList(String lectureCode, int reviewOffset, int reviewLimit) {
@@ -142,7 +142,7 @@ public class LectureService {
         JsonNode snippetJsonNode = playlistNode.get("items").get(0).get("snippet");
         String thumbnailWithHighestWidth = selectThumbnailWithHighestWidth(playlistNode.get("items").get(0).get("snippet").get("thumbnails"));
 
-        IndexList indexList = buildIndexListResponse(indexNode);
+        IndexInfo indexInfo = buildIndexInfoResponse(indexNode);
         List<ReviewBrief> reviewBriefList = lectureRepository.getReviewBriefList(playlistNode.get("items").get(0).get("id").asText(), 0, reviewLimit);
 
         PlaylistDetail playlistDetail = PlaylistDetail.builder()
@@ -153,13 +153,13 @@ public class LectureService {
                 .isPlaylist(true)
                 .lectureCount(playlistNode.get("items").get(0).get("contentDetails").get("itemCount").asInt())
                 .thumbnail(thumbnailWithHighestWidth)
-                .indexList(indexList)
+                .indexInfo(indexInfo)
                 .reviews(reviewBriefList)
                 .build();
         return playlistDetail;
     }
 
-    public IndexList buildIndexListResponse(JsonNode indexNode) {
+    public IndexInfo buildIndexInfoResponse(JsonNode indexNode) {
 
         String nextPageToken = indexNode.has("nextPageToken") ? indexNode.get("nextPageToken").asText() : null;
 
@@ -178,12 +178,12 @@ public class LectureService {
                 indexList.add(index);
             }
         }
-        IndexList indexListResult = IndexList.builder()
+        IndexInfo indexInfoResult = IndexInfo.builder()
                 .indexList(indexList)
                 .nextPageToken(nextPageToken)
                 .build();
 
-        return indexListResult;
+        return indexInfoResult;
     }
 
     public static String selectThumbnailWithHighestWidth(JsonNode thumbnailsNode) {
