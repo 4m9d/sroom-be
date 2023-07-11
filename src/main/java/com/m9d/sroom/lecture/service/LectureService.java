@@ -12,6 +12,7 @@ import com.m9d.sroom.lecture.repository.LectureRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -79,28 +80,33 @@ public class LectureService {
 
     public KeywordSearch buildLectureListResponse(JsonNode resultNode) {
         List<Lecture> lectureList = new ArrayList<>();
-        for (JsonNode item : resultNode.get("items")) {
-            JsonNode snippetNode = item.get("snippet");
-            boolean isPlaylist = item.get("id").get("kind").asText().equals("youtube#playlist");
-            String thumbnailWithHighestWidth = selectThumbnailWithHighestWidth(snippetNode.get("thumbnails"));
+        try {
+            for (JsonNode item : resultNode.get("items")) {
+                JsonNode snippetNode = item.get("snippet");
+                boolean isPlaylist = item.get("id").get("kind").asText().equals("youtube#playlist");
+                String thumbnailWithHighestWidth = selectThumbnailWithHighestWidth(snippetNode.get("thumbnails"));
 
-            String lectureCode;
-            if (isPlaylist) {
-                lectureCode = item.get("id").get("playlistId").asText();
-            } else {
-                lectureCode = item.get("id").get("videoId").asText();
+                String lectureCode;
+                if (isPlaylist) {
+                    lectureCode = item.get("id").get("playlistId").asText();
+                } else {
+                    lectureCode = item.get("id").get("videoId").asText();
+                }
+
+                Lecture lecture = Lecture.builder()
+                        .lectureTitle(snippetNode.get("title").asText())
+                        .description(snippetNode.get("description").asText())
+                        .channel(snippetNode.get("channelTitle").asText())
+                        .lectureCode(lectureCode)
+                        .isPlaylist(isPlaylist)
+                        .thumbnail(thumbnailWithHighestWidth)
+                        .build();
+                lectureList.add(lecture);
             }
-
-            Lecture lecture = Lecture.builder()
-                    .lectureTitle(snippetNode.get("title").asText())
-                    .description(snippetNode.get("description").asText())
-                    .channel(snippetNode.get("channelTitle").asText())
-                    .lectureCode(lectureCode)
-                    .isPlaylist(isPlaylist)
-                    .thumbnail(thumbnailWithHighestWidth)
-                    .build();
-            lectureList.add(lecture);
+        } catch (Exception e) {
+            throw new InvalidParameterException();
         }
+
         String nextPageToken = resultNode.has("nextPageToken") ? resultNode.get("nextPageToken").asText() : null;
         String prevPageToken = resultNode.has("prevPageToken") ? resultNode.get("prevPageToken").asText() : null;
 
@@ -115,75 +121,86 @@ public class LectureService {
 
     public VideoDetail buildVideoDetailResponse(JsonNode resultNode, int reviewLimit) {
 
-        JsonNode snippetJsonNode = resultNode.get("items").get(0).get("snippet");
-        String thumbnailWithHighestWidth = selectThumbnailWithHighestWidth(snippetJsonNode.get("thumbnails"));
+        try {
+            JsonNode snippetJsonNode = resultNode.get("items").get(0).get("snippet");
+            String thumbnailWithHighestWidth = selectThumbnailWithHighestWidth(snippetJsonNode.get("thumbnails"));
 
-        List<ReviewBrief> reviewBriefList = lectureRepository.getReviewBriefList(resultNode.get("items").get(0).get("id").asText(), 0, reviewLimit);
+            List<ReviewBrief> reviewBriefList = lectureRepository.getReviewBriefList(resultNode.get("items").get(0).get("id").asText(), 0, reviewLimit);
 
 
-        VideoDetail videoDetail = VideoDetail.builder()
-                .lectureCode(resultNode.get("items").get(0).get("id").asText())
-                .lectureTitle(snippetJsonNode.get("title").asText())
-                .channel(snippetJsonNode.get("channelTitle").asText())
-                .description(snippetJsonNode.get("description").asText())
-                .isPlaylist(false)
-                .viewCount(resultNode.get("items").get(0).get("statistics").get("viewCount").asInt())
-                .publishedAt(snippetJsonNode.get("publishedAt").asText().substring(0, 10))
-                .thumbnail(thumbnailWithHighestWidth)
-                .reviews(reviewBriefList)
-                .reviewCount(reviewBriefList.size())
-                .build();
+            VideoDetail videoDetail = VideoDetail.builder()
+                    .lectureCode(resultNode.get("items").get(0).get("id").asText())
+                    .lectureTitle(snippetJsonNode.get("title").asText())
+                    .channel(snippetJsonNode.get("channelTitle").asText())
+                    .description(snippetJsonNode.get("description").asText())
+                    .isPlaylist(false)
+                    .viewCount(resultNode.get("items").get(0).get("statistics").get("viewCount").asInt())
+                    .publishedAt(snippetJsonNode.get("publishedAt").asText().substring(0, 10))
+                    .thumbnail(thumbnailWithHighestWidth)
+                    .reviews(reviewBriefList)
+                    .reviewCount(reviewBriefList.size())
+                    .build();
 
-        return videoDetail;
+            return videoDetail;
+        } catch (Exception e) {
+            throw new InvalidParameterException();
+        }
     }
 
     public PlaylistDetail buildPlaylistDetailResponse(JsonNode playlistNode, JsonNode indexNode, int reviewLimit) {
+        try {
+            JsonNode snippetJsonNode = playlistNode.get("items").get(0).get("snippet");
+            String thumbnailWithHighestWidth = selectThumbnailWithHighestWidth(playlistNode.get("items").get(0).get("snippet").get("thumbnails"));
 
-        JsonNode snippetJsonNode = playlistNode.get("items").get(0).get("snippet");
-        String thumbnailWithHighestWidth = selectThumbnailWithHighestWidth(playlistNode.get("items").get(0).get("snippet").get("thumbnails"));
+            IndexInfo indexInfo = buildIndexInfoResponse(indexNode);
+            List<ReviewBrief> reviewBriefList = lectureRepository.getReviewBriefList(playlistNode.get("items").get(0).get("id").asText(), 0, reviewLimit);
 
-        IndexInfo indexInfo = buildIndexInfoResponse(indexNode);
-        List<ReviewBrief> reviewBriefList = lectureRepository.getReviewBriefList(playlistNode.get("items").get(0).get("id").asText(), 0, reviewLimit);
-
-        PlaylistDetail playlistDetail = PlaylistDetail.builder()
-                .lectureCode(playlistNode.get("items").get(0).get("id").asText())
-                .lectureTitle(snippetJsonNode.get("title").asText())
-                .channel(snippetJsonNode.get("channelTitle").asText())
-                .description(snippetJsonNode.get("description").asText())
-                .isPlaylist(true)
-                .lectureCount(playlistNode.get("items").get(0).get("contentDetails").get("itemCount").asInt())
-                .thumbnail(thumbnailWithHighestWidth)
-                .indexInfo(indexInfo)
-                .reviews(reviewBriefList)
-                .build();
-        return playlistDetail;
+            PlaylistDetail playlistDetail = PlaylistDetail.builder()
+                    .lectureCode(playlistNode.get("items").get(0).get("id").asText())
+                    .lectureTitle(snippetJsonNode.get("title").asText())
+                    .channel(snippetJsonNode.get("channelTitle").asText())
+                    .description(snippetJsonNode.get("description").asText())
+                    .isPlaylist(true)
+                    .lectureCount(playlistNode.get("items").get(0).get("contentDetails").get("itemCount").asInt())
+                    .thumbnail(thumbnailWithHighestWidth)
+                    .indexInfo(indexInfo)
+                    .reviews(reviewBriefList)
+                    .build();
+            return playlistDetail;
+        } catch (Exception e) {
+            throw new InvalidParameterException();
+        }
     }
 
     public IndexInfo buildIndexInfoResponse(JsonNode indexNode) {
 
-        String nextPageToken = indexNode.has("nextPageToken") ? indexNode.get("nextPageToken").asText() : null;
+        try {
+            String nextPageToken = indexNode.has("nextPageToken") ? indexNode.get("nextPageToken").asText() : null;
 
-        List<Index> indexList = new ArrayList<>();
-        for (JsonNode item : indexNode.get("items")) {
-            JsonNode snippetNode = item.get("snippet");
+            List<Index> indexList = new ArrayList<>();
+            for (JsonNode item : indexNode.get("items")) {
+                JsonNode snippetNode = item.get("snippet");
 
-            if (snippetNode.get("resourceId").get("kind").asText().equals("youtube#video") && item.get("status").get("privacyStatus").asText().equals("public")) {
-                String itemThumbnailWithHighestWidth = selectThumbnailWithHighestWidth(item.get("snippet").get("thumbnails"));
-                Index index = Index.builder()
-                        .index(snippetNode.get("position").asInt())
-                        .lectureCode(snippetNode.get("resourceId").get("videoId").asText())
-                        .lectureTitle(snippetNode.get("title").asText())
-                        .thumbnail(itemThumbnailWithHighestWidth)
-                        .build();
-                indexList.add(index);
+                if (snippetNode.get("resourceId").get("kind").asText().equals("youtube#video") && item.get("status").get("privacyStatus").asText().equals("public")) {
+                    String itemThumbnailWithHighestWidth = selectThumbnailWithHighestWidth(item.get("snippet").get("thumbnails"));
+                    Index index = Index.builder()
+                            .index(snippetNode.get("position").asInt())
+                            .lectureCode(snippetNode.get("resourceId").get("videoId").asText())
+                            .lectureTitle(snippetNode.get("title").asText())
+                            .thumbnail(itemThumbnailWithHighestWidth)
+                            .build();
+                    indexList.add(index);
+                }
             }
-        }
-        IndexInfo indexInfoResult = IndexInfo.builder()
-                .indexList(indexList)
-                .nextPageToken(nextPageToken)
-                .build();
+            IndexInfo indexInfoResult = IndexInfo.builder()
+                    .indexList(indexList)
+                    .nextPageToken(nextPageToken)
+                    .build();
 
-        return indexInfoResult;
+            return indexInfoResult;
+        } catch (Exception e) {
+            throw new InvalidParameterException();
+        }
     }
 
     public static String selectThumbnailWithHighestWidth(JsonNode thumbnailsNode) {

@@ -1,6 +1,7 @@
 package com.m9d.sroom.member.controller;
 
 import com.m9d.sroom.member.dto.request.GoogleIdKey;
+import com.m9d.sroom.member.dto.request.RefreshToken;
 import com.m9d.sroom.util.ControllerTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,5 +38,21 @@ public class MemberControllerTest extends ControllerTest {
                         .content(googleIdKeyJson))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().json(expectedResponseBody));
+    }
+
+    @Test
+    @DisplayName("access token을 입력하지 않으면 토큰갱신이 불가합니다.")
+    void refresh401() throws Exception {
+        //given
+        RefreshToken refreshToken = RefreshToken.builder()
+                .refreshToken("eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjg4OTY3MjE5LCJleHAiOjE2ODk1NzIwMTl9.H7uqypveQrQ5dBvDtdkipIFlz749BlTXtKQ93_pQff4")
+                .build();
+        String refreshTokenJson = objectMapper.writeValueAsString(refreshToken);
+
+        //expected
+        mockMvc.perform(post("/members/refresh")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(refreshTokenJson))
+                .andExpect(status().isUnauthorized());
     }
 }

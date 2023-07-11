@@ -12,6 +12,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
+import java.util.UUID;
+
 @SpringBootTest
 @Testcontainers
 public class ServiceTest extends SroomApplicationTests {
@@ -36,7 +38,13 @@ public class ServiceTest extends SroomApplicationTests {
 
     protected GoogleIdToken.Payload getGoogleIdTokenPayload() {
         GoogleIdToken.Payload payload = new GoogleIdToken.Payload();
-        String expectedMemberCode = "106400356559989163499";
+
+        // Generate a UUID
+        UUID uuid = UUID.randomUUID();
+
+        // Convert it to a string
+        String randomUUIDString = uuid.toString();
+        String expectedMemberCode = randomUUIDString;
         payload.setSubject(expectedMemberCode);
 
         return payload;

@@ -199,7 +199,7 @@ public class LectureControllerTest extends ControllerTest {
         PlaylistDetail playlistDetail = getPlaylistDetail(login, lectureCode, indexLimit);
         String isPlaylist = "true";
         String indexOnly = "true";
-        String indexNextToken = playlistDetail.getIndexList().getNextPageToken();
+        String indexNextToken = playlistDetail.getIndexInfo().getNextPageToken();
 
         //expected
         mockMvc.perform(get("/lectures/{lectureCode}", lectureCode)
@@ -209,7 +209,7 @@ public class LectureControllerTest extends ControllerTest {
                         .queryParam("index_only", indexOnly)
                         .queryParam("index_next_token", indexNextToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.indexList[0].index", is(String.valueOf(indexLimit))));
+                .andExpect(jsonPath("$.indexList[0].index", is(indexLimit)));
     }
 
     @Test
