@@ -5,12 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
 @Service
@@ -20,20 +23,32 @@ public class YoutubeService {
     @Value("${google-cloud-api-key}")
     private String googleCloudApiKey;
 
-    public static final HttpClient CLIENT = HttpClient.newHttpClient();
-
     public JsonNode requestToYoutube(String url) throws Exception {
+        URL requestUrl = new URL(url);
+        HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
+        connection.setRequestMethod("GET");
+        connection.setRequestProperty("Content-Type", "application/json");
 
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .header("Content-Type", "application/json")
-                .GET()
-                .build();
-        HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
+        int responseCode = connection.getResponseCode();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode jsonResponse = objectMapper.readTree(response.body());
-        return jsonResponse;
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            InputStream inputStream = connection.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+            StringBuilder responseBuilder = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                responseBuilder.append(line);
+            }
+            reader.close();
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonResponse = objectMapper.readTree(responseBuilder.toString());
+
+            return jsonResponse;
+        } else {
+            throw new RuntimeException("Failed to make HTTP request. Response code: " + responseCode);
+        }
     }
 
     private void validateUrl(String url) {
