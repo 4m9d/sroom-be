@@ -23,15 +23,13 @@ public class YoutubeService {
     private static final HttpClient CLIENT = HttpClient.newHttpClient();
 
     public JsonNode requestToYoutube(String url) throws Exception {
-        validateUrl(url);
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Content-Type", "application/json")
                 .GET()
                 .build();
-        HttpResponse.BodyHandler handler = HttpResponse.BodyHandlers.ofString();
-        HttpResponse<String> response = CLIENT.send(request, handler);
+        HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonResponse = objectMapper.readTree(response.body());
@@ -60,8 +58,8 @@ public class YoutubeService {
             String pageTokenQuery = "&pageToken=".concat(pageTokenOrNull);
             url = url.concat(pageTokenQuery);
         }
+        validateUrl(url);
 
-        System.out.println("2. url 작성 완료" + System.nanoTime());
         return requestToYoutube(url);
     }
 
@@ -74,6 +72,7 @@ public class YoutubeService {
         String keyQuery = "&key=".concat(googleCloudApiKey);
 
         url = url.concat(partQuery).concat(fieldsQuery).concat(lectureCodeQuery).concat(keyQuery);
+        validateUrl(url);
         return requestToYoutube(url);
     }
 
@@ -86,6 +85,7 @@ public class YoutubeService {
         String keyQuery = "&key=".concat(googleCloudApiKey);
 
         url = url.concat(partQuery).concat(fieldsQuery).concat(lectureCodeQuery).concat(keyQuery);
+        validateUrl(url);
         return requestToYoutube(url);
     }
 
@@ -105,6 +105,7 @@ public class YoutubeService {
             url = url.concat(pageTokenQuery);
         }
 
+        validateUrl(url);
         return requestToYoutube(url);
     }
 
