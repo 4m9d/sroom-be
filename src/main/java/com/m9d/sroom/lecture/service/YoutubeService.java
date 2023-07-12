@@ -20,7 +20,7 @@ public class YoutubeService {
     @Value("${google-cloud-api-key}")
     private String googleCloudApiKey;
 
-    private static final HttpClient CLIENT = HttpClient.newHttpClient();
+    public static final HttpClient CLIENT = HttpClient.newHttpClient();
 
     public JsonNode requestToYoutube(String url) throws Exception {
 
