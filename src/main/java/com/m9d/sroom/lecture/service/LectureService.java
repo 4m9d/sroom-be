@@ -12,6 +12,8 @@ import com.m9d.sroom.lecture.repository.LectureRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.security.InvalidParameterException;
 import java.util.*;
 
@@ -97,7 +99,7 @@ public class LectureService {
             for (JsonNode item : resultNode.get("items")) {
                 JsonNode snippetNode = item.get("snippet");
                 boolean isPlaylist = item.get("id").get("kind").asText().equals("youtube#playlist");
-                String thumbnailWithHighestWidth = selectThumbnailWithHighestWidth(snippetNode.get("thumbnails"));
+                String thumbnailWithHighestWidth = selectThumbnailWithHighestResolution(snippetNode.get("thumbnails"));
 
                 String lectureCode;
                 if (isPlaylist) {
@@ -137,7 +139,7 @@ public class LectureService {
 
         try {
             JsonNode snippetJsonNode = resultNode.get("items").get(0).get("snippet");
-            String thumbnailWithHighestWidth = selectThumbnailWithHighestWidth(snippetJsonNode.get("thumbnails"));
+            String thumbnailWithHighestWidth = selectThumbnailWithHighestResolution(snippetJsonNode.get("thumbnails"));
 
             List<ReviewBrief> reviewBriefList = lectureRepository.getReviewBriefList(resultNode.get("items").get(0).get("id").asText(), 0, reviewLimit);
 
@@ -167,7 +169,7 @@ public class LectureService {
     public PlaylistDetail buildPlaylistDetailResponse(JsonNode playlistNode, JsonNode indexNode, int reviewLimit, Set<String> enrolledLectureSet) {
         try {
             JsonNode snippetJsonNode = playlistNode.get("items").get(0).get("snippet");
-            String thumbnailWithHighestWidth = selectThumbnailWithHighestWidth(playlistNode.get("items").get(0).get("snippet").get("thumbnails"));
+            String thumbnailWithHighestWidth = selectThumbnailWithHighestResolution(playlistNode.get("items").get(0).get("snippet").get("thumbnails"));
 
             IndexInfo indexInfo = buildIndexInfoResponse(indexNode, enrolledLectureSet);
             List<ReviewBrief> reviewBriefList = lectureRepository.getReviewBriefList(playlistNode.get("items").get(0).get("id").asText(), 0, reviewLimit);
@@ -206,7 +208,7 @@ public class LectureService {
                 boolean isEnrolled = enrolledLectureSet.contains(lectureCode);
 
                 if (snippetNode.get("resourceId").get("kind").asText().equals("youtube#video") && item.get("status").get("privacyStatus").asText().equals("public")) {
-                    String itemThumbnailWithHighestWidth = selectThumbnailWithHighestWidth(item.get("snippet").get("thumbnails"));
+                    String itemThumbnailWithHighestWidth = selectThumbnailWithHighestResolution(item.get("snippet").get("thumbnails"));
                     Index index = Index.builder()
                             .index(snippetNode.get("position").asInt())
                             .lectureCode(lectureCode)
@@ -228,7 +230,23 @@ public class LectureService {
         }
     }
 
-    public static String selectThumbnailWithHighestWidth(JsonNode thumbnailsNode) {
+    public String selectThumbnailWithHighestResolution(JsonNode thumbnailsNode) {
+        String[] thumbnailTypes = {"maxresdefault", "sddefault", "hqdefault", "mqdefault"};
+
+        String defaultThumbnailUrl = thumbnailsNode.get("default").get("url").asText();
+        String baseUrl = defaultThumbnailUrl.substring(0, defaultThumbnailUrl.lastIndexOf("/") + 1);
+
+        for (String thumbnailType : thumbnailTypes) {
+            String thumbnailUrl = baseUrl + thumbnailType.concat(".jpg");
+            if (doesUrlExist(thumbnailUrl)) {
+                return thumbnailUrl;
+            }
+        }
+
+        return selectThumbnailWithHighestWidth(thumbnailsNode);
+    }
+
+    private static String selectThumbnailWithHighestWidth(JsonNode thumbnailsNode) {
         int maxWidth = 0;
         String selectedThumbnailUrl = "";
 
@@ -241,7 +259,24 @@ public class LectureService {
                 selectedThumbnailUrl = url;
             }
         }
-
         return selectedThumbnailUrl;
     }
+    public static boolean doesUrlExist(String targetUrl) {
+        HttpURLConnection httpUrlConn;
+        try {
+            httpUrlConn = (HttpURLConnection) new URL(targetUrl).openConnection();
+            httpUrlConn.setRequestMethod("HEAD");
+
+            httpUrlConn.setConnectTimeout(3000);
+            httpUrlConn.setReadTimeout(3000);
+
+            boolean result = (httpUrlConn.getResponseCode() == HttpURLConnection.HTTP_OK);
+            httpUrlConn.disconnect();
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+    }
+
 }

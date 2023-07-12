@@ -53,7 +53,6 @@ public class LectureController {
                                                               @RequestParam(name = "nextPageToken", required = false) String nextPageToken,
                                                               @RequestParam(name = "prevPageToken", required = false) String prevPageToken) throws Exception {
         Long memberId = jwtUtil.getMemberIdFromRequest();
-        System.out.println(memberId);
         KeywordSearch keywordSearch = lectureService.searchByKeyword(memberId, keyword, limit, nextPageToken, prevPageToken);
         return ResponseEntity.ok(keywordSearch);
     }
