@@ -20,17 +20,16 @@ public class YoutubeService {
     @Value("${google-cloud-api-key}")
     private String googleCloudApiKey;
 
-    public JsonNode requestToYoutube(String url) throws Exception {
-        validateUrl(url);
+    private static final HttpClient CLIENT = HttpClient.newHttpClient();
 
-        HttpClient client = HttpClient.newHttpClient();
+    public JsonNode requestToYoutube(String url) throws Exception {
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Content-Type", "application/json")
                 .GET()
                 .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonResponse = objectMapper.readTree(response.body());
@@ -41,6 +40,10 @@ public class YoutubeService {
         if (url.contains(" ")) {
             throw new IllegalArgumentException("url에는 띄어쓰기가 허용되지 않습니다.");
         }
+    }
+
+    public String encodeSpaces(String input) {
+        return input.replace(" ", "%20");
     }
 
     public JsonNode getLectureListFromYoutube(String keyword, int limit, String nextPageToken, String prevPageToken) throws Exception {
@@ -59,6 +62,8 @@ public class YoutubeService {
             String pageTokenQuery = "&pageToken=".concat(pageTokenOrNull);
             url = url.concat(pageTokenQuery);
         }
+        url = encodeSpaces(url);
+
         return requestToYoutube(url);
     }
 
@@ -71,6 +76,7 @@ public class YoutubeService {
         String keyQuery = "&key=".concat(googleCloudApiKey);
 
         url = url.concat(partQuery).concat(fieldsQuery).concat(lectureCodeQuery).concat(keyQuery);
+        validateUrl(url);
         return requestToYoutube(url);
     }
 
@@ -83,6 +89,7 @@ public class YoutubeService {
         String keyQuery = "&key=".concat(googleCloudApiKey);
 
         url = url.concat(partQuery).concat(fieldsQuery).concat(lectureCodeQuery).concat(keyQuery);
+        validateUrl(url);
         return requestToYoutube(url);
     }
 
@@ -102,6 +109,7 @@ public class YoutubeService {
             url = url.concat(pageTokenQuery);
         }
 
+        validateUrl(url);
         return requestToYoutube(url);
     }
 

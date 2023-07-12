@@ -1,11 +1,13 @@
 package com.m9d.sroom.lecture.controller;
 
-import com.m9d.sroom.lecture.domain.ReviewBrief;
+import com.m9d.sroom.lecture.dto.response.ReviewBrief;
 import com.m9d.sroom.lecture.dto.response.*;
 import com.m9d.sroom.lecture.exception.TwoOnlyParamTrueException;
 import com.m9d.sroom.lecture.exception.VideoIndexParamException;
 import com.m9d.sroom.lecture.service.LectureService;
 import com.m9d.sroom.lecture.service.YoutubeService;
+import com.m9d.sroom.util.JwtUtil;
+import com.m9d.sroom.util.annotation.Auth;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -30,7 +32,9 @@ public class LectureController {
 
     private final LectureService lectureService;
     private final YoutubeService youtubeService;
+    private final JwtUtil jwtUtil;
 
+    @Auth
     @GetMapping("")
     @Tag(name = "강의 검색")
     @Operation(summary = "강의 키워드 검색", description = "키워드를 입력받아 유튜브 강의를 검색한다.")
@@ -48,11 +52,14 @@ public class LectureController {
                                                               @RequestParam(name = "limit", required = false, defaultValue = "10") int limit,
                                                               @RequestParam(name = "nextPageToken", required = false) String nextPageToken,
                                                               @RequestParam(name = "prevPageToken", required = false) String prevPageToken) throws Exception {
-        KeywordSearch keywordSearch = lectureService.searchByKeyword(keyword, limit, nextPageToken, prevPageToken);
+        Long memberId = jwtUtil.getMemberIdFromRequest();
+        System.out.println(memberId);
+        KeywordSearch keywordSearch = lectureService.searchByKeyword(memberId, keyword, limit, nextPageToken, prevPageToken);
         return ResponseEntity.ok(keywordSearch);
     }
 
 
+    @Auth
     @GetMapping("/{lectureCode}")
     @Tag(name = "강의 검색")
     @Operation(summary = "강의 상세 정보 조회", description = "강의 ID를 이용하여 강의의 상세 정보를 조회한다.")
@@ -77,6 +84,7 @@ public class LectureController {
                                               @RequestParam(name = "review_only", required = false, defaultValue = "false") boolean reviewOnly,
                                               @RequestParam(name = "review_offset", required = false, defaultValue = "0") int reviewOffset,
                                               @RequestParam(name = "review_limit", required = false, defaultValue = "10") int reviewLimit) throws Exception {
+        Long memberId = jwtUtil.getMemberIdFromRequest();
         if (indexOnly && reviewOnly) {
             throw new TwoOnlyParamTrueException();
         }
@@ -84,7 +92,7 @@ public class LectureController {
             throw new VideoIndexParamException();
         }
         if (indexOnly) {
-            IndexInfo indexInfo = lectureService.getPlaylistItems(lectureCode, indexNextToken, indexLimit);
+            IndexInfo indexInfo = lectureService.getPlaylistItems(memberId, lectureCode, indexNextToken, indexLimit);
             return ResponseEntity.ok(indexInfo);
         }
         if (reviewOnly) {
@@ -92,10 +100,10 @@ public class LectureController {
             return ResponseEntity.ok(reviewBriefList);
         }
         if (isPlaylist) {
-            PlaylistDetail playlistDetail = lectureService.getPlaylistDetail(lectureCode, indexNextToken, indexLimit, reviewLimit);
+            PlaylistDetail playlistDetail = lectureService.getPlaylistDetail(memberId, lectureCode, indexNextToken, indexLimit, reviewLimit);
             return ResponseEntity.ok(playlistDetail);
         }
-        VideoDetail videoDetail = lectureService.getVideoDetail(lectureCode, reviewLimit);
+        VideoDetail videoDetail = lectureService.getVideoDetail(memberId, lectureCode, reviewLimit);
         return ResponseEntity.ok(videoDetail);
     }
 }

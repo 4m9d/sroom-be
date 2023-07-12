@@ -1,4 +1,4 @@
-package com.m9d.sroom.lecture.domain;
+package com.m9d.sroom.lecture.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -20,11 +20,15 @@ public class Index {
     @Schema(description = "강의 제목", example = "네트워크 기초(개정판)")
     private String lectureTitle;
 
+    @Schema(description = "강의 등록 여부", example = "false")
+    private boolean isEnrolled;
+
     @Builder
-    public Index(int index, String lectureCode, String thumbnail, String lectureTitle) {
+    public Index(int index, String lectureCode, String thumbnail, String lectureTitle, boolean isEnrolled) {
         this.index = index;
         this.lectureCode = lectureCode;
         this.thumbnail = thumbnail;
         this.lectureTitle = lectureTitle;
+        this.isEnrolled = isEnrolled;
     }
 }

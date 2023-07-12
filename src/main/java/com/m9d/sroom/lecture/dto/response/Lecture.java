@@ -1,4 +1,4 @@
-package com.m9d.sroom.lecture.domain;
+package com.m9d.sroom.lecture.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -18,6 +18,9 @@ public class Lecture{
     @Schema(description = "채널", example = "따라하면서 배우는 IT")
     private String channel;
 
+    @Schema(description = "강의 등록 여부", example = "false")
+    private boolean isEnrolled;
+
     @Schema(description = "강의 ID", example = "PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi")
     private String lectureCode;
 
@@ -35,10 +38,12 @@ public class Lecture{
     private String thumbnail;
 
     @Builder
-    public Lecture(String lectureTitle, String description, String channel, String lectureCode, boolean isPlaylist, double rating, int reviewCount, String thumbnail) {
+
+    public Lecture(String lectureTitle, String description, String channel, boolean isEnrolled, String lectureCode, boolean isPlaylist, double rating, int reviewCount, String thumbnail) {
         this.lectureTitle = lectureTitle;
         this.description = description;
         this.channel = channel;
+        this.isEnrolled = isEnrolled;
         this.lectureCode = lectureCode;
         this.isPlaylist = isPlaylist;
         this.rating = rating;
