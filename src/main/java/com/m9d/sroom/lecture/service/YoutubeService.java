@@ -42,6 +42,10 @@ public class YoutubeService {
         }
     }
 
+    public String encodeSpaces(String input) {
+        return input.replace(" ", "%20");
+    }
+
     public JsonNode getLectureListFromYoutube(String keyword, int limit, String nextPageToken, String prevPageToken) throws Exception {
         String url = "https://www.googleapis.com/youtube/v3/search?";
         String pageTokenOrNull = chooseTokenOrNull(nextPageToken, prevPageToken);
@@ -58,7 +62,7 @@ public class YoutubeService {
             String pageTokenQuery = "&pageToken=".concat(pageTokenOrNull);
             url = url.concat(pageTokenQuery);
         }
-        validateUrl(url);
+        url = encodeSpaces(url);
 
         return requestToYoutube(url);
     }

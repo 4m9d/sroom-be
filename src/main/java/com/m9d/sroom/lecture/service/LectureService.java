@@ -25,15 +25,9 @@ public class LectureService {
     public KeywordSearch searchByKeyword(Long memberId, String keyword, int limit, String nextPageToken, String prevPageToken) throws Exception {
 
         JsonNode resultNode = youtubeService.getLectureListFromYoutube(keyword, limit, nextPageToken, prevPageToken);
-        System.out.println("유튜브에선 불러와짐");
-        System.out.println(resultNode.toPrettyString());
 
         Set<String> enrolledLectureSet = getLecturesByMemberId(memberId);
-        System.out.println("강의셋도 가져옴");
-        System.out.println(enrolledLectureSet.toString());
         KeywordSearch keywordSearch = buildLectureListResponse(resultNode, enrolledLectureSet);
-        System.out.println(keywordSearch.toString());
-
 
         return keywordSearch;
     }
