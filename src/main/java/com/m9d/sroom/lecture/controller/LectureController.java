@@ -50,8 +50,8 @@ public class LectureController {
     })
     public ResponseEntity<KeywordSearch> getLecturesByKeyword(@RequestParam(name = "keyword", required = true) String keyword,
                                                               @RequestParam(name = "limit", required = false, defaultValue = "10") int limit,
-                                                              @RequestParam(name = "nextPageToken", required = false) String nextPageToken,
-                                                              @RequestParam(name = "prevPageToken", required = false) String prevPageToken) throws Exception {
+                                                              @RequestParam(name = "next_page_token", required = false) String nextPageToken,
+                                                              @RequestParam(name = "prev_page_token", required = false) String prevPageToken) throws Exception {
         Long memberId = jwtUtil.getMemberIdFromRequest();
         KeywordSearch keywordSearch = lectureService.searchByKeyword(memberId, keyword, limit, nextPageToken, prevPageToken);
         return ResponseEntity.ok(keywordSearch);
