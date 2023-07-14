@@ -31,7 +31,6 @@ import java.util.List;
 public class LectureController {
 
     private final LectureService lectureService;
-    private final YoutubeService youtubeService;
     private final JwtUtil jwtUtil;
 
     @Auth
@@ -41,6 +40,7 @@ public class LectureController {
     @Parameters({
             @Parameter(in = ParameterIn.QUERY, name = "keyword", description = "검색할 키워드", required = true, example = "네트워크"),
             @Parameter(in = ParameterIn.QUERY, name = "limit", description = "결과의 최대 개수", required = false, example = "5"),
+            @Parameter(in = ParameterIn.QUERY, name = "filter", description = "검색 종류 필터, all, playlist, video", required = false, example = "all"),
             @Parameter(in = ParameterIn.QUERY, name = "nextPageToken", description = "다음 페이지 토큰", required = false, example = "QAUQAA"),
             @Parameter(in = ParameterIn.QUERY, name = "prevPageToken", description = "이전 페이지 토큰", required = false, example = "CAUQAA")
     })
@@ -50,10 +50,11 @@ public class LectureController {
     })
     public ResponseEntity<KeywordSearch> getLecturesByKeyword(@RequestParam(name = "keyword", required = true) String keyword,
                                                               @RequestParam(name = "limit", required = false, defaultValue = "10") int limit,
+                                                              @RequestParam(name = "filter", required = false, defaultValue = "all") String filter,
                                                               @RequestParam(name = "next_page_token", required = false) String nextPageToken,
                                                               @RequestParam(name = "prev_page_token", required = false) String prevPageToken) throws Exception {
         Long memberId = jwtUtil.getMemberIdFromRequest();
-        KeywordSearch keywordSearch = lectureService.searchByKeyword(memberId, keyword, limit, nextPageToken, prevPageToken);
+        KeywordSearch keywordSearch = lectureService.searchByKeyword(memberId, keyword, limit, filter, nextPageToken, prevPageToken);
         return ResponseEntity.ok(keywordSearch);
     }
 

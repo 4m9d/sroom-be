@@ -27,9 +27,9 @@ public class LectureService {
     private final YoutubeService youtubeService;
     private final LectureRepository lectureRepository;
 
-    public KeywordSearch searchByKeyword(Long memberId, String keyword, int limit, String nextPageToken, String prevPageToken) throws Exception {
+    public KeywordSearch searchByKeyword(Long memberId, String keyword, int limit, String filter, String nextPageToken, String prevPageToken) throws Exception {
 
-        JsonNode resultNode = youtubeService.getLectureListFromYoutube(keyword, limit, nextPageToken, prevPageToken);
+        JsonNode resultNode = youtubeService.getLectureListFromYoutube(keyword, limit, filter, nextPageToken, prevPageToken);
 
         Set<String> enrolledLectureSet = getLecturesByMemberId(memberId).get();
         KeywordSearch keywordSearch = buildLectureListResponse(resultNode, enrolledLectureSet);

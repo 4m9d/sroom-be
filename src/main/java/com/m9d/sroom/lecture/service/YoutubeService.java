@@ -60,7 +60,7 @@ public class YoutubeService {
         return input.replace(" ", "%20");
     }
 
-    public JsonNode getLectureListFromYoutube(String keyword, int limit, String nextPageToken, String prevPageToken) throws Exception {
+    public JsonNode getLectureListFromYoutube(String keyword, int limit, String filter, String nextPageToken, String prevPageToken) throws Exception {
         String url = "https://www.googleapis.com/youtube/v3/search?";
         String pageTokenOrNull = chooseTokenOrNull(nextPageToken, prevPageToken);
 
@@ -68,7 +68,14 @@ public class YoutubeService {
         String fieldsQuery = "&fields=nextPageToken,prevPageToken,pageInfo,items(id,snippet(title,channelTitle,thumbnails,description,publishTime))";
         String maxResultsQuery = "&maxResults=".concat(String.valueOf(limit));
         String apikeyQuery = "&key=".concat(googleCloudApiKey);
+
         String typeQuery = "&type=playlist,video";
+        if (filter.equals("playlist")) {
+            typeQuery = "&type=playlist";
+        } else if (filter.equals("video")) {
+            typeQuery = "&type=video";
+        }
+
         String qQuery = "&q=".concat(keyword);
 
         url = url.concat(partQuery).concat(fieldsQuery).concat(maxResultsQuery).concat(typeQuery).concat(apikeyQuery).concat(qQuery);
