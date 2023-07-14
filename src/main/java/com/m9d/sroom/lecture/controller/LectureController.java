@@ -67,7 +67,7 @@ public class LectureController {
             @Parameter(in = ParameterIn.QUERY, name = "is_playlist", description = "플레이리스트 여부", required = true, example = "false"),
             @Parameter(in = ParameterIn.QUERY, name = "index_only", description = "목차만 응답 여부", required = false, example = "false"),
             @Parameter(in = ParameterIn.QUERY, name = "review_only", description = "후기만 응답 여부", required = false, example = "false"),
-            @Parameter(in = ParameterIn.QUERY, name = "index_limit", description = "결과의 최대 개수", required = false, example = "10"),
+            @Parameter(in = ParameterIn.QUERY, name = "index_limit", description = "결과의 최대 개수", required = false, example = "50"),
             @Parameter(in = ParameterIn.QUERY, name = "review_limit", description = "후기의 최대 개수", required = false, example = "10")
     })
     @ApiResponses(value = {
@@ -78,7 +78,7 @@ public class LectureController {
     public ResponseEntity<?> getLectureDetail(@PathVariable(name = "lectureCode", required = true) String lectureCode,
                                               @RequestParam(name = "is_playlist", required = true) boolean isPlaylist,
                                               @RequestParam(name = "index_only", required = false, defaultValue = "false") boolean indexOnly,
-                                              @RequestParam(name = "index_limit", required = false, defaultValue = "10") int indexLimit,
+                                              @RequestParam(name = "index_limit", required = false, defaultValue = "50") int indexLimit,
                                               @RequestParam(name = "index_next_token", required = false) String indexNextToken,
                                               @RequestParam(name = "review_only", required = false, defaultValue = "false") boolean reviewOnly,
                                               @RequestParam(name = "review_offset", required = false, defaultValue = "0") int reviewOffset,
@@ -99,7 +99,7 @@ public class LectureController {
             return ResponseEntity.ok(reviewBriefList);
         }
         if (isPlaylist) {
-            PlaylistDetail playlistDetail = lectureService.getPlaylistDetail(memberId, lectureCode, indexNextToken, indexLimit, reviewLimit);
+            PlaylistDetail playlistDetail = lectureService.getPlaylistDetail(memberId, lectureCode, indexNextToken, reviewLimit);
             return ResponseEntity.ok(playlistDetail);
         }
         VideoDetail videoDetail = lectureService.getVideoDetail(memberId, lectureCode, reviewLimit);

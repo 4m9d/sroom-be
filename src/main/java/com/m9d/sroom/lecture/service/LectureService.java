@@ -17,6 +17,7 @@ import java.security.InvalidParameterException;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -49,10 +50,10 @@ public class LectureService {
         return videoDetail;
     }
 
-    public PlaylistDetail getPlaylistDetail(Long memberId, String lectureCode, String indexNextToken, int indexLimit, int reviewLimit) throws Exception {
+    public PlaylistDetail getPlaylistDetail(Long memberId, String lectureCode, String indexNextToken, int reviewLimit) throws Exception {
 
         CompletableFuture<JsonNode> playlistFuture = youtubeService.getPlaylistDetailFromYoutube(lectureCode);
-        CompletableFuture<JsonNode> indexFuture = youtubeService.getPlaylistItemsFromYoutube(lectureCode, indexNextToken, indexLimit);
+        CompletableFuture<JsonNode> indexFuture = youtubeService.getPlaylistItemsFromYoutube(lectureCode, indexNextToken, 50);
         CompletableFuture<Set<String>> enrolledLectureFuture = getLecturesByMemberId(memberId);
 
         CompletableFuture.allOf(playlistFuture, indexFuture, enrolledLectureFuture).join();
@@ -211,6 +212,8 @@ public class LectureService {
         try {
             String nextPageToken = indexNode.has("nextPageToken") ? indexNode.get("nextPageToken").asText() : null;
 
+            AtomicLong totalDurationSeconds = new AtomicLong();
+
             List<CompletableFuture<Index>> futuresList = new ArrayList<>();
             for (JsonNode item : indexNode.get("items")) {
                 JsonNode snippetNode = item.get("snippet");
@@ -227,14 +230,15 @@ public class LectureService {
                     boolean isEnrolled = enrolledLectureSet.contains(lectureCode);
 
                     if (snippetNode.get("resourceId").get("kind").asText().equals("youtube#video") && item.get("status").get("privacyStatus").asText().equals("public")) {
-                        String videoDuration = formatDuration(videoNode.get("items").get(0).get("contentDetails").get("duration").asText());
+                        String videoDuration = videoNode.get("items").get(0).get("contentDetails").get("duration").asText();
+                        totalDurationSeconds.addAndGet(Duration.parse(videoDuration).getSeconds());
                         String thumbnail = selectThumbnail(item.get("snippet").get("thumbnails"));
                         Index index = Index.builder()
                                 .index(snippetNode.get("position").asInt())
                                 .isEnrolled(isEnrolled)
                                 .lectureTitle(snippetNode.get("title").asText())
                                 .thumbnail(thumbnail)
-                                .duration(videoDuration)
+                                .duration(formatDuration(videoDuration))
                                 .build();
                         return index;
                     }
@@ -251,8 +255,12 @@ public class LectureService {
                         .map(CompletableFuture::join)
                         .filter(Objects::nonNull)
                         .collect(Collectors.toList());
+
+                String totalDuration = formatDuration(Duration.ofSeconds(totalDurationSeconds.get()).toString());
+
                 IndexInfo indexInfoResult = IndexInfo.builder()
                         .indexList(indexList)
+                        .totalDuration(totalDuration)
                         .nextPageToken(nextPageToken)
                         .build();
                 return indexInfoResult;
@@ -282,7 +290,6 @@ public class LectureService {
 
         return selectedThumbnailUrl;
     }
-
     public static String formatDuration(String durationString) {
         Duration duration = Duration.parse(durationString);
 
