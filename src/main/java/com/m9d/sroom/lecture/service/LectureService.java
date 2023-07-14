@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.security.InvalidParameterException;
+import java.time.Duration;
 import java.util.*;
 
 @RequiredArgsConstructor
@@ -143,12 +144,14 @@ public class LectureService {
 
             String lectureCode = resultNode.get("items").get(0).get("id").asText();
             boolean isEnrolled = enrolledLectureSet.contains(lectureCode);
+            String videoDuration = formatDuration(resultNode.get("items").get(0).get("contentDetails").get("duration").asText());
 
             VideoDetail videoDetail = VideoDetail.builder()
                     .lectureCode(lectureCode)
                     .lectureTitle(snippetJsonNode.get("title").asText())
                     .channel(snippetJsonNode.get("channelTitle").asText())
                     .description(snippetJsonNode.get("description").asText())
+                    .duration(videoDuration)
                     .isPlaylist(false)
                     .isEnrolled(isEnrolled)
                     .viewCount(resultNode.get("items").get(0).get("statistics").get("viewCount").asInt())
@@ -243,6 +246,23 @@ public class LectureService {
         }
 
         return selectedThumbnailUrl;
+    }
+
+    public static String formatDuration(String durationString) {
+        Duration duration = Duration.parse(durationString);
+
+        long totalSeconds = duration.getSeconds();
+        long hours = totalSeconds / 3600;
+        long minutes = (totalSeconds % 3600) / 60;
+        long seconds = totalSeconds % 60;
+
+        if (hours > 0) {
+            return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        } else if (minutes > 0) {
+            return String.format("%02d:%02d", minutes, seconds);
+        } else {
+            return String.format("%02d", seconds);
+        }
     }
 
 }
