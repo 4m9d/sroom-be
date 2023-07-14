@@ -44,7 +44,6 @@ public class YoutubeService {
 
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonResponse = objectMapper.readTree(responseBuilder.toString());
-
             return jsonResponse;
         } else {
             throw new RuntimeException("Failed to make HTTP request. Response code: " + responseCode);
@@ -61,7 +60,7 @@ public class YoutubeService {
         return input.replace(" ", "%20");
     }
 
-    public JsonNode getLectureListFromYoutube(String keyword, int limit, String nextPageToken, String prevPageToken) throws Exception {
+    public JsonNode getLectureListFromYoutube(String keyword, int limit, String filter, String nextPageToken, String prevPageToken) throws Exception {
         String url = "https://www.googleapis.com/youtube/v3/search?";
         String pageTokenOrNull = chooseTokenOrNull(nextPageToken, prevPageToken);
 
@@ -69,7 +68,14 @@ public class YoutubeService {
         String fieldsQuery = "&fields=nextPageToken,prevPageToken,pageInfo,items(id,snippet(title,channelTitle,thumbnails,description,publishTime))";
         String maxResultsQuery = "&maxResults=".concat(String.valueOf(limit));
         String apikeyQuery = "&key=".concat(googleCloudApiKey);
+
         String typeQuery = "&type=playlist,video";
+        if (filter.equals("playlist")) {
+            typeQuery = "&type=playlist";
+        } else if (filter.equals("video")) {
+            typeQuery = "&type=video";
+        }
+
         String qQuery = "&q=".concat(keyword);
 
         url = url.concat(partQuery).concat(fieldsQuery).concat(maxResultsQuery).concat(typeQuery).concat(apikeyQuery).concat(qQuery);
@@ -95,7 +101,8 @@ public class YoutubeService {
         return requestToYoutube(url);
     }
 
-    public JsonNode getPlaylistDetailFromYoutube(String lectureCode) throws Exception {
+    @Async
+    public CompletableFuture<JsonNode> getPlaylistDetailFromYoutube(String lectureCode) throws Exception {
         String url = "https://www.googleapis.com/youtube/v3/playlists?";
 
         String partQuery = "part=id,snippet,status,contentDetails";
@@ -105,10 +112,11 @@ public class YoutubeService {
 
         url = url.concat(partQuery).concat(fieldsQuery).concat(lectureCodeQuery).concat(keyQuery);
         validateUrl(url);
-        return requestToYoutube(url);
+        return CompletableFuture.completedFuture(requestToYoutube(url));
     }
 
-    public JsonNode getPlaylistItemsFromYoutube(String lectureCode, String nextToken, int limit) throws Exception {
+    @Async
+    public CompletableFuture<JsonNode> getPlaylistItemsFromYoutube(String lectureCode, String nextToken, int limit) throws Exception {
         String url = "https://www.googleapis.com/youtube/v3/playlistItems?";
 
         String partQuery = "part=snippet,status";
@@ -125,7 +133,7 @@ public class YoutubeService {
         }
 
         validateUrl(url);
-        return requestToYoutube(url);
+        return CompletableFuture.completedFuture(requestToYoutube(url));
     }
 
     public String chooseTokenOrNull(String nextPageToken, String prevPageToken) {

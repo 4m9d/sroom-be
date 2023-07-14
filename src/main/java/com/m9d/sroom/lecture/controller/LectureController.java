@@ -31,7 +31,6 @@ import java.util.List;
 public class LectureController {
 
     private final LectureService lectureService;
-    private final YoutubeService youtubeService;
     private final JwtUtil jwtUtil;
 
     @Auth
@@ -41,6 +40,7 @@ public class LectureController {
     @Parameters({
             @Parameter(in = ParameterIn.QUERY, name = "keyword", description = "검색할 키워드", required = true, example = "네트워크"),
             @Parameter(in = ParameterIn.QUERY, name = "limit", description = "결과의 최대 개수", required = false, example = "5"),
+            @Parameter(in = ParameterIn.QUERY, name = "filter", description = "검색 종류 필터, all, playlist, video", required = false, example = "all"),
             @Parameter(in = ParameterIn.QUERY, name = "nextPageToken", description = "다음 페이지 토큰", required = false, example = "QAUQAA"),
             @Parameter(in = ParameterIn.QUERY, name = "prevPageToken", description = "이전 페이지 토큰", required = false, example = "CAUQAA")
     })
@@ -50,10 +50,11 @@ public class LectureController {
     })
     public ResponseEntity<KeywordSearch> getLecturesByKeyword(@RequestParam(name = "keyword", required = true) String keyword,
                                                               @RequestParam(name = "limit", required = false, defaultValue = "10") int limit,
-                                                              @RequestParam(name = "nextPageToken", required = false) String nextPageToken,
-                                                              @RequestParam(name = "prevPageToken", required = false) String prevPageToken) throws Exception {
+                                                              @RequestParam(name = "filter", required = false, defaultValue = "all") String filter,
+                                                              @RequestParam(name = "next_page_token", required = false) String nextPageToken,
+                                                              @RequestParam(name = "prev_page_token", required = false) String prevPageToken) throws Exception {
         Long memberId = jwtUtil.getMemberIdFromRequest();
-        KeywordSearch keywordSearch = lectureService.searchByKeyword(memberId, keyword, limit, nextPageToken, prevPageToken);
+        KeywordSearch keywordSearch = lectureService.searchByKeyword(memberId, keyword, limit, filter, nextPageToken, prevPageToken);
         return ResponseEntity.ok(keywordSearch);
     }
 
@@ -67,7 +68,7 @@ public class LectureController {
             @Parameter(in = ParameterIn.QUERY, name = "is_playlist", description = "플레이리스트 여부", required = true, example = "false"),
             @Parameter(in = ParameterIn.QUERY, name = "index_only", description = "목차만 응답 여부", required = false, example = "false"),
             @Parameter(in = ParameterIn.QUERY, name = "review_only", description = "후기만 응답 여부", required = false, example = "false"),
-            @Parameter(in = ParameterIn.QUERY, name = "index_limit", description = "결과의 최대 개수", required = false, example = "10"),
+            @Parameter(in = ParameterIn.QUERY, name = "index_limit", description = "결과의 최대 개수", required = false, example = "50"),
             @Parameter(in = ParameterIn.QUERY, name = "review_limit", description = "후기의 최대 개수", required = false, example = "10")
     })
     @ApiResponses(value = {
@@ -78,7 +79,7 @@ public class LectureController {
     public ResponseEntity<?> getLectureDetail(@PathVariable(name = "lectureCode", required = true) String lectureCode,
                                               @RequestParam(name = "is_playlist", required = true) boolean isPlaylist,
                                               @RequestParam(name = "index_only", required = false, defaultValue = "false") boolean indexOnly,
-                                              @RequestParam(name = "index_limit", required = false, defaultValue = "10") int indexLimit,
+                                              @RequestParam(name = "index_limit", required = false, defaultValue = "50") int indexLimit,
                                               @RequestParam(name = "index_next_token", required = false) String indexNextToken,
                                               @RequestParam(name = "review_only", required = false, defaultValue = "false") boolean reviewOnly,
                                               @RequestParam(name = "review_offset", required = false, defaultValue = "0") int reviewOffset,
@@ -99,7 +100,7 @@ public class LectureController {
             return ResponseEntity.ok(reviewBriefList);
         }
         if (isPlaylist) {
-            PlaylistDetail playlistDetail = lectureService.getPlaylistDetail(memberId, lectureCode, indexNextToken, indexLimit, reviewLimit);
+            PlaylistDetail playlistDetail = lectureService.getPlaylistDetail(memberId, lectureCode, indexNextToken, reviewLimit);
             return ResponseEntity.ok(playlistDetail);
         }
         VideoDetail videoDetail = lectureService.getVideoDetail(memberId, lectureCode, reviewLimit);
