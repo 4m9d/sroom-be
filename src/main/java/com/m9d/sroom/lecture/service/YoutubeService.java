@@ -44,7 +44,6 @@ public class YoutubeService {
 
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonResponse = objectMapper.readTree(responseBuilder.toString());
-
             return jsonResponse;
         } else {
             throw new RuntimeException("Failed to make HTTP request. Response code: " + responseCode);
@@ -95,7 +94,8 @@ public class YoutubeService {
         return requestToYoutube(url);
     }
 
-    public JsonNode getPlaylistDetailFromYoutube(String lectureCode) throws Exception {
+    @Async
+    public CompletableFuture<JsonNode> getPlaylistDetailFromYoutube(String lectureCode) throws Exception {
         String url = "https://www.googleapis.com/youtube/v3/playlists?";
 
         String partQuery = "part=id,snippet,status,contentDetails";
@@ -105,10 +105,11 @@ public class YoutubeService {
 
         url = url.concat(partQuery).concat(fieldsQuery).concat(lectureCodeQuery).concat(keyQuery);
         validateUrl(url);
-        return requestToYoutube(url);
+        return CompletableFuture.completedFuture(requestToYoutube(url));
     }
 
-    public JsonNode getPlaylistItemsFromYoutube(String lectureCode, String nextToken, int limit) throws Exception {
+    @Async
+    public CompletableFuture<JsonNode> getPlaylistItemsFromYoutube(String lectureCode, String nextToken, int limit) throws Exception {
         String url = "https://www.googleapis.com/youtube/v3/playlistItems?";
 
         String partQuery = "part=snippet,status";
@@ -125,7 +126,7 @@ public class YoutubeService {
         }
 
         validateUrl(url);
-        return requestToYoutube(url);
+        return CompletableFuture.completedFuture(requestToYoutube(url));
     }
 
     public String chooseTokenOrNull(String nextPageToken, String prevPageToken) {

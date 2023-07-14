@@ -11,9 +11,6 @@ public class Index {
     @Schema(description = "목차 번호", example = "1")
     private int index;
 
-    @Schema(description = "강의 ID", example = "PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi")
-    private String lectureCode;
-
     @Schema(description = "강의 썸네일", example = "https://i.ytimg.com/vi/Av9UFzl_wis/hqdefault.jpg")
     private String thumbnail;
 
@@ -23,12 +20,15 @@ public class Index {
     @Schema(description = "강의 등록 여부", example = "false")
     private boolean isEnrolled;
 
+    @Schema(description = "영상 길이", example = "44:23")
+    private String duration;
+
     @Builder
-    public Index(int index, String lectureCode, String thumbnail, String lectureTitle, boolean isEnrolled) {
+    public Index(int index, String thumbnail, String lectureTitle, boolean isEnrolled, String duration) {
         this.index = index;
-        this.lectureCode = lectureCode;
         this.thumbnail = thumbnail;
         this.lectureTitle = lectureTitle;
         this.isEnrolled = isEnrolled;
+        this.duration = duration;
     }
 }
