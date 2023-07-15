@@ -19,13 +19,14 @@ public class Lecture{
     private String channel;
 
     @Schema(description = "강의 등록 여부", example = "false")
+    @JsonProperty("is_enrolled")
     private boolean isEnrolled;
 
     @Schema(description = "강의 ID", example = "PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi")
     private String lectureCode;
 
     @Schema(description = "플레이리스트 여부", example = "true")
-    @JsonProperty("isPlaylist")
+    @JsonProperty("is_playlist")
     private boolean isPlaylist;
 
     @Schema(description = "강의 평점", example = "4.3")
@@ -38,7 +39,6 @@ public class Lecture{
     private String thumbnail;
 
     @Builder
-
     public Lecture(String lectureTitle, String description, String channel, boolean isEnrolled, String lectureCode, boolean isPlaylist, double rating, int reviewCount, String thumbnail) {
         this.lectureTitle = lectureTitle;
         this.description = description;
