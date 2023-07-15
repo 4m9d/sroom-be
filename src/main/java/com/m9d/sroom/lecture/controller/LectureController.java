@@ -92,7 +92,7 @@ public class LectureController {
             throw new VideoIndexParamException();
         }
         if (indexOnly) {
-            IndexInfo indexInfo = lectureService.getPlaylistItems(memberId, lectureCode, indexNextToken, indexLimit);
+            IndexInfo indexInfo = lectureService.getPlaylistItems(lectureCode, indexNextToken, indexLimit);
             return ResponseEntity.ok(indexInfo);
         }
         if (reviewOnly) {
@@ -100,10 +100,10 @@ public class LectureController {
             return ResponseEntity.ok(reviewBriefList);
         }
         if (isPlaylist) {
-            PlaylistDetail playlistDetail = lectureService.getPlaylistDetail(memberId, lectureCode, indexNextToken, reviewLimit);
+            PlaylistDetail playlistDetail = lectureService.getPlaylistDetail(lectureCode, indexNextToken, reviewLimit);
             return ResponseEntity.ok(playlistDetail);
         }
-        VideoDetail videoDetail = lectureService.getVideoDetail(memberId, lectureCode, reviewLimit);
+        VideoDetail videoDetail = lectureService.getVideoDetail(lectureCode, reviewLimit);
         return ResponseEntity.ok(videoDetail);
     }
 }
