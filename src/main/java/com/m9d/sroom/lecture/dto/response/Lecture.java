@@ -7,6 +7,7 @@ import lombok.Data;
 
 @Schema(description = "검색된 개별 강의 정보")
 @Data
+@Builder
 public class Lecture{
 
     @Schema(description = "강의 제목", example = "네트워크 기초(개정판)")
@@ -37,17 +38,4 @@ public class Lecture{
 
     @Schema(description = "강의 썸네일", example = "https://i.ytimg.com/vi/Av9UFzl_wis/hqdefault.jpg")
     private String thumbnail;
-
-    @Builder
-    public Lecture(String lectureTitle, String description, String channel, boolean isEnrolled, String lectureCode, boolean isPlaylist, double rating, int reviewCount, String thumbnail) {
-        this.lectureTitle = lectureTitle;
-        this.description = description;
-        this.channel = channel;
-        this.isEnrolled = isEnrolled;
-        this.lectureCode = lectureCode;
-        this.isPlaylist = isPlaylist;
-        this.rating = rating;
-        this.reviewCount = reviewCount;
-        this.thumbnail = thumbnail;
-    }
 }

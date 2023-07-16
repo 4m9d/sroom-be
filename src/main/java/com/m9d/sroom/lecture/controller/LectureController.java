@@ -98,7 +98,7 @@ public class LectureController {
             return ResponseEntity.ok(reviewBriefList);
         }
         if (isPlaylist) {
-            PlaylistDetail playlistDetail = lectureService.getPlaylistDetail(lectureCode, indexNextToken, reviewLimit);
+            PlaylistDetail playlistDetail = lectureService.getPlaylistDetail(memberId, lectureCode, indexNextToken, reviewLimit);
             return ResponseEntity.ok(playlistDetail);
         }
         VideoDetail videoDetail = lectureService.getVideoDetail(memberId, lectureCode, reviewLimit);

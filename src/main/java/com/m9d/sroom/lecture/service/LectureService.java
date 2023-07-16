@@ -64,8 +64,7 @@ public class LectureService {
         return videoDetail;
     }
 
-    public PlaylistDetail getPlaylistDetail(String lectureCode, String indexNextToken, int reviewLimit) throws Exception {
-
+    public PlaylistDetail getPlaylistDetail(Long memberId, String lectureCode, String indexNextToken, int reviewLimit) throws Exception {
         Playlist playlist = Playlist.builder()
                 .playlistId(lectureCode)
                 .build();
@@ -77,18 +76,17 @@ public class LectureService {
 
         CompletableFuture<JsonNode> playlistFuture = youtubeUtil.getYoutubeResource(playlist);
         CompletableFuture<JsonNode> indexFuture = youtubeUtil.getYoutubeResource(playlistItem);
-
         CompletableFuture.allOf(playlistFuture, indexFuture).join();
-
 
         JsonNode playlistNode = playlistFuture.get();
         JsonNode indexNode = indexFuture.get();
 
-
         validateNodeIfNotFound(playlistNode);
         validateNodeIfNotFound(indexNode);
 
-        PlaylistDetail playlistDetail = buildPlaylistDetailResponse(playlistNode, indexNode, reviewLimit);
+        Set<String> enrolledPlaylistSet = getEnrolledPlaylistByMemberId(memberId);
+
+        PlaylistDetail playlistDetail = buildPlaylistDetailResponse(playlistNode, indexNode, reviewLimit, enrolledPlaylistSet);
         return playlistDetail;
     }
 
@@ -177,7 +175,6 @@ public class LectureService {
     }
 
     public VideoDetail buildVideoDetailResponse(JsonNode resultNode, int reviewLimit, Set<String> enrolledVideoSet) {
-
         try {
             JsonNode snippetJsonNode = resultNode.get("items").get(0).get("snippet");
             String thumbnail = selectThumbnail(snippetJsonNode.get("thumbnails"));
@@ -210,7 +207,7 @@ public class LectureService {
         }
     }
 
-    public PlaylistDetail buildPlaylistDetailResponse(JsonNode playlistNode, JsonNode indexNode, int reviewLimit) {
+    public PlaylistDetail buildPlaylistDetailResponse(JsonNode playlistNode, JsonNode indexNode, int reviewLimit, Set<String> enrolledPlaylistSet) {
         try {
             JsonNode snippetJsonNode = playlistNode.get("items").get(0).get("snippet");
             String thumbnail = selectThumbnail(playlistNode.get("items").get(0).get("snippet").get("thumbnails"));
@@ -219,6 +216,7 @@ public class LectureService {
             List<ReviewBrief> reviewBriefList = lectureRepository.getReviewBriefList(playlistNode.get("items").get(0).get("id").asText(), 0, reviewLimit);
 
             String lectureCode = playlistNode.get("items").get(0).get("id").asText();
+            boolean isEnrolled = enrolledPlaylistSet.contains(lectureCode);
 
             PlaylistDetail playlistDetail = PlaylistDetail.builder()
                     .lectureCode(lectureCode)
@@ -226,6 +224,7 @@ public class LectureService {
                     .channel(snippetJsonNode.get("channelTitle").asText())
                     .description(snippetJsonNode.get("description").asText())
                     .isPlaylist(true)
+                    .isEnrolled(isEnrolled)
                     .lectureCount(playlistNode.get("items").get(0).get("contentDetails").get("itemCount").asInt())
                     .thumbnail(thumbnail)
                     .indexInfo(indexInfo)
@@ -238,7 +237,6 @@ public class LectureService {
     }
 
     public CompletableFuture<IndexInfo> buildIndexInfoResponse(JsonNode indexNode) {
-
         try {
             String nextPageToken = indexNode.has("nextPageToken") ? indexNode.get("nextPageToken").asText() : null;
 
@@ -306,7 +304,6 @@ public class LectureService {
 
 
     public String selectThumbnail(JsonNode thumbnailsNode) {
-
         String selectedThumbnailUrl = "";
 
         JsonNode mediumThumbnailNode = thumbnailsNode.get("medium");

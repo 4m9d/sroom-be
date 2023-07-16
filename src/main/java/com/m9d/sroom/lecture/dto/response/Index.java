@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Schema(description = "재생목록 목차 정보")
 @Data
+@Builder
 public class Index {
 
     @Schema(description = "목차 번호", example = "1")
@@ -19,12 +20,4 @@ public class Index {
 
     @Schema(description = "영상 길이", example = "44:23")
     private String duration;
-
-    @Builder
-    public Index(int index, String thumbnail, String lectureTitle, String duration) {
-        this.index = index;
-        this.thumbnail = thumbnail;
-        this.lectureTitle = lectureTitle;
-        this.duration = duration;
-    }
 }

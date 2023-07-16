@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Schema(description = "후기 정보")
 @Data
+@Builder
 public class ReviewBrief {
 
     @Schema(description = "순서", example = "1")
@@ -16,11 +17,4 @@ public class ReviewBrief {
 
     @Schema(description = "별점", example = "2")
     private int submittedRating;
-
-    @Builder
-    public ReviewBrief(int index, String reviewContent, int submittedRating) {
-        this.index = index;
-        this.reviewContent = reviewContent;
-        this.submittedRating = submittedRating;
-    }
 }
