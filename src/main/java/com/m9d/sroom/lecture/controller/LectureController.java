@@ -5,7 +5,6 @@ import com.m9d.sroom.lecture.dto.response.*;
 import com.m9d.sroom.lecture.exception.TwoOnlyParamTrueException;
 import com.m9d.sroom.lecture.exception.VideoIndexParamException;
 import com.m9d.sroom.lecture.service.LectureService;
-import com.m9d.sroom.lecture.service.YoutubeService;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,10 +50,9 @@ public class LectureController {
     public ResponseEntity<KeywordSearch> getLecturesByKeyword(@RequestParam(name = "keyword", required = true) String keyword,
                                                               @RequestParam(name = "limit", required = false, defaultValue = "10") int limit,
                                                               @RequestParam(name = "filter", required = false, defaultValue = "all") String filter,
-                                                              @RequestParam(name = "next_page_token", required = false) String nextPageToken,
-                                                              @RequestParam(name = "prev_page_token", required = false) String prevPageToken) throws Exception {
+                                                              @RequestParam(name = "next_page_token", required = false) String nextPageToken) throws Exception {
         Long memberId = jwtUtil.getMemberIdFromRequest();
-        KeywordSearch keywordSearch = lectureService.searchByKeyword(memberId, keyword, limit, filter, nextPageToken, prevPageToken);
+        KeywordSearch keywordSearch = lectureService.searchByKeyword(memberId, keyword, limit, filter, nextPageToken);
         return ResponseEntity.ok(keywordSearch);
     }
 
@@ -103,7 +101,7 @@ public class LectureController {
             PlaylistDetail playlistDetail = lectureService.getPlaylistDetail(lectureCode, indexNextToken, reviewLimit);
             return ResponseEntity.ok(playlistDetail);
         }
-        VideoDetail videoDetail = lectureService.getVideoDetail(lectureCode, reviewLimit);
+        VideoDetail videoDetail = lectureService.getVideoDetail(memberId, lectureCode, reviewLimit);
         return ResponseEntity.ok(videoDetail);
     }
 }

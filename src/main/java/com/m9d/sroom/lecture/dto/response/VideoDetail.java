@@ -9,6 +9,7 @@ import java.util.List;
 
 @Schema(description = "동영상 상세 정보")
 @Data
+@Builder
 public class VideoDetail {
 
     @Schema(description = "강의 ID", example = "OEV8gMkCHXQ")
@@ -39,6 +40,9 @@ public class VideoDetail {
     @Schema(description = "강의 평점", example = "4.3")
     private double rating;
 
+    @Schema(description = "강의 등록 현황", example = "true")
+    private boolean isEnrolled;
+
     @Schema(description = "후기 개수", example = "44")
     private int reviewCount;
 
@@ -47,20 +51,4 @@ public class VideoDetail {
 
     @Schema(description = "강의 리뷰 목록")
     private List<ReviewBrief> reviews;
-
-    @Builder
-    public VideoDetail(String lectureCode, String lectureTitle, String channel, String description, String duration, boolean isPlaylist, long viewCount, String publishedAt, double rating, int reviewCount, String thumbnail, List<ReviewBrief> reviews) {
-        this.lectureCode = lectureCode;
-        this.lectureTitle = lectureTitle;
-        this.channel = channel;
-        this.description = description;
-        this.duration = duration;
-        this.isPlaylist = isPlaylist;
-        this.viewCount = viewCount;
-        this.publishedAt = publishedAt;
-        this.rating = rating;
-        this.reviewCount = reviewCount;
-        this.thumbnail = thumbnail;
-        this.reviews = reviews;
-    }
 }

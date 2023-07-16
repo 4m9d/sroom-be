@@ -5,10 +5,16 @@ import com.m9d.sroom.lecture.dto.response.Index;
 import com.m9d.sroom.lecture.dto.response.Lecture;
 import com.m9d.sroom.lecture.dto.response.ReviewBrief;
 import com.m9d.sroom.lecture.dto.response.*;
+import com.m9d.sroom.lecture.exception.LectureNotFoundException;
 import com.m9d.sroom.lecture.exception.PlaylistItemNotFoundException;
 import com.m9d.sroom.lecture.exception.PlaylistNotFoundException;
 import com.m9d.sroom.lecture.exception.VideoNotFoundException;
 import com.m9d.sroom.lecture.repository.LectureRepository;
+import com.m9d.sroom.util.youtube.YoutubeUtil;
+import com.m9d.sroom.util.youtube.resource.LectureList;
+import com.m9d.sroom.util.youtube.resource.Playlist;
+import com.m9d.sroom.util.youtube.resource.PlaylistItem;
+import com.m9d.sroom.util.youtube.resource.Video;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -24,63 +30,86 @@ import java.util.stream.Collectors;
 @Service
 public class LectureService {
 
-    private final YoutubeService youtubeService;
     private final LectureRepository lectureRepository;
+    private final YoutubeUtil youtubeUtil;
 
-    public KeywordSearch searchByKeyword(Long memberId, String keyword, int limit, String filter, String nextPageToken, String prevPageToken) throws Exception {
-
-        JsonNode resultNode = youtubeService.getLectureListFromYoutube(keyword, limit, filter, nextPageToken, prevPageToken);
+    public KeywordSearch searchByKeyword(Long memberId, String keyword, int limit, String filter, String nextPageToken) throws Exception {
+        LectureList lectureList = LectureList.builder()
+                .keyword(keyword)
+                .filter(filter)
+                .limit(limit)
+                .pageToken(nextPageToken)
+                .build();
+        JsonNode resultNode = youtubeUtil.getYoutubeResource(lectureList).get();
 
         Set<String> enrolledLectureSet = getLecturesByMemberId(memberId).get();
-        KeywordSearch keywordSearch = buildLectureListResponse(resultNode, enrolledLectureSet);
 
+        KeywordSearch keywordSearch = buildLectureListResponse(resultNode, enrolledLectureSet);
         return keywordSearch;
     }
 
-    public VideoDetail getVideoDetail(String lectureCode, int reviewLimit) throws Exception {
-
-        JsonNode resultNode = youtubeService.getVideoDetailFromYoutube(lectureCode);
+    public VideoDetail getVideoDetail(Long memberId, String lectureCode, int reviewLimit) throws Exception {
+        Video video = Video.builder()
+                .videoId(lectureCode)
+                .build();
+        JsonNode resultNode = youtubeUtil.getYoutubeResource(video).get();
 
         if (resultNode.get("pageInfo").get("totalResults").asInt() == 0) {
             throw new VideoNotFoundException();
         }
 
-        VideoDetail videoDetail = buildVideoDetailResponse(resultNode, reviewLimit);
+        Set<String> enrolledVideoSet = getEnrolledVideoByMemberId(memberId);
+
+        VideoDetail videoDetail = buildVideoDetailResponse(resultNode, reviewLimit, enrolledVideoSet);
         return videoDetail;
     }
 
     public PlaylistDetail getPlaylistDetail(String lectureCode, String indexNextToken, int reviewLimit) throws Exception {
 
-        CompletableFuture<JsonNode> playlistFuture = youtubeService.getPlaylistDetailFromYoutube(lectureCode);
-        CompletableFuture<JsonNode> indexFuture = youtubeService.getPlaylistItemsFromYoutube(lectureCode, indexNextToken, 50);
+        Playlist playlist = Playlist.builder()
+                .playlistId(lectureCode)
+                .build();
+        PlaylistItem playlistItem = PlaylistItem.builder()
+                .playlistId(lectureCode)
+                .nextPageToken(indexNextToken)
+                .limit(50)
+                .build();
+
+        CompletableFuture<JsonNode> playlistFuture = youtubeUtil.getYoutubeResource(playlist);
+        CompletableFuture<JsonNode> indexFuture = youtubeUtil.getYoutubeResource(playlistItem);
 
         CompletableFuture.allOf(playlistFuture, indexFuture).join();
 
+
         JsonNode playlistNode = playlistFuture.get();
-
-        if (playlistNode.get("pageInfo").get("totalResults").asInt() == 0) {
-            throw new PlaylistNotFoundException();
-        }
-
         JsonNode indexNode = indexFuture.get();
 
-        if (indexNode.get("pageInfo").get("totalResults").asInt() == 0) {
-            throw new PlaylistItemNotFoundException();
-        }
+
+        validateNodeIfNotFound(playlistNode);
+        validateNodeIfNotFound(indexNode);
 
         PlaylistDetail playlistDetail = buildPlaylistDetailResponse(playlistNode, indexNode, reviewLimit);
         return playlistDetail;
     }
 
-    public IndexInfo getPlaylistItems(String lectureCode, String indexNextToken, int indexLimit) throws Exception {
-
-        JsonNode indexNode = youtubeService.getPlaylistItemsFromYoutube(lectureCode, indexNextToken, indexLimit).get();
-
-        if (indexNode.get("pageInfo").get("totalResults").asInt() == 0) {
-            throw new PlaylistItemNotFoundException();
+    public void validateNodeIfNotFound(JsonNode node) {
+        if (node.get("pageInfo").get("totalResults").asInt() == 0) {
+            throw new LectureNotFoundException();
         }
+    }
 
-        IndexInfo indexInfo = buildIndexInfoResponse(indexNode).get();
+
+    public IndexInfo getPlaylistItems(String lectureCode, String indexNextToken, int indexLimit) throws Exception {
+        PlaylistItem playlistItem = PlaylistItem.builder()
+                .playlistId(lectureCode)
+                .nextPageToken(indexNextToken)
+                .limit(indexLimit)
+                .build();
+        JsonNode resultNode = youtubeUtil.getYoutubeResource(playlistItem).get();
+
+        validateNodeIfNotFound(resultNode);
+
+        IndexInfo indexInfo = buildIndexInfoResponse(resultNode).get();
         return indexInfo;
     }
 
@@ -92,9 +121,17 @@ public class LectureService {
     @Async
     public CompletableFuture<Set<String>> getLecturesByMemberId(Long memberId) {
         Set<String> lectureSet = new HashSet<>();
-        lectureSet.addAll(lectureRepository.getVideosByMemberId(memberId));
-        lectureSet.addAll(lectureRepository.getPlaylistByMemberId(memberId));
+        lectureSet.addAll(getEnrolledVideoByMemberId(memberId));
+        lectureSet.addAll(getEnrolledPlaylistByMemberId(memberId));
         return CompletableFuture.completedFuture(lectureSet);
+    }
+
+    public Set<String> getEnrolledVideoByMemberId(Long memberId) {
+        return lectureRepository.getVideosByMemberId(memberId);
+    }
+
+    public Set<String> getEnrolledPlaylistByMemberId(Long memberId) {
+        return lectureRepository.getPlaylistByMemberId(memberId);
     }
 
     public KeywordSearch buildLectureListResponse(JsonNode resultNode, Set<String> enrolledLectureSet) {
@@ -139,7 +176,7 @@ public class LectureService {
         return keywordSearch;
     }
 
-    public VideoDetail buildVideoDetailResponse(JsonNode resultNode, int reviewLimit) {
+    public VideoDetail buildVideoDetailResponse(JsonNode resultNode, int reviewLimit, Set<String> enrolledVideoSet) {
 
         try {
             JsonNode snippetJsonNode = resultNode.get("items").get(0).get("snippet");
@@ -150,6 +187,8 @@ public class LectureService {
             String lectureCode = resultNode.get("items").get(0).get("id").asText();
             String videoDuration = formatDuration(resultNode.get("items").get(0).get("contentDetails").get("duration").asText());
 
+            boolean isEnrolled = enrolledVideoSet.contains(lectureCode);
+
             VideoDetail videoDetail = VideoDetail.builder()
                     .lectureCode(lectureCode)
                     .lectureTitle(snippetJsonNode.get("title").asText())
@@ -157,6 +196,7 @@ public class LectureService {
                     .description(snippetJsonNode.get("description").asText())
                     .duration(videoDuration)
                     .isPlaylist(false)
+                    .isEnrolled(isEnrolled)
                     .viewCount(resultNode.get("items").get(0).get("statistics").get("viewCount").asInt())
                     .publishedAt(snippetJsonNode.get("publishedAt").asText().substring(0, 10))
                     .thumbnail(thumbnail)
@@ -213,9 +253,12 @@ public class LectureService {
                 CompletableFuture<Index> indexFuture = CompletableFuture.supplyAsync(() -> {
                     JsonNode videoNode;
                     try {
-                        videoNode = youtubeService.getVideoDetailFromYoutube(lectureCode);
+                        videoNode = youtubeUtil.getYoutubeResource(Video.builder()
+                                        .videoId(lectureCode)
+                                        .build())
+                                .get();
                     } catch (Exception e) {
-                        throw new RuntimeException(e);
+                        throw new LectureNotFoundException();
                     }
 
                     if (snippetNode.get("resourceId").get("kind").asText().equals("youtube#video") && item.get("status").get("privacyStatus").asText().equals("public")) {
@@ -278,6 +321,7 @@ public class LectureService {
 
         return selectedThumbnailUrl;
     }
+
     public static String formatDuration(String durationString) {
         Duration duration = Duration.parse(durationString);
 
