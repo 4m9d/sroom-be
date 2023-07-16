@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -57,7 +58,7 @@ public class ControllerAdvice {
     @ExceptionHandler(IOException.class)
     public ResponseEntity<ErrorResponse> iOException(IOException e) {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode("400")
+                .statusCode(HttpURLConnection.HTTP_BAD_REQUEST)
                 .message(e.getMessage())
                 .build();
 
@@ -67,7 +68,7 @@ public class ControllerAdvice {
     @ExceptionHandler(JsonProcessingException.class)
     public ResponseEntity<ErrorResponse> jsonProcessingException(JsonProcessingException e) {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode("400")
+                .statusCode(HttpURLConnection.HTTP_BAD_REQUEST)
                 .message(e.getMessage())
                 .build();
 
@@ -81,7 +82,7 @@ public class ControllerAdvice {
 
         String error = String.format("필수 파라미터인 '%s'(%s)가 누락되었습니다.", name, type);
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode("400")
+                .statusCode(HttpURLConnection.HTTP_BAD_REQUEST)
                 .message(error)
                 .build();
 
@@ -95,7 +96,7 @@ public class ControllerAdvice {
         String error = String.format("필수 경로 변수인 '%s'가 누락되었습니다.", name);
 
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode("400")
+                .statusCode(HttpURLConnection.HTTP_BAD_REQUEST)
                 .message(error)
                 .build();
 
@@ -106,7 +107,7 @@ public class ControllerAdvice {
     @ExceptionHandler(InvalidParameterException.class)
     public ResponseEntity<?> InvalidParameterException(InvalidParameterException e) {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode("400")
+                .statusCode(HttpURLConnection.HTTP_BAD_REQUEST)
                 .message(e.getMessage())
                 .build();
         return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
@@ -115,7 +116,7 @@ public class ControllerAdvice {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> IllegalArgumentException(IllegalArgumentException e) {
         ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode("400")
+                .statusCode(HttpURLConnection.HTTP_BAD_REQUEST)
                 .message(e.getMessage())
                 .build();
         return ResponseEntity.status(BAD_REQUEST).body(errorResponse);

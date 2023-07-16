@@ -7,11 +7,11 @@ import lombok.Getter;
 @Data
 public class ErrorResponse {
 
-    private String statusCode;
+    private int statusCode;
     private String message;
 
     @Builder
-    public ErrorResponse(String statusCode, String message) {
+    public ErrorResponse(int statusCode, String message) {
         this.statusCode = statusCode;
         this.message = message;
     }
