@@ -6,8 +6,6 @@ import com.m9d.sroom.lecture.dto.response.Lecture;
 import com.m9d.sroom.lecture.dto.response.ReviewBrief;
 import com.m9d.sroom.lecture.dto.response.*;
 import com.m9d.sroom.lecture.exception.LectureNotFoundException;
-import com.m9d.sroom.lecture.exception.PlaylistItemNotFoundException;
-import com.m9d.sroom.lecture.exception.PlaylistNotFoundException;
 import com.m9d.sroom.lecture.exception.VideoNotFoundException;
 import com.m9d.sroom.lecture.repository.LectureRepository;
 import com.m9d.sroom.util.youtube.YoutubeUtil;
@@ -20,10 +18,10 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
 
-import java.security.InvalidParameterException;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
@@ -42,7 +40,6 @@ public class LectureService {
                 .pageToken(nextPageToken)
                 .build();
         JsonNode resultNode = youtubeUtil.getYoutubeResource(lectureList).get();
-
         Set<String> enrolledLectureSet = getLecturesByMemberId(memberId).get();
 
         KeywordSearch keywordSearch = buildLectureListResponse(resultNode, enrolledLectureSet);
@@ -135,6 +132,7 @@ public class LectureService {
 
     public KeywordSearch buildLectureListResponse(JsonNode resultNode, Set<String> enrolledLectureSet) {
         List<Lecture> lectureList = new ArrayList<>();
+        int count = 1;
         try {
             for (JsonNode item : resultNode.get("items")) {
                 JsonNode snippetNode = item.get("snippet");
@@ -164,7 +162,7 @@ public class LectureService {
                 lectureList.add(lecture);
             }
         } catch (Exception e) {
-            throw new InvalidParameterException();
+            throw new RuntimeException(e);
         }
 
         String nextPageToken = resultNode.has("nextPageToken") ? resultNode.get("nextPageToken").asText() : null;
@@ -210,7 +208,7 @@ public class LectureService {
 
             return videoDetail;
         } catch (Exception e) {
-            throw new InvalidParameterException();
+            throw new RuntimeException(e);
         }
     }
 
@@ -241,8 +239,8 @@ public class LectureService {
                     .reviews(reviewBriefList)
                     .build();
             return playlistDetail;
-        } catch (Exception e) {
-            throw new InvalidParameterException();
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -308,7 +306,7 @@ public class LectureService {
             return indexInfoFuture;
 
         } catch (Exception e) {
-            throw new InvalidParameterException();
+            throw new RuntimeException(e);
         }
     }
 
