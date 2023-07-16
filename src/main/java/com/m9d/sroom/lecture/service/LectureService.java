@@ -18,6 +18,7 @@ import com.m9d.sroom.util.youtube.resource.Video;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.HtmlUtils;
 
 import java.security.InvalidParameterException;
 import java.time.Duration;
@@ -147,11 +148,14 @@ public class LectureService {
                     lectureCode = item.get("id").get("videoId").asText();
                 }
                 boolean isEnrolled = enrolledLectureSet.contains(lectureCode);
+                String lectureTitle = snippetNode.get("title").asText();
+                String channel = snippetNode.get("channelTitle").asText();
+                String description = snippetNode.get("description").asText();
 
                 Lecture lecture = Lecture.builder()
-                        .lectureTitle(snippetNode.get("title").asText())
-                        .description(snippetNode.get("description").asText())
-                        .channel(snippetNode.get("channelTitle").asText())
+                        .lectureTitle(unescapeHtml(lectureTitle))
+                        .description(unescapeHtml(description))
+                        .channel(unescapeHtml(channel))
                         .lectureCode(lectureCode)
                         .isEnrolled(isEnrolled)
                         .isPlaylist(isPlaylist)
@@ -185,12 +189,15 @@ public class LectureService {
             String videoDuration = formatDuration(resultNode.get("items").get(0).get("contentDetails").get("duration").asText());
 
             boolean isEnrolled = enrolledVideoSet.contains(lectureCode);
+            String lectureTitle = snippetJsonNode.get("title").asText();
+            String channel = snippetJsonNode.get("channelTitle").asText();
+            String description = snippetJsonNode.get("description").asText();
 
             VideoDetail videoDetail = VideoDetail.builder()
                     .lectureCode(lectureCode)
-                    .lectureTitle(snippetJsonNode.get("title").asText())
-                    .channel(snippetJsonNode.get("channelTitle").asText())
-                    .description(snippetJsonNode.get("description").asText())
+                    .lectureTitle(unescapeHtml(lectureTitle))
+                    .channel(unescapeHtml(channel))
+                    .description(unescapeHtml(description))
                     .duration(videoDuration)
                     .isPlaylist(false)
                     .isEnrolled(isEnrolled)
@@ -217,12 +224,15 @@ public class LectureService {
 
             String lectureCode = playlistNode.get("items").get(0).get("id").asText();
             boolean isEnrolled = enrolledPlaylistSet.contains(lectureCode);
+            String lectureTitle = snippetJsonNode.get("title").asText();
+            String channel = snippetJsonNode.get("channelTitle").asText();
+            String description = snippetJsonNode.get("description").asText();
 
             PlaylistDetail playlistDetail = PlaylistDetail.builder()
                     .lectureCode(lectureCode)
-                    .lectureTitle(snippetJsonNode.get("title").asText())
-                    .channel(snippetJsonNode.get("channelTitle").asText())
-                    .description(snippetJsonNode.get("description").asText())
+                    .lectureTitle(unescapeHtml(lectureTitle))
+                    .channel(unescapeHtml(channel))
+                    .description(unescapeHtml(description))
                     .isPlaylist(true)
                     .isEnrolled(isEnrolled)
                     .lectureCount(playlistNode.get("items").get(0).get("contentDetails").get("itemCount").asInt())
@@ -265,7 +275,7 @@ public class LectureService {
                         String thumbnail = selectThumbnail(item.get("snippet").get("thumbnails"));
                         Index index = Index.builder()
                                 .index(snippetNode.get("position").asInt())
-                                .lectureTitle(snippetNode.get("title").asText())
+                                .lectureTitle(unescapeHtml(snippetNode.get("title").asText()))
                                 .thumbnail(thumbnail)
                                 .duration(formatDuration(videoDuration))
                                 .build();
@@ -337,5 +347,9 @@ public class LectureService {
     public boolean checkIfPlaylist(String lectureCode) {
         String firstTwoCharacters = lectureCode.substring(0, 2);
         return firstTwoCharacters.equals("PL");
+    }
+
+    public String unescapeHtml(String input) {
+        return HtmlUtils.htmlUnescape(input);
     }
 }
