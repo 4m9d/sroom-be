@@ -239,7 +239,7 @@ public class LectureService {
                     .reviews(reviewBriefList)
                     .build();
             return playlistDetail;
-        } catch (ExecutionException e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
