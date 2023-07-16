@@ -75,7 +75,6 @@ public class LectureController {
             @ApiResponse(responseCode = "404", description = "입력한 lectureCode에 해당하는 강의가 없습니다.", content = @Content)
     })
     public ResponseEntity<?> getLectureDetail(@PathVariable(name = "lectureCode", required = true) String lectureCode,
-                                              @RequestParam(name = "is_playlist", required = true) boolean isPlaylist,
                                               @RequestParam(name = "index_only", required = false, defaultValue = "false") boolean indexOnly,
                                               @RequestParam(name = "index_limit", required = false, defaultValue = "50") int indexLimit,
                                               @RequestParam(name = "index_next_token", required = false) String indexNextToken,
@@ -83,6 +82,7 @@ public class LectureController {
                                               @RequestParam(name = "review_offset", required = false, defaultValue = "0") int reviewOffset,
                                               @RequestParam(name = "review_limit", required = false, defaultValue = "10") int reviewLimit) throws Exception {
         Long memberId = jwtUtil.getMemberIdFromRequest();
+        boolean isPlaylist = lectureService.checkIfPlaylist(lectureCode);
         if (indexOnly && reviewOnly) {
             throw new TwoOnlyParamTrueException();
         }

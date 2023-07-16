@@ -334,4 +334,8 @@ public class LectureService {
         }
     }
 
+    public boolean checkIfPlaylist(String lectureCode) {
+        String firstTwoCharacters = lectureCode.substring(0, 2);
+        return firstTwoCharacters.equals("PL");
+    }
 }
