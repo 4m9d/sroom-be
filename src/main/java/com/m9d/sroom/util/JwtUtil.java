@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -14,7 +15,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Configuration
+@Service
 public class JwtUtil {
 
     @Value("${jwt-secret}")
