@@ -9,6 +9,7 @@ import java.util.List;
 
 @Schema(description = "재생목록 상세 정보")
 @Data
+@Builder
 public class PlaylistDetail {
 
     @Schema(description = "재생목록 ID", example = "PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi")
@@ -19,6 +20,10 @@ public class PlaylistDetail {
 
     @Schema(description = "채널 이름", example = "Network Academy")
     private String channel;
+
+    @Schema(description = "강의 등록 여부", example = "false")
+    @JsonProperty("is_enrolled")
+    private boolean isEnrolled;
 
     @Schema(description = "재생목록 설명", example = "OSI 7계층에서 각 계층의 다양한 프로토콜들을 통해서 배우는 네트워크 기초에 대한 강의입니다.")
     private String description;
@@ -43,24 +48,8 @@ public class PlaylistDetail {
     private String thumbnail;
 
     @Schema(description = "강의 목차 정보")
-    private IndexInfo indexInfo;
+    private IndexInfo indexes;
 
     @Schema(description = "강의 후기 요약 정보")
     private List<ReviewBrief> reviews;
-
-    @Builder
-    public PlaylistDetail(String lectureCode, String lectureTitle, String channel, String description, boolean isPlaylist, String publishedAt, int lectureCount, double rating, int reviewCount, String thumbnail, IndexInfo indexInfo, List<ReviewBrief> reviews) {
-        this.lectureCode = lectureCode;
-        this.lectureTitle = lectureTitle;
-        this.channel = channel;
-        this.description = description;
-        this.isPlaylist = isPlaylist;
-        this.publishedAt = publishedAt;
-        this.lectureCount = lectureCount;
-        this.rating = rating;
-        this.reviewCount = reviewCount;
-        this.thumbnail = thumbnail;
-        this.indexInfo = indexInfo;
-        this.reviews = reviews;
-    }
 }

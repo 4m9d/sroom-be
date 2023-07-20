@@ -9,6 +9,7 @@ import java.util.List;
 
 @Schema(description = "동영상 상세 정보")
 @Data
+@Builder
 public class VideoDetail {
 
     @Schema(description = "강의 ID", example = "OEV8gMkCHXQ")
@@ -25,6 +26,10 @@ public class VideoDetail {
 
     @Schema(description = "강의 재생 길이", example = "3:45")
     private String duration;
+
+    @Schema(description = "강의 등록 여부", example = "false")
+    @JsonProperty("is_enrolled")
+    private boolean isEnrolled;
 
     @Schema(description = "플레이리스트 여부", example = "false")
     @JsonProperty("is_playlist")
@@ -47,20 +52,4 @@ public class VideoDetail {
 
     @Schema(description = "강의 리뷰 목록")
     private List<ReviewBrief> reviews;
-
-    @Builder
-    public VideoDetail(String lectureCode, String lectureTitle, String channel, String description, String duration, boolean isPlaylist, long viewCount, String publishedAt, double rating, int reviewCount, String thumbnail, List<ReviewBrief> reviews) {
-        this.lectureCode = lectureCode;
-        this.lectureTitle = lectureTitle;
-        this.channel = channel;
-        this.description = description;
-        this.duration = duration;
-        this.isPlaylist = isPlaylist;
-        this.viewCount = viewCount;
-        this.publishedAt = publishedAt;
-        this.rating = rating;
-        this.reviewCount = reviewCount;
-        this.thumbnail = thumbnail;
-        this.reviews = reviews;
-    }
 }

@@ -1,11 +1,13 @@
 package com.m9d.sroom.util.youtube.resource;
 
 import com.m9d.sroom.util.youtube.YoutubeApiParameters;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Builder
 @RequiredArgsConstructor
 public class PlaylistItem implements YoutubeResource {
     private final String playlistId;

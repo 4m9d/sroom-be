@@ -3,7 +3,7 @@ package com.m9d.sroom.util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.m9d.sroom.SroomApplicationTests;
-import com.m9d.sroom.lecture.service.YoutubeService;
+import com.m9d.sroom.lecture.service.LectureService;
 import com.m9d.sroom.member.domain.Member;
 import com.m9d.sroom.member.repository.MemberRepository;
 import com.m9d.sroom.member.service.MemberService;
@@ -31,7 +31,7 @@ public class ServiceTest extends SroomApplicationTests {
     protected JwtUtil jwtUtil;
 
     @Autowired
-    protected YoutubeService youtubeService;
+    protected LectureService lectureService;
 
     @Autowired
     protected ObjectMapper objectMapper;

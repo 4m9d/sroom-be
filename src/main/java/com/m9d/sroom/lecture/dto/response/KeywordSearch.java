@@ -8,6 +8,7 @@ import java.util.List;
 
 @Schema(description = "검색 결과 강의 리스트")
 @Data
+@Builder
 public class KeywordSearch {
 
     @Schema(description = "응답 개수", example = "5")
@@ -21,12 +22,4 @@ public class KeywordSearch {
 
     @Schema(description = "조회된 강의 리스트")
     private List<Lecture> lectures;
-
-    @Builder
-    public KeywordSearch(int resultPerPage, String nextPageToken, String prevPageToken, List<Lecture> lectures) {
-        this.resultPerPage = resultPerPage;
-        this.nextPageToken = nextPageToken;
-        this.prevPageToken = prevPageToken;
-        this.lectures = lectures;
-    }
 }
