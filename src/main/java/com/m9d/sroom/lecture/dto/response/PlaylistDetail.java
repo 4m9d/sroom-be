@@ -48,7 +48,7 @@ public class PlaylistDetail {
     private String thumbnail;
 
     @Schema(description = "강의 목차 정보")
-    private IndexInfo indexInfo;
+    private IndexInfo indexes;
 
     @Schema(description = "강의 후기 요약 정보")
     private List<ReviewBrief> reviews;

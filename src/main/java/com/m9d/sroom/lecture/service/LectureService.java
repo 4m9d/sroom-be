@@ -235,7 +235,7 @@ public class LectureService {
                     .isEnrolled(isEnrolled)
                     .lectureCount(playlistNode.get("items").get(0).get("contentDetails").get("itemCount").asInt())
                     .thumbnail(thumbnail)
-                    .indexInfo(indexInfo)
+                    .indexes(indexInfo)
                     .reviews(reviewBriefList)
                     .build();
             return playlistDetail;
