@@ -1,6 +1,6 @@
 package com.m9d.sroom.util.youtube.resource;
 
-import com.m9d.sroom.util.youtube.YoutubeApiParameters;
+import com.m9d.sroom.util.youtube.YoutubeConstant;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 
@@ -18,7 +18,7 @@ public class Playlist implements YoutubeResource{
 
     @Override
     public Map<String, String> getParameters() {
-        Map<String, String> params = new HashMap<>(YoutubeApiParameters.PLAYLIST_PARAMETERS);
+        Map<String, String> params = new HashMap<>(YoutubeConstant.PLAYLIST_PARAMETERS);
         params.put("id", playlistId);
         return params;
     }

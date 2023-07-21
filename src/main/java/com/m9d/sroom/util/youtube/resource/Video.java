@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
 
-import com.m9d.sroom.util.youtube.YoutubeApiParameters;
+import com.m9d.sroom.util.youtube.YoutubeConstant;
 
 import java.util.Map;
 
@@ -18,7 +18,7 @@ public class Video implements YoutubeResource {
 
     @Override
     public Map<String, String> getParameters() {
-        Map<String, String> params = new HashMap<>(YoutubeApiParameters.VIDEO_PARAMETERS);
+        Map<String, String> params = new HashMap<>(YoutubeConstant.VIDEO_PARAMETERS);
         params.put("id", videoId);
         return params;
     }

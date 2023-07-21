@@ -17,7 +17,6 @@ import com.m9d.sroom.util.youtube.resource.LectureList;
 import com.m9d.sroom.util.youtube.resource.Playlist;
 import com.m9d.sroom.util.youtube.resource.PlaylistItem;
 import com.m9d.sroom.util.youtube.resource.Video;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -30,13 +29,19 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
+import static com.m9d.sroom.lecture.constant.LectureConstant.*;
+
 @Service
 @Slf4j
 public class LectureService {
 
     private final LectureRepository lectureRepository;
     private final YoutubeUtil youtubeUtil;
+
+    public LectureService(LectureRepository lectureRepository, YoutubeUtil youtubeUtil) {
+        this.lectureRepository = lectureRepository;
+        this.youtubeUtil = youtubeUtil;
+    }
 
     public KeywordSearch searchByKeyword(Long memberId, KeywordSearchParam keywordSearchParam) {
         LectureList lectureList = LectureList.builder()
@@ -84,7 +89,7 @@ public class LectureService {
         PlaylistItem playlistItem = PlaylistItem.builder()
                 .playlistId(lectureCode)
                 .nextPageToken(indexNextToken)
-                .limit(50)
+                .limit(DEFAULT_REVIEW_COUNT)
                 .build();
 
         CompletableFuture<JsonNode> playlistFuture = youtubeUtil.getYoutubeResource(playlist);
@@ -156,23 +161,22 @@ public class LectureService {
 
     public KeywordSearch buildLectureListResponse(JsonNode resultNode, Set<String> enrolledLectureSet) {
         List<Lecture> lectureList = new ArrayList<>();
-        int count = 1;
         try {
-            for (JsonNode item : resultNode.get("items")) {
-                JsonNode snippetNode = item.get("snippet");
-                boolean isPlaylist = item.get("id").get("kind").asText().equals("youtube#playlist");
-                String thumbnail = selectThumbnail(snippetNode.get("thumbnails"));
+            for (JsonNode item : resultNode.get(JSONNODE_ITEMS)) {
+                JsonNode snippetNode = item.get(JSONNODE_SNIPPET);
+                boolean isPlaylist = item.get(JSONNODE_ID).get(JSONNODE_KIND).asText().equals(JSONNODE_TYPE_PLAYLIST);
+                String thumbnail = selectThumbnail(snippetNode.get(JSONNODE_THUMBNAILS));
 
                 String lectureCode;
                 if (isPlaylist) {
-                    lectureCode = item.get("id").get("playlistId").asText();
+                    lectureCode = item.get(JSONNODE_ID).get(JSONNODE_PLAYLIST_ID).asText();
                 } else {
-                    lectureCode = item.get("id").get("videoId").asText();
+                    lectureCode = item.get(JSONNODE_ID).get(JSONNODE_VIDEO_ID).asText();
                 }
                 boolean isEnrolled = enrolledLectureSet.contains(lectureCode);
-                String lectureTitle = snippetNode.get("title").asText();
-                String channel = snippetNode.get("channelTitle").asText();
-                String description = snippetNode.get("description").asText();
+                String lectureTitle = snippetNode.get(JSONNODE_TITLE).asText();
+                String channel = snippetNode.get(JSONNODE_CHANNEL_TITLE).asText();
+                String description = snippetNode.get(JSONNODE_DESCRIPTION).asText();
 
                 Lecture lecture = Lecture.builder()
                         .lectureTitle(unescapeHtml(lectureTitle))
@@ -186,15 +190,16 @@ public class LectureService {
                 lectureList.add(lecture);
             }
         } catch (Exception e) {
+            log.info("error occurred. message = {}", e.getMessage());
             throw new RuntimeException(e);
         }
 
-        String nextPageToken = resultNode.has("nextPageToken") ? resultNode.get("nextPageToken").asText() : null;
-        String prevPageToken = resultNode.has("prevPageToken") ? resultNode.get("prevPageToken").asText() : null;
+        String nextPageToken = resultNode.has(JSONNODE_NEXT_PAGE_TOKEN) ? resultNode.get("nextPageToken").asText() : null;
+        String prevPageToken = resultNode.has(JSONNODE_PREV_PAGE_TOKEN) ? resultNode.get("prevPageToken").asText() : null;
         KeywordSearch keywordSearch = KeywordSearch.builder()
                 .nextPageToken(nextPageToken)
                 .prevPageToken(prevPageToken)
-                .resultPerPage(resultNode.get("pageInfo").get("resultsPerPage").asInt())
+                .resultPerPage(resultNode.get(JSONNODE_PAGE_INFO).get(JSONNODE_RESULT_PER_PAGE).asInt())
                 .lectures(lectureList)
                 .build();
         return keywordSearch;
@@ -202,18 +207,18 @@ public class LectureService {
 
     public VideoDetail buildVideoDetailResponse(JsonNode resultNode, int reviewLimit, Set<String> enrolledVideoSet) {
         try {
-            JsonNode snippetJsonNode = resultNode.get("items").get(0).get("snippet");
-            String thumbnail = selectThumbnail(snippetJsonNode.get("thumbnails"));
+        JsonNode snippetJsonNode = resultNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_SNIPPET);
+            String thumbnail = selectThumbnail(snippetJsonNode.get(JSONNODE_THUMBNAILS));
 
-            List<ReviewBrief> reviewBriefList = lectureRepository.getReviewBriefList(resultNode.get("items").get(0).get("id").asText(), 0, reviewLimit);
+            List<ReviewBrief> reviewBriefList = lectureRepository.getReviewBriefList(resultNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_ID).asText(), DEFAULT_REVIEW_OFFSET, reviewLimit);
 
-            String lectureCode = resultNode.get("items").get(0).get("id").asText();
-            String videoDuration = formatDuration(resultNode.get("items").get(0).get("contentDetails").get("duration").asText());
+            String lectureCode = resultNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_ID).asText();
+            String videoDuration = formatDuration(resultNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_CONTENT_DETAIL).get(JSONNODE_DURATION).asText());
 
             boolean isEnrolled = enrolledVideoSet.contains(lectureCode);
-            String lectureTitle = snippetJsonNode.get("title").asText();
-            String channel = snippetJsonNode.get("channelTitle").asText();
-            String description = snippetJsonNode.get("description").asText();
+            String lectureTitle = snippetJsonNode.get(JSONNODE_TITLE).asText();
+            String channel = snippetJsonNode.get(JSONNODE_CHANNEL_TITLE).asText();
+            String description = snippetJsonNode.get(JSONNODE_DESCRIPTION).asText();
 
             VideoDetail videoDetail = VideoDetail.builder()
                     .lectureCode(lectureCode)
@@ -221,10 +226,10 @@ public class LectureService {
                     .channel(unescapeHtml(channel))
                     .description(unescapeHtml(description))
                     .duration(videoDuration)
-                    .playlist(false)
+                    .playlist(FALSE)
                     .enrolled(isEnrolled)
-                    .viewCount(resultNode.get("items").get(0).get("statistics").get("viewCount").asInt())
-                    .publishedAt(snippetJsonNode.get("publishedAt").asText().substring(0, 10))
+                    .viewCount(resultNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_STATISTICS).get(JSONNODE_VIEW_COUNT).asInt())
+                    .publishedAt(snippetJsonNode.get(JSONNODE_PUBLISHED_AT).asText().substring(PUBLISHED_DATE_START_INDEX, PUBLISHED_DATE_END_INDEX))
                     .thumbnail(thumbnail)
                     .reviews(reviewBriefList)
                     .reviewCount(reviewBriefList.size())
@@ -232,53 +237,55 @@ public class LectureService {
 
             return videoDetail;
         } catch (Exception e) {
+            log.info("error occurred. message = {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
 
     public PlaylistDetail buildPlaylistDetailResponse(JsonNode playlistNode, JsonNode indexNode, int reviewLimit, Set<String> enrolledPlaylistSet) {
         try {
-            JsonNode snippetJsonNode = playlistNode.get("items").get(0).get("snippet");
-            String thumbnail = selectThumbnail(playlistNode.get("items").get(0).get("snippet").get("thumbnails"));
+            JsonNode snippetJsonNode = playlistNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_SNIPPET);
+            String thumbnail = selectThumbnail(playlistNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_SNIPPET).get(JSONNODE_THUMBNAILS));
 
             IndexInfo indexInfo = buildIndexInfoResponse(indexNode).get();
-            List<ReviewBrief> reviewBriefList = lectureRepository.getReviewBriefList(playlistNode.get("items").get(0).get("id").asText(), 0, reviewLimit);
+            List<ReviewBrief> reviewBriefList = lectureRepository.getReviewBriefList(playlistNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_ID).asText(), DEFAULT_REVIEW_OFFSET, reviewLimit);
 
-            String lectureCode = playlistNode.get("items").get(0).get("id").asText();
+            String lectureCode = playlistNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_ID).asText();
             boolean isEnrolled = enrolledPlaylistSet.contains(lectureCode);
-            String lectureTitle = snippetJsonNode.get("title").asText();
-            String channel = snippetJsonNode.get("channelTitle").asText();
-            String description = snippetJsonNode.get("description").asText();
+            String lectureTitle = snippetJsonNode.get(JSONNODE_TITLE).asText();
+            String channel = snippetJsonNode.get(JSONNODE_CHANNEL_TITLE).asText();
+            String description = snippetJsonNode.get(JSONNODE_DESCRIPTION).asText();
 
             PlaylistDetail playlistDetail = PlaylistDetail.builder()
                     .lectureCode(lectureCode)
                     .lectureTitle(unescapeHtml(lectureTitle))
                     .channel(unescapeHtml(channel))
                     .description(unescapeHtml(description))
-                    .playlist(true)
+                    .playlist(TRUE)
                     .enrolled(isEnrolled)
-                    .lectureCount(playlistNode.get("items").get(0).get("contentDetails").get("itemCount").asInt())
+                    .lectureCount(playlistNode.get(JSONNODE_PLAYLIST_ID).get(FIRST_INDEX).get(JSONNODE_CONTENT_DETAIL).get(JSONNODE_ITEM_COUNT).asInt())
                     .thumbnail(thumbnail)
                     .indexes(indexInfo)
                     .reviews(reviewBriefList)
                     .build();
             return playlistDetail;
         } catch (Exception e) {
+            log.info("error occurred. message = {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
 
     public CompletableFuture<IndexInfo> buildIndexInfoResponse(JsonNode indexNode) {
         try {
-            String nextPageToken = indexNode.has("nextPageToken") ? indexNode.get("nextPageToken").asText() : null;
+            String nextPageToken = indexNode.has(JSONNODE_NEXT_PAGE_TOKEN) ? indexNode.get(JSONNODE_NEXT_PAGE_TOKEN).asText() : null;
 
             AtomicLong totalDurationSeconds = new AtomicLong();
 
             List<CompletableFuture<Index>> futuresList = new ArrayList<>();
-            for (JsonNode item : indexNode.get("items")) {
-                JsonNode snippetNode = item.get("snippet");
+            for (JsonNode item : indexNode.get(JSONNODE_ITEMS)) {
+                JsonNode snippetNode = item.get(JSONNODE_SNIPPET);
 
-                String lectureCode = snippetNode.get("resourceId").get("videoId").asText();
+                String lectureCode = snippetNode.get(JSONNODE_RESOURCE_ID).get(JSONNODE_VIDEO_ID).asText();
 
                 CompletableFuture<Index> indexFuture = CompletableFuture.supplyAsync(() -> {
                     JsonNode videoNode;
@@ -288,16 +295,17 @@ public class LectureService {
                                         .build())
                                 .get();
                     } catch (Exception e) {
+                        log.info("error occurred. message = {}", e.getMessage());
                         throw new LectureNotFoundException();
                     }
 
-                    if (snippetNode.get("resourceId").get("kind").asText().equals("youtube#video") && item.get("status").get("privacyStatus").asText().equals("public")) {
-                        String videoDuration = videoNode.get("items").get(0).get("contentDetails").get("duration").asText();
+                    if (snippetNode.get(JSONNODE_RESOURCE_ID).get(JSONNODE_KIND).asText().equals(JSONNODE_TYPE_VIDEO) && item.get(JSONNODE_STATUS).get(JSONNODE_PRIVACY_STATUS).asText().equals(JSONNODE_PUBLIC)) {
+                        String videoDuration = videoNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_CONTENT_DETAIL).get(JSONNODE_DURATION).asText();
                         totalDurationSeconds.addAndGet(Duration.parse(videoDuration).getSeconds());
-                        String thumbnail = selectThumbnail(item.get("snippet").get("thumbnails"));
+                        String thumbnail = selectThumbnail(item.get(JSONNODE_SNIPPET).get(JSONNODE_THUMBNAILS));
                         Index index = Index.builder()
-                                .index(snippetNode.get("position").asInt())
-                                .lectureTitle(unescapeHtml(snippetNode.get("title").asText()))
+                                .index(snippetNode.get(JSONNODE_POSITION).asInt())
+                                .lectureTitle(unescapeHtml(snippetNode.get(JSONNODE_TITLE).asText()))
                                 .thumbnail(thumbnail)
                                 .duration(formatDuration(videoDuration))
                                 .build();
@@ -330,6 +338,7 @@ public class LectureService {
             return indexInfoFuture;
 
         } catch (Exception e) {
+            log.info("error occurred. message = {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -338,14 +347,14 @@ public class LectureService {
     public String selectThumbnail(JsonNode thumbnailsNode) {
         String selectedThumbnailUrl = "";
 
-        JsonNode mediumThumbnailNode = thumbnailsNode.get("medium");
+        JsonNode mediumThumbnailNode = thumbnailsNode.get(JSONNODE_THUMBNAIL_MEDIUM);
         if (mediumThumbnailNode != null) {
-            selectedThumbnailUrl = mediumThumbnailNode.get("url").asText();
+            selectedThumbnailUrl = mediumThumbnailNode.get(JSONNODE_THUMBNAIL_URL).asText();
         }
 
-        JsonNode maxresThumbnailNode = thumbnailsNode.get("maxres");
+        JsonNode maxresThumbnailNode = thumbnailsNode.get(JSONNODE_THUMBNAIL_MAXRES);
         if (maxresThumbnailNode != null) {
-            return maxresThumbnailNode.get("url").asText();
+            return maxresThumbnailNode.get(JSONNODE_THUMBNAIL_URL).asText();
         }
 
         return selectedThumbnailUrl;
@@ -355,20 +364,20 @@ public class LectureService {
         Duration duration = Duration.parse(durationString);
 
         long totalSeconds = duration.getSeconds();
-        long hours = totalSeconds / 3600;
-        long minutes = (totalSeconds % 3600) / 60;
-        long seconds = totalSeconds % 60;
+        long hours = totalSeconds / SECONDS_IN_HOUR;
+        long minutes = (totalSeconds % SECONDS_IN_HOUR) / SECONDS_IN_MINUTE;
+        long seconds = totalSeconds % SECONDS_IN_MINUTE;
 
         if (hours > 0) {
-            return String.format("%d:%02d:%02d", hours, minutes, seconds);
+            return String.format(FORMAT_WITH_HOUR, hours, minutes, seconds);
         } else {
-            return String.format("%d:%02d", minutes, seconds);
+            return String.format(FORMAT_WITHOUT_HOUR, minutes, seconds);
         }
     }
 
     public boolean checkIfPlaylist(String lectureCode) {
-        String firstTwoCharacters = lectureCode.substring(0, 2);
-        return firstTwoCharacters.equals("PL");
+        String firstTwoCharacters = lectureCode.substring(LECTURE_CODE_START_INDEX, LECTURE_CODE_PLAYLIST_INDICATOR_LENGTH);
+        return firstTwoCharacters.equals(PLAYLIST_CODE_INDICATOR);
     }
 
     public String unescapeHtml(String input) {

@@ -12,7 +12,6 @@ import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.member.exception.*;
 import com.m9d.sroom.member.repository.MemberRepository;
 import com.m9d.sroom.util.JwtUtil;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,8 +19,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
+import static com.m9d.sroom.member.constant.MemberConstant.DEFAULT_MEMBER_NAME_FORMAT;
+import static com.m9d.sroom.util.JwtUtil.EXPIRATION_TIME;
 
-@RequiredArgsConstructor
+
 @Service
 @Slf4j
 public class MemberService {
@@ -31,6 +32,11 @@ public class MemberService {
 
     @Value("${client-id}")
     private String clientId;
+
+    public MemberService(MemberRepository memberRepository, JwtUtil jwtUtil) {
+        this.memberRepository = memberRepository;
+        this.jwtUtil = jwtUtil;
+    }
 
     @Transactional
     public Login authenticateMember(String credential) throws Exception {
@@ -56,7 +62,7 @@ public class MemberService {
         Login login = Login.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
-                .expiresAt((Long) jwtUtil.getDetailFromToken(accessToken).get("expirationTime"))
+                .expiresAt((Long) jwtUtil.getDetailFromToken(accessToken).get(EXPIRATION_TIME))
                 .name(member.getMemberName())
                 .bio(member.getBio())
                 .build();
@@ -104,7 +110,7 @@ public class MemberService {
         final int NUMBER_BOUND = 1000000;
 
         int randomNumber = RANDOM.nextInt(NUMBER_BOUND);
-        String memberName = String.format("user_%06d", randomNumber);
+        String memberName = String.format(DEFAULT_MEMBER_NAME_FORMAT, randomNumber);
         return memberName;
     }
 
@@ -112,7 +118,7 @@ public class MemberService {
     public Login verifyRefreshTokenAndReturnLogin(Long memberId, RefreshToken refreshToken) {
         Map<String, Object> refreshTokenDetail = jwtUtil.getDetailFromToken(refreshToken.getRefreshToken());
 
-        if ((Long) refreshTokenDetail.get("expirationTime") <= System.currentTimeMillis() / 1000) {
+        if ((Long) refreshTokenDetail.get(EXPIRATION_TIME) <= System.currentTimeMillis() / 1000) {
             throw new TokenExpiredException("refresh");
         }
         if (!memberId.equals(Long.valueOf((String) refreshTokenDetail.get("memberId")))) {

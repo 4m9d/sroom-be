@@ -1,7 +1,5 @@
 package com.m9d.sroom.util.youtube;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.m9d.sroom.lecture.exception.LectureNotFoundException;
@@ -19,6 +17,8 @@ import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
+
+import static com.m9d.sroom.util.youtube.YoutubeConstant.*;
 
 @Service
 @Slf4j
@@ -39,7 +39,7 @@ public class YoutubeUtil {
         String response = getAndReadResponse(connection);
 
         ObjectMapper objectMapper = new ObjectMapper();
-        try{
+        try {
             return objectMapper.readTree(response);
         } catch (Exception e) {
             log.info("error occurred. message: read tree failed (youtube response)");
@@ -62,8 +62,8 @@ public class YoutubeUtil {
         try {
             URL requestUrl = new URL(url);
             HttpURLConnection connection = (HttpURLConnection) requestUrl.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setRequestMethod(REQUEST_METHOD_GET);
+            connection.setRequestProperty("Content-Type", YOUTUBE_REQUEST_CONTENT_TYPE);
             return connection;
         } catch (Exception e) {
             log.info("error occurred. message: open connection youtube failed");
@@ -72,7 +72,7 @@ public class YoutubeUtil {
     }
 
     private String getAndReadResponse(HttpURLConnection connection) {
-        try{
+        try {
             int responseCode = connection.getResponseCode();
 
             if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -96,6 +96,6 @@ public class YoutubeUtil {
     }
 
     public String encodeSpaces(String input) {
-        return input.replace(" ", "%20");
+        return input.replace(SPACE_CHARACTER, ENCODED_SPACE_CHARACTER);
     }
 }

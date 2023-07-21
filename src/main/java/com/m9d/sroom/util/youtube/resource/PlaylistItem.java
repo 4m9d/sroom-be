@@ -1,6 +1,6 @@
 package com.m9d.sroom.util.youtube.resource;
 
-import com.m9d.sroom.util.youtube.YoutubeApiParameters;
+import com.m9d.sroom.util.youtube.YoutubeConstant;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 
@@ -19,7 +19,7 @@ public class PlaylistItem implements YoutubeResource {
 
     @Override
     public Map<String, String> getParameters() {
-        Map<String, String> params = new HashMap<>(YoutubeApiParameters.PLAYLIST_ITEMS_PARAMETERS);
+        Map<String, String> params = new HashMap<>(YoutubeConstant.PLAYLIST_ITEMS_PARAMETERS);
         params.put("playlistId", playlistId);
         params.put("maxResults", String.valueOf(limit));
         if (nextPageToken != null) {

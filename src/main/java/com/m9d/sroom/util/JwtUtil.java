@@ -23,6 +23,7 @@ public class JwtUtil {
 
     public static final long ACCESS_TOKEN_EXPIRATION_PERIOD = 1000L * 60 * 60 * 10; // 10시간 유효
     public static final long REFRESH_TOKEN_EXPIRATION_PERIOD = 1000L * 60 * 60 * 24 * 7; // 7일 유효
+    public static final String EXPIRATION_TIME = "expirationTime";
 
     public String generateAccessToken(Member member) {
         return generateToken(member.getMemberId(), ACCESS_TOKEN_EXPIRATION_PERIOD);
