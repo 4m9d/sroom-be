@@ -17,4 +17,10 @@ public class ReviewBrief {
 
     @Schema(description = "별점", example = "2")
     private int submittedRating;
+
+    @Schema(description = "후기 남긴 사람 이름", example = "user_318593")
+    private String reviewerName;
+
+    @Schema(description = "후기 생성 날짜", example = "2022-01-34")
+    private String publishedAt;
 }

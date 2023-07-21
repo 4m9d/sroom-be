@@ -1,8 +1,9 @@
 package com.m9d.sroom.lecture.dto.request;
 
 import lombok.Getter;
+import lombok.Setter;
 
-@Getter
+@Getter @Setter
 public class LectureDetailParam {
     private boolean indexOnly = false;
     private int indexLimit = 50;

@@ -386,6 +386,7 @@ public class LectureService {
 
     public ResponseEntity<?> getLectureDetail(Long memberId, boolean isPlaylist, String lectureCode, LectureDetailParam lectureDetailParam) {
         lectureDetailParamValidate(isPlaylist, lectureDetailParam);
+        log.info("param = {}, {}, {}", lectureDetailParam.isIndexOnly(), lectureDetailParam.isReviewOnly(), lectureDetailParam.getReviewLimit());
 
         if (lectureDetailParam.isIndexOnly()) {
             IndexInfo indexInfo = getPlaylistItems(lectureCode, lectureDetailParam.getIndexNextToken(), lectureDetailParam.getIndexLimit());

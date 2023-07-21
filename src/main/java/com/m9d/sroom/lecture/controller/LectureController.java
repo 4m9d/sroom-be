@@ -2,10 +2,7 @@ package com.m9d.sroom.lecture.controller;
 
 import com.m9d.sroom.lecture.dto.request.KeywordSearchParam;
 import com.m9d.sroom.lecture.dto.request.LectureDetailParam;
-import com.m9d.sroom.lecture.dto.response.ReviewBrief;
 import com.m9d.sroom.lecture.dto.response.*;
-import com.m9d.sroom.lecture.exception.TwoOnlyParamTrueException;
-import com.m9d.sroom.lecture.exception.VideoIndexParamException;
 import com.m9d.sroom.lecture.service.LectureService;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
@@ -16,12 +13,10 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;

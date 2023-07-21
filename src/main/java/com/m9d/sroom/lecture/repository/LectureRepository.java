@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 @Repository
@@ -17,16 +18,25 @@ public class LectureRepository {
     }
 
     public List<ReviewBrief> getReviewBriefList(String lectureCode, int reviewOffset, int reviewLimit) {
-        String sql = "SELECT review_id, content, submitted_rating FROM REVIEW WHERE source_code = ? ORDER BY submitted_date DESC LIMIT ? OFFSET ?";
+        String sql = "SELECT r.review_id, r.content, r.submitted_rating, m.member_name, r.submitted_date " +
+                "FROM REVIEW r JOIN MEMBER m ON r.member_id = m.member_id " +
+                "WHERE r.source_code = ? " +
+                "ORDER BY r.submitted_date DESC LIMIT ? OFFSET ?";
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
         List<ReviewBrief> reviewBriefList = jdbcTemplate.query(sql, new Object[]{lectureCode, reviewLimit, reviewOffset},
                 (rs, rowNum) -> ReviewBrief.builder()
-                        .index(rowNum + reviewOffset)
+                        .index(rowNum + reviewOffset + 1)
                         .reviewContent(rs.getString("content"))
                         .submittedRating(rs.getInt("submitted_rating"))
+                        .reviewerName(rs.getString("member_name"))
+                        .publishedAt(dateFormat.format(rs.getTimestamp("submitted_date")))
                         .build()
         );
         return reviewBriefList;
     }
+
 
     public HashSet<String> getVideosByMemberId(Long memberId) {
         String sql = "SELECT v.video_code FROM COURSEVIDEO cv JOIN VIDEO v ON cv.video_id = v.video_id WHERE cv.member_id = ?";
