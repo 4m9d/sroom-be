@@ -1,6 +1,10 @@
 package com.m9d.sroom.config.error;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -8,10 +12,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
+@Slf4j
 public class ControllerAdvice {
 
     @ResponseStatus(NOT_FOUND)
@@ -109,6 +116,20 @@ public class ControllerAdvice {
         return ErrorResponse.builder()
                 .statusCode(BAD_REQUEST.value())
                 .message(e.getMessage())
+                .build();
+    }
+
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(BindException.class)
+    public ErrorResponse handleInvalidParameters(BindException e) {
+        List<FieldError> fieldErrors = e.getFieldErrors();
+        String message = fieldErrors.stream()
+                .map(FieldError::getDefaultMessage)
+                .collect(Collectors.joining(", "));
+        log.info("Exception: {}, Message: {}", e.getClass().getSimpleName(), e.getMessage());
+        return ErrorResponse.builder()
+                .statusCode(BAD_REQUEST.value())
+                .message(message)
                 .build();
     }
 }

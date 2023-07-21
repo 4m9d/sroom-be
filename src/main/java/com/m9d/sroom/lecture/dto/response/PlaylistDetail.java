@@ -23,14 +23,14 @@ public class PlaylistDetail {
 
     @Schema(description = "강의 등록 여부", example = "false")
     @JsonProperty("is_enrolled")
-    private boolean isEnrolled;
+    private boolean enrolled;
 
     @Schema(description = "재생목록 설명", example = "OSI 7계층에서 각 계층의 다양한 프로토콜들을 통해서 배우는 네트워크 기초에 대한 강의입니다.")
     private String description;
 
     @Schema(description = "플레이리스트 여부", example = "true")
     @JsonProperty("is_playlist")
-    private boolean isPlaylist;
+    private boolean playlist;
 
     @Schema(description = "재생목록 게시 날짜", example = "2022-12-31T23:59:59Z")
     private String publishedAt;

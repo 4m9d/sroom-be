@@ -21,14 +21,14 @@ public class Lecture{
 
     @Schema(description = "강의 등록 여부", example = "false")
     @JsonProperty("is_enrolled")
-    private boolean isEnrolled;
+    private boolean enrolled;
 
     @Schema(description = "강의 ID", example = "PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi")
     private String lectureCode;
 
     @Schema(description = "플레이리스트 여부", example = "true")
     @JsonProperty("is_playlist")
-    private boolean isPlaylist;
+    private boolean playlist;
 
     @Schema(description = "강의 평점", example = "4.3")
     private double rating;

@@ -28,12 +28,10 @@ public class VideoDetail {
     private String duration;
 
     @Schema(description = "강의 등록 여부", example = "false")
-    @JsonProperty("is_enrolled")
-    private boolean isEnrolled;
+    private boolean enrolled;
 
     @Schema(description = "플레이리스트 여부", example = "false")
-    @JsonProperty("is_playlist")
-    private boolean isPlaylist;
+    private boolean playlist;
 
     @Schema(description = "조회 수", example = "10234")
     private long viewCount;
