@@ -1,11 +1,15 @@
 package com.m9d.sroom.lecture.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.m9d.sroom.lecture.dto.request.KeywordSearchParam;
+import com.m9d.sroom.lecture.dto.request.LectureDetailParam;
 import com.m9d.sroom.lecture.dto.response.Index;
 import com.m9d.sroom.lecture.dto.response.Lecture;
 import com.m9d.sroom.lecture.dto.response.ReviewBrief;
 import com.m9d.sroom.lecture.dto.response.*;
 import com.m9d.sroom.lecture.exception.LectureNotFoundException;
+import com.m9d.sroom.lecture.exception.TwoOnlyParamTrueException;
+import com.m9d.sroom.lecture.exception.VideoIndexParamException;
 import com.m9d.sroom.lecture.exception.VideoNotFoundException;
 import com.m9d.sroom.lecture.repository.LectureRepository;
 import com.m9d.sroom.util.youtube.YoutubeUtil;
@@ -14,6 +18,8 @@ import com.m9d.sroom.util.youtube.resource.Playlist;
 import com.m9d.sroom.util.youtube.resource.PlaylistItem;
 import com.m9d.sroom.util.youtube.resource.Video;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
@@ -21,48 +27,57 @@ import org.springframework.web.util.HtmlUtils;
 import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class LectureService {
 
     private final LectureRepository lectureRepository;
     private final YoutubeUtil youtubeUtil;
 
-    public KeywordSearch searchByKeyword(Long memberId, String keyword, int limit, String filter, String nextPageToken) throws Exception {
+    public KeywordSearch searchByKeyword(Long memberId, KeywordSearchParam keywordSearchParam) {
         LectureList lectureList = LectureList.builder()
-                .keyword(keyword)
-                .filter(filter)
-                .limit(limit)
-                .pageToken(nextPageToken)
+                .keyword(keywordSearchParam.getKeyword())
+                .filter(keywordSearchParam.getFilter())
+                .limit(keywordSearchParam.getLimit())
+                .pageToken(keywordSearchParam.getNextPageToken())
                 .build();
-        JsonNode resultNode = youtubeUtil.getYoutubeResource(lectureList).get();
-        Set<String> enrolledLectureSet = getLecturesByMemberId(memberId).get();
-
-        KeywordSearch keywordSearch = buildLectureListResponse(resultNode, enrolledLectureSet);
-        return keywordSearch;
+        try {
+            JsonNode resultNode = youtubeUtil.getYoutubeResource(lectureList).get();
+            Set<String> enrolledLectureSet = getLecturesByMemberId(memberId).get();
+            KeywordSearch keywordSearch = buildLectureListResponse(resultNode, enrolledLectureSet);
+            return keywordSearch;
+        } catch (Exception e) {
+            log.info("error occurred. message = {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
-    public VideoDetail getVideoDetail(Long memberId, String lectureCode, int reviewLimit) throws Exception {
+    public VideoDetail getVideoDetail(Long memberId, String lectureCode, int reviewLimit) {
         Video video = Video.builder()
                 .videoId(lectureCode)
                 .build();
-        JsonNode resultNode = youtubeUtil.getYoutubeResource(video).get();
+        try {
+            JsonNode resultNode = youtubeUtil.getYoutubeResource(video).get();
 
-        if (resultNode.get("pageInfo").get("totalResults").asInt() == 0) {
-            throw new VideoNotFoundException();
+            if (resultNode.get("pageInfo").get("totalResults").asInt() == 0) {
+                throw new VideoNotFoundException();
+            }
+
+            Set<String> enrolledVideoSet = getEnrolledVideoByMemberId(memberId);
+
+            VideoDetail videoDetail = buildVideoDetailResponse(resultNode, reviewLimit, enrolledVideoSet);
+            return videoDetail;
+        } catch (Exception e) {
+            log.info("error occurred. message = {}", e.getMessage());
+            throw new RuntimeException(e);
         }
-
-        Set<String> enrolledVideoSet = getEnrolledVideoByMemberId(memberId);
-
-        VideoDetail videoDetail = buildVideoDetailResponse(resultNode, reviewLimit, enrolledVideoSet);
-        return videoDetail;
     }
 
-    public PlaylistDetail getPlaylistDetail(Long memberId, String lectureCode, String indexNextToken, int reviewLimit) throws Exception {
+    public PlaylistDetail getPlaylistDetail(Long memberId, String lectureCode, String indexNextToken, int reviewLimit) {
         Playlist playlist = Playlist.builder()
                 .playlistId(lectureCode)
                 .build();
@@ -76,16 +91,21 @@ public class LectureService {
         CompletableFuture<JsonNode> indexFuture = youtubeUtil.getYoutubeResource(playlistItem);
         CompletableFuture.allOf(playlistFuture, indexFuture).join();
 
-        JsonNode playlistNode = playlistFuture.get();
-        JsonNode indexNode = indexFuture.get();
+        try {
+            JsonNode playlistNode = playlistFuture.get();
+            JsonNode indexNode = indexFuture.get();
 
-        validateNodeIfNotFound(playlistNode);
-        validateNodeIfNotFound(indexNode);
+            validateNodeIfNotFound(playlistNode);
+            validateNodeIfNotFound(indexNode);
 
-        Set<String> enrolledPlaylistSet = getEnrolledPlaylistByMemberId(memberId);
+            Set<String> enrolledPlaylistSet = getEnrolledPlaylistByMemberId(memberId);
 
-        PlaylistDetail playlistDetail = buildPlaylistDetailResponse(playlistNode, indexNode, reviewLimit, enrolledPlaylistSet);
-        return playlistDetail;
+            PlaylistDetail playlistDetail = buildPlaylistDetailResponse(playlistNode, indexNode, reviewLimit, enrolledPlaylistSet);
+            return playlistDetail;
+        } catch (Exception e) {
+            log.info("error occurred. message = {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
     public void validateNodeIfNotFound(JsonNode node) {
@@ -95,18 +115,22 @@ public class LectureService {
     }
 
 
-    public IndexInfo getPlaylistItems(String lectureCode, String indexNextToken, int indexLimit) throws Exception {
+    public IndexInfo getPlaylistItems(String lectureCode, String indexNextToken, int indexLimit) {
         PlaylistItem playlistItem = PlaylistItem.builder()
                 .playlistId(lectureCode)
                 .nextPageToken(indexNextToken)
                 .limit(indexLimit)
                 .build();
-        JsonNode resultNode = youtubeUtil.getYoutubeResource(playlistItem).get();
+        try {
+            JsonNode resultNode = youtubeUtil.getYoutubeResource(playlistItem).get();
+            validateNodeIfNotFound(resultNode);
 
-        validateNodeIfNotFound(resultNode);
-
-        IndexInfo indexInfo = buildIndexInfoResponse(resultNode).get();
-        return indexInfo;
+            IndexInfo indexInfo = buildIndexInfoResponse(resultNode).get();
+            return indexInfo;
+        } catch (Exception e) {
+            log.info("error occurred. message = {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
     }
 
     public List<ReviewBrief> getReviewBriefList(String lectureCode, int reviewOffset, int reviewLimit) {
@@ -155,8 +179,8 @@ public class LectureService {
                         .description(unescapeHtml(description))
                         .channel(unescapeHtml(channel))
                         .lectureCode(lectureCode)
-                        .isEnrolled(isEnrolled)
-                        .isPlaylist(isPlaylist)
+                        .enrolled(isEnrolled)
+                        .playlist(isPlaylist)
                         .thumbnail(thumbnail)
                         .build();
                 lectureList.add(lecture);
@@ -197,8 +221,8 @@ public class LectureService {
                     .channel(unescapeHtml(channel))
                     .description(unescapeHtml(description))
                     .duration(videoDuration)
-                    .isPlaylist(false)
-                    .isEnrolled(isEnrolled)
+                    .playlist(false)
+                    .enrolled(isEnrolled)
                     .viewCount(resultNode.get("items").get(0).get("statistics").get("viewCount").asInt())
                     .publishedAt(snippetJsonNode.get("publishedAt").asText().substring(0, 10))
                     .thumbnail(thumbnail)
@@ -231,8 +255,8 @@ public class LectureService {
                     .lectureTitle(unescapeHtml(lectureTitle))
                     .channel(unescapeHtml(channel))
                     .description(unescapeHtml(description))
-                    .isPlaylist(true)
-                    .isEnrolled(isEnrolled)
+                    .playlist(true)
+                    .enrolled(isEnrolled)
                     .lectureCount(playlistNode.get("items").get(0).get("contentDetails").get("itemCount").asInt())
                     .thumbnail(thumbnail)
                     .indexes(indexInfo)
@@ -349,5 +373,33 @@ public class LectureService {
 
     public String unescapeHtml(String input) {
         return HtmlUtils.htmlUnescape(input);
+    }
+
+    public ResponseEntity<?> getLectureDetail(Long memberId, boolean isPlaylist, String lectureCode, LectureDetailParam lectureDetailParam) {
+        lectureDetailParamValidate(isPlaylist, lectureDetailParam);
+
+        if (lectureDetailParam.isIndexOnly()) {
+            IndexInfo indexInfo = getPlaylistItems(lectureCode, lectureDetailParam.getIndexNextToken(), lectureDetailParam.getIndexLimit());
+            return ResponseEntity.ok(indexInfo);
+        }
+        if (lectureDetailParam.isReviewOnly()) {
+            List<ReviewBrief> reviewBriefList = getReviewBriefList(lectureCode, lectureDetailParam.getReviewOffset(), lectureDetailParam.getReviewLimit());
+            return ResponseEntity.ok(reviewBriefList);
+        }
+        if (isPlaylist) {
+            PlaylistDetail playlistDetail = getPlaylistDetail(memberId, lectureCode, lectureDetailParam.getIndexNextToken(), lectureDetailParam.getReviewLimit());
+            return ResponseEntity.ok(playlistDetail);
+        }
+        VideoDetail videoDetail = getVideoDetail(memberId, lectureCode, lectureDetailParam.getReviewLimit());
+        return ResponseEntity.ok(videoDetail);
+    }
+
+    public void lectureDetailParamValidate(boolean isPlaylist, LectureDetailParam lectureDetailParam) {
+        if (lectureDetailParam.isIndexOnly() && lectureDetailParam.isReviewOnly()) {
+            throw new TwoOnlyParamTrueException();
+        }
+        if (!isPlaylist && lectureDetailParam.isIndexOnly()) {
+            throw new VideoIndexParamException();
+        }
     }
 }
