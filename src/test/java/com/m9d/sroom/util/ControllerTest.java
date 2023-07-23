@@ -2,7 +2,6 @@ package com.m9d.sroom.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.m9d.sroom.SroomApplicationTests;
 import com.m9d.sroom.lecture.dto.response.KeywordSearch;
 import com.m9d.sroom.lecture.dto.response.PlaylistDetail;
 import com.m9d.sroom.member.domain.Member;
@@ -10,6 +9,7 @@ import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.member.repository.MemberRepository;
 import com.m9d.sroom.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -23,7 +23,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class ControllerTest extends SroomApplicationTests {
+@AutoConfigureTestDatabase
+public class ControllerTest {
 
     @Autowired
     protected MockMvc mockMvc;

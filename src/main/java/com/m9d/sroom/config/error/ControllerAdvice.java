@@ -24,6 +24,7 @@ public class ControllerAdvice {
     @ResponseStatus(NOT_FOUND)
     @ExceptionHandler(NotFoundException.class)
     public ErrorResponse notFoundException(NotFoundException e) {
+        log.info("Exception: {}, Message: {}", e.getClass().getSimpleName(), e.getMessage());
         return ErrorResponse.builder()
                 .statusCode(e.getStatusCode())
                 .message(e.getMessage())
@@ -33,6 +34,7 @@ public class ControllerAdvice {
     @ResponseStatus(UNAUTHORIZED)
     @ExceptionHandler(UnauthorizedException.class)
     public ErrorResponse unauthorizedException(UnauthorizedException e) {
+        log.info("Exception: {}, Message: {}", e.getClass().getSimpleName(), e.getMessage());
         return ErrorResponse.builder()
                 .statusCode(e.getStatusCode())
                 .message(e.getMessage())
@@ -42,6 +44,7 @@ public class ControllerAdvice {
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(DuplicationException.class)
     public ErrorResponse duplicationException(DuplicationException e) {
+        log.info("Exception: {}, Message: {}", e.getClass().getSimpleName(), e.getMessage());
         return ErrorResponse.builder()
                 .statusCode(e.getStatusCode())
                 .message(e.getMessage())
@@ -51,6 +54,7 @@ public class ControllerAdvice {
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(NotMatchException.class)
     public ErrorResponse notMatchException(NotMatchException e) {
+        log.info("Exception: {}, Message: {}", e.getClass().getSimpleName(), e.getMessage());
         return ErrorResponse.builder()
                 .statusCode(e.getStatusCode())
                 .message(e.getMessage())
@@ -60,6 +64,7 @@ public class ControllerAdvice {
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(IOException.class)
     public ErrorResponse iOException(IOException e) {
+        log.info("Exception: {}, Message: {}", e.getClass().getSimpleName(), e.getMessage(), e);
         return ErrorResponse.builder()
                 .statusCode(BAD_REQUEST.value())
                 .message(e.getMessage())
@@ -69,6 +74,7 @@ public class ControllerAdvice {
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(JsonProcessingException.class)
     public ErrorResponse jsonProcessingException(JsonProcessingException e) {
+        log.info("Exception: {}, Message: {}", e.getClass().getSimpleName(), e.getMessage(), e);
         return ErrorResponse.builder()
                 .statusCode(BAD_REQUEST.value())
                 .message(e.getMessage())
@@ -77,9 +83,11 @@ public class ControllerAdvice {
 
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ErrorResponse customHandleMissingRequestValue(MissingServletRequestParameterException ex) {
-        String name = ex.getParameterName();
-        String type = ex.getParameterType();
+    public ErrorResponse customHandleMissingRequestValue(MissingServletRequestParameterException e) {
+        String name = e.getParameterName();
+        String type = e.getParameterType();
+
+        log.info("Exception: {}, Message: {}", e.getClass().getSimpleName(), e.getMessage());
 
         String error = String.format("필수 파라미터인 '%s'(%s)가 누락되었습니다.", name, type);
         return ErrorResponse.builder()
@@ -90,9 +98,10 @@ public class ControllerAdvice {
 
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(MissingPathVariableException.class)
-    public ErrorResponse customHandleMissingPathVariable(MissingPathVariableException ex) {
-        String name = ex.getVariableName();
+    public ErrorResponse customHandleMissingPathVariable(MissingPathVariableException e) {
+        String name = e.getVariableName();
         String error = String.format("필수 경로 변수인 '%s'가 누락되었습니다.", name);
+        log.info("Exception: {}, Message: {}", e.getClass().getSimpleName(), e.getMessage());
 
         return ErrorResponse.builder()
                 .statusCode(BAD_REQUEST.value())
@@ -104,6 +113,7 @@ public class ControllerAdvice {
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(InvalidParameterException.class)
     public ErrorResponse InvalidParameterException(InvalidParameterException e) {
+        log.info("Exception: {}, Message: {}", e.getClass().getSimpleName(), e.getMessage());
         return ErrorResponse.builder()
                 .statusCode(BAD_REQUEST.value())
                 .message(e.getMessage())
@@ -113,6 +123,7 @@ public class ControllerAdvice {
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
     public ErrorResponse IllegalArgumentException(IllegalArgumentException e) {
+        log.info("Exception: {}, Message: {}", e.getClass().getSimpleName(), e.getMessage(), e);
         return ErrorResponse.builder()
                 .statusCode(BAD_REQUEST.value())
                 .message(e.getMessage())

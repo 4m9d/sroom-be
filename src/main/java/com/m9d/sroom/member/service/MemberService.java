@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
-import static com.m9d.sroom.member.constant.MemberConstant.DEFAULT_MEMBER_NAME_FORMAT;
+import static com.m9d.sroom.member.constant.MemberConstant.*;
 import static com.m9d.sroom.util.JwtUtil.EXPIRATION_TIME;
 
 
@@ -107,7 +107,6 @@ public class MemberService {
     @Transactional
     public String generateMemberName() {
         final Random RANDOM = new Random();
-        final int NUMBER_BOUND = 1000000;
 
         int randomNumber = RANDOM.nextInt(NUMBER_BOUND);
         String memberName = String.format(DEFAULT_MEMBER_NAME_FORMAT, randomNumber);
@@ -118,10 +117,10 @@ public class MemberService {
     public Login verifyRefreshTokenAndReturnLogin(Long memberId, RefreshToken refreshToken) {
         Map<String, Object> refreshTokenDetail = jwtUtil.getDetailFromToken(refreshToken.getRefreshToken());
 
-        if ((Long) refreshTokenDetail.get(EXPIRATION_TIME) <= System.currentTimeMillis() / 1000) {
+        if ((Long) refreshTokenDetail.get(EXPIRATION_TIME) <= System.currentTimeMillis() / MILLIS_TO_SECONDS) {
             throw new TokenExpiredException("refresh");
         }
-        if (!memberId.equals(Long.valueOf((String) refreshTokenDetail.get("memberId")))) {
+        if (!memberId.equals(Long.valueOf((String) refreshTokenDetail.get(MEMBER_ID_FIELD)))) {
             throw new MemberNotMatchException();
         }
 

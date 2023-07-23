@@ -2,21 +2,20 @@ package com.m9d.sroom.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.m9d.sroom.SroomApplicationTests;
 import com.m9d.sroom.lecture.service.LectureService;
 import com.m9d.sroom.member.domain.Member;
 import com.m9d.sroom.member.repository.MemberRepository;
 import com.m9d.sroom.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.UUID;
 
 @SpringBootTest
-@Testcontainers
-public class ServiceTest extends SroomApplicationTests {
+@AutoConfigureTestDatabase
+public class ServiceTest {
 
     @Autowired
     protected MemberRepository memberRepository;

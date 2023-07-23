@@ -95,8 +95,8 @@ public class LectureControllerTest extends ControllerTest {
                         .header("Authorization", login.getAccessToken())
                         .queryParam("is_playlist", "false"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.lectureTitle").isNotEmpty())
-                .andExpect(jsonPath("$.lectureCode", is(lectureCode)))
+                .andExpect(jsonPath("$.lecture_title").isNotEmpty())
+                .andExpect(jsonPath("$.lecture_code", is(lectureCode)))
                 .andExpect(jsonPath("$.thumbnail").isNotEmpty());
     }
 
@@ -199,7 +199,7 @@ public class LectureControllerTest extends ControllerTest {
         PlaylistDetail playlistDetail = getPlaylistDetail(login, lectureCode, indexLimit);
         String isPlaylist = "true";
         String indexOnly = "true";
-        String indexNextToken = playlistDetail.getIndexInfo().getNextPageToken();
+        String indexNextToken = playlistDetail.getIndexes().getNextPageToken();
 
         //expected
         mockMvc.perform(get("/lectures/{lectureCode}", lectureCode)
