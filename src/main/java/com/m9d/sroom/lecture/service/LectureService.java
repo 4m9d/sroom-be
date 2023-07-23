@@ -119,7 +119,7 @@ public class LectureService {
         JsonNode resultNode = safeGet(youtubeUtil.getYoutubeResource(playlistItem));
         validateNodeIfNotFound(resultNode);
 
-        IndexInfo indexInfo = safeGet(buildIndexInfoResponse(resultNode));
+        IndexInfo indexInfo = buildIndexInfoResponse(resultNode);
         return indexInfo;
     }
 
@@ -223,7 +223,7 @@ public class LectureService {
         JsonNode snippetJsonNode = playlistNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_SNIPPET);
         String thumbnail = selectThumbnail(playlistNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_SNIPPET).get(JSONNODE_THUMBNAILS));
 
-        IndexInfo indexInfo = buildIndexInfoResponse(indexNode).get();
+        IndexInfo indexInfo = buildIndexInfoResponse(indexNode);
         List<ReviewBrief> reviewBriefList = lectureRepository.getReviewBriefList(playlistNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_ID).asText(), DEFAULT_REVIEW_OFFSET, reviewLimit);
 
         String lectureCode = playlistNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_ID).asText();
@@ -232,7 +232,7 @@ public class LectureService {
         String channel = snippetJsonNode.get(JSONNODE_CHANNEL_TITLE).asText();
         String description = snippetJsonNode.get(JSONNODE_DESCRIPTION).asText();
 
-        PlaylistDetail playlistDetail = PlaylistDetail.builder()
+        return PlaylistDetail.builder()
                 .lectureCode(lectureCode)
                 .lectureTitle(unescapeHtml(lectureTitle))
                 .channel(unescapeHtml(channel))
@@ -244,62 +244,56 @@ public class LectureService {
                 .indexes(indexInfo)
                 .reviews(reviewBriefList)
                 .build();
-        return playlistDetail;
     }
 
-    public CompletableFuture<IndexInfo> buildIndexInfoResponse(JsonNode indexNode) {
+    public IndexInfo buildIndexInfoResponse(JsonNode indexNode) {
         String nextPageToken = indexNode.has(JSONNODE_NEXT_PAGE_TOKEN) ? indexNode.get(JSONNODE_NEXT_PAGE_TOKEN).asText() : null;
 
         AtomicLong totalDurationSeconds = new AtomicLong();
 
         List<CompletableFuture<Index>> futuresList = new ArrayList<>();
         for (JsonNode item : indexNode.get(JSONNODE_ITEMS)) {
-            JsonNode snippetNode = item.get(JSONNODE_SNIPPET);
-
-            String lectureCode = snippetNode.get(JSONNODE_RESOURCE_ID).get(JSONNODE_VIDEO_ID).asText();
-
-            CompletableFuture<Index> indexFuture = CompletableFuture.supplyAsync(() -> {
-                JsonNode videoNode = safeGet(youtubeUtil.getYoutubeResource(Video.builder()
-                                .videoId(lectureCode)
-                                .build()));
-
-                if (snippetNode.get(JSONNODE_RESOURCE_ID).get(JSONNODE_KIND).asText().equals(JSONNODE_TYPE_VIDEO) && item.get(JSONNODE_STATUS).get(JSONNODE_PRIVACY_STATUS).asText().equals(JSONNODE_PUBLIC)) {
-                    String videoDuration = videoNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_CONTENT_DETAIL).get(JSONNODE_DURATION).asText();
-                    totalDurationSeconds.addAndGet(Duration.parse(videoDuration).getSeconds());
-                    String thumbnail = selectThumbnail(item.get(JSONNODE_SNIPPET).get(JSONNODE_THUMBNAILS));
-                    Index index = Index.builder()
-                            .index(snippetNode.get(JSONNODE_POSITION).asInt())
-                            .lectureTitle(unescapeHtml(snippetNode.get(JSONNODE_TITLE).asText()))
-                            .thumbnail(thumbnail)
-                            .duration(formatDuration(videoDuration))
-                            .build();
-                    return index;
-                }
-                return null;
-            });
-
-            futuresList.add(indexFuture);
+            futuresList.add(buildIndex(item, totalDurationSeconds));
         }
 
         CompletableFuture<Void> allFutures = CompletableFuture.allOf(futuresList.toArray(new CompletableFuture[futuresList.size()]));
 
-        CompletableFuture<IndexInfo> indexInfoFuture = allFutures.thenApply(v -> {
-            List<Index> indexList = futuresList.stream()
-                    .map(CompletableFuture::join)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
+        allFutures.join();
 
-            String totalDuration = formatDuration(Duration.ofSeconds(totalDurationSeconds.get()).toString());
+        List<Index> indexList = futuresList.stream()
+                .map(CompletableFuture::join)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
 
-            IndexInfo indexInfoResult = IndexInfo.builder()
-                    .indexList(indexList)
-                    .totalDuration(totalDuration)
-                    .nextPageToken(nextPageToken)
-                    .build();
-            return indexInfoResult;
+        String totalDuration = formatDuration(Duration.ofSeconds(totalDurationSeconds.get()).toString());
+
+        return IndexInfo.builder()
+                .indexList(indexList)
+                .totalDuration(totalDuration)
+                .nextPageToken(nextPageToken)
+                .build();
+    }
+
+    private CompletableFuture<Index> buildIndex(JsonNode item, AtomicLong totalDurationSeconds) {
+        JsonNode snippetNode = item.get(JSONNODE_SNIPPET);
+        String lectureCode = snippetNode.get(JSONNODE_RESOURCE_ID).get(JSONNODE_VIDEO_ID).asText();
+
+        return CompletableFuture.supplyAsync(() -> {
+            JsonNode videoNode = safeGet(youtubeUtil.getYoutubeResource(Video.builder().videoId(lectureCode).build()));
+
+            if (snippetNode.get(JSONNODE_RESOURCE_ID).get(JSONNODE_KIND).asText().equals(JSONNODE_TYPE_VIDEO) && item.get(JSONNODE_STATUS).get(JSONNODE_PRIVACY_STATUS).asText().equals(JSONNODE_PUBLIC)) {
+                String videoDuration = videoNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_CONTENT_DETAIL).get(JSONNODE_DURATION).asText();
+                totalDurationSeconds.addAndGet(Duration.parse(videoDuration).getSeconds());
+                String thumbnail = selectThumbnail(item.get(JSONNODE_SNIPPET).get(JSONNODE_THUMBNAILS));
+                return Index.builder()
+                        .index(snippetNode.get(JSONNODE_POSITION).asInt())
+                        .lectureTitle(unescapeHtml(snippetNode.get(JSONNODE_TITLE).asText()))
+                        .thumbnail(thumbnail)
+                        .duration(formatDuration(videoDuration))
+                        .build();
+            }
+            return null;
         });
-
-        return indexInfoFuture;
     }
 
 
@@ -343,7 +337,8 @@ public class LectureService {
         return HtmlUtils.htmlUnescape(input);
     }
 
-    public ResponseEntity<?> getLectureDetail(Long memberId, boolean isPlaylist, String lectureCode, LectureDetailParam lectureDetailParam) {
+    public ResponseEntity<?> getLectureDetail(Long memberId, boolean isPlaylist, String
+            lectureCode, LectureDetailParam lectureDetailParam) {
         lectureDetailParamValidate(isPlaylist, lectureDetailParam);
         log.info("param = {}, {}, {}", lectureDetailParam.isIndexOnly(), lectureDetailParam.isReviewOnly(), lectureDetailParam.getReviewLimit());
 
