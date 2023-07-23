@@ -36,6 +36,7 @@ public class LectureConstant {
     public static final String JSONNODE_NEXT_PAGE_TOKEN = "nextPageToken";
     public static final String JSONNODE_PREV_PAGE_TOKEN = "prevPageToken";
     public static final String JSONNODE_PAGE_INFO = "pageInfo";
+    public static final String JSONNODE_TOTAL_RESULTS = "totalResults";
     public static final String JSONNODE_RESULT_PER_PAGE = "resultsPerPage";
     public static final String JSONNODE_CONTENT_DETAIL = "contentDetails";
     public static final String JSONNODE_DURATION = "duration";
