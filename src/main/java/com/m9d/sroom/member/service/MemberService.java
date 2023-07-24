@@ -46,30 +46,6 @@ public class MemberService {
         return generateLogin(member);
     }
 
-    @Transactional
-    public Login renewTokens(Long memberId) {
-        Member member = memberRepository.findByMemberId(memberId)
-                .orElseThrow(MemberNotFoundException::new);
-        return generateLogin(member);
-    }
-
-    @Transactional
-    public Login generateLogin(Member member) {
-        String accessToken = jwtUtil.generateAccessToken(member);
-        String refreshToken = jwtUtil.generateRefreshToken(member);
-        memberRepository.saveRefreshToken(member.getMemberId(), refreshToken);
-
-        Login login = Login.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .expiresAt((Long) jwtUtil.getDetailFromToken(accessToken).get(EXPIRATION_TIME))
-                .name(member.getMemberName())
-                .bio(member.getBio())
-                .build();
-        return login;
-    }
-
-    @Transactional
     public GoogleIdToken.Payload getPayloadFromCredential(String credential) throws Exception {
         HttpTransport transport = new NetHttpTransport();
         JacksonFactory jsonFactory = new JacksonFactory();
@@ -86,25 +62,21 @@ public class MemberService {
         return idToken.getPayload();
     }
 
-    @Transactional
     public String getMemberCodeFromPayload(GoogleIdToken.Payload payload) {
         return payload.getSubject();
     }
 
-    @Transactional
     public Member findOrCreateMemberByMemberCode(String memberCode) {
         return memberRepository.findByMemberCode(memberCode)
                 .orElseGet(() -> createNewMember(memberCode));
     }
 
-    @Transactional
     public Member createNewMember(String memberCode) {
         String memberName = generateMemberName();
         memberRepository.save(memberCode, memberName);
         return memberRepository.getByMemberCode(memberCode);
     }
 
-    @Transactional
     public String generateMemberName() {
         final Random RANDOM = new Random();
 
@@ -131,5 +103,25 @@ public class MemberService {
 
         Login login = renewTokens(memberId);
         return login;
+    }
+
+    public Login renewTokens(Long memberId) {
+        Member member = memberRepository.findByMemberId(memberId)
+                .orElseThrow(MemberNotFoundException::new);
+        return generateLogin(member);
+    }
+
+    public Login generateLogin(Member member) {
+        String accessToken = jwtUtil.generateAccessToken(member);
+        String refreshToken = jwtUtil.generateRefreshToken(member);
+        memberRepository.saveRefreshToken(member.getMemberId(), refreshToken);
+
+        return Login.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .expiresAt((Long) jwtUtil.getDetailFromToken(accessToken).get(EXPIRATION_TIME))
+                .name(member.getMemberName())
+                .bio(member.getBio())
+                .build();
     }
 }
