@@ -17,9 +17,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
-/**
- * 로그인 여부를 체크하는 Interceptor
- */
 @Component
 @Slf4j
 public class AuthInterceptor implements HandlerInterceptor {
@@ -34,7 +31,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
 
         if (!(handler instanceof HandlerMethod))
             return true;
