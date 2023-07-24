@@ -35,18 +35,19 @@ public class MemberController {
             @ApiResponse(responseCode = "400", description = "요청 본문이 유효하지 않습니다.", content = {@Content}),
             @ApiResponse(responseCode = "401", description = "인증에 실패하였습니다.", content = @Content)
     })
-    public ResponseEntity<?> login(@RequestBody GoogleIdKey googleIdKey) throws Exception {
-        return ResponseEntity.ok(memberService.authenticateMember(googleIdKey.getCredential()));
+    public Login login(@RequestBody GoogleIdKey googleIdKey) throws Exception {
+        Login login = memberService.authenticateMember(googleIdKey.getCredential());
+        return login;
     }
 
     @Auth
     @PostMapping("/refresh")
     @Tag(name = "로그인")
     @Operation(summary = "access token 갱신", description = "refresh token을 사용하여 로그인을 유지합니다.")
-@ApiResponse(responseCode = "200", description = "토큰 갱신에 성공하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(allOf = Login.class))})
-    public ResponseEntity<?> refresh(@RequestBody RefreshToken refreshToken) {
+    @ApiResponse(responseCode = "200", description = "토큰 갱신에 성공하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(allOf = Login.class))})
+    public Login refresh(@RequestBody RefreshToken refreshToken) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
         Login login = memberService.verifyRefreshTokenAndReturnLogin(memberId, refreshToken);
-        return ResponseEntity.ok(login);
+        return login;
     }
 }
