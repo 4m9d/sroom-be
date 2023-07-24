@@ -23,7 +23,7 @@ public class LectureConstant {
     public static final String JSONNODE_SNIPPET = "snippet";
     public static final String JSONNODE_ID = "id";
     public static final String JSONNODE_RESOURCE_ID = "resourceId";
-    public static final String JSONNODE_PLAYLIST_ID = "items";
+    public static final String JSONNODE_PLAYLIST_ID = "playlistId";
     public static final String JSONNODE_VIDEO_ID = "videoId";
     public static final String JSONNODE_KIND = "kind";
     public static final String JSONNODE_THUMBNAILS = "thumbnails";

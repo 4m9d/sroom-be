@@ -1,14 +1,18 @@
 package com.m9d.sroom.lecture.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Schema(description = "검색 결과 강의 리스트")
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class KeywordSearch {
 
     @Schema(description = "응답 개수", example = "5")

@@ -1,12 +1,16 @@
 package com.m9d.sroom.lecture.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Schema(description = "재생목록 목차 정보")
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Index {
 
     @Schema(description = "목차 번호", example = "1")

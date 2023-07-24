@@ -2,14 +2,18 @@ package com.m9d.sroom.lecture.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Schema(description = "동영상 상세 정보")
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class VideoDetail {
 
     @Schema(description = "강의 ID", example = "OEV8gMkCHXQ")

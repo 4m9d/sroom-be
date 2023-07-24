@@ -2,12 +2,16 @@ package com.m9d.sroom.lecture.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Schema(description = "검색된 개별 강의 정보")
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Lecture{
 
     @Schema(description = "강의 제목", example = "네트워크 기초(개정판)")

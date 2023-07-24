@@ -148,6 +148,7 @@ public class LectureService {
         List<Lecture> lectureList = new ArrayList<>();
 
         for (JsonNode item : resultNode.get(JSONNODE_ITEMS)) {
+            System.out.println(item.toPrettyString());
             JsonNode snippetNode = item.get(JSONNODE_SNIPPET);
             boolean isPlaylist = item.get(JSONNODE_ID).get(JSONNODE_KIND).asText().equals(JSONNODE_TYPE_PLAYLIST);
             String thumbnail = selectThumbnail(snippetNode.get(JSONNODE_THUMBNAILS));
@@ -239,7 +240,7 @@ public class LectureService {
                 .description(unescapeHtml(description))
                 .playlist(TRUE)
                 .enrolled(isEnrolled)
-                .lectureCount(playlistNode.get(JSONNODE_PLAYLIST_ID).get(FIRST_INDEX).get(JSONNODE_CONTENT_DETAIL).get(JSONNODE_ITEM_COUNT).asInt())
+                .lectureCount(playlistNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_CONTENT_DETAIL).get(JSONNODE_ITEM_COUNT).asInt())
                 .thumbnail(thumbnail)
                 .indexes(indexInfo)
                 .reviews(reviewBriefList)

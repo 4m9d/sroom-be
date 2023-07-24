@@ -70,16 +70,16 @@ public class ControllerTest {
         return objectMapper.readValue(jsonContent, KeywordSearch.class);
     }
 
-    protected PlaylistDetail getPlaylistDetail(Login login, String playlistCode, int indexLimit) throws Exception {
+    protected PlaylistDetail getPlaylistDetail(Login login, String playlistCode) throws Exception {
         MockHttpServletResponse response = mockMvc.perform(get("/lectures/{lectureCode}", playlistCode)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", login.getAccessToken())
-                        .queryParam("is_playlist", "true")
-                        .queryParam("index_limit", String.valueOf(indexLimit)))
+                        .queryParam("is_playlist", "true"))
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
         String jsonContent = response.getContentAsString();
+        System.out.println(jsonContent);
         return objectMapper.readValue(jsonContent, PlaylistDetail.class);
     }
 }
