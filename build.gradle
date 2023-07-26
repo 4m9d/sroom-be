@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.13'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'groovy'
 }
 
 group = 'com.4m9d'
@@ -19,6 +20,15 @@ configurations {
 
 repositories {
     mavenCentral()
+}
+
+apply plugin: 'groovy'
+
+sourceSets {
+    main {
+        java { srcDirs = [] }
+        groovy { srcDirs += ['src/main/java'] }
+    }
 }
 
 dependencies {
@@ -42,10 +52,13 @@ dependencies {
     implementation 'com.google.api-client:google-api-client:1.32.1'
     implementation 'com.google.http-client:google-http-client-jackson2:1.39.2'
 
+    implementation "org.springframework.boot:spring-boot-starter-webflux"
 
     implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
 
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    implementation 'org.codehaus.groovy:groovy-all:3.0.8'
 }
 
 tasks.named('test') {
