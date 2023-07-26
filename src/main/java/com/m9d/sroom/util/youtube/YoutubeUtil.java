@@ -59,8 +59,6 @@ public class YoutubeUtil {
         String url = baseUrl + endPoint + query;
         url = url.concat("&key=" + googleCloudApiKey);
 
-        System.out.println(url);
-
         return url;
     }
 
