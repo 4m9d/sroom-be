@@ -1,13 +1,12 @@
 package com.m9d.sroom.config.error;
 
 import lombok.Getter;
-
-import java.net.HttpURLConnection;
+import org.springframework.http.HttpStatus;
 
 @Getter
 public abstract class DuplicationException extends RuntimeException {
 
-    private final int statusCode = HttpURLConnection.HTTP_BAD_REQUEST;
+    private final int statusCode = HttpStatus.NOT_FOUND.value();
     private String message;
 
     public DuplicationException(String message) {

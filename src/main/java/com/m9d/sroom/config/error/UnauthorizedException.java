@@ -2,12 +2,12 @@ package com.m9d.sroom.config.error;
 
 import lombok.Getter;
 
-import java.net.HttpURLConnection;
+import org.springframework.http.HttpStatus;
 
 @Getter
 public abstract class UnauthorizedException extends RuntimeException {
 
-    private final int statusCode = HttpURLConnection.HTTP_UNAUTHORIZED;
+    private final int statusCode = HttpStatus.UNAUTHORIZED.value();
     private String message;
 
     public UnauthorizedException(String message) {
