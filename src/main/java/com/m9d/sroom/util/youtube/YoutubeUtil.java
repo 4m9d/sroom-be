@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -26,6 +27,9 @@ public class YoutubeUtil {
 
     @Value("${google-cloud-api-key}")
     private String googleCloudApiKey;
+
+    @Value("${youtube.base-url}")
+    private String baseUrl;
 
     public <T extends YoutubeResource> CompletableFuture<JsonNode> getYoutubeResource(T resource) {
         String url = buildYoutubeApiRequest(resource.getEndpoint(), resource.getParameters());
@@ -47,13 +51,15 @@ public class YoutubeUtil {
         }
     }
 
-    private String buildYoutubeApiRequest(String baseUrl, Map<String, String> params) {
+    private String buildYoutubeApiRequest(String endPoint, Map<String, String> params) {
         String query = params.entrySet().stream()
                 .map(entry -> entry.getKey() + "=" + entry.getValue())
                 .collect(Collectors.joining("&"));
 
-        String url = encodeSpaces(baseUrl + query);
+        String url = baseUrl + endPoint + query;
         url = url.concat("&key=" + googleCloudApiKey);
+
+        System.out.println(url);
 
         return url;
     }
@@ -93,9 +99,5 @@ public class YoutubeUtil {
             log.info("error occurred. message: get response from youtube failed");
             throw new RuntimeException(e);
         }
-    }
-
-    public String encodeSpaces(String input) {
-        return input.replace(SPACE_CHARACTER, ENCODED_SPACE_CHARACTER);
     }
 }

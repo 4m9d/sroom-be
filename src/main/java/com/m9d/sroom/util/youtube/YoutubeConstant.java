@@ -1,13 +1,14 @@
 package com.m9d.sroom.util.youtube;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
+
 import java.util.Map;
 
 public class YoutubeConstant {
 
-    public static final String REQUEST_METHOD_GET = "GET";
+    public static final String REQUEST_METHOD_GET = HttpMethod.GET.name();
     public static final String YOUTUBE_REQUEST_CONTENT_TYPE = "application/json";
-    public static final String SPACE_CHARACTER = " ";
-    public static final String ENCODED_SPACE_CHARACTER = "%20";
 
     public static final Map<String, String> LECTURE_LIST_PARAMETERS = Map.of(
             "part", "id,snippet",

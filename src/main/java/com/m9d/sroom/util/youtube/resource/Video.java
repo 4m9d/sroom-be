@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import java.util.HashMap;
 
 import com.m9d.sroom.util.youtube.YoutubeConstant;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Map;
 
@@ -14,7 +15,8 @@ import java.util.Map;
 public class Video implements YoutubeResource {
 
     private final String videoId;
-    private static final String ENDPOINT = "https://www.googleapis.com/youtube/v3/videos?";
+
+    private static final String ENDPOINT = "videos?";
 
     @Override
     public Map<String, String> getParameters() {
