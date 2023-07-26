@@ -2,6 +2,7 @@ package com.m9d.sroom.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.m9d.sroom.course.service.CourseService;
 import com.m9d.sroom.lecture.service.LectureService;
 import com.m9d.sroom.member.domain.Member;
 import com.m9d.sroom.member.repository.MemberRepository;
@@ -31,6 +32,9 @@ public class ServiceTest {
 
     @Autowired
     protected LectureService lectureService;
+
+    @Autowired
+    protected CourseService courseService;
 
     @Autowired
     protected ObjectMapper objectMapper;
