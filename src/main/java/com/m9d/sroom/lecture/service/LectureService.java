@@ -49,7 +49,7 @@ public class LectureService {
                 .keyword(keywordSearchParam.getKeyword())
                 .filter(keywordSearchParam.getFilter())
                 .limit(keywordSearchParam.getLimit())
-                .pageToken(keywordSearchParam.getNextPageToken())
+                .pageToken(keywordSearchParam.getNext_page_token())
                 .build();
 
         JsonNode resultNode = safeGet(youtubeUtil.getYoutubeResource(lectureList));
@@ -189,7 +189,10 @@ public class LectureService {
     }
 
     public VideoDetail buildVideoDetailResponse(JsonNode resultNode, int reviewLimit, Set<String> enrolledVideoSet) {
-        JsonNode snippetJsonNode = resultNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_SNIPPET);
+        JsonNode snippetJsonNode = resultNode
+                .get(JSONNODE_ITEMS)
+                .get(FIRST_INDEX)
+                .get(JSONNODE_SNIPPET);
         String thumbnail = selectThumbnail(snippetJsonNode.get(JSONNODE_THUMBNAILS));
 
         List<ReviewBrief> reviewBriefList = lectureRepository.getReviewBriefList(resultNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_ID).asText(), DEFAULT_REVIEW_OFFSET, reviewLimit);
@@ -208,7 +211,7 @@ public class LectureService {
                 .channel(unescapeHtml(channel))
                 .description(unescapeHtml(description))
                 .duration(videoDuration)
-                .playlist(FALSE)
+                .playlist(false)
                 .enrolled(isEnrolled)
                 .viewCount(resultNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_STATISTICS).get(JSONNODE_VIEW_COUNT).asInt())
                 .publishedAt(snippetJsonNode.get(JSONNODE_PUBLISHED_AT).asText().substring(PUBLISHED_DATE_START_INDEX, PUBLISHED_DATE_END_INDEX))
@@ -238,7 +241,7 @@ public class LectureService {
                 .lectureTitle(unescapeHtml(lectureTitle))
                 .channel(unescapeHtml(channel))
                 .description(unescapeHtml(description))
-                .playlist(TRUE)
+                .playlist(true)
                 .enrolled(isEnrolled)
                 .lectureCount(playlistNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_CONTENT_DETAIL).get(JSONNODE_ITEM_COUNT).asInt())
                 .thumbnail(thumbnail)
@@ -318,8 +321,8 @@ public class LectureService {
         Duration duration = Duration.parse(durationString);
 
         long totalSeconds = duration.getSeconds();
-        long hours = totalSeconds / SECONDS_IN_HOUR;
-        long minutes = (totalSeconds % SECONDS_IN_HOUR) / SECONDS_IN_MINUTE;
+        long hours = totalSeconds / (MINUTES_IN_HOUR * SECONDS_IN_MINUTE);
+        long minutes = (totalSeconds % (MINUTES_IN_HOUR * SECONDS_IN_MINUTE)) / SECONDS_IN_MINUTE;
         long seconds = totalSeconds % SECONDS_IN_MINUTE;
 
         if (hours > 0) {
@@ -342,27 +345,27 @@ public class LectureService {
             lectureCode, LectureDetailParam lectureDetailParam) {
         lectureDetailParamValidate(isPlaylist, lectureDetailParam);
 
-        if (lectureDetailParam.isIndexOnly()) {
-            IndexInfo indexInfo = getPlaylistItems(lectureCode, lectureDetailParam.getIndexNextToken(), lectureDetailParam.getIndexLimit());
+        if (lectureDetailParam.isIndex_only()) {
+            IndexInfo indexInfo = getPlaylistItems(lectureCode, lectureDetailParam.getIndex_next_token(), lectureDetailParam.getIndex_limit());
             return ResponseEntity.ok(indexInfo);
         }
-        if (lectureDetailParam.isReviewOnly()) {
-            List<ReviewBrief> reviewBriefList = getReviewBriefList(lectureCode, lectureDetailParam.getReviewOffset(), lectureDetailParam.getReviewLimit());
+        if (lectureDetailParam.isReview_only()) {
+            List<ReviewBrief> reviewBriefList = getReviewBriefList(lectureCode, lectureDetailParam.getReview_offset(), lectureDetailParam.getReview_limit());
             return ResponseEntity.ok(reviewBriefList);
         }
         if (isPlaylist) {
-            PlaylistDetail playlistDetail = getPlaylistDetail(memberId, lectureCode, lectureDetailParam.getIndexNextToken(), lectureDetailParam.getReviewLimit());
+            PlaylistDetail playlistDetail = getPlaylistDetail(memberId, lectureCode, lectureDetailParam.getIndex_next_token(), lectureDetailParam.getReview_limit());
             return ResponseEntity.ok(playlistDetail);
         }
-        VideoDetail videoDetail = getVideoDetail(memberId, lectureCode, lectureDetailParam.getReviewLimit());
+        VideoDetail videoDetail = getVideoDetail(memberId, lectureCode, lectureDetailParam.getReview_limit());
         return ResponseEntity.ok(videoDetail);
     }
 
     public void lectureDetailParamValidate(boolean isPlaylist, LectureDetailParam lectureDetailParam) {
-        if (lectureDetailParam.isIndexOnly() && lectureDetailParam.isReviewOnly()) {
+        if (lectureDetailParam.isIndex_only() && lectureDetailParam.isReview_only()) {
             throw new TwoOnlyParamTrueException();
         }
-        if (!isPlaylist && lectureDetailParam.isIndexOnly()) {
+        if (!isPlaylist && lectureDetailParam.isIndex_only()) {
             throw new VideoIndexParamException();
         }
     }

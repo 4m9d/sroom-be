@@ -15,7 +15,7 @@ public class KeywordSearchParam {
     @NotNull(message = "키워드 파라미터가 입력되지 않았습니다.")
     private String keyword;
 
-    private String nextPageToken;
+    private String next_page_token;
 
     private int limit = 10;
 

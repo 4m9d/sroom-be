@@ -5,10 +5,16 @@ import lombok.Setter;
 
 @Getter @Setter
 public class LectureDetailParam {
-    private boolean indexOnly = false;
-    private int indexLimit = 50;
-    private String indexNextToken;
-    private boolean reviewOnly = false;
-    private int reviewOffset = 0;
-    private int reviewLimit = 10;
+
+    private boolean index_only = false;
+
+    private int index_limit = 50;
+
+    private String index_next_token;
+
+    private boolean review_only = false;
+
+    private int review_offset = 0;
+
+    private int review_limit = 10;
 }
