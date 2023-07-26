@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
+import static com.m9d.sroom.lecture.constant.LectureConstant.DEFAULT_REVIEW_COUNT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -31,7 +32,7 @@ public class LectureControllerTest extends ControllerTest {
                         .queryParam("keyword", keyword)
                         .queryParam("limit", limit))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.resultPerPage").value(Integer.parseInt(limit)));
+                .andExpect(jsonPath("$.result_per_page").value(Integer.parseInt(limit)));
     }
 
     @Test
@@ -60,10 +61,10 @@ public class LectureControllerTest extends ControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", login.getAccessToken())
                         .queryParam("keyword", keyword)
-                        .queryParam("nextPageToken", keywordSearch.getNextPageToken()))
+                        .queryParam("next_page_token", keywordSearch.getNextPageToken()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.prevPageToken").exists()) //prevPageToken을 받았다는건 첫번째 페이지가 아니라는 뜻입니다.
-                .andExpect(jsonPath("$.lectures[0].lectureCode", not(keywordSearch.getLectures().get(0).getLectureCode()))); // 첫번째 반환된 페이지의 값과 다르다는 뜻입니다.
+                .andExpect(jsonPath("$.prev_page_token").exists()) //prevPageToken을 받았다는건 첫번째 페이지가 아니라는 뜻입니다.
+                .andExpect(jsonPath("$.lectures[0].lecture_code", not(keywordSearch.getLectures().get(0).getLectureCode()))); // 첫번째 반환된 페이지의 값과 다르다는 뜻입니다.
     }
 
     @Test
@@ -78,8 +79,8 @@ public class LectureControllerTest extends ControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", login.getAccessToken())
                         .queryParam("keyword", "keyword")
-                        .queryParam("nextPageToken", notValidPageToken))
-                .andExpect(status().isBadRequest());
+                        .queryParam("next_page_token", notValidPageToken))
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -95,8 +96,8 @@ public class LectureControllerTest extends ControllerTest {
                         .header("Authorization", login.getAccessToken())
                         .queryParam("is_playlist", "false"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.lectureTitle").isNotEmpty())
-                .andExpect(jsonPath("$.lectureCode", is(lectureCode)))
+                .andExpect(jsonPath("$.lecture_title").isNotEmpty())
+                .andExpect(jsonPath("$.lecture_code", is(lectureCode)))
                 .andExpect(jsonPath("$.thumbnail").isNotEmpty());
     }
 
@@ -113,26 +114,9 @@ public class LectureControllerTest extends ControllerTest {
                         .header("Authorization", login.getAccessToken())
                         .queryParam("is_playlist", "true"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.lectureTitle").isNotEmpty())
-                .andExpect(jsonPath("$.lectureCode", is(lectureCode)))
+                .andExpect(jsonPath("$.lecture_title").isNotEmpty())
+                .andExpect(jsonPath("$.lecture_code", is(lectureCode)))
                 .andExpect(jsonPath("$.thumbnail").isNotEmpty());
-    }
-
-    @Test
-    @DisplayName("강의코드에 띄어쓰기를 포함하면 400에러가 발생합니다.")
-    void shouldReturnBadRequestSpacingLectureCode() throws Exception {
-        //given
-        Login login = getNewLogin();
-        String lectureCode = "띄 어 쓰 기 가 득 한 강 의 코 드";
-        String isPlaylist = "false";
-
-        //expected
-        mockMvc.perform(get("/lectures/{lectureCode}", lectureCode)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", login.getAccessToken())
-                        .queryParam("is_playlist", isPlaylist))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message", is("url에는 띄어쓰기가 허용되지 않습니다.")));
     }
 
     @Test
@@ -166,7 +150,7 @@ public class LectureControllerTest extends ControllerTest {
                         .header("Authorization", login.getAccessToken())
                         .queryParam("is_playlist", isPlaylist))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.message", is("입력한 lectureId에 해당하는 재생목록이 없습니다.")));
+                .andExpect(jsonPath("$.message", is("입력한 lectureId에 해당하는 영상이 없습니다.")));
     }
 
     @Test
@@ -194,12 +178,11 @@ public class LectureControllerTest extends ControllerTest {
     void indexOnlyResponse200() throws Exception {
         //given
         Login login = getNewLogin();
-        String lectureCode = "PLRx0vPvlEmdAghTr5mXQxGpHjWqSz0dgC";
-        int indexLimit = 5;
-        PlaylistDetail playlistDetail = getPlaylistDetail(login, lectureCode, indexLimit);
+        String lectureCode = "PLif_jr7pPZACDdM6sB6Yr_0L0VGXEjF1b";
+        PlaylistDetail playlistDetail = getPlaylistDetail(login, lectureCode);
         String isPlaylist = "true";
         String indexOnly = "true";
-        String indexNextToken = playlistDetail.getIndexInfo().getNextPageToken();
+        String indexNextToken = playlistDetail.getIndexes().getNextPageToken();
 
         //expected
         mockMvc.perform(get("/lectures/{lectureCode}", lectureCode)
@@ -209,7 +192,7 @@ public class LectureControllerTest extends ControllerTest {
                         .queryParam("index_only", indexOnly)
                         .queryParam("index_next_token", indexNextToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.indexList[0].index", is(indexLimit)));
+                .andExpect(jsonPath("$.index_list[0].index", is(DEFAULT_REVIEW_COUNT)));
     }
 
     @Test

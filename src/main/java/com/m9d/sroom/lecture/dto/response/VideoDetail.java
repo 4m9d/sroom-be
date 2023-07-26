@@ -2,13 +2,18 @@ package com.m9d.sroom.lecture.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Schema(description = "동영상 상세 정보")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class VideoDetail {
 
     @Schema(description = "강의 ID", example = "OEV8gMkCHXQ")
@@ -27,11 +32,10 @@ public class VideoDetail {
     private String duration;
 
     @Schema(description = "강의 등록 여부", example = "false")
-    private boolean isEnrolled;
+    private boolean enrolled;
 
     @Schema(description = "플레이리스트 여부", example = "false")
-    @JsonProperty("isPlaylist")
-    private boolean isPlaylist;
+    private boolean playlist;
 
     @Schema(description = "조회 수", example = "10234")
     private long viewCount;
@@ -50,21 +54,4 @@ public class VideoDetail {
 
     @Schema(description = "강의 리뷰 목록")
     private List<ReviewBrief> reviews;
-
-    @Builder
-    public VideoDetail(String lectureCode, String lectureTitle, String channel, String description, String duration, boolean isEnrolled, boolean isPlaylist, long viewCount, String publishedAt, double rating, int reviewCount, String thumbnail, List<ReviewBrief> reviews) {
-        this.lectureCode = lectureCode;
-        this.lectureTitle = lectureTitle;
-        this.channel = channel;
-        this.description = description;
-        this.duration = duration;
-        this.isEnrolled = isEnrolled;
-        this.isPlaylist = isPlaylist;
-        this.viewCount = viewCount;
-        this.publishedAt = publishedAt;
-        this.rating = rating;
-        this.reviewCount = reviewCount;
-        this.thumbnail = thumbnail;
-        this.reviews = reviews;
-    }
 }

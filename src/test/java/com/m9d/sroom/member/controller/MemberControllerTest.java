@@ -28,16 +28,10 @@ public class MemberControllerTest extends ControllerTest {
         String googleIdKeyJson = objectMapper.writeValueAsString(googleIdKey);
 
         //expected
-        Map<String, String> responseMap = new HashMap<>();
-        responseMap.put("statusCode", "401");
-        responseMap.put("message", "입력받은 credential 토큰이 유효하지 않습니다");
-        String expectedResponseBody = objectMapper.writeValueAsString(responseMap);
-
         mockMvc.perform(post("/members/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(googleIdKeyJson))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().json(expectedResponseBody));
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

@@ -6,15 +6,17 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-@Configuration
+@Service
 public class JwtUtil {
 
     @Value("${jwt-secret}")
@@ -22,6 +24,7 @@ public class JwtUtil {
 
     public static final long ACCESS_TOKEN_EXPIRATION_PERIOD = 1000L * 60 * 60 * 10; // 10시간 유효
     public static final long REFRESH_TOKEN_EXPIRATION_PERIOD = 1000L * 60 * 60 * 24 * 7; // 7일 유효
+    public static final String EXPIRATION_TIME = "expirationTime";
 
     public String generateAccessToken(Member member) {
         return generateToken(member.getMemberId(), ACCESS_TOKEN_EXPIRATION_PERIOD);
@@ -47,10 +50,10 @@ public class JwtUtil {
                 .getBody();
 
         Map<String, Object> details = new HashMap<>();
-        details.put("expirationTime", claims.getExpiration().getTime() / 1000); // convert to Unix time
+        details.put("expirationTime", claims.getExpiration().getTime() / 1000);
         details.put("memberId", claims.getSubject());
 
-        return details; // convert to Unix time
+        return details;
     }
 
     public Long getMemberIdFromRequest() {

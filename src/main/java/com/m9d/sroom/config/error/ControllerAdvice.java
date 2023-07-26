@@ -1,123 +1,110 @@
 package com.m9d.sroom.config.error;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import org.springframework.http.ResponseEntity;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import static org.springframework.http.HttpStatus.*;
+import org.springframework.http.HttpStatus;
 
 @RestControllerAdvice
+@Slf4j
 public class ControllerAdvice {
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ErrorResponse> notFoundException(NotFoundException e) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
+    public ErrorResponse notFoundException(NotFoundException e) {
+        log.warn("Exception: {}, Message: {}", e.getClass().getSimpleName(), e.getMessage());
+        return ErrorResponse.builder()
                 .statusCode(e.getStatusCode())
                 .message(e.getMessage())
                 .build();
-
-        return ResponseEntity.status(NOT_FOUND).body(errorResponse);
     }
 
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(UnauthorizedException.class)
-    public ResponseEntity<ErrorResponse> unauthorizedException(UnauthorizedException e) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
+    public ErrorResponse unauthorizedException(UnauthorizedException e) {
+        log.warn("Exception: {}, Message: {}", e.getClass().getSimpleName(), e.getMessage());
+        return ErrorResponse.builder()
                 .statusCode(e.getStatusCode())
                 .message(e.getMessage())
                 .build();
-
-        return ResponseEntity.status(UNAUTHORIZED).body(errorResponse);
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(DuplicationException.class)
-    public ResponseEntity<ErrorResponse> duplicationException(DuplicationException e) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
+    public ErrorResponse duplicationException(DuplicationException e) {
+        log.warn("Exception: {}, Message: {}", e.getClass().getSimpleName(), e.getMessage());
+        return ErrorResponse.builder()
                 .statusCode(e.getStatusCode())
                 .message(e.getMessage())
                 .build();
-
-        return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(NotMatchException.class)
-    public ResponseEntity<ErrorResponse> notMatchException(NotMatchException e) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
+    public ErrorResponse notMatchException(NotMatchException e) {
+        log.warn("Exception: {}, Message: {}", e.getClass().getSimpleName(), e.getMessage());
+        return ErrorResponse.builder()
                 .statusCode(e.getStatusCode())
                 .message(e.getMessage())
                 .build();
-
-        return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
     }
 
-    @ExceptionHandler(IOException.class)
-    public ResponseEntity<ErrorResponse> iOException(IOException e) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode("400")
-                .message(e.getMessage())
-                .build();
-
-        return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
-    }
-
-    @ExceptionHandler(JsonProcessingException.class)
-    public ResponseEntity<ErrorResponse> jsonProcessingException(JsonProcessingException e) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode("400")
-                .message(e.getMessage())
-                .build();
-
-        return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
-    }
-
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<?> customHandleMissingRequestValue(MissingServletRequestParameterException ex) {
-        String name = ex.getParameterName();
-        String type = ex.getParameterType();
+    public ErrorResponse customHandleMissingRequestValue(MissingServletRequestParameterException e) {
+        String name = e.getParameterName();
+        String type = e.getParameterType();
+        log.info("Exception: {}, Message: {}", e.getClass().getSimpleName(), e.getMessage());
 
         String error = String.format("필수 파라미터인 '%s'(%s)가 누락되었습니다.", name, type);
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode("400")
+        return ErrorResponse.builder()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
                 .message(error)
                 .build();
-
-        // 예외 메시지를 담은 새로운 예외 객체를 생성하여 반환
-        return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MissingPathVariableException.class)
-    public ResponseEntity<?> customHandleMissingPathVariable(MissingPathVariableException ex) {
-        String name = ex.getVariableName();
+    public ErrorResponse customHandleMissingPathVariable(MissingPathVariableException e) {
+        String name = e.getVariableName();
         String error = String.format("필수 경로 변수인 '%s'가 누락되었습니다.", name);
+        log.info("Exception: {}, Message: {}", e.getClass().getSimpleName(), e.getMessage());
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode("400")
+        return ErrorResponse.builder()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
                 .message(error)
                 .build();
 
-        // 예외 메시지를 담은 새로운 예외 객체를 생성하여 반환
-        return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(InvalidParameterException.class)
-    public ResponseEntity<?> InvalidParameterException(InvalidParameterException e) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode("400")
+    public ErrorResponse InvalidParameterException(InvalidParameterException e) {
+        log.warn("Exception: {}, Message: {}", e.getClass().getSimpleName(), e.getMessage());
+        return ErrorResponse.builder()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
                 .message(e.getMessage())
                 .build();
-        return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<?> IllegalArgumentException(IllegalArgumentException e) {
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .statusCode("400")
+    public ErrorResponse IllegalArgumentException(IllegalArgumentException e) {
+        log.warn("Exception: {}, Message: {}", e.getClass().getSimpleName(), e.getMessage(), e);
+        return ErrorResponse.builder()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
                 .message(e.getMessage())
                 .build();
-        return ResponseEntity.status(BAD_REQUEST).body(errorResponse);
     }
 }

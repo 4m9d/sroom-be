@@ -9,14 +9,19 @@ server:
     whitelabel:
       enabled: false
 spring:
-  #Mariadb
+  h2:
+    console:
+      enabled: true
+      path : /h2-console
+
   datasource:
-    url: ${url}
-    username: ${username}
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test;MODE=MYSQL
+    username: sa
     password:
-  mvc:
-    view:
-      suffix: .html
+
+youtube:
+  base-url: https://www.googleapis.com/youtube/v3/
 
 #Devtool
 devtools:

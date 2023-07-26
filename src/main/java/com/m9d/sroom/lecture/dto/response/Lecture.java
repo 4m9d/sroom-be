@@ -2,11 +2,16 @@ package com.m9d.sroom.lecture.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Schema(description = "검색된 개별 강의 정보")
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Lecture{
 
     @Schema(description = "강의 제목", example = "네트워크 기초(개정판)")
@@ -19,14 +24,15 @@ public class Lecture{
     private String channel;
 
     @Schema(description = "강의 등록 여부", example = "false")
-    private boolean isEnrolled;
+    @JsonProperty("is_enrolled")
+    private boolean enrolled;
 
     @Schema(description = "강의 ID", example = "PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi")
     private String lectureCode;
 
     @Schema(description = "플레이리스트 여부", example = "true")
-    @JsonProperty("isPlaylist")
-    private boolean isPlaylist;
+    @JsonProperty("is_playlist")
+    private boolean playlist;
 
     @Schema(description = "강의 평점", example = "4.3")
     private double rating;
@@ -36,18 +42,4 @@ public class Lecture{
 
     @Schema(description = "강의 썸네일", example = "https://i.ytimg.com/vi/Av9UFzl_wis/hqdefault.jpg")
     private String thumbnail;
-
-    @Builder
-
-    public Lecture(String lectureTitle, String description, String channel, boolean isEnrolled, String lectureCode, boolean isPlaylist, double rating, int reviewCount, String thumbnail) {
-        this.lectureTitle = lectureTitle;
-        this.description = description;
-        this.channel = channel;
-        this.isEnrolled = isEnrolled;
-        this.lectureCode = lectureCode;
-        this.isPlaylist = isPlaylist;
-        this.rating = rating;
-        this.reviewCount = reviewCount;
-        this.thumbnail = thumbnail;
-    }
 }
