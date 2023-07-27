@@ -17,8 +17,6 @@ public class LectureServiceTest extends ServiceTest {
         String unescapeHtml = lectureService.unescapeHtml(escapeHtml);
 
         //when
-        System.out.println(escapeHtml);
-        System.out.println(unescapeHtml);
         assertTrue(unescapeHtml.equals("Blaze Transformations & Rescues! w/ AJ | 90 Minute Compilation | B"));
     }
 }

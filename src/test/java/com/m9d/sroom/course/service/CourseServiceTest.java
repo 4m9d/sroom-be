@@ -1,6 +1,8 @@
 package com.m9d.sroom.course.service;
 
 import com.m9d.sroom.course.dto.response.CourseInfo;
+import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
+import com.m9d.sroom.member.domain.Member;
 import com.m9d.sroom.util.ServiceTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
@@ -25,7 +27,7 @@ public class CourseServiceTest extends ServiceTest {
 
         String lectureInsertSql = "INSERT INTO LECTURE(course_id, channel, is_playlist) values(?, ?, ?)";
         String getCourseIdSql = "SELECT course_id FROM COURSE WHERE course_title = ?";
-        for(int i=1; i<=3; i++) {
+        for (int i = 1; i <= 3; i++) {
             String courseId = jdbcTemplate.queryForObject(getCourseIdSql, String.class, "course".concat(String.valueOf(i)));
             jdbcTemplate.update(lectureInsertSql, Integer.valueOf(courseId), "channel1", "false");
             jdbcTemplate.update(lectureInsertSql, Integer.valueOf(courseId), "channel2", "false");
@@ -37,5 +39,20 @@ public class CourseServiceTest extends ServiceTest {
         //then
         Assertions.assertEquals(3, courseList.size());
         Assertions.assertEquals(2, courseList.get(0).getChannels().length);
+    }
+
+
+    @Test
+    @DisplayName("신규 코스 등록에 성공합니다.")
+    void createNewCourse() {
+        //given
+        Member member = getNewMember();
+
+        //when
+        EnrolledCourseInfo enrolledCourseInfo = courseService.enrollCourse(member.getMemberId(), VIDEO_CODE);
+
+        //then
+        Long courseIdInLectureTable = courseRepository.getCourseIdByLectureId(enrolledCourseInfo.getLectureId());
+        Assertions.assertEquals(enrolledCourseInfo.getCourseId(), courseIdInLectureTable, "lecture table의 courseId와 등록된 courseId가 다릅니다.");
     }
 }
