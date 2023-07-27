@@ -4,6 +4,7 @@ package com.m9d.sroom.util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.m9d.sroom.course.repository.CourseRepository;
 import com.m9d.sroom.course.service.CourseService;
+import com.m9d.sroom.dashbord.service.DashboardService;
 import com.m9d.sroom.lecture.service.LectureService;
 import com.m9d.sroom.member.repository.MemberRepository;
 import com.m9d.sroom.member.service.MemberService;
@@ -31,6 +32,9 @@ public class SroomTest {
 
     @Autowired
     protected CourseService courseService;
+
+    @Autowired
+    protected DashboardService dashboardService;
 
     @Autowired
     protected MemberRepository memberRepository;
