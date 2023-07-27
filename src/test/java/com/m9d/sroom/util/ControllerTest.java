@@ -1,48 +1,19 @@
 package com.m9d.sroom.util;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.lecture.dto.response.KeywordSearch;
 import com.m9d.sroom.lecture.dto.response.PlaylistDetail;
 import com.m9d.sroom.member.domain.Member;
 import com.m9d.sroom.member.dto.response.Login;
-import com.m9d.sroom.member.repository.MemberRepository;
-import com.m9d.sroom.member.service.MemberService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@AutoConfigureTestDatabase
-public class ControllerTest {
-
-    @Autowired
-    protected MockMvc mockMvc;
-
-    @Autowired
-    protected ObjectMapper objectMapper;
-
-    @Autowired
-    protected MemberService memberService;
-
-    @Autowired
-    protected MemberRepository memberRepository;
-
-    @Autowired
-    protected JwtUtil jwtUtil;
-
-    @Autowired
-    protected JdbcTemplate jdbcTemplate;
+public class ControllerTest extends SroomTest{
 
     public Login getNewLogin() {
         Member member = getNewMember();
@@ -81,5 +52,12 @@ public class ControllerTest {
         String jsonContent = response.getContentAsString();
         System.out.println(jsonContent);
         return objectMapper.readValue(jsonContent, PlaylistDetail.class);
+    }
+
+    protected Long enrollNewCourseWithVideo(Login login) {
+        Object obj = jwtUtil.getDetailFromToken(login.getAccessToken()).get("memberId");
+        Long memberId = Long.valueOf((String) obj);
+        EnrolledCourseInfo courseId = courseService.enrollCourse(memberId, VIDEO_CODE);
+        return courseId.getCourseId();
     }
 }
