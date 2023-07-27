@@ -52,9 +52,9 @@ public class DashboardServiceTest extends ServiceTest {
         Assertions.assertEquals(completion_rate, dashboardInfo.getCompletionRate());
         Assertions.assertEquals(total_learning_time, dashboardInfo.getTotalLearningTime());
 
-        Assertions.assertEquals("2023-05-10 10:00:00", dashboardInfo.getLatest().get(0).getLastViewTime());
-        Assertions.assertEquals("2023-05-01 10:00:00", dashboardInfo.getLatest().get(1).getLastViewTime());
+        Assertions.assertEquals("2023-05-10 10:00:00", dashboardInfo.getLatestLectures().get(0).getLastViewTime());
+        Assertions.assertEquals("2023-05-01 10:00:00", dashboardInfo.getLatestLectures().get(1).getLastViewTime());
 
-        Assertions.assertEquals(2, dashboardInfo.getLearningHistory().size());
+        Assertions.assertEquals(2, dashboardInfo.getLearningHistories().size());
     }
 }

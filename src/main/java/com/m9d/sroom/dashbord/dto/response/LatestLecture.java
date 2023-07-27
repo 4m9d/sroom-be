@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Schema(description = "최근 수강 강의")
 @Data
-public class Latest {
+public class LatestLecture {
 
     @Schema(description = "코스 id")
     private long courseId;

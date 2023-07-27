@@ -22,8 +22,8 @@ public class DashboardInfo {
     private String motivation;
 
     @Schema(description = "최근 수강 강의")
-    private List<Latest> latest;
+    private List<LatestLecture> latestLectures;
 
     @Schema(description = "일별 수강 로그")
-    private List<LearningHistory> learningHistory;
+    private List<LearningHistory> learningHistories;
 }

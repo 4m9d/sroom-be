@@ -14,8 +14,8 @@ public class LearningHistory {
     private int learningTime;
 
     @Schema(description = "일일 퀴즈 푼 갯수")
-    private int quizzes;
+    private int quizCount;
 
     @Schema(description = "일일 수강 강의 갯수")
-    private int lectures;
+    private int lectureCount;
 }
