@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class DashboardControllerTest extends ControllerTest {
 
     @Test
-    @DisplayName("유저가 식별되어 대시보드 정보를 반환함")
+    @DisplayName("유저가 식별되어 대시보드 정보를 반환합니다")
     void Dashboards200() throws Exception {
         //given
         Login login = getNewLogin();

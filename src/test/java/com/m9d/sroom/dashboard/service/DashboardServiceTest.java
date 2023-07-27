@@ -16,7 +16,7 @@ import java.util.List;
 public class DashboardServiceTest extends ServiceTest {
 
     @Test
-    @DisplayName("??")
+    @DisplayName("유저의 대시보드 정보를 불러옵니다")
     void getDashboardTest() {
         //given
         Member member = getNewMember();
