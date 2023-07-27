@@ -21,5 +21,36 @@ public class CourseRepository {
         return null;
     }
 
-    public List<String> getChannelListByCourseId(int courseId) { return null; }
+    public List<String> getChannelListByCourseId(int courseId) {
+        return null;
+    }
+
+    public Long saveCourse(Long memberId, String courseTitle, Long courseDuration, String thumbnail) {
+        return null; //return courseId
+    }
+
+    public Long saveCourseWithSchedule(Long memberId, String courseTitle, Long courseDuration, String thumbnail, int weeks, int dailyTargetTime) {
+        return null; //return courseId
+    }
+
+    public Long saveVideo(String videoCode, Long duration, String channel, String thumbnail, Long viewCount, String description, String title, String language, boolean licence) {
+        return null; //return videoId
+    }
+
+    public Long savePlaylist(String playlistCode, String channel, String thumbnail, String description) {
+        return null; //return playlistId
+    }
+
+    public Long savePlaylistVideo(Long playlistId, Long videoId, int videoIndex) {
+        return null; //return playlistVideoId
+    }
+
+    public Long saveLecture(Long memberId, Long courseId, Long sourceId, String channel, boolean isPlaylist, int lectureIndex) {
+        return null; //return lectureId
+    }
+
+    public Long getCourseIdByLectureId(Long lectureId){
+        return null;
+    }
+
 }
