@@ -88,7 +88,7 @@ public class LectureControllerTest extends ControllerTest {
     void getVideoDetail200() throws Exception {
         //given
         Login login = getNewLogin();
-        String lectureCode = "Z9dvM7qgN9s";
+        String lectureCode = VIDEO_CODE;
 
         //expected
         mockMvc.perform(get("/lectures/{lectureCode}", lectureCode)
@@ -106,7 +106,7 @@ public class LectureControllerTest extends ControllerTest {
     void getPlaylistDetail200() throws Exception {
         //given
         Login login = getNewLogin();
-        String lectureCode = "PLRx0vPvlEmdAghTr5mXQxGpHjWqSz0dgC";
+        String lectureCode = PLAYLIST_CODE;
 
         //expected
         mockMvc.perform(get("/lectures/{lectureCode}", lectureCode)

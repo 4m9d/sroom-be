@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import static com.m9d.sroom.lecture.constant.LectureConstant.*;
 import static com.m9d.sroom.util.youtube.YoutubeConstant.*;
 
 @Service
@@ -97,5 +98,12 @@ public class YoutubeUtil {
             log.info("error occurred. message: get response from youtube failed");
             throw new RuntimeException(e);
         }
+    }
+
+
+
+    public boolean checkIfPlaylist(String lectureCode) {
+        String firstTwoCharacters = lectureCode.substring(LECTURE_CODE_START_INDEX, LECTURE_CODE_PLAYLIST_INDICATOR_LENGTH);
+        return firstTwoCharacters.equals(PLAYLIST_CODE_INDICATOR);
     }
 }

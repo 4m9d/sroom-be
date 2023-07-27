@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 import static com.m9d.sroom.lecture.constant.LectureConstant.*;
+import static com.m9d.sroom.util.DateUtil.*;
 
 @Service
 @Slf4j
@@ -330,11 +331,6 @@ public class LectureService {
         } else {
             return String.format(FORMAT_WITHOUT_HOUR, minutes, seconds);
         }
-    }
-
-    public boolean checkIfPlaylist(String lectureCode) {
-        String firstTwoCharacters = lectureCode.substring(LECTURE_CODE_START_INDEX, LECTURE_CODE_PLAYLIST_INDICATOR_LENGTH);
-        return firstTwoCharacters.equals(PLAYLIST_CODE_INDICATOR);
     }
 
     public String unescapeHtml(String input) {

@@ -1,6 +1,7 @@
 package com.m9d.sroom.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -12,7 +13,27 @@ import java.util.TimeZone;
  *
  */
 @Slf4j
+@Service
 public class DateUtil {
+
+    //time format
+    public static final int MINUTES_IN_HOUR = 60;
+    public static final int SECONDS_IN_MINUTE = 60;
+    public static final String FORMAT_WITH_HOUR = "%d:%02d:%02d";
+    public static final String FORMAT_WITHOUT_HOUR = "%d:%02d";
+
+    public Long convertTimeToSeconds(String time) {
+        String[] parts = time.split(":");
+        int length = parts.length;
+
+        if (length == 2) {
+            return Long.parseLong(parts[0]) * 60 + Long.parseLong(parts[1]);
+        } else if (length == 3) {
+            return Long.parseLong(parts[0]) * 3600 + Long.parseLong(parts[1]) * 60 + Long.parseLong(parts[2]);
+        } else {
+            throw new IllegalArgumentException("duration time 포멧이 적절하지 않습니다.");
+        }
+    }
 
     /**
      * TimeZone

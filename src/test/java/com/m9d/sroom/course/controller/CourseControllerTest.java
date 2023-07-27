@@ -21,7 +21,7 @@ public class CourseControllerTest extends ControllerTest {
         //given
         Login login = getNewLogin();
         NewCourse newCourse = new NewCourse();
-        newCourse.setLecture_code(VIDEO_CODE);
+        newCourse.setLectureCode(VIDEO_CODE);
 
         String content = objectMapper.writeValueAsString(newCourse);
         String useSchedule = "false";
@@ -44,7 +44,7 @@ public class CourseControllerTest extends ControllerTest {
         //given
         Login login = getNewLogin();
         String expectedEndTime = "2023-07-29";
-        NewCourse newCourse = new NewCourse(VIDEO_CODE, 30, List.of(1), expectedEndTime);
+        NewCourse newCourse = new NewCourse(VIDEO_CODE, 30, List.of(1), expectedEndTime, LECTURETITLE, CHANNEL, LECTURE_DESCRIPTION, "5:22", THUMBNAIL, 0);
 
         String content = objectMapper.writeValueAsString(newCourse);
         String useSchedule = "true";
@@ -67,7 +67,7 @@ public class CourseControllerTest extends ControllerTest {
         //given
         Login login = getNewLogin();
         NewCourse newCourse = new NewCourse();
-        newCourse.setLecture_code(PLAYLIST_CODE);
+        newCourse.setLectureCode(PLAYLIST_CODE);
 
         String content = objectMapper.writeValueAsString(newCourse);
         String useSchedule = "false";
@@ -90,7 +90,7 @@ public class CourseControllerTest extends ControllerTest {
         //given
         Login login = getNewLogin();
         String expectedEndTime = "2023-07-29";
-        NewCourse newCourse = new NewCourse(PLAYLIST_CODE, 60, List.of(1, 2, 3, 4), expectedEndTime);
+        NewCourse newCourse = new NewCourse(PLAYLIST_CODE, 60, List.of(1, 2, 3, 4), expectedEndTime, LECTURETITLE, CHANNEL, LECTURE_DESCRIPTION, "5:22", THUMBNAIL, 5);
 
         String content = objectMapper.writeValueAsString(newCourse);
         String useSchedule = "false";
@@ -114,7 +114,7 @@ public class CourseControllerTest extends ControllerTest {
         Login login = getNewLogin();
         Long courseId = enrollNewCourseWithVideo(login);
         NewCourse newCourse = new NewCourse();
-        newCourse.setLecture_code(VIDEO_CODE);
+        newCourse.setLectureCode(VIDEO_CODE);
 
         String content = objectMapper.writeValueAsString(newCourse);
 
@@ -136,7 +136,7 @@ public class CourseControllerTest extends ControllerTest {
         Login login = getNewLogin();
         Long courseId = enrollNewCourseWithVideo(login);
         NewCourse newCourse = new NewCourse();
-        newCourse.setLecture_code(PLAYLIST_CODE);
+        newCourse.setLectureCode(PLAYLIST_CODE);
 
         String content = objectMapper.writeValueAsString(newCourse);
 

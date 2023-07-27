@@ -4,12 +4,6 @@ public class LectureConstant {
     public static final int DEFAULT_REVIEW_COUNT = 50;
     public static final int DEFAULT_REVIEW_OFFSET = 0;
 
-    //time format
-    public static final int MINUTES_IN_HOUR = 60;
-    public static final int SECONDS_IN_MINUTE = 60;
-    public static final String FORMAT_WITH_HOUR = "%d:%02d:%02d";
-    public static final String FORMAT_WITHOUT_HOUR = "%d:%02d";
-
     //check if playlist
     public static final int LECTURE_CODE_START_INDEX = 0;
     public static final int LECTURE_CODE_PLAYLIST_INDICATOR_LENGTH = 2;

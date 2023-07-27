@@ -1,6 +1,7 @@
 package com.m9d.sroom.util;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.m9d.sroom.course.dto.request.NewCourse;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.lecture.dto.response.KeywordSearch;
 import com.m9d.sroom.lecture.dto.response.PlaylistDetail;
@@ -57,7 +58,10 @@ public class ControllerTest extends SroomTest{
     protected Long enrollNewCourseWithVideo(Login login) {
         Object obj = jwtUtil.getDetailFromToken(login.getAccessToken()).get("memberId");
         Long memberId = Long.valueOf((String) obj);
-        EnrolledCourseInfo courseId = courseService.enrollCourse(memberId, VIDEO_CODE);
+
+        NewCourse newCourse = new NewCourse();
+        newCourse.setLectureCode(VIDEO_CODE);
+        EnrolledCourseInfo courseId = courseService.enrollCourse(memberId, newCourse, false);
         return courseId.getCourseId();
     }
 }
