@@ -59,8 +59,14 @@ public class ControllerTest extends SroomTest{
         Object obj = jwtUtil.getDetailFromToken(login.getAccessToken()).get("memberId");
         Long memberId = Long.valueOf((String) obj);
 
-        NewCourse newCourse = new NewCourse();
-        newCourse.setLectureCode(VIDEO_CODE);
+        NewCourse newCourse = NewCourse.builder()
+                .lectureCode(VIDEO_CODE)
+                .channel(CHANNEL)
+                .title(LECTURETITLE)
+                .duration("5:22")
+                .thumbnail(THUMBNAIL)
+                .description(LECTURE_DESCRIPTION)
+                .build();
         EnrolledCourseInfo courseId = courseService.enrollCourse(memberId, newCourse, false);
         return courseId.getCourseId();
     }

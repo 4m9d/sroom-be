@@ -20,8 +20,14 @@ public class CourseControllerTest extends ControllerTest {
     void saveCourseWithVideo() throws Exception {
         //given
         Login login = getNewLogin();
-        NewCourse newCourse = new NewCourse();
-        newCourse.setLectureCode(VIDEO_CODE);
+        NewCourse newCourse = NewCourse.builder()
+                .lectureCode(VIDEO_CODE)
+                .channel(CHANNEL)
+                .title(LECTURETITLE)
+                .duration("5:22")
+                .thumbnail(THUMBNAIL)
+                .description(LECTURE_DESCRIPTION)
+                .build();
 
         String content = objectMapper.writeValueAsString(newCourse);
         String useSchedule = "false";
@@ -44,7 +50,17 @@ public class CourseControllerTest extends ControllerTest {
         //given
         Login login = getNewLogin();
         String expectedEndTime = "2023-07-29";
-        NewCourse newCourse = new NewCourse(VIDEO_CODE, 30, List.of(1), expectedEndTime, LECTURETITLE, CHANNEL, LECTURE_DESCRIPTION, "5:22", THUMBNAIL, 0);
+        NewCourse newCourse = NewCourse.builder()
+                .lectureCode(VIDEO_CODE)
+                .channel(CHANNEL)
+                .title(LECTURETITLE)
+                .duration("5:22")
+                .thumbnail(THUMBNAIL)
+                .description(LECTURE_DESCRIPTION)
+                .dailyTargetTime(30)
+                .scheduling(List.of(1))
+                .expectedEndTime(expectedEndTime)
+                .build();
 
         String content = objectMapper.writeValueAsString(newCourse);
         String useSchedule = "true";
@@ -66,8 +82,14 @@ public class CourseControllerTest extends ControllerTest {
     void saveCourseWithPlaylist() throws Exception {
         //given
         Login login = getNewLogin();
-        NewCourse newCourse = new NewCourse();
-        newCourse.setLectureCode(PLAYLIST_CODE);
+        NewCourse newCourse = NewCourse.builder()
+                .lectureCode(PLAYLIST_CODE)
+                .channel(CHANNEL)
+                .title(LECTURETITLE)
+                .duration("5:22")
+                .thumbnail(THUMBNAIL)
+                .description(LECTURE_DESCRIPTION)
+                .build();
 
         String content = objectMapper.writeValueAsString(newCourse);
         String useSchedule = "false";
@@ -90,7 +112,18 @@ public class CourseControllerTest extends ControllerTest {
         //given
         Login login = getNewLogin();
         String expectedEndTime = "2023-07-29";
-        NewCourse newCourse = new NewCourse(PLAYLIST_CODE, 60, List.of(1, 2, 3, 4), expectedEndTime, LECTURETITLE, CHANNEL, LECTURE_DESCRIPTION, "5:22", THUMBNAIL, 5);
+        NewCourse newCourse = NewCourse.builder()
+                .lectureCode(VIDEO_CODE)
+                .channel(CHANNEL)
+                .title(LECTURETITLE)
+                .duration("5:22")
+                .thumbnail(THUMBNAIL)
+                .description(LECTURE_DESCRIPTION)
+                .dailyTargetTime(60)
+                .scheduling(List.of(1, 2, 3, 4))
+                .expectedEndTime(expectedEndTime)
+                .indexCount(4)
+                .build();
 
         String content = objectMapper.writeValueAsString(newCourse);
         String useSchedule = "false";

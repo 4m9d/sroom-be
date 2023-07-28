@@ -2,6 +2,7 @@ package com.m9d.sroom.course.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class NewCourse {
 
     @Schema(description = "강의 코드", example = "PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi")

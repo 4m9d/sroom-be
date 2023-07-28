@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import static com.m9d.sroom.util.youtube.YoutubeConstant.*;
@@ -43,7 +44,13 @@ public class CourseService {
     public EnrolledCourseInfo enrollCourse(Long memberId, NewCourse newCourse, boolean useSchedule) {
         Long courseId = saveCourse(memberId, newCourse, useSchedule);
         boolean isPlaylist = youtubeUtil.checkIfPlaylist(newCourse.getLectureCode());
-        Long sourceId = getSourceInfo(newCourse, isPlaylist);
+
+        Long sourceId;
+        if (isPlaylist) {
+            sourceId = getPlaylistInfo(newCourse);
+        } else {
+            sourceId = getVideoInfo(newCourse);
+        }
         Long lectureId = courseRepository.saveLecture(memberId, courseId, sourceId, newCourse.getChannel(), isPlaylist, newCourse.getIndexCount());
 
         return EnrolledCourseInfo.builder()
@@ -52,19 +59,20 @@ public class CourseService {
                 .build();
     }
 
-    private Long getSourceInfo(NewCourse newCourse, boolean isPlaylist) {
+    private Long getVideoInfo(NewCourse newCourse) {
+        Optional<Long> videoIdOptional = courseRepository.findVideo(newCourse.getLectureCode());
+        Long sourceId = videoIdOptional.orElseGet(() -> youtubeUtil.safeGet(saveVideo(newCourse.getLectureCode())));
+        return sourceId;
+    }
+
+    private Long getPlaylistInfo(NewCourse newCourse) {
         Long sourceId;
-        if (isPlaylist) {
-            sourceId = courseRepository.fiendPlaylist(newCourse.getLectureCode());
-            if (sourceId == null) {
-                sourceId = courseRepository.savePlaylist(newCourse.getLectureCode(), newCourse.getChannel(), newCourse.getThumbnail(), newCourse.getDescription());
-                savePlaylistItem(newCourse.getLectureCode(), sourceId);
-            }
+        Optional<Long> playlistIdOptional = courseRepository.findPlaylist(newCourse.getLectureCode());
+        if (playlistIdOptional.isEmpty()) {
+            sourceId = courseRepository.savePlaylist(newCourse.getLectureCode(), newCourse.getChannel(), newCourse.getThumbnail(), newCourse.getDescription());
+            savePlaylistItem(newCourse.getLectureCode(), sourceId);
         } else {
-            sourceId = courseRepository.findVideo(newCourse.getLectureCode());
-            if (sourceId == null) {
-                sourceId = youtubeUtil.safeGet(saveVideo(newCourse.getLectureCode()));
-            }
+            sourceId = playlistIdOptional.get();
         }
         return sourceId;
     }

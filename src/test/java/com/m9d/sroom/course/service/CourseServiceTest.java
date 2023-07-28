@@ -50,8 +50,14 @@ public class CourseServiceTest extends ServiceTest {
         Member member = getNewMember();
 
         //when
-        NewCourse newCourse = new NewCourse();
-        newCourse.setLectureCode(VIDEO_CODE);
+        NewCourse newCourse = NewCourse.builder()
+                .lectureCode(VIDEO_CODE)
+                .channel(CHANNEL)
+                .title(LECTURETITLE)
+                .duration("5:22")
+                .thumbnail(THUMBNAIL)
+                .description(LECTURE_DESCRIPTION)
+                .build();
         EnrolledCourseInfo enrolledCourseInfo = courseService.enrollCourse(member.getMemberId(), newCourse, false);
 
         //then
