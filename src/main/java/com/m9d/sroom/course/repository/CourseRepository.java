@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public class CourseRepository {
@@ -33,7 +34,7 @@ public class CourseRepository {
         return null; //return courseId
     }
 
-    public Long saveVideo(String videoCode, Long duration, String channel, String thumbnail, Long viewCount, String description, String title, String language, boolean licence) {
+    public Long saveVideo(String videoCode, Long duration, String channel, String thumbnail, String description, String title, String language, String licence) {
         return null; //return videoId
     }
 
@@ -53,4 +54,11 @@ public class CourseRepository {
         return null;
     }
 
+    public Long fiendPlaylist(String lectureCode) {
+        return null;
+    }
+
+    public Long findVideo(String lectureCode) {
+        return null;
+    }
 }

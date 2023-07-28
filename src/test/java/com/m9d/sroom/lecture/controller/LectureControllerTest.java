@@ -8,7 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
-import static com.m9d.sroom.lecture.constant.LectureConstant.DEFAULT_REVIEW_COUNT;
+import static com.m9d.sroom.util.youtube.YoutubeConstant.DEFAULT_INDEX_COUNT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -192,7 +192,7 @@ public class LectureControllerTest extends ControllerTest {
                         .queryParam("index_only", indexOnly)
                         .queryParam("index_next_token", indexNextToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.index_list[0].index", is(DEFAULT_REVIEW_COUNT)));
+                .andExpect(jsonPath("$.index_list[0].index", is(DEFAULT_INDEX_COUNT)));
     }
 
     @Test

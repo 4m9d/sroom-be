@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -33,6 +34,28 @@ public class DateUtil {
         } else {
             throw new IllegalArgumentException("duration time 포멧이 적절하지 않습니다.");
         }
+    }
+
+    public String formatDuration(String durationString) {
+        Duration duration = Duration.parse(durationString);
+
+        long totalSeconds = duration.getSeconds();
+        long hours = totalSeconds / (MINUTES_IN_HOUR * SECONDS_IN_MINUTE);
+        long minutes = (totalSeconds % (MINUTES_IN_HOUR * SECONDS_IN_MINUTE)) / SECONDS_IN_MINUTE;
+        long seconds = totalSeconds % SECONDS_IN_MINUTE;
+
+        if (hours > 0) {
+            return String.format(FORMAT_WITH_HOUR, hours, minutes, seconds);
+        } else {
+            return String.format(FORMAT_WITHOUT_HOUR, minutes, seconds);
+        }
+    }
+
+    public Long convertISOToSeconds(String isoTime){
+        Duration duration = Duration.parse(isoTime);
+
+        Long totalSeconds = duration.toSeconds();
+        return totalSeconds;
     }
 
     /**

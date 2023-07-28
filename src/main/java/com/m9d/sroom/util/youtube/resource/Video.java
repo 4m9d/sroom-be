@@ -14,14 +14,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class Video implements YoutubeResource {
 
-    private final String videoId;
+    private final String videoCode;
 
     private static final String ENDPOINT = "videos?";
 
     @Override
     public Map<String, String> getParameters() {
         Map<String, String> params = new HashMap<>(YoutubeConstant.VIDEO_PARAMETERS);
-        params.put("id", videoId);
+        params.put("id", videoCode);
         return params;
     }
 

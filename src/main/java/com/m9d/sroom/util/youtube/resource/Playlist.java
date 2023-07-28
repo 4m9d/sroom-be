@@ -12,14 +12,14 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class Playlist implements YoutubeResource {
 
-    private final String playlistId;
+    private final String playlistCode;
 
     private static final String ENDPOINT = "playlists?";
 
     @Override
     public Map<String, String> getParameters() {
         Map<String, String> params = new HashMap<>(YoutubeConstant.PLAYLIST_PARAMETERS);
-        params.put("id", playlistId);
+        params.put("id", playlistCode);
         return params;
     }
 
