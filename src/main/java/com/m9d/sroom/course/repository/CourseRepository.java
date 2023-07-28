@@ -7,9 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Repository
 public class CourseRepository {
@@ -39,9 +37,9 @@ public class CourseRepository {
     }
 
     public Long saveCourseWithSchedule(Long memberId, String courseTitle, Long courseDuration, String thumbnail, int weeks, int dailyTargetTime) {
-        String query = "INSERT INTO COURSE (member_id, course_title, course_duration, thumbnail, weeks, daily_target_time) VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "INSERT INTO COURSE (member_id, course_title, course_duration, thumbnail, weeks, daily_target_time, is_scheduled) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
-        jdbcTemplate.update(query, memberId, courseTitle, courseDuration, thumbnail, weeks, dailyTargetTime);
+        jdbcTemplate.update(query, memberId, courseTitle, courseDuration, thumbnail, weeks, dailyTargetTime, 1);
 
         query = "SELECT LAST_INSERT_ID()";
         return jdbcTemplate.queryForObject(query, Long.class);
@@ -83,6 +81,12 @@ public class CourseRepository {
         return jdbcTemplate.queryForObject(query, Long.class);
     }
 
+    public void saveCourseVideo(Long memberId, Long courseId, Long videoId, int section, int videoIndex, int lectureIndex) {
+        String query = "INSERT INTO COURSEVIDEO (member_id, course_id, video_id, section, video_index, lecture_index) VALUES (?, ?, ?, ?, ?, ?)";
+
+        jdbcTemplate.update(query, memberId, courseId, videoId, section, videoId, lectureIndex);
+    }
+
     public Long getCourseIdByLectureId(Long lectureId) {
         String query = "SELECT course_id FROM LECTURE WHERE lecture_id = ?";
         return jdbcTemplate.queryForObject(query, Long.class, lectureId);
@@ -106,5 +110,21 @@ public class CourseRepository {
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    public List<int[]> getVideoIdAndIndex(Long playlistId) {
+        String query = "SELECT video_id, video_index FROM PLAYLISTVIDEO WHERE playlist_id = ? ORDER BY video_index";
+
+        List<int[]> videoData = new ArrayList<>();
+
+        jdbcTemplate.query(query, (rs, rowNum) -> {
+            int[] videoInfo = new int[2];
+            videoInfo[0] = rs.getInt("video_id");
+            videoInfo[1] = rs.getInt("video_index");
+            videoData.add(videoInfo);
+            return null;
+        }, playlistId);
+
+        return videoData;
     }
 }

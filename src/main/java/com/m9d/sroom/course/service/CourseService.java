@@ -9,17 +9,21 @@ import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.util.youtube.YoutubeUtil;
 import com.m9d.sroom.util.youtube.resource.PlaylistItem;
 import com.m9d.sroom.util.youtube.resource.Video;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.security.InvalidParameterException;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import static com.m9d.sroom.course.constant.CourseConstant.*;
 import static com.m9d.sroom.util.youtube.YoutubeConstant.*;
 
 @Service
+@Slf4j
 public class CourseService {
 
     private final CourseRepository courseRepository;
@@ -47,12 +51,14 @@ public class CourseService {
 
         Long sourceId;
         if (isPlaylist) {
-            sourceId = getPlaylistInfo(newCourse);
+            sourceId = getPlaylistInfo(memberId, courseId, newCourse, useSchedule);
         } else {
             sourceId = getVideoInfo(newCourse);
+            courseRepository.saveCourseVideo(memberId, courseId, sourceId, ENROLL_DEFAULT_SECTION, ENROLL_VIDEO_INDEX, ENROLL_LECTURE_INDEX);
         }
         Long lectureId = courseRepository.saveLecture(memberId, courseId, sourceId, newCourse.getChannel(), isPlaylist, newCourse.getIndexCount());
 
+        log.info("course inserted. member = {}, lecture = {}", memberId, newCourse.getTitle());
         return EnrolledCourseInfo.builder()
                 .courseId(courseId)
                 .lectureId(lectureId)
@@ -65,16 +71,36 @@ public class CourseService {
         return sourceId;
     }
 
-    private Long getPlaylistInfo(NewCourse newCourse) {
-        Long sourceId;
+    private Long getPlaylistInfo(Long memberId, Long courseId, NewCourse newCourse, boolean useSchedule) {
+        Long playlistId;
         Optional<Long> playlistIdOptional = courseRepository.findPlaylist(newCourse.getLectureCode());
         if (playlistIdOptional.isEmpty()) {
-            sourceId = courseRepository.savePlaylist(newCourse.getLectureCode(), newCourse.getChannel(), newCourse.getThumbnail(), newCourse.getDescription());
-            savePlaylistItem(newCourse.getLectureCode(), sourceId);
+            playlistId = courseRepository.savePlaylist(newCourse.getLectureCode(), newCourse.getChannel(), newCourse.getThumbnail(), newCourse.getDescription());
+            savePlaylistItem(newCourse.getLectureCode(), playlistId);
         } else {
-            sourceId = playlistIdOptional.get();
+            playlistId = playlistIdOptional.get();
         }
-        return sourceId;
+
+        int videoCount = 1;
+        int section = 0;
+        int week = 0;
+
+        List<int[]> videoData = courseRepository.getVideoIdAndIndex(playlistId);
+        for (int[] videoInfo : videoData) {
+            if (useSchedule) {
+                if (videoCount > newCourse.getScheduling().get(week)) {
+                    week++;
+                    section++;
+                    videoCount = 1;
+                }
+                courseRepository.saveCourseVideo(memberId, courseId, (long) videoInfo[0], section + 1, videoInfo[1], ENROLL_LECTURE_INDEX);
+                videoCount++;
+            } else {
+                courseRepository.saveCourseVideo(memberId, courseId, (long) videoInfo[0], ENROLL_DEFAULT_SECTION, videoInfo[1], ENROLL_LECTURE_INDEX);
+            }
+        }
+
+        return playlistId;
     }
 
     private Long saveCourse(Long memberId, NewCourse newCourse, boolean useSchedule) {
@@ -82,6 +108,7 @@ public class CourseService {
         Long lectureDuration = dateUtil.convertTimeToSeconds(newCourse.getDuration());
 
         if (useSchedule) {
+            validateScheduleField(newCourse);
             courseId = courseRepository.saveCourseWithSchedule(memberId, newCourse.getTitle(), lectureDuration, newCourse.getThumbnail(), newCourse.getScheduling().size(), newCourse.getDailyTargetTime());
         } else {
             courseId = courseRepository.saveCourse(memberId, newCourse.getTitle(), lectureDuration, newCourse.getThumbnail());
@@ -89,10 +116,19 @@ public class CourseService {
         return courseId;
     }
 
-    private void savePlaylistItem(String lectureCode, Long playlistId) {
+    private void validateScheduleField(NewCourse newCourse) {
+        if (newCourse.getDailyTargetTime() == 0 ||
+                newCourse.getScheduling() == null ||
+                newCourse.getExpectedEndTime() == null ||
+                newCourse.getIndexCount() == 0) {
+            throw new InvalidParameterException("스케줄 필드를 적절히 입력해주세요");
+        }
+    }
+
+    private void savePlaylistItem(String playlistCode, Long playlistId) {
         String nextPageToken = null;
         do {
-            nextPageToken = savePlaylistItemPerPage(lectureCode, playlistId, nextPageToken);
+            nextPageToken = savePlaylistItemPerPage(playlistCode, playlistId, nextPageToken);
         } while (nextPageToken != null);
     }
 
@@ -107,7 +143,7 @@ public class CourseService {
         for (JsonNode item : playlistItem.get(JSONNODE_ITEMS)) {
             int index = item.get(JSONNODE_SNIPPET).get(JSONNODE_POSITION).asInt();
             CompletableFuture<Long> videoIdFuture = saveVideo(item.get(JSONNODE_SNIPPET).get(JSONNODE_RESOURCE_ID).get(JSONNODE_VIDEO_ID).asText());
-            videoIdFuture.thenAccept(videoId -> courseRepository.savePlaylistVideo(playlistId, videoId, index));
+            videoIdFuture.thenAccept(videoId -> courseRepository.savePlaylistVideo(playlistId, videoId, index + 1));
         }
 
         try {
