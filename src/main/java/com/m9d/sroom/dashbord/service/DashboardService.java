@@ -1,10 +1,21 @@
 package com.m9d.sroom.dashbord.service;
 
-import com.m9d.sroom.dashbord.dto.response.DashboardInfo;
+import com.m9d.sroom.course.dto.response.CourseInfo;
+import com.m9d.sroom.course.repository.CourseRepository;
+import com.m9d.sroom.dashbord.dto.response.Dashboard;
+import com.m9d.sroom.dashbord.dto.response.DashboardMemberData;
+import com.m9d.sroom.dashbord.dto.response.LearningHistory;
 import com.m9d.sroom.dashbord.repository.DashboardRepository;
+import com.m9d.sroom.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.*;
+
+import static com.m9d.sroom.dashbord.constant.DashboardConstant.*;
 
 @Service
 @Slf4j
@@ -12,7 +23,89 @@ import org.springframework.stereotype.Service;
 public class DashboardService {
 
     private final DashboardRepository dashboardRepository;
-    public DashboardInfo getDashboard() {
-        return null;
+    private final CourseRepository courseRepository;
+    private final MemberRepository memberRepository;
+    public Dashboard getDashboard(Long memberId) {
+
+        List<CourseInfo> latestCourses = dashboardRepository.getLatestCourseListByMemberId(memberId);
+        List<LearningHistory> learningHistories = dashboardRepository.getLearningHistoryListByMemberId(memberId);
+        DashboardMemberData dashboardMemberData = dashboardRepository.getDashboardMemberDataByMemberId(memberId);
+        String motivation = getMotivation(learningHistories, dashboardMemberData, memberId);
+
+        int correctnessRate = (int)(((float) dashboardMemberData.getTotalCorrectCount() / dashboardMemberData.getTotalSolvedCount()) * 100);
+
+        for(int i = 0; i < latestCourses.size(); i++) {
+
+            Long courseId = latestCourses.get(i).getCourseId();
+            HashSet<String> channels = courseRepository.getChannelListByCourseId(courseId);
+            int lectureCount = courseRepository.getTotalLectureCountByCourseId(courseId);
+            int completedLectureCount = courseRepository.getCompletedLectureCountByCourseId(courseId);
+
+            latestCourses.get(i).setChannels(channels);
+            latestCourses.get(i).setLectureCount(lectureCount);
+            latestCourses.get(i).setCompletedLectureCount(completedLectureCount);
+        }
+
+
+
+        Dashboard dashboardInfo = Dashboard.builder()
+                .correctnessRate(correctnessRate)
+                .completionRate(dashboardMemberData.getCompletionRate())
+                .totalLearningTime(dashboardMemberData.getTotalLearningTime())
+                .motivation(motivation)
+                .latestLectures(latestCourses)
+                .learningHistories(learningHistories)
+                .build();
+
+        return dashboardInfo;
     }
+
+    public String getMotivation(List<LearningHistory> learningHistories, DashboardMemberData dashboardMemberData, Long memberId) {
+        List<String> motivationList = new ArrayList<>();
+        motivationList.addAll(MOTIVATION_GENERAL);
+
+        String memberName = memberRepository.getMemberNameById(memberId);
+        int consecutiveLearningDays = getConsecutiveLearningDay(learningHistories);
+        int totalLearningTime = dashboardMemberData.getTotalLearningTime();
+        int leftTargetTime = 10 - (totalLearningTime % 10);
+        int targetTime = 10 * (totalLearningTime / 10 + 1);
+
+        motivationList.add(memberName + MOTIVATION_INDUCE_REVIEW);
+
+        motivationList.add(leftTargetTime + MOTIVATION_TOTAL_LEARNING_TIME_PREFIX + targetTime + MOTIVATION_TOTAL_LEARNING_TIME_SUFFIX);
+
+        if(consecutiveLearningDays > 0) {
+            motivationList.add(consecutiveLearningDays + MOTIVATION_CONSECUTIVE_LEARNING);
+        }
+        else {
+            motivationList.add(MOTIVATION_RESTART_LEARNING);
+        }
+
+        Collections.shuffle(motivationList);
+
+        return motivationList.get(0);
+    }
+
+    public int getConsecutiveLearningDay(List<LearningHistory> learningHistories) {
+
+        int consecutiveCount = 0;
+        LocalDate beforeDate = LocalDate.now();
+
+        for(int i = 0; i < learningHistories.size(); i++) {
+
+            LocalDate nowDate = LocalDate.parse(learningHistories.get(i).getDate());
+            Period dateDiff = Period.between(nowDate, beforeDate);
+
+            if(dateDiff.getDays() <= 1 && dateDiff.getMonths() == 0 && dateDiff.getYears() == 0) {
+                consecutiveCount++;
+                beforeDate = nowDate;
+            }
+            else {
+                break;
+            }
+
+        }
+        return consecutiveCount;
+    }
+
 }
