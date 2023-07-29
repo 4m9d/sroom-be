@@ -39,13 +39,13 @@ public class MemberService {
 
     @Transactional
     public Login authenticateMember(String credential) throws Exception {
-        GoogleIdToken.Payload payload = getPayloadFromCredential(credential);
-        String memberCode = getMemberCodeFromPayload(payload);
+        GoogleIdToken payload = verifyCredential(credential);
+        String memberCode = getMemberCodeFromIdToken(payload);
         Member member = findOrCreateMemberByMemberCode(memberCode);
         return generateLogin(member);
     }
 
-    public GoogleIdToken.Payload getPayloadFromCredential(String credential) throws Exception {
+    public GoogleIdToken verifyCredential(String credential) throws Exception {
         HttpTransport transport = new NetHttpTransport();
         GsonFactory jsonFactory = GsonFactory.getDefaultInstance();
 
@@ -59,11 +59,11 @@ public class MemberService {
             throw new CredentialUnauthorizedException();
         }
 
-        return idToken.getPayload();
+        return idToken;
     }
 
-    public String getMemberCodeFromPayload(GoogleIdToken.Payload payload) {
-        return payload.getSubject();
+    public String getMemberCodeFromIdToken(GoogleIdToken idToken) {
+        return idToken.getPayload().getSubject();
     }
 
     public Member findOrCreateMemberByMemberCode(String memberCode) {

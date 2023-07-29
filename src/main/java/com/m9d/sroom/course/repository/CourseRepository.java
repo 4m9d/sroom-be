@@ -1,6 +1,8 @@
 package com.m9d.sroom.course.repository;
 
+import com.m9d.sroom.course.domain.Playlist;
 import com.m9d.sroom.course.dto.response.CourseInfo;
+import com.m9d.sroom.course.domain.Video;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -45,7 +47,7 @@ public class CourseRepository {
         return jdbcTemplate.queryForObject(query, Long.class);
     }
 
-    public Long saveVideo(String videoCode, Long duration, String channel, String thumbnail, String description, String title, String language, String licence) {
+    public Long saveVideo(String videoCode, int duration, String channel, String thumbnail, String description, String title, String language, String licence) {
         String query = "INSERT INTO VIDEO (video_code, duration, channel, thumbnail, description, title, language, license) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(query, videoCode, duration, channel, thumbnail, description, title, language, licence);
@@ -84,7 +86,7 @@ public class CourseRepository {
     public void saveCourseVideo(Long memberId, Long courseId, Long videoId, int section, int videoIndex, int lectureIndex) {
         String query = "INSERT INTO COURSEVIDEO (member_id, course_id, video_id, section, video_index, lecture_index) VALUES (?, ?, ?, ?, ?, ?)";
 
-        jdbcTemplate.update(query, memberId, courseId, videoId, section, videoId, lectureIndex);
+        jdbcTemplate.update(query, memberId, courseId, videoId, section, videoIndex, lectureIndex);
     }
 
     public Long getCourseIdByLectureId(Long lectureId) {
@@ -92,16 +94,22 @@ public class CourseRepository {
         return jdbcTemplate.queryForObject(query, Long.class, lectureId);
     }
 
-    public Optional<Long> findPlaylist(String lectureCode) {
-        String query = "SELECT playlist_id FROM PLAYLIST WHERE playlist_code = ?";
-        Long playlistId = queryForObjectOrNull(query, (rs, rowNum) -> rs.getLong(1), lectureCode);
-        return Optional.ofNullable(playlistId);
+    public Optional<Playlist> findPlaylist(String lectureCode) {
+        String query = "SELECT playlist_id, duration FROM PLAYLIST WHERE playlist_code = ?";
+        Playlist playlist = queryForObjectOrNull(query, (rs, rowNum) -> Playlist.builder()
+                .playlistId(rs.getLong("playlist_id"))
+                .duration(rs.getInt("duration"))
+                .build(), lectureCode);
+        return Optional.ofNullable(playlist);
     }
 
-    public Optional<Long> findVideo(String lectureCode) {
-        String query = "SELECT video_id FROM VIDEO WHERE video_code = ?";
-        Long videoId = queryForObjectOrNull(query, (rs, rowNum) -> rs.getLong(1), lectureCode);
-        return Optional.ofNullable(videoId);
+    public Optional<Video> findVideo(String lectureCode) {
+        String query = "SELECT video_id, duration FROM VIDEO WHERE video_code = ?";
+        Video video = queryForObjectOrNull(query, (rs, rowNum) -> Video.builder()
+                .videoId(rs.getLong("video_id"))
+                .duration(rs.getInt("duration"))
+                .build(), lectureCode);
+        return Optional.ofNullable(video);
     }
 
     private <T> T queryForObjectOrNull(String sql, RowMapper<T> rowMapper, Object... args) {
@@ -112,19 +120,34 @@ public class CourseRepository {
         }
     }
 
-    public List<int[]> getVideoIdAndIndex(Long playlistId) {
+    public List<Video> getVideoIdAndIndex(Long playlistId) {
         String query = "SELECT video_id, video_index FROM PLAYLISTVIDEO WHERE playlist_id = ? ORDER BY video_index";
 
-        List<int[]> videoData = new ArrayList<>();
+        List<Video> videoData = new ArrayList<>();
 
         jdbcTemplate.query(query, (rs, rowNum) -> {
-            int[] videoInfo = new int[2];
-            videoInfo[0] = rs.getInt("video_id");
-            videoInfo[1] = rs.getInt("video_index");
-            videoData.add(videoInfo);
+            Video.builder()
+                    .videoId(rs.getLong("video_id"))
+                    .index(rs.getInt("video_index"))
+                    .build();
             return null;
         }, playlistId);
 
         return videoData;
+    }
+
+    public void saveCourseDuration(Long courseId, int duration) {
+        String query = "UPDATE COURSE SET duration = ? WHERE course_id = ?";
+
+        jdbcTemplate.update(query, duration, courseId);
+    }
+
+    public int getDurationByPlaylistId(Long playlistId) {
+        String query = "SELECT SUM(v.duration) FROM VIDEO v " +
+                "INNER JOIN PLAYLISTVIDEO pv ON v.video_id = pv.video_id " +
+                "WHERE pv.playlist_id = ?";
+
+        Integer totalDuration = jdbcTemplate.queryForObject(query, Integer.class, playlistId);
+        return totalDuration == null ? 0 : totalDuration;
     }
 }

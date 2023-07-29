@@ -6,13 +6,12 @@ import lombok.RequiredArgsConstructor;
 import java.util.HashMap;
 
 import com.m9d.sroom.util.youtube.YoutubeConstant;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Map;
 
 @Builder
 @RequiredArgsConstructor
-public class Video implements YoutubeResource {
+public class VideoReq implements YoutubeResource {
 
     private final String videoCode;
 
