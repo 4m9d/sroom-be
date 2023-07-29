@@ -4,8 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.HashSet;
-
 @Builder
 @Schema(description = "강의 코스 정보")
 @Data
@@ -21,7 +19,7 @@ public class CourseInfo {
     private String thumbnail;
 
     @Schema(description = "채널 리스트")
-    private HashSet<String> channels;
+    private String channels;
 
     @Schema(description = "코스 내 영상 갯수")
     private int lectureCount;

@@ -41,7 +41,8 @@ public class DashboardService {
             int lectureCount = courseRepository.getTotalLectureCountByCourseId(courseId);
             int completedLectureCount = courseRepository.getCompletedLectureCountByCourseId(courseId);
 
-            latestCourses.get(i).setChannels(channels);
+
+            latestCourses.get(i).setChannels(String.join(", ", channels));
             latestCourses.get(i).setLectureCount(lectureCount);
             latestCourses.get(i).setCompletedLectureCount(completedLectureCount);
         }
