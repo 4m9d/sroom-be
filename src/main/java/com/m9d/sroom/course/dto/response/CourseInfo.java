@@ -31,7 +31,7 @@ public class CourseInfo {
     private int duration;
 
     @Schema(description = "수강률")
-    private float progress;
+    private int progress;
 
     @Schema(description = "마지막 수강 시간")
     private String lastViewTime;

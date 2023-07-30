@@ -29,7 +29,7 @@ public class DashboardRepository {
                         .courseId(rs.getLong("course_id"))
                         .duration(rs.getInt("course_duration") / 60)
                         .thumbnail(rs.getString("thumbnail"))
-                        .progress(rs.getFloat("progress"))
+                        .progress(rs.getInt("progress"))
                         .courseTitle(rs.getString("course_title"))
                         .lastViewTime(dateFormat.format(rs.getTimestamp("last_view_time")))
                         .build(),
