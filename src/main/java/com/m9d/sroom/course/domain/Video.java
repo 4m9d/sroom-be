@@ -43,4 +43,6 @@ public class Video {
     private String license;
 
     private Timestamp updatedAt;
+
+    private boolean complete;
 }

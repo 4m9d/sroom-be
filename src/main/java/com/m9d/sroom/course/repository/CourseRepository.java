@@ -1,5 +1,6 @@
 package com.m9d.sroom.course.repository;
 
+import com.m9d.sroom.course.domain.Course;
 import com.m9d.sroom.course.domain.Playlist;
 import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.domain.Video;
@@ -7,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Timestamp;
 import java.util.*;
 
 @Repository
@@ -96,12 +97,14 @@ public class CourseRepository {
     }
 
     public Optional<Playlist> findPlaylist(String lectureCode) {
-        String query = "SELECT playlist_id, channel, description, duration, updated_at FROM PLAYLIST WHERE playlist_code = ?";
+        String query = "SELECT playlist_id, title, channel, thumbnail, description, duration, updated_at FROM PLAYLIST WHERE playlist_code = ?";
         Playlist playlist = queryForObjectOrNull(query, (rs, rowNum) -> Playlist.builder()
                 .playlistId(rs.getLong("playlist_id"))
+                .title(rs.getString("title"))
                 .channel(rs.getString("channel"))
                 .description(rs.getString("description"))
                 .duration(rs.getInt("duration"))
+                .thumbnail(rs.getString("thumbnail"))
                 .updatedAt(rs.getTimestamp("updated_at"))
                 .build(), lectureCode);
         return Optional.ofNullable(playlist);
@@ -207,5 +210,73 @@ public class CourseRepository {
         String query = "UPDATE PLAYLIST SET duration = ? WHERE playlist_id = ?";
 
         jdbcTemplate.update(query, playlistDuration, playlistId);
+    }
+
+    public Course getCourse(Long courseId) {
+        String query = "SELECT member_id, course_title, course_duration, is_scheduled, weeks, start_date, expected_end_date, daily_target_time FROM COURSE WHERE course_id = ?";
+
+        return jdbcTemplate.queryForObject(query, ((rs, rowNum) -> Course.builder()
+                .courseId(courseId)
+                .memberId(rs.getLong("member_id"))
+                .title(rs.getString("course_title"))
+                .duration(rs.getInt("course_duration"))
+                .scheduled(rs.getBoolean("is_scheduled"))
+                .weeks(rs.getInt("weeks"))
+                .startDate(rs.getDate("start_date"))
+                .expectedEndTime(rs.getTimestamp("expected_end_date"))
+                .dailyTargetTime(rs.getInt("daily_target_time"))
+                .build()), courseId);
+    }
+
+    public int getVideoDuration(Long videoId) {
+        String query = "SELECT duration FROM VIDEO WHERE video_id = ?";
+
+        return jdbcTemplate.queryForObject(query, (rs, rowNum) -> rs.getInt("duration"), videoId);
+    }
+
+    public List<Video> getVideoListByCourseId(Long courseId) {
+        String query = "SELECT video_id, video_index, is_complete FROM COURSEVIDEO WHERE course_id = ? ORDER BY video_index";
+
+        return jdbcTemplate.query(query, ((rs, rowNum) -> Video.builder()
+                .videoId(rs.getLong("video_id"))
+                .index(rs.getInt("video_index"))
+                .complete(rs.getBoolean("is_complete"))
+                .build()), courseId);
+    }
+
+    public int getLastLectureIndex(Long courseId) {
+        String query = "SELECT MAX(lecture_index) FROM LECTURE WHERE course_id = ?";
+
+        try {
+            Integer lastIndex = jdbcTemplate.queryForObject(query, new SingleColumnRowMapper<>(), courseId);
+            return lastIndex != null ? lastIndex : 0;
+        } catch (EmptyResultDataAccessException e) {
+            return 0;
+        }
+    }
+
+    public List<Video> getVideosByCourseId(Long courseId) {
+        String query = "SELECT v.video_id, cv.video_index, v.duration " +
+                "FROM COURSEVIDEO cv INNER JOIN VIDEO v ON cv.video_id = v.video_id " +
+                "WHERE cv.course_id = ? " +
+                "ORDER BY cv.video_index ASC";
+
+        return jdbcTemplate.query(query, (rs, rowNum) -> Video.builder()
+                .videoId(rs.getLong("video_id"))
+                .index(rs.getInt("video_index"))
+                .duration(rs.getInt("duration"))
+                .build(), courseId);
+    }
+
+    public void updateVideoSection(Long courseId, Long videoId, int section) {
+        String query = "UPDATE COURSEVIDEO SET section = ? WHERE course_id = ? AND video_id = ?";
+
+        jdbcTemplate.update(query, section, courseId, videoId);
+    }
+
+    public void updateSchedule(Long courseId, int weeks, Date expectedEndDate) {
+        String sql = "UPDATE COURSE SET weeks = ?, expected_end_date = ? WHERE course_id = ?";
+
+        jdbcTemplate.update(sql, weeks, expectedEndDate, courseId);
     }
 }

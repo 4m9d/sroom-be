@@ -36,11 +36,11 @@ public class CourseController {
         return enrolledCourseInfo;
     }
 
-//    @Auth
-//    @PostMapping("/{courseId}")
-//    public EnrolledCourseInfo addLectureInCourse(@PathVariable("courseId") Long courseId, @Valid @RequestBody NewLecture newLecture){
-//        Long memberId = jwtUtil.getMemberIdFromRequest();
-//        EnrolledCourseInfo enrolledCourseInfo = courseService.addLectureInCourse(memberId, courseId, newLecture);
-//        return enrolledCourseInfo;
-//    }
+    @Auth
+    @PostMapping("/{courseId}")
+    public EnrolledCourseInfo addLectureInCourse(@PathVariable("courseId") Long courseId, @Valid @RequestBody NewLecture newLecture){
+        Long memberId = jwtUtil.getMemberIdFromRequest();
+        EnrolledCourseInfo enrolledCourseInfo = courseService.addLectureInCourse(memberId, courseId, newLecture);
+        return enrolledCourseInfo;
+    }
 }
