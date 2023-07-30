@@ -95,9 +95,8 @@ public class DashboardService {
         for(int i = 0; i < learningHistories.size(); i++) {
 
             LocalDate nowDate = LocalDate.parse(learningHistories.get(i).getDate());
-            Period dateDiff = Period.between(nowDate, beforeDate);
 
-            if(dateDiff.getDays() <= 1 && dateDiff.getMonths() == 0 && dateDiff.getYears() == 0) {
+            if(isConsecutive(beforeDate, nowDate)) {
                 consecutiveCount++;
                 beforeDate = nowDate;
             }
@@ -107,6 +106,11 @@ public class DashboardService {
 
         }
         return consecutiveCount;
+    }
+
+    public boolean isConsecutive(LocalDate beforeDate, LocalDate nowDate) {
+        Period dateDiff = Period.between(nowDate, beforeDate);
+        return (dateDiff.getYears() == 0 && dateDiff.getMonths() == 0 && dateDiff.getDays() == 1);
     }
 
 }
