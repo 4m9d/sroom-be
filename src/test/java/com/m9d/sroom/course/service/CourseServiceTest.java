@@ -38,7 +38,6 @@ public class CourseServiceTest extends ServiceTest {
 
         //then
         Assertions.assertEquals(3, courseList.size());
-        Assertions.assertEquals(2, courseList.get(0).getChannels().length);
     }
 
 

@@ -1,8 +1,10 @@
 package com.m9d.sroom.dashbord.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Data;
 
+@Builder
 @Schema(description = "일일 수강 로그")
 @Data
 public class LearningHistory {
@@ -18,4 +20,5 @@ public class LearningHistory {
 
     @Schema(description = "일일 수강 강의 갯수")
     private int lectureCount;
+
 }

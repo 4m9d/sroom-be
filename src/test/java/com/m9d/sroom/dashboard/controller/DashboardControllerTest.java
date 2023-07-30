@@ -4,6 +4,7 @@ import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.util.ControllerTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -19,8 +20,9 @@ public class DashboardControllerTest extends ControllerTest {
 
         //expected
         mockMvc.perform(get("/dashboards")
+                        .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", login.getAccessToken()))
-                        .andExpect(status().isOk())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.correctness_rate").isNotEmpty())
                 .andExpect(jsonPath("$.completion_rate").isNotEmpty())
                 .andExpect(jsonPath("$.total_learning_time").isNotEmpty());

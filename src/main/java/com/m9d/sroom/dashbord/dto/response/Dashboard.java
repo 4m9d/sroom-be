@@ -1,13 +1,20 @@
 package com.m9d.sroom.dashbord.dto.response;
 
+import com.m9d.sroom.course.dto.response.CourseInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Builder
 @Schema(description = "대시보드 반환 데이터")
 @Data
-public class DashboardInfo {
+@NoArgsConstructor
+@AllArgsConstructor
+public class Dashboard {
 
     @Schema(description = "퀴즈 정답률")
     private int correctnessRate;
@@ -22,7 +29,7 @@ public class DashboardInfo {
     private String motivation;
 
     @Schema(description = "최근 수강 강의")
-    private List<LatestLecture> latestLectures;
+    private List<CourseInfo> latestLectures;
 
     @Schema(description = "일별 수강 로그")
     private List<LearningHistory> learningHistories;
