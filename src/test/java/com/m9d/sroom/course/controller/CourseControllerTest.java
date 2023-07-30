@@ -1,6 +1,6 @@
 package com.m9d.sroom.course.controller;
 
-import com.m9d.sroom.course.dto.request.NewCourse;
+import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.util.ControllerTest;
 import org.junit.jupiter.api.DisplayName;
@@ -20,16 +20,11 @@ public class CourseControllerTest extends ControllerTest {
     void saveCourseWithVideo() throws Exception {
         //given
         Login login = getNewLogin();
-        NewCourse newCourse = NewCourse.builder()
+        NewLecture newLecture = NewLecture.builder()
                 .lectureCode(VIDEO_CODE)
-                .channel(CHANNEL)
-                .title(LECTURETITLE)
-                .duration("5:22")
-                .thumbnail(THUMBNAIL)
-                .description(LECTURE_DESCRIPTION)
                 .build();
 
-        String content = objectMapper.writeValueAsString(newCourse);
+        String content = objectMapper.writeValueAsString(newLecture);
         String useSchedule = "false";
 
         //expected
@@ -50,19 +45,14 @@ public class CourseControllerTest extends ControllerTest {
         //given
         Login login = getNewLogin();
         String expectedEndTime = "2023-07-29";
-        NewCourse newCourse = NewCourse.builder()
+        NewLecture newLecture = NewLecture.builder()
                 .lectureCode(VIDEO_CODE)
-                .channel(CHANNEL)
-                .title(LECTURETITLE)
-                .duration("5:22")
-                .thumbnail(THUMBNAIL)
-                .description(LECTURE_DESCRIPTION)
                 .dailyTargetTime(30)
                 .scheduling(List.of(1))
                 .expectedEndTime(expectedEndTime)
                 .build();
 
-        String content = objectMapper.writeValueAsString(newCourse);
+        String content = objectMapper.writeValueAsString(newLecture);
         String useSchedule = "true";
 
         //expected
@@ -82,16 +72,11 @@ public class CourseControllerTest extends ControllerTest {
     void saveCourseWithPlaylist() throws Exception {
         //given
         Login login = getNewLogin();
-        NewCourse newCourse = NewCourse.builder()
+        NewLecture newLecture = NewLecture.builder()
                 .lectureCode(PLAYLIST_CODE)
-                .channel(CHANNEL)
-                .title(LECTURETITLE)
-                .duration("5:22")
-                .thumbnail(THUMBNAIL)
-                .description(LECTURE_DESCRIPTION)
                 .build();
 
-        String content = objectMapper.writeValueAsString(newCourse);
+        String content = objectMapper.writeValueAsString(newLecture);
         String useSchedule = "false";
 
         //expected
@@ -112,20 +97,14 @@ public class CourseControllerTest extends ControllerTest {
         //given
         Login login = getNewLogin();
         String expectedEndTime = "2023-07-29";
-        NewCourse newCourse = NewCourse.builder()
+        NewLecture newLecture = NewLecture.builder()
                 .lectureCode(VIDEO_CODE)
-                .channel(CHANNEL)
-                .title(LECTURETITLE)
-                .duration("5:22")
-                .thumbnail(THUMBNAIL)
-                .description(LECTURE_DESCRIPTION)
                 .dailyTargetTime(60)
                 .scheduling(List.of(1, 2, 3, 4))
                 .expectedEndTime(expectedEndTime)
-                .indexCount(4)
                 .build();
 
-        String content = objectMapper.writeValueAsString(newCourse);
+        String content = objectMapper.writeValueAsString(newLecture);
         String useSchedule = "false";
 
         //expected
@@ -146,10 +125,10 @@ public class CourseControllerTest extends ControllerTest {
         //given
         Login login = getNewLogin();
         Long courseId = enrollNewCourseWithVideo(login);
-        NewCourse newCourse = new NewCourse();
-        newCourse.setLectureCode(VIDEO_CODE);
+        NewLecture newLecture = new NewLecture();
+        newLecture.setLectureCode(VIDEO_CODE);
 
-        String content = objectMapper.writeValueAsString(newCourse);
+        String content = objectMapper.writeValueAsString(newLecture);
 
         //expected
         mockMvc.perform(post("/courses/{courseId}", courseId)
@@ -168,10 +147,10 @@ public class CourseControllerTest extends ControllerTest {
         //given
         Login login = getNewLogin();
         Long courseId = enrollNewCourseWithVideo(login);
-        NewCourse newCourse = new NewCourse();
-        newCourse.setLectureCode(PLAYLIST_CODE);
+        NewLecture newLecture = new NewLecture();
+        newLecture.setLectureCode(PLAYLIST_CODE);
 
-        String content = objectMapper.writeValueAsString(newCourse);
+        String content = objectMapper.writeValueAsString(newLecture);
 
         //expected
         mockMvc.perform(post("/courses/{courseId}", courseId)

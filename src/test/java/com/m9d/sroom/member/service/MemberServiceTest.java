@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -28,8 +30,8 @@ public class MemberServiceTest extends ServiceTest {
     @DisplayName("신규 회원을 생성합니다.")
     void createNewMember200() {
         //given
-        GoogleIdToken.Payload payload = getGoogleIdTokenPayload();
-        String memberCode = memberService.getMemberCodeFromPayload(payload);
+        UUID uuid = UUID.randomUUID();
+        String memberCode = uuid.toString();
 
 
         //when

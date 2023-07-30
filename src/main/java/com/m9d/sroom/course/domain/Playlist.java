@@ -2,8 +2,12 @@ package com.m9d.sroom.course.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
-@Getter
+import java.sql.Timestamp;
+import java.util.List;
+
+@Getter @Setter
 @Builder
 public class Playlist {
 
@@ -21,9 +25,7 @@ public class Playlist {
 
     private String description;
 
-    private boolean playlist;
-
-    private String publishedAt;
+    private Timestamp publishedAt;
 
     private int lectureCount;
 
@@ -32,4 +34,8 @@ public class Playlist {
     private int reviewCount;
 
     private String thumbnail;
+
+    private Timestamp updatedAt;
+
+    private List<Video> videoList;
 }

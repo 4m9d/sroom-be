@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class NewCourse {
+public class NewLecture {
 
     @Schema(description = "강의 코드", example = "PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi")
     @NotNull
@@ -29,27 +29,5 @@ public class NewCourse {
     @Schema(description = "예상 종료 시간", example = "2023-12-31")
     private String expectedEndTime;
 
-    @Schema(description = "강의 제목", example = "데이터 과학 기초")
-    @NotNull
-    private String title;
-
-    @Schema(description = "강의 제공 채널", example = "따라하면서 배우는 IT")
-    @NotNull
-    private String channel;
-
-    @Schema(description = "강의 설명", example = "이 강의는 데이터 과학의 기초에 대해 다룹니다.")
-    @NotNull
-    private String description;
-
-    @Schema(description = "강의 시간", example = "300")
-    @NotNull
-    private String duration;
-
-    @Schema(description = "강의 썸네일 URL", example = "https://i.ytimg.com/vi/Av9UFzl_wis/hqdefault.jpg")
-    @NotNull
-    private String thumbnail;
-
-    @Schema(description = "강의 인덱스 카운트", example = "0")
-    private int indexCount = 0;
 
 }

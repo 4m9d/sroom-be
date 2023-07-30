@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.*;
 
 @Repository
@@ -29,7 +30,7 @@ public class CourseRepository {
         return null;
     }
 
-    public Long saveCourse(Long memberId, String courseTitle, Long courseDuration, String thumbnail) {
+    public Long saveCourse(Long memberId, String courseTitle, int courseDuration, String thumbnail) {
         String query = "INSERT INTO COURSE (member_id, course_title, course_duration, thumbnail) VALUES (?, ?, ?, ?)";
 
         jdbcTemplate.update(query, memberId, courseTitle, courseDuration, thumbnail);
@@ -38,7 +39,7 @@ public class CourseRepository {
         return jdbcTemplate.queryForObject(query, Long.class);
     }
 
-    public Long saveCourseWithSchedule(Long memberId, String courseTitle, Long courseDuration, String thumbnail, int weeks, int dailyTargetTime) {
+    public Long saveCourseWithSchedule(Long memberId, String courseTitle, int courseDuration, String thumbnail, int weeks, int dailyTargetTime) {
         String query = "INSERT INTO COURSE (member_id, course_title, course_duration, thumbnail, weeks, daily_target_time, is_scheduled) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         jdbcTemplate.update(query, memberId, courseTitle, courseDuration, thumbnail, weeks, dailyTargetTime, 1);
@@ -47,19 +48,19 @@ public class CourseRepository {
         return jdbcTemplate.queryForObject(query, Long.class);
     }
 
-    public Long saveVideo(String videoCode, int duration, String channel, String thumbnail, String description, String title, String language, String licence) {
+    public Long saveVideo(Video video) {
         String query = "INSERT INTO VIDEO (video_code, duration, channel, thumbnail, description, title, language, license) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        jdbcTemplate.update(query, videoCode, duration, channel, thumbnail, description, title, language, licence);
+        jdbcTemplate.update(query, video.getVideoCode(), video.getDuration(), video.getChannel(), video.getThumbnail(), video.getDescription(), video.getTitle(), video.getLanguage(), video.getLicense());
 
         query = "SELECT LAST_INSERT_ID()";
         return jdbcTemplate.queryForObject(query, Long.class);
     }
 
-    public Long savePlaylist(String playlistCode, String channel, String thumbnail, String description) {
-        String query = "INSERT INTO PLAYLIST (playlist_code, channel, thumbnail, description) VALUES (?, ?, ?, ?)";
+    public Long savePlaylist(Playlist playlist) {
+        String query = "INSERT INTO PLAYLIST (playlist_code, title, channel, thumbnail, description, published_at) VALUES (?, ?, ?, ?, ?, ?)";
 
-        jdbcTemplate.update(query, playlistCode, channel, thumbnail, description);
+        jdbcTemplate.update(query, playlist.getPlaylistCode(), playlist.getTitle(), playlist.getChannel(), playlist.getThumbnail(), playlist.getDescription(), playlist.getPublishedAt());
 
         query = "SELECT LAST_INSERT_ID()";
         return jdbcTemplate.queryForObject(query, Long.class);
@@ -95,19 +96,29 @@ public class CourseRepository {
     }
 
     public Optional<Playlist> findPlaylist(String lectureCode) {
-        String query = "SELECT playlist_id, duration FROM PLAYLIST WHERE playlist_code = ?";
+        String query = "SELECT playlist_id, channel, description, duration, updated_at FROM PLAYLIST WHERE playlist_code = ?";
         Playlist playlist = queryForObjectOrNull(query, (rs, rowNum) -> Playlist.builder()
                 .playlistId(rs.getLong("playlist_id"))
+                .channel(rs.getString("channel"))
+                .description(rs.getString("description"))
                 .duration(rs.getInt("duration"))
+                .updatedAt(rs.getTimestamp("updated_at"))
                 .build(), lectureCode);
         return Optional.ofNullable(playlist);
     }
 
     public Optional<Video> findVideo(String lectureCode) {
-        String query = "SELECT video_id, duration FROM VIDEO WHERE video_code = ?";
+        String query = "SELECT video_id, video_code, channel, thumbnail, language, license, duration, description, title, updated_at FROM VIDEO WHERE video_code = ?";
         Video video = queryForObjectOrNull(query, (rs, rowNum) -> Video.builder()
                 .videoId(rs.getLong("video_id"))
+                .videoCode(rs.getString("video_code"))
+                .channel(rs.getString("channel"))
+                .thumbnail(rs.getString("thumbnail"))
+                .language(rs.getString("language"))
+                .license(rs.getString("license"))
                 .duration(rs.getInt("duration"))
+                .title(rs.getString("title"))
+                .updatedAt(rs.getTimestamp("updated_at"))
                 .build(), lectureCode);
         return Optional.ofNullable(video);
     }
@@ -149,5 +160,52 @@ public class CourseRepository {
 
         Integer totalDuration = jdbcTemplate.queryForObject(query, Integer.class, playlistId);
         return totalDuration == null ? 0 : totalDuration;
+    }
+
+    public Long getMemberIdByCourseId(Long courseId) {
+        String query = "SELECT member_id FROM COURSE WHERE course_id = ?";
+
+        return jdbcTemplate.queryForObject(query, Long.class, courseId);
+    }
+
+    public List<Video> getVideoIdListByPlaylistId(Long playlistId) {
+        String query = "SELECT video_id, video_index FROM PLAYLISTVIDEO WHERE playlsit_id = ?";
+
+        return jdbcTemplate.query(query, ((rs, rowNum) -> Video.builder()
+                .videoId(rs.getLong("video_id"))
+                .index(rs.getInt("video_index"))
+                .build()), playlistId);
+    }
+
+    public Long updatePlaylistAndGetId(Playlist playlist) {
+        String updateQuery = "UPDATE PLAYLIST SET title = ?, channel = ?, description = ?, published_at = ? WHERE playlist_code = ?";
+
+        jdbcTemplate.update(updateQuery, playlist.getTitle(), playlist.getChannel(), playlist.getDescription(), playlist.getPublishedAt(), playlist.getPlaylistCode());
+
+        String selectQuery = "SELECT playlist_id FROM PLAYLIST WHERE playlist_code = ?";
+
+        return jdbcTemplate.queryForObject(selectQuery, (rs, rowNum) -> rs.getLong("playlist_id"), playlist.getPlaylistCode());
+    }
+
+    public Long updateVideoAndGetId(Video video) {
+        String updateQuery = "UPDATE VIDEO SET video_code = ?, channel = ?, thumbnail = ?, language = ?, license = ?, duration = ?, description = ?, title = ? WHERE video_code = ?";
+
+        jdbcTemplate.update(updateQuery, video.getVideoCode(), video.getChannel(), video.getThumbnail(), video.getLanguage(), video.getLicense(), video.getDuration(), video.getDescription(), video.getTitle(), video.getVideoCode());
+
+        String selectQuery = "SELECT video_id From VIDEO WHERE video_code = ?";
+
+        return jdbcTemplate.queryForObject(selectQuery, (rs, rowNum) -> rs.getLong("video_id"), video.getVideoCode());
+    }
+
+    public void deletePlaylistVideo(Long playlistId) {
+        String query = "DELETE FROM PLAYLISTVIDEO WHERE playlist_id = ?";
+
+        jdbcTemplate.update(query, playlistId);
+    }
+
+    public void updatePlaylistDuration(Long playlistId, int playlistDuration) {
+        String query = "UPDATE PLAYLIST SET duration = ? WHERE playlist_id = ?";
+
+        jdbcTemplate.update(query, playlistDuration, playlistId);
     }
 }

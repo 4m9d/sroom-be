@@ -15,4 +15,7 @@ public class EnrolledCourseInfo {
 
     @Schema(description = "등록된 강의 번호", example = "44")
     private Long lectureId;
+
+    @Schema(description = "등록된 강의 제목", example = "손경식의 맥북프로 언박싱")
+    private String title;
 }

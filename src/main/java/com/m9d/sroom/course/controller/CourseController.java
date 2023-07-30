@@ -1,6 +1,6 @@
 package com.m9d.sroom.course.controller;
 
-import com.m9d.sroom.course.dto.request.NewCourse;
+import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.course.service.CourseService;
 import com.m9d.sroom.util.JwtUtil;
@@ -30,9 +30,17 @@ public class CourseController {
     @Tag(name = "강의 등록")
     @Operation(summary = "강의 신규 등록", description = "강의코드를 입력받아 코스를 생성합니다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 강의 코스를 등록하였습니다.", content = @Content(schema = @Schema(implementation = EnrolledCourseInfo.class)))
-    public EnrolledCourseInfo enrollCourse(@Valid @RequestBody NewCourse newCourse, @RequestParam("use_schedule") boolean useSchedule) {
+    public EnrolledCourseInfo enrollCourse(@Valid @RequestBody NewLecture newLecture, @RequestParam("use_schedule") boolean useSchedule) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
-        EnrolledCourseInfo enrolledCourseInfo = courseService.enrollCourse(memberId, newCourse, useSchedule);
+        EnrolledCourseInfo enrolledCourseInfo = courseService.enrollCourse(memberId, newLecture, useSchedule);
         return enrolledCourseInfo;
     }
+
+//    @Auth
+//    @PostMapping("/{courseId}")
+//    public EnrolledCourseInfo addLectureInCourse(@PathVariable("courseId") Long courseId, @Valid @RequestBody NewLecture newLecture){
+//        Long memberId = jwtUtil.getMemberIdFromRequest();
+//        EnrolledCourseInfo enrolledCourseInfo = courseService.addLectureInCourse(memberId, courseId, newLecture);
+//        return enrolledCourseInfo;
+//    }
 }

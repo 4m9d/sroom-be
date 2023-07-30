@@ -1,12 +1,12 @@
 package com.m9d.sroom.course.domain;
 
-import com.m9d.sroom.lecture.dto.response.ReviewBrief;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
-import java.util.List;
+import java.sql.Timestamp;
 
-@Getter
+@Getter @Setter
 @Builder
 public class Video {
 
@@ -37,4 +37,10 @@ public class Video {
     private String thumbnail;
 
     private int index;
+
+    private String language;
+
+    private String license;
+
+    private Timestamp updatedAt;
 }
