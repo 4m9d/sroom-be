@@ -22,4 +22,7 @@ public class DashboardConstant {
         MOTIVATION_GENERAL.add("스룸 없는 시험기간? 생각도 하기 시룸");
     }
 
+    //Value
+    public static final int TARGET_TIME_INTERVAL = 10;
+
 }

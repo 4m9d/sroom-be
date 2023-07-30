@@ -68,8 +68,8 @@ public class DashboardService {
         String memberName = memberRepository.getMemberNameById(memberId);
         int consecutiveLearningDays = getConsecutiveLearningDay(learningHistories);
         int totalLearningTime = dashboardMemberData.getTotalLearningTime();
-        int leftTargetTime = 10 - (totalLearningTime % 10);
-        int targetTime = 10 * (totalLearningTime / 10 + 1);
+        int leftTargetTime = TARGET_TIME_INTERVAL - (totalLearningTime % TARGET_TIME_INTERVAL);
+        int targetTime = TARGET_TIME_INTERVAL * (totalLearningTime / TARGET_TIME_INTERVAL + 1);
 
         motivationList.add(memberName + MOTIVATION_INDUCE_REVIEW);
 
