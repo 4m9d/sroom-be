@@ -161,6 +161,7 @@ public class CourseService {
     }
 
     private void saveCourseVideos(Course course, Playlist playlist, int lectureIndex) {
+        System.out.println("들어오긴 했음");
         List<Video> enrolledVideoList = courseRepository.getVideoListByCourseId(course.getCourseId());
         int lastVideoIndex = enrolledVideoList.get(enrolledVideoList.size() - 1).getIndex();
 
@@ -322,7 +323,7 @@ public class CourseService {
 
     private void validateScheduleField(NewLecture newLecture) {
         if (newLecture.getDailyTargetTime() == 0 ||
-                newLecture.getScheduling() == null ||
+                newLecture.getScheduling().equals(null) ||
                 newLecture.getExpectedEndTime() == null) {
             throw new InvalidParameterException("스케줄 필드를 적절히 입력해주세요");
         }
@@ -375,7 +376,12 @@ public class CourseService {
                 .build());
         JsonNode videoNode = youtubeUtil.safeGet(youtubeResource).get(JSONNODE_ITEMS).get(FIRST_INDEX);
 
-        String language = videoNode.get(JSONNODE_SNIPPET).get(JSONNODE_LANGUAGE).asText();
+        String language;
+        if (videoNode.get(JSONNODE_SNIPPET).get(JSONNODE_LANGUAGE) != null) {
+            language = videoNode.get(JSONNODE_SNIPPET).get(JSONNODE_LANGUAGE).asText();
+        } else {
+            language = UNKNOWN_LANGUAGE;
+        }
         String licence = videoNode.get(JSONNODE_STATUS).get(JSONNODE_LICENCE).asText();
         int videoDuration = dateUtil.convertISOToSeconds(videoNode.get(JSONNODE_CONTENT_DETAIL).get(JSONNODE_DURATION).asText());
         String channel = videoNode.get(JSONNODE_SNIPPET).get(JSONNODE_CHANNEL_TITLE).asText();

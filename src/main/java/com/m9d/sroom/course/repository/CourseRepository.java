@@ -137,17 +137,10 @@ public class CourseRepository {
     public List<Video> getVideoIdAndIndex(Long playlistId) {
         String query = "SELECT video_id, video_index FROM PLAYLISTVIDEO WHERE playlist_id = ? ORDER BY video_index";
 
-        List<Video> videoData = new ArrayList<>();
-
-        jdbcTemplate.query(query, (rs, rowNum) -> {
-            Video.builder()
-                    .videoId(rs.getLong("video_id"))
-                    .index(rs.getInt("video_index"))
-                    .build();
-            return null;
-        }, playlistId);
-
-        return videoData;
+        return jdbcTemplate.query(query, ((rs, rowNum) -> Video.builder()
+                .videoId(rs.getLong("video_id"))
+                .index(rs.getInt("video_index"))
+                .build()), playlistId);
     }
 
     public void saveCourseDuration(Long courseId, int duration) {

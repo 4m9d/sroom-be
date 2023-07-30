@@ -32,6 +32,8 @@ public class YoutubeConstant {
     public static final int DEFAULT_INDEX_COUNT = 50;
     public static final int DEFAULT_INDEX_OFFSET = 0;
 
+    public static final String UNKNOWN_LANGUAGE = "unknown";
+
     //JsonNode
     public static final int FIRST_INDEX = 0;
     public static final String JSONNODE_ITEMS = "items";
