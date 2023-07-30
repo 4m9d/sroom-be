@@ -37,7 +37,7 @@ public class DashboardService {
         for(int i = 0; i < latestCourses.size(); i++) {
 
             Long courseId = latestCourses.get(i).getCourseId();
-            HashSet<String> channels = courseRepository.getChannelListByCourseId(courseId);
+            HashSet<String> channels = courseRepository.getChannelSetByCourseId(courseId);
             int lectureCount = courseRepository.getTotalLectureCountByCourseId(courseId);
             int completedLectureCount = courseRepository.getCompletedLectureCountByCourseId(courseId);
 
