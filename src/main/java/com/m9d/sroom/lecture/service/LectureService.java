@@ -160,14 +160,18 @@ public class LectureService {
             int videoCount = 1;
             String lectureTitle = snippetNode.get(JSONNODE_TITLE).asText();
             String channel = snippetNode.get(JSONNODE_CHANNEL_TITLE).asText();
-            String description = snippetNode.get(JSONNODE_DESCRIPTION).asText();
+            String description;
 
             if (isPlaylist) {
                 lectureCode = item.get(JSONNODE_ID).get(JSONNODE_PLAYLIST_ID).asText();
-                videoCount = getPlaylistItemCount(lectureCode);
+                Playlist playlist = getPlaylistItemCountAndDescription(lectureCode);
+                videoCount = playlist.getLectureCount();
+                description = playlist.getDescription();
             } else {
                 lectureCode = item.get(JSONNODE_ID).get(JSONNODE_VIDEO_ID).asText();
-                viewCount = getViewCount(lectureCode);
+                Video video = getViewCountAndDescription(lectureCode);
+                viewCount = video.getViewCount();
+                description = video.getDescription();
             }
 
             boolean isEnrolled = enrolledLectureSet.contains(lectureCode);
@@ -201,37 +205,45 @@ public class LectureService {
         return keywordSearch;
     }
 
-    private Long getViewCount(String lectureCode) {
-        Optional<Video> videoOptional = lectureRepository.findViewCount(lectureCode);
+    private Video getViewCountAndDescription(String lectureCode) {
+        Optional<Video> videoOptional = lectureRepository.findViewCountAndDescriptioin(lectureCode);
 
-        long viewCount;
+        Video video;
         if (videoOptional.isPresent() && dateUtil.validateExpiration(videoOptional.get().getUpdatedAt(), VIDEO_UPDATE_THRESHOLD_HOURS)) {
-            viewCount = videoOptional.get().getViewCount();
+            video = videoOptional.get();
         } else {
             JsonNode videoNode = youtubeUtil.safeGet(youtubeUtil.getYoutubeResource(VideoReq.
                     builder().
                     videoCode(lectureCode).
                     build()));
-            viewCount = videoNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_STATISTICS).get(JSONNODE_VIEW_COUNT).asLong();
+            video = Video.builder()
+                    .videoCode(lectureCode)
+                    .viewCount(videoNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_STATISTICS).get(JSONNODE_VIEW_COUNT).asLong())
+                    .description(videoNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_SNIPPET).get(JSONNODE_DESCRIPTION).asText())
+                    .build();
         }
 
-        return viewCount;
+        return video;
     }
 
-    private int getPlaylistItemCount(String lectureCode) {
-        Optional<Playlist> playlistOptional = lectureRepository.findVideoCount(lectureCode);
+    private Playlist getPlaylistItemCountAndDescription(String lectureCode) {
+        Optional<Playlist> playlistOptional = lectureRepository.findVideoCountAndDescription(lectureCode);
 
-        int playlistItemCount;
+        Playlist playlist;
         if (playlistOptional.isPresent() && dateUtil.validateExpiration(playlistOptional.get().getUpdatedAt(), PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
-            playlistItemCount = playlistOptional.get().getLectureCount();
+            playlist = playlistOptional.get();
         } else {
             JsonNode playlistNode = youtubeUtil.safeGet(youtubeUtil.getYoutubeResource(PlaylistReq.builder()
                     .playlistCode(lectureCode)
                     .build()));
-            playlistItemCount = playlistNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_CONTENT_DETAIL).get(JSONNODE_ITEM_COUNT).asInt();
+            playlist = Playlist.builder()
+                    .playlistCode(lectureCode)
+                    .description(playlistNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_SNIPPET).get(JSONNODE_DESCRIPTION).asText())
+                    .lectureCount(playlistNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_CONTENT_DETAIL).get(JSONNODE_ITEM_COUNT).asInt())
+                    .build();
         }
 
-        return playlistItemCount;
+        return playlist;
     }
 
     public VideoDetail buildVideoDetailResponse(JsonNode resultNode, int reviewLimit, Set<String> enrolledVideoSet) {
