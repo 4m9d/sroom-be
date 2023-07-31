@@ -131,9 +131,7 @@ public class CourseService {
     private void scheduleVideos(Course course) {
         Date startDate = course.getStartDate();
         int dailyTargetTimeForSecond = course.getDailyTargetTime() * SECONDS_IN_MINUTE;
-        System.out.println("dailyTargetTimeForSecond = " + dailyTargetTimeForSecond);
         int weeklyTargetTimeForSecond = dailyTargetTimeForSecond * DAYS_IN_WEEK;
-        System.out.println("weeklyTargetTimeForSecond = " + weeklyTargetTimeForSecond);
         int section = 1;
         int currentSectionTime = 0;
 
@@ -148,9 +146,7 @@ public class CourseService {
             }
 
             currentSectionTime += video.getDuration();
-            System.out.println("currentSectionTime = " + currentSectionTime);
             lastSectionTime = currentSectionTime;
-            System.out.println("section = " + section);;
 
             courseRepository.updateVideoSection(course.getCourseId(), video.getVideoId(), section);
         }
@@ -166,7 +162,6 @@ public class CourseService {
     }
 
     private void saveCourseVideos(Course course, Playlist playlist, int lectureIndex) {
-        System.out.println("들어오긴 했음");
         List<Video> enrolledVideoList = courseRepository.getVideoListByCourseId(course.getCourseId());
         int lastVideoIndex = enrolledVideoList.get(enrolledVideoList.size() - 1).getIndex();
 
