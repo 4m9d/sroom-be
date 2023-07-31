@@ -1,5 +1,6 @@
 package com.m9d.sroom.course.service;
 
+import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.member.domain.Member;
@@ -48,7 +49,10 @@ public class CourseServiceTest extends ServiceTest {
         Member member = getNewMember();
 
         //when
-        EnrolledCourseInfo enrolledCourseInfo = courseService.enrollCourse(member.getMemberId(), VIDEO_CODE);
+        NewLecture newLecture = NewLecture.builder()
+                .lectureCode(VIDEO_CODE)
+                .build();
+        EnrolledCourseInfo enrolledCourseInfo = courseService.enrollCourse(member.getMemberId(), newLecture, false);
 
         //then
         Long courseIdInLectureTable = courseRepository.getCourseIdByLectureId(enrolledCourseInfo.getLectureId());

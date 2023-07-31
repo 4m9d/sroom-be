@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingPathVariableException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -105,6 +106,23 @@ public class ControllerAdvice {
         return ErrorResponse.builder()
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .message(e.getMessage())
+                .build();
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ErrorResponse argumentNotValidException(MethodArgumentNotValidException e){
+        log.warn("Exception: {}, Message: {}", e.getClass().getSimpleName(), e.getMessage(), e);
+
+        List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
+        List<String> errorMessages = fieldErrors.stream()
+                .map(FieldError::getField)
+                .collect(Collectors.toList());
+
+        String message = String.format("다음 필드에 대한 에러입니다 : %s", String.join(", ", errorMessages));
+        return ErrorResponse.builder()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .message(message)
                 .build();
     }
 }

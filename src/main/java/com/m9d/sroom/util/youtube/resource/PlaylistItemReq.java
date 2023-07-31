@@ -3,16 +3,15 @@ package com.m9d.sroom.util.youtube.resource;
 import com.m9d.sroom.util.youtube.YoutubeConstant;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @Builder
 @RequiredArgsConstructor
-public class PlaylistItem implements YoutubeResource {
+public class PlaylistItemReq implements YoutubeResource {
 
-    private final String playlistId;
+    private final String playlistCode;
     private final String nextPageToken;
     private final int limit;
 
@@ -21,7 +20,7 @@ public class PlaylistItem implements YoutubeResource {
     @Override
     public Map<String, String> getParameters() {
         Map<String, String> params = new HashMap<>(YoutubeConstant.PLAYLIST_ITEMS_PARAMETERS);
-        params.put("playlistId", playlistId);
+        params.put("playlistId", playlistCode);
         params.put("maxResults", String.valueOf(limit));
         if (nextPageToken != null) {
             params.put("pageToken", nextPageToken);
