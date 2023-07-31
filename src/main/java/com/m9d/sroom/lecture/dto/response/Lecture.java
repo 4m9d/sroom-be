@@ -42,4 +42,13 @@ public class Lecture{
 
     @Schema(description = "강의 썸네일", example = "https://i.ytimg.com/vi/Av9UFzl_wis/hqdefault.jpg")
     private String thumbnail;
+
+    @Schema(description = "강의 개수", example = "11")
+    private int lectureCount;
+
+    @Schema(description = "조회수", example = "1222222")
+    private Long viewCount;
+
+    @Schema(description = "생성일", example = "2022-05-23 10:30:21")
+    private String publishedAt;
 }

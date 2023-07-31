@@ -66,6 +66,7 @@ public class YoutubeConstant {
     public static final String JSONNODE_PUBLIC = "public";
     public static final String JSONNODE_LANGUAGE = "defaultAudioLanguage";
     public static final String JSONNODE_POSITION = "position";
+    public static final String JSONNODE_PUBLISHETIME = "publishTime";
     public static final String JSONNODE_PUBLISHED_AT = "publishedAt";
     public static final int PUBLISHED_DATE_START_INDEX = 0;
     public static final int PUBLISHED_DATE_END_INDEX = 10;

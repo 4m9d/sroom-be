@@ -31,13 +31,13 @@ class CourseSqlQuery {
     """
 
     public static final String SAVE_VIDEO_QUERY = """
-    INSERT INTO VIDEO (video_code, duration, channel, thumbnail, description, title, language, license)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO VIDEO (video_code, duration, channel, thumbnail, description, title, language, license, view_count)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     """
 
     public static final String SAVE_PLAYLIST_QUERY = """
-    INSERT INTO PLAYLIST (playlist_code, title, channel, thumbnail, description, published_at)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO PLAYLIST (playlist_code, title, channel, thumbnail, description, published_at, video_count)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
     """
 
     public static final String SAVE_PLAYLIST_VIDEO_QUERY = """
@@ -95,7 +95,7 @@ class CourseSqlQuery {
 
     public static final String UPDATE_PLAYLIST_AND_GET_ID_QUERY = """
     UPDATE PLAYLIST 
-    SET title = ?, channel = ?, description = ?, published_at = ? 
+    SET title = ?, channel = ?, description = ?, published_at = ?, video_count = ?
     WHERE playlist_code = ?
     """
 

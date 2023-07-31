@@ -6,6 +6,6 @@ public class CourseConstant {
     public static final int ENROLL_VIDEO_INDEX = 1;
     public static final int ENROLL_LECTURE_INDEX = 1;
 
-    public static final int PLAYLIST_UPDATE_THRESHOLD_HOURS = 48;
-    public static final int VIDEO_UPDATE_THRESHOLD_HOURS = 24;
+    public static final int PLAYLIST_UPDATE_THRESHOLD_HOURS = 1;
+    public static final int VIDEO_UPDATE_THRESHOLD_HOURS = 1;
 }

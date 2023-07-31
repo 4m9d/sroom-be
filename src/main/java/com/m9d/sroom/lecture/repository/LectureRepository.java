@@ -1,9 +1,13 @@
 package com.m9d.sroom.lecture.repository;
 
+import com.m9d.sroom.course.domain.Playlist;
+import com.m9d.sroom.course.domain.Video;
 import com.m9d.sroom.lecture.dto.response.ReviewBrief;
 import com.m9d.sroom.lecture.sql.LectureSqlQuery;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.text.SimpleDateFormat;
@@ -39,5 +43,37 @@ public class LectureRepository {
 
     public HashSet<String> getPlaylistByMemberId(Long memberId) {
         return new HashSet<>(jdbcTemplate.query(LectureSqlQuery.GET_PLAYLIST_BY_MEMBER_ID_QUERY, (rs, rowNum) -> rs.getString("playlist_code"), memberId));
+    }
+
+    public Optional<Video> findViewCountAndDescriptioin(String lectureCode) {
+        String query = "SELECT view_count, updated_at, description FROM VIDEO WHERE video_code = ?";
+
+        Video video = queryForObjectOrNull(query,
+                (rs, rowNum) -> Video.builder()
+                        .viewCount(rs.getLong("view_count"))
+                        .updatedAt(rs.getTimestamp("updated_at"))
+                        .description(rs.getString("description"))
+                        .build(), lectureCode);
+        return Optional.ofNullable(video);
+    }
+
+    public Optional<Playlist> findVideoCountAndDescription(String lectureCode) {
+        String query = "SELECT video_count, updated_at, description FROM PLAYLIST WHERE playlist_code = ?";
+
+        Playlist playlist = queryForObjectOrNull(query,
+                (rs, rowNum) -> Playlist.builder()
+                        .lectureCount(rs.getInt("video_count"))
+                        .updatedAt(rs.getTimestamp("updated_at"))
+                        .description(rs.getString("description"))
+                        .build(), lectureCode);
+        return Optional.ofNullable(playlist);
+    }
+
+    private <T> T queryForObjectOrNull(String sql, RowMapper<T> rowMapper, Object... args) {
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, args);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 }
