@@ -7,6 +7,7 @@ import com.m9d.sroom.course.domain.Video;
 import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
+import com.m9d.sroom.course.dto.response.MyCourses;
 import com.m9d.sroom.course.exception.CourseNotMatchException;
 import com.m9d.sroom.course.repository.CourseRepository;
 import com.m9d.sroom.lecture.exception.LectureNotFoundException;
@@ -20,6 +21,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.security.InvalidParameterException;
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -49,9 +51,48 @@ public class CourseService {
         this.youtubeUtil = youtubeUtil;
         this.dateUtil = dateUtil;
     }
+  
+    public MyCourses getMyCourses(Long memberId) {
+  
+        List<CourseInfo> courseInfoList = courseRepository.getCourseListByMemberId(memberId);
+        int unfinishedCourseCount = getUnfinishedCourseCount(courseInfoList);
 
-    public List<CourseInfo> getCourseList(Long memberId) {
-        return null;
+        int courseCount = courseInfoList.size();
+
+        int completionRate = (int) ((float)(courseCount - unfinishedCourseCount) / courseCount * 100);
+
+        for(int i = 0; i < courseInfoList.size(); i++) {
+
+            Long courseId = courseInfoList.get(i).getCourseId();
+            HashSet<String> channels = courseRepository.getChannelSetByCourseId(courseId);
+            int lectureCount = courseRepository.getTotalLectureCountByCourseId(courseId);
+            int completedLectureCount = courseRepository.getCompletedLectureCountByCourseId(courseId);
+
+            courseInfoList.get(i).setChannels(String.join(", ", channels));
+            courseInfoList.get(i).setTotalVideoCount(lectureCount);
+            courseInfoList.get(i).setCompletedVideoCount(completedLectureCount);
+        }
+
+        MyCourses myCourses = MyCourses.builder()
+                    .unfinishedCourse(unfinishedCourseCount)
+                    .completionRate(completionRate)
+                    .courses(courseInfoList)
+                    .build();
+
+        return myCourses;
+    }
+
+    public int getUnfinishedCourseCount(List<CourseInfo> courseInfoList) {
+
+        int unfinishedCourseCount = 0;
+
+        for(int i = 0; i < courseInfoList.size(); i++) {
+            if(courseInfoList.get(i).getProgress() < 100) {
+                unfinishedCourseCount++;
+            }
+        }
+
+        return unfinishedCourseCount;
     }
 
     public void requestToFastApi(String videoCode, String defaultLanguage) {

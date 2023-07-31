@@ -1,7 +1,9 @@
 package com.m9d.sroom.course.controller;
 
+import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
+import com.m9d.sroom.course.dto.response.MyCourses;
 import com.m9d.sroom.course.service.CourseService;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
@@ -24,6 +26,18 @@ public class CourseController {
 
     private final JwtUtil jwtUtil;
     private final CourseService courseService;
+
+    @Auth
+    @GetMapping("")
+    @Tag(name = "내 강의실 코스 리스트 불러오기")
+    @Operation(summary = "내 강의코스 불러오기", description = "멤버ID를 입력받아 멤버의 등록 코스 리스트와 관련 정보를 불러옵니다.")
+    @ApiResponse(responseCode = "200", description = "성공적으로 코스 리스트를 불러왔습니다.", content = @Content(schema = @Schema(implementation = MyCourses.class)))
+    public MyCourses getMyCourses() {
+        Long memberId = jwtUtil.getMemberIdFromRequest();
+        MyCourses myCourses = courseService.getMyCourses(memberId);
+
+        return myCourses;
+    }
 
     @Auth
     @PostMapping("")

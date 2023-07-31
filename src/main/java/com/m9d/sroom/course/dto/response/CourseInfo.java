@@ -22,10 +22,10 @@ public class CourseInfo {
     private String channels;
 
     @Schema(description = "코스 내 영상 갯수")
-    private int lectureCount;
+    private int totalVideoCount;
 
     @Schema(description = "수강 완료 영상 갯수")
-    private int completedLectureCount;
+    private int completedVideoCount;
 
     @Schema(description = "코스 총 재생 시간")
     private int duration;

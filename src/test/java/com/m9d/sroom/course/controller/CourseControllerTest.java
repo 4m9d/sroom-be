@@ -16,6 +16,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CourseControllerTest extends ControllerTest {
 
     @Test
+    @DisplayName("내 강의실에서 강의코스 리스트와 정보를 불러옵니다.")
+    void getCourses() throws Exception {
+        //given
+        Login login = getNewLogin();
+
+        //expected
+        mockMvc.perform(get("/courses")
+                    .header("Authorization", login.getAccessToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.unfinished_course").isNotEmpty())
+                .andExpect(jsonPath("$.completion_rate").isNotEmpty())
+                .andDo(print());
+    }
+
+    @Test
     @DisplayName("단일영상 신규 코스등록에 성공합니다 - 일정관리 안함")
     void saveCourseWithVideo() throws Exception {
         //given

@@ -43,8 +43,8 @@ public class DashboardService {
 
 
             latestCourses.get(i).setChannels(String.join(", ", channels));
-            latestCourses.get(i).setLectureCount(lectureCount);
-            latestCourses.get(i).setCompletedLectureCount(completedLectureCount);
+            latestCourses.get(i).setTotalVideoCount(lectureCount);
+            latestCourses.get(i).setCompletedVideoCount(completedLectureCount);
         }
 
 
