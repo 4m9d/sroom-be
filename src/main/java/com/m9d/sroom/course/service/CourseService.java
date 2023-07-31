@@ -68,9 +68,6 @@ public class CourseService {
             int lectureCount = courseRepository.getTotalLectureCountByCourseId(courseId);
             int completedLectureCount = courseRepository.getCompletedLectureCountByCourseId(courseId);
 
-            System.out.println(lectureCount);
-            System.out.println(completedLectureCount);
-
             courseInfoList.get(i).setChannels(String.join(", ", channels));
             courseInfoList.get(i).setTotalVideoCount(lectureCount);
             courseInfoList.get(i).setCompletedVideoCount(completedLectureCount);
