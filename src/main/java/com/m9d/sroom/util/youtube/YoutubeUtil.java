@@ -17,8 +17,10 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+import static com.m9d.sroom.lecture.constant.LectureConstant.*;
 import static com.m9d.sroom.util.youtube.YoutubeConstant.*;
 
 @Service
@@ -96,6 +98,44 @@ public class YoutubeUtil {
         } catch (IOException e) {
             log.info("error occurred. message: get response from youtube failed");
             throw new RuntimeException(e);
+        }
+    }
+
+    public <T> T safeGet(Future<T> future) {
+        try {
+            return future.get();
+        } catch (Exception e) {
+            log.error("error occurred. message = {}", e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public boolean checkIfPlaylist(String lectureCode) {
+        String firstTwoCharacters = lectureCode.substring(LECTURE_CODE_START_INDEX, LECTURE_CODE_PLAYLIST_INDICATOR_LENGTH);
+        return firstTwoCharacters.equals(PLAYLIST_CODE_INDICATOR);
+    }
+
+    public String selectThumbnail(JsonNode thumbnailsNode) {
+        String selectedThumbnailUrl = "";
+
+        JsonNode mediumThumbnailNode = thumbnailsNode.get(JSONNODE_THUMBNAIL_MEDIUM);
+        if (mediumThumbnailNode != null) {
+            selectedThumbnailUrl = mediumThumbnailNode.get(JSONNODE_THUMBNAIL_URL).asText();
+        }
+
+        JsonNode maxresThumbnailNode = thumbnailsNode.get(JSONNODE_THUMBNAIL_MAXRES);
+        if (maxresThumbnailNode != null) {
+            return maxresThumbnailNode.get(JSONNODE_THUMBNAIL_URL).asText();
+        }
+
+        return selectedThumbnailUrl;
+    }
+
+    public void validateNodeIfNotFound(JsonNode node) {
+        if (node.get("pageInfo").get("totalResults").asInt() == 0) {
+            LectureNotFoundException e = new LectureNotFoundException();
+            log.info("error occurred. message = {}", e.getMessage(), e);
+            throw e;
         }
     }
 }

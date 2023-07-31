@@ -1,6 +1,7 @@
 package com.m9d.sroom.util;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.lecture.dto.response.KeywordSearch;
 import com.m9d.sroom.lecture.dto.response.PlaylistDetail;
@@ -8,6 +9,8 @@ import com.m9d.sroom.member.domain.Member;
 import com.m9d.sroom.member.dto.response.Login;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+
+import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -22,10 +25,9 @@ public class ControllerTest extends SroomTest{
     }
 
     protected Member getNewMember() {
-        GoogleIdToken.Payload payload = new GoogleIdToken.Payload();
-        String expectedMemberCode = "106400356559989163499";
-        String memberCode = memberService.getMemberCodeFromPayload(payload.setSubject(expectedMemberCode));
+        UUID uuid = UUID.randomUUID();
 
+        String memberCode = uuid.toString();
         return memberService.findOrCreateMemberByMemberCode(memberCode);
     }
 
@@ -57,7 +59,11 @@ public class ControllerTest extends SroomTest{
     protected Long enrollNewCourseWithVideo(Login login) {
         Object obj = jwtUtil.getDetailFromToken(login.getAccessToken()).get("memberId");
         Long memberId = Long.valueOf((String) obj);
-        EnrolledCourseInfo courseId = courseService.enrollCourse(memberId, VIDEO_CODE);
+
+        NewLecture newLecture = NewLecture.builder()
+                .lectureCode(VIDEO_CODE)
+                .build();
+        EnrolledCourseInfo courseId = courseService.enrollCourse(memberId, newLecture, false);
         return courseId.getCourseId();
     }
 }

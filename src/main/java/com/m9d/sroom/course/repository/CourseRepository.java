@@ -1,13 +1,23 @@
 package com.m9d.sroom.course.repository;
 
+import com.m9d.sroom.course.domain.Course;
+import com.m9d.sroom.course.domain.Playlist;
 import com.m9d.sroom.course.dto.response.CourseInfo;
+import com.m9d.sroom.course.domain.Video;
+import com.m9d.sroom.course.exception.CourseNotFoundException;
 import com.m9d.sroom.course.sql.CourseSqlQuery;
 import com.m9d.sroom.dashbord.sql.DashboardSqlQuery;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static com.m9d.sroom.course.sql.CourseSqlQuery.*;
 import java.util.HashSet;
 import java.util.List;
 
@@ -49,32 +59,164 @@ public class CourseRepository {
         return jdbcTemplate.queryForObject(CourseSqlQuery.GET_COMPLETED_LECTURE_COUNT_BY_COURSE_ID_QUERY, (rs, rowNum) -> rs.getInt("completed_lecture_count"), courseId);
     }
 
-    public Long saveCourse(Long memberId, String courseTitle, Long courseDuration, String thumbnail) {
-        return null; //return courseId
+    public Long saveCourse(Long memberId, String courseTitle, int courseDuration, String thumbnail) {
+        jdbcTemplate.update(SAVE_COURSE_QUERY, memberId, courseTitle, courseDuration, thumbnail);
+
+        return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
     }
 
-    public Long saveCourseWithSchedule(Long memberId, String courseTitle, Long courseDuration, String thumbnail, int weeks, int dailyTargetTime) {
-        return null; //return courseId
+    public Long saveCourseWithSchedule(Long memberId, String courseTitle, int courseDuration, String thumbnail, int weeks, int dailyTargetTime, Date expectedEndDate) {
+        jdbcTemplate.update(SAVE_COURSE_WITH_SCHEDULE_QUERY, memberId, courseTitle, courseDuration, thumbnail, weeks, dailyTargetTime, 1, expectedEndDate);
+
+        return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
     }
 
-    public Long saveVideo(String videoCode, Long duration, String channel, String thumbnail, Long viewCount, String description, String title, String language, boolean licence) {
-        return null; //return videoId
+    public Long saveVideo(Video video) {
+        jdbcTemplate.update(SAVE_VIDEO_QUERY, video.getVideoCode(), video.getDuration(), video.getChannel(), video.getThumbnail(), video.getDescription(), video.getTitle(), video.getLanguage(), video.getLicense());
+
+        return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
     }
 
-    public Long savePlaylist(String playlistCode, String channel, String thumbnail, String description) {
-        return null; //return playlistId
+    public Long savePlaylist(Playlist playlist) {
+        jdbcTemplate.update(SAVE_PLAYLIST_QUERY, playlist.getPlaylistCode(), playlist.getTitle(), playlist.getChannel(), playlist.getThumbnail(), playlist.getDescription(), playlist.getPublishedAt());
+
+        return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
     }
 
     public Long savePlaylistVideo(Long playlistId, Long videoId, int videoIndex) {
-        return null; //return playlistVideoId
+        jdbcTemplate.update(SAVE_PLAYLIST_VIDEO_QUERY, playlistId, videoId, videoIndex);
+
+        return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
     }
 
     public Long saveLecture(Long memberId, Long courseId, Long sourceId, String channel, boolean isPlaylist, int lectureIndex) {
-        return null; //return lectureId
+        jdbcTemplate.update(SAVE_LECTURE_QUERY, memberId, courseId, sourceId, channel, isPlaylist ? 1 : 0, lectureIndex);
+
+        return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
     }
 
-    public Long getCourseIdByLectureId(Long lectureId){
-        return null;
+    public void saveCourseVideo(Long memberId, Long courseId, Long videoId, int section, int videoIndex, int lectureIndex) {
+        jdbcTemplate.update(SAVE_COURSE_VIDEO_QUERY, memberId, courseId, videoId, section, videoIndex, lectureIndex);
     }
 
+    public Long getCourseIdByLectureId(Long lectureId) {
+        return jdbcTemplate.queryForObject(GET_COURSE_ID_BY_LECTURE_ID_QUERY, Long.class, lectureId);
+    }
+
+    public Optional<Playlist> findPlaylist(String lectureCode) {
+        Playlist playlist = queryForObjectOrNull(FIND_PLAYLIST_QUERY, (rs, rowNum) -> Playlist.builder()
+                .playlistId(rs.getLong("playlist_id"))
+                .title(rs.getString("title"))
+                .channel(rs.getString("channel"))
+                .description(rs.getString("description"))
+                .duration(rs.getInt("duration"))
+                .thumbnail(rs.getString("thumbnail"))
+                .updatedAt(rs.getTimestamp("updated_at"))
+                .build(), lectureCode);
+        return Optional.ofNullable(playlist);
+    }
+
+    public Optional<Video> findVideo(String lectureCode) {
+        Video video = queryForObjectOrNull(FIND_VIDEO_QUERY, (rs, rowNum) -> Video.builder()
+                .videoId(rs.getLong("video_id"))
+                .videoCode(rs.getString("video_code"))
+                .channel(rs.getString("channel"))
+                .thumbnail(rs.getString("thumbnail"))
+                .language(rs.getString("language"))
+                .license(rs.getString("license"))
+                .duration(rs.getInt("duration"))
+                .title(rs.getString("title"))
+                .updatedAt(rs.getTimestamp("updated_at"))
+                .build(), lectureCode);
+        return Optional.ofNullable(video);
+    }
+
+    private <T> T queryForObjectOrNull(String sql, RowMapper<T> rowMapper, Object... args) {
+        try {
+            return jdbcTemplate.queryForObject(sql, rowMapper, args);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    public List<Video> getVideoIdAndIndex(Long playlistId) {
+        return jdbcTemplate.query(GET_VIDEO_ID_AND_INDEX_QUERY, ((rs, rowNum) -> Video.builder()
+                .videoId(rs.getLong("video_id"))
+                .index(rs.getInt("video_index"))
+                .build()), playlistId);
+    }
+
+    public int getDurationByPlaylistId(Long playlistId) {
+        Integer totalDuration = jdbcTemplate.queryForObject(GET_DURATION_BY_PLAYLIST_ID_QUERY, Integer.class, playlistId);
+        return totalDuration == null ? 0 : totalDuration;
+    }
+
+    public Long getMemberIdByCourseId(Long courseId) {
+        try{
+            return jdbcTemplate.queryForObject(GET_MEMBER_ID_BY_COURSE_ID_QUERY, Long.class, courseId);
+        }catch (EmptyResultDataAccessException e){
+            throw new CourseNotFoundException();
+        }
+    }
+
+    public Long updatePlaylistAndGetId(Playlist playlist) {
+        jdbcTemplate.update(UPDATE_PLAYLIST_AND_GET_ID_QUERY, playlist.getTitle(), playlist.getChannel(), playlist.getDescription(), playlist.getPublishedAt(), playlist.getPlaylistCode());
+
+        return jdbcTemplate.queryForObject(GET_PLAYLIST_ID_BY_PLAYLIST_CODE, (rs, rowNum) -> rs.getLong("playlist_id"), playlist.getPlaylistCode());
+    }
+
+    public void deletePlaylistVideo(Long playlistId) {
+        jdbcTemplate.update(DELETE_PLAYLIST_VIDEO_QUERY, playlistId);
+    }
+
+    public void updatePlaylistDuration(Long playlistId, int playlistDuration) {
+        jdbcTemplate.update(UPDATE_PLAYLIST_DURATION_QUERY, playlistDuration, playlistId);
+    }
+
+    public Course getCourse(Long courseId) {
+        return jdbcTemplate.queryForObject(GET_COURSE_QUERY, ((rs, rowNum) -> Course.builder()
+                .courseId(courseId)
+                .memberId(rs.getLong("member_id"))
+                .title(rs.getString("course_title"))
+                .duration(rs.getInt("course_duration"))
+                .scheduled(rs.getBoolean("is_scheduled"))
+                .weeks(rs.getInt("weeks"))
+                .startDate(rs.getDate("start_date"))
+                .expectedEndTime(rs.getTimestamp("expected_end_date"))
+                .dailyTargetTime(rs.getInt("daily_target_time"))
+                .build()), courseId);
+    }
+
+    public List<Video> getVideoListByCourseId(Long courseId) {
+        return jdbcTemplate.query(GET_VIDEO_LIST_BY_COURSE_ID_QUERY, ((rs, rowNum) -> Video.builder()
+                .videoId(rs.getLong("video_id"))
+                .index(rs.getInt("video_index"))
+                .complete(rs.getBoolean("is_complete"))
+                .build()), courseId);
+    }
+
+    public int getLastLectureIndex(Long courseId) {
+        try {
+            Integer lastIndex = jdbcTemplate.queryForObject(GET_LAST_LECTURE_INDEX_QUERY, new SingleColumnRowMapper<>(), courseId);
+            return lastIndex != null ? lastIndex : 0;
+        } catch (EmptyResultDataAccessException e) {
+            return 0;
+        }
+    }
+
+    public List<Video> getVideosByCourseId(Long courseId) {
+        return jdbcTemplate.query(GET_VIDEOS_BY_COURSE_ID_QUERY, (rs, rowNum) -> Video.builder()
+                .videoId(rs.getLong("video_id"))
+                .index(rs.getInt("video_index"))
+                .duration(rs.getInt("duration"))
+                .build(), courseId);
+    }
+
+    public void updateVideoSection(Long courseId, Long videoId, int section) {
+        jdbcTemplate.update(UPDATE_VIDEO_SECTION_QUERY, section, courseId, videoId);
+    }
+
+    public void updateSchedule(Long courseId, int weeks, Date expectedEndDate) {
+        jdbcTemplate.update(UPDATE_SCHEDULE_QUERY, weeks, expectedEndDate, courseId);
+    }
 }
