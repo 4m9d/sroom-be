@@ -40,10 +40,10 @@ public class CourseRepository {
         return jdbcTemplate.queryForObject(query, Long.class);
     }
 
-    public Long saveCourseWithSchedule(Long memberId, String courseTitle, int courseDuration, String thumbnail, int weeks, int dailyTargetTime) {
-        String query = "INSERT INTO COURSE (member_id, course_title, course_duration, thumbnail, weeks, daily_target_time, is_scheduled) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    public Long saveCourseWithSchedule(Long memberId, String courseTitle, int courseDuration, String thumbnail, int weeks, int dailyTargetTime, Date expectedEndDate) {
+        String query = "INSERT INTO COURSE (member_id, course_title, course_duration, thumbnail, weeks, daily_target_time, is_scheduled, expected_end_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        jdbcTemplate.update(query, memberId, courseTitle, courseDuration, thumbnail, weeks, dailyTargetTime, 1);
+        jdbcTemplate.update(query, memberId, courseTitle, courseDuration, thumbnail, weeks, dailyTargetTime, 1, expectedEndDate);
 
         query = "SELECT LAST_INSERT_ID()";
         return jdbcTemplate.queryForObject(query, Long.class);

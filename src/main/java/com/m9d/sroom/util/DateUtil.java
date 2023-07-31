@@ -3,6 +3,7 @@ package com.m9d.sroom.util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.Calendar;
@@ -57,6 +58,17 @@ public class DateUtil {
         int totalSeconds = (int) duration.toSeconds();
         return totalSeconds;
     }
+
+    public Date convertStringToDate(String strDate){
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        try{
+            return format.parse(strDate);
+        } catch (ParseException e) {
+            throw new IllegalArgumentException("입력한 날짜 형식이 올바르지 않습니다.");
+        }
+    }
+
+
 
     /**
      * TimeZone

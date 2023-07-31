@@ -188,7 +188,8 @@ public class CourseService {
 
         if (useSchedule) {
             validateScheduleField(newLecture);
-            courseId = courseRepository.saveCourseWithSchedule(memberId, video.getTitle(), video.getDuration(), video.getThumbnail(), newLecture.getScheduling().size(), newLecture.getDailyTargetTime());
+            Date expectedEndDate = dateUtil.convertStringToDate(newLecture.getExpectedEndTime());
+            courseId = courseRepository.saveCourseWithSchedule(memberId, video.getTitle(), video.getDuration(), video.getThumbnail(), newLecture.getScheduling().size(), newLecture.getDailyTargetTime(), expectedEndDate);
             courseRepository.saveCourseVideo(memberId, courseId, video.getVideoId(), ENROLL_DEFAULT_SECTION_SCHEDULE, ENROLL_VIDEO_INDEX, ENROLL_LECTURE_INDEX);
         } else {
             courseId = courseRepository.saveCourse(memberId, video.getTitle(), video.getDuration(), video.getThumbnail());
@@ -208,8 +209,9 @@ public class CourseService {
         Playlist playlist = putAndGetPlaylist(newLecture.getLectureCode());
 
         Long courseId;
+        Date expectedEndDate = dateUtil.convertStringToDate(newLecture.getExpectedEndTime());
         if (useSchedule) {
-            courseId = courseRepository.saveCourseWithSchedule(memberId, playlist.getTitle(), playlist.getDuration(), playlist.getThumbnail(), newLecture.getScheduling().size(), newLecture.getDailyTargetTime());
+            courseId = courseRepository.saveCourseWithSchedule(memberId, playlist.getTitle(), playlist.getDuration(), playlist.getThumbnail(), newLecture.getScheduling().size(), newLecture.getDailyTargetTime(), expectedEndDate);
 
         } else {
             courseId = courseRepository.saveCourse(memberId, playlist.getTitle(), playlist.getDuration(), playlist.getThumbnail());
