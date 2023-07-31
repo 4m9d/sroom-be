@@ -27,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 
 import java.time.Duration;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
@@ -146,6 +148,8 @@ public class LectureService {
     public KeywordSearch buildLectureListResponse(JsonNode resultNode, Set<String> enrolledLectureSet) {
         List<Lecture> lectureList = new ArrayList<>();
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
         for (JsonNode item : resultNode.get(JSONNODE_ITEMS)) {
             JsonNode snippetNode = item.get(JSONNODE_SNIPPET);
             boolean isPlaylist = item.get(JSONNODE_ID).get(JSONNODE_KIND).asText().equals(JSONNODE_TYPE_PLAYLIST);
@@ -167,6 +171,8 @@ public class LectureService {
             }
 
             boolean isEnrolled = enrolledLectureSet.contains(lectureCode);
+            ZonedDateTime date = ZonedDateTime.parse(snippetNode.get(JSONNODE_PUBLISHETIME).asText());
+            String formatted = date.format(formatter);
 
             Lecture lecture = Lecture.builder()
                     .lectureTitle(unescapeHtml(lectureTitle))
@@ -174,6 +180,7 @@ public class LectureService {
                     .channel(unescapeHtml(channel))
                     .lectureCode(lectureCode)
                     .enrolled(isEnrolled)
+                    .publishedAt(formatted)
                     .playlist(isPlaylist)
                     .lectureCount(videoCount)
                     .viewCount(viewCount)
