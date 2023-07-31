@@ -20,7 +20,7 @@ public class DateUtil {
     //time format
     public static final int MINUTES_IN_HOUR = 60;
     public static final int SECONDS_IN_MINUTE = 60;
-    public static final int DAYS_IN_WEEK = 60;
+    public static final int DAYS_IN_WEEK = 7;
     public static final String FORMAT_WITH_HOUR = "%d:%02d:%02d";
     public static final String FORMAT_WITHOUT_HOUR = "%d:%02d";
 

@@ -95,23 +95,14 @@ public class LectureService {
         JsonNode playlistNode = youtubeUtil.safeGet(playlistFuture);
         JsonNode indexNode = youtubeUtil.safeGet(indexFuture);
 
-        validateNodeIfNotFound(playlistNode);
-        validateNodeIfNotFound(indexNode);
+        youtubeUtil.validateNodeIfNotFound(playlistNode);
+        youtubeUtil.validateNodeIfNotFound(indexNode);
 
         Set<String> enrolledPlaylistSet = getEnrolledPlaylistByMemberId(memberId);
 
         PlaylistDetail playlistDetail = buildPlaylistDetailResponse(playlistNode, indexNode, reviewLimit, enrolledPlaylistSet);
         return playlistDetail;
     }
-
-    public void validateNodeIfNotFound(JsonNode node) {
-        if (node.get("pageInfo").get("totalResults").asInt() == 0) {
-            LectureNotFoundException e = new LectureNotFoundException();
-            log.info("error occurred. message = {}", e.getMessage(), e);
-            throw e;
-        }
-    }
-
 
     public IndexInfo getPlaylistItems(String lectureCode, String indexNextToken, int indexLimit) {
         PlaylistItemReq playlistItemReq = PlaylistItemReq.builder()
@@ -120,7 +111,7 @@ public class LectureService {
                 .limit(indexLimit)
                 .build();
         JsonNode resultNode = youtubeUtil.safeGet(youtubeUtil.getYoutubeResource(playlistItemReq));
-        validateNodeIfNotFound(resultNode);
+        youtubeUtil.validateNodeIfNotFound(resultNode);
 
         IndexInfo indexInfo = buildIndexInfoResponse(resultNode);
         return indexInfo;

@@ -130,4 +130,12 @@ public class YoutubeUtil {
 
         return selectedThumbnailUrl;
     }
+
+    public void validateNodeIfNotFound(JsonNode node) {
+        if (node.get("pageInfo").get("totalResults").asInt() == 0) {
+            LectureNotFoundException e = new LectureNotFoundException();
+            log.info("error occurred. message = {}", e.getMessage(), e);
+            throw e;
+        }
+    }
 }

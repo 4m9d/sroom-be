@@ -9,6 +9,7 @@ import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.course.exception.CourseNotMatchException;
 import com.m9d.sroom.course.repository.CourseRepository;
+import com.m9d.sroom.lecture.exception.LectureNotFoundException;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.util.youtube.YoutubeUtil;
 import com.m9d.sroom.util.youtube.resource.PlaylistItemReq;
@@ -130,7 +131,9 @@ public class CourseService {
     private void scheduleVideos(Course course) {
         Date startDate = course.getStartDate();
         int dailyTargetTimeForSecond = course.getDailyTargetTime() * SECONDS_IN_MINUTE;
+        System.out.println("dailyTargetTimeForSecond = " + dailyTargetTimeForSecond);
         int weeklyTargetTimeForSecond = dailyTargetTimeForSecond * DAYS_IN_WEEK;
+        System.out.println("weeklyTargetTimeForSecond = " + weeklyTargetTimeForSecond);
         int section = 1;
         int currentSectionTime = 0;
 
@@ -145,7 +148,9 @@ public class CourseService {
             }
 
             currentSectionTime += video.getDuration();
+            System.out.println("currentSectionTime = " + currentSectionTime);
             lastSectionTime = currentSectionTime;
+            System.out.println("section = " + section);;
 
             courseRepository.updateVideoSection(course.getCourseId(), video.getVideoId(), section);
         }
@@ -209,8 +214,8 @@ public class CourseService {
         Playlist playlist = putAndGetPlaylist(newLecture.getLectureCode());
 
         Long courseId;
-        Date expectedEndDate = dateUtil.convertStringToDate(newLecture.getExpectedEndTime());
         if (useSchedule) {
+            Date expectedEndDate = dateUtil.convertStringToDate(newLecture.getExpectedEndTime());
             courseId = courseRepository.saveCourseWithSchedule(memberId, playlist.getTitle(), playlist.getDuration(), playlist.getThumbnail(), newLecture.getScheduling().size(), newLecture.getDailyTargetTime(), expectedEndDate);
 
         } else {
@@ -304,6 +309,7 @@ public class CourseService {
                 .build());
         JsonNode playlistNode = youtubeUtil.safeGet(youtubeResource);
 
+        youtubeUtil.validateNodeIfNotFound(playlistNode);
 
         JsonNode snippetJsonNode = playlistNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_SNIPPET);
         String thumbnail = youtubeUtil.selectThumbnail(snippetJsonNode.get(JSONNODE_THUMBNAILS));
@@ -377,6 +383,8 @@ public class CourseService {
                 .videoCode(videoCode)
                 .build());
         JsonNode videoNode = youtubeUtil.safeGet(youtubeResource).get(JSONNODE_ITEMS).get(FIRST_INDEX);
+
+        youtubeUtil.validateNodeIfNotFound(youtubeUtil.safeGet(youtubeResource));
 
         String language;
         if (videoNode.get(JSONNODE_SNIPPET).get(JSONNODE_LANGUAGE) != null) {
