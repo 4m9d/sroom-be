@@ -38,6 +38,10 @@ public class MemberRepository {
         jdbcTemplate.update(MemberSqlQuery.SAVE_REFRESH_TOKEN_QUERY, refreshToken, memberId);
     }
 
+    public String getMemberNameById(Long memberId) {
+        return jdbcTemplate.queryForObject(MemberSqlQuery.GET_MEMBER_NAME_BY_ID_QUERY, (rs, rowNum) -> rs.getString(1), memberId);
+    }
+
     public Optional<Member> findByMemberId(Long memberId) {
         Member member = queryForObjectOrNull(MemberSqlQuery.FIND_BY_MEMBER_ID_QUERY, memberRowMapper, memberId);
         return Optional.ofNullable(member);

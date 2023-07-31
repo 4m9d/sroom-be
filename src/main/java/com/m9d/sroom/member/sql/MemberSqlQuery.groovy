@@ -14,5 +14,7 @@ class MemberSqlQuery {
 
     public static final String GET_REFRESH_BY_ID_QUERY = "SELECT refresh_token FROM MEMBER WHERE member_id = ?"
 
+    public static final String GET_MEMBER_NAME_BY_ID_QUERY = "SELECT member_name FROM MEMBER WHERE member_id = ?"
+
 }
 
