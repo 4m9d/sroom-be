@@ -1,6 +1,8 @@
 package com.m9d.sroom.course.controller;
 
+import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
+import com.m9d.sroom.course.dto.response.MyCourses;
 import com.m9d.sroom.course.service.CourseService;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
@@ -16,6 +18,15 @@ public class CourseController {
 
     private final JwtUtil jwtUtil;
     private final CourseService courseService;
+
+    @Auth
+    @GetMapping("")
+    public MyCourses getCourses() {
+        Long memberId = jwtUtil.getMemberIdFromRequest();
+        MyCourses myCourses = courseService.getMyCourses(memberId);
+
+        return myCourses;
+    }
 
     @Auth
     @PostMapping("")

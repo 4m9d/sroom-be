@@ -18,4 +18,11 @@ class CourseSqlQuery {
     FROM COURSEVIDEO cv
     WHERE cv.course_id = ? AND cv.is_complete = true
     """
+
+    public static final String GET_COURSES_BY_MEMBER_ID_QUERY = """
+    SELECT c.course_id, c.thumbnail, c.course_duration, c.last_view_time, c.course_title, c.progress
+    FROM COURSE c
+    WHERE c.member_id = ?
+    ORDER BY c.last_view_time DESC
+    """
 }

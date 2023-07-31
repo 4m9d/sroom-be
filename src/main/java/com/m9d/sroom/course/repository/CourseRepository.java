@@ -2,10 +2,12 @@ package com.m9d.sroom.course.repository;
 
 import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.sql.CourseSqlQuery;
+import com.m9d.sroom.dashbord.sql.DashboardSqlQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.text.SimpleDateFormat;
 import java.util.HashSet;
 import java.util.List;
 
@@ -20,7 +22,19 @@ public class CourseRepository {
     }
 
     public List<CourseInfo> getCourseListByMemberId(Long memberId) {
-        return null;
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+
+        return jdbcTemplate.query(CourseSqlQuery.GET_COURSES_BY_MEMBER_ID_QUERY,
+                (rs, rowNum) -> CourseInfo.builder()
+                        .courseId(rs.getLong("course_id"))
+                        .duration(rs.getInt("course_duration") / 60)
+                        .thumbnail(rs.getString("thumbnail"))
+                        .progress(rs.getInt("progress"))
+                        .courseTitle(rs.getString("course_title"))
+                        .lastViewTime(dateFormat.format(rs.getTimestamp("last_view_time")))
+                        .build(),
+                memberId);
     }
 
     public HashSet<String> getChannelSetByCourseId(Long courseId) {
