@@ -58,13 +58,13 @@ public class CourseRepository {
     }
 
     public Long saveVideo(Video video) {
-        jdbcTemplate.update(SAVE_VIDEO_QUERY, video.getVideoCode(), video.getDuration(), video.getChannel(), video.getThumbnail(), video.getDescription(), video.getTitle(), video.getLanguage(), video.getLicense());
+        jdbcTemplate.update(SAVE_VIDEO_QUERY, video.getVideoCode(), video.getDuration(), video.getChannel(), video.getThumbnail(), video.getDescription(), video.getTitle(), video.getLanguage(), video.getLicense(), video.getViewCount());
 
         return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
     }
 
     public Long savePlaylist(Playlist playlist) {
-        jdbcTemplate.update(SAVE_PLAYLIST_QUERY, playlist.getPlaylistCode(), playlist.getTitle(), playlist.getChannel(), playlist.getThumbnail(), playlist.getDescription(), playlist.getPublishedAt());
+        jdbcTemplate.update(SAVE_PLAYLIST_QUERY, playlist.getPlaylistCode(), playlist.getTitle(), playlist.getChannel(), playlist.getThumbnail(), playlist.getDescription(), playlist.getPublishedAt(), playlist.getLectureCount());
 
         return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
     }
@@ -146,7 +146,7 @@ public class CourseRepository {
     }
 
     public Long updatePlaylistAndGetId(Playlist playlist) {
-        jdbcTemplate.update(UPDATE_PLAYLIST_AND_GET_ID_QUERY, playlist.getTitle(), playlist.getChannel(), playlist.getDescription(), playlist.getPublishedAt(), playlist.getPlaylistCode());
+        jdbcTemplate.update(UPDATE_PLAYLIST_AND_GET_ID_QUERY, playlist.getTitle(), playlist.getChannel(), playlist.getDescription(), playlist.getPublishedAt(), playlist.getLectureCount(), playlist.getPlaylistCode());
 
         return jdbcTemplate.queryForObject(GET_PLAYLIST_ID_BY_PLAYLIST_CODE, (rs, rowNum) -> rs.getLong("playlist_id"), playlist.getPlaylistCode());
     }

@@ -3,9 +3,12 @@ package com.m9d.sroom.util;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.TimeZone;
@@ -66,6 +69,15 @@ public class DateUtil {
         } catch (ParseException e) {
             throw new IllegalArgumentException("입력한 날짜 형식이 올바르지 않습니다.");
         }
+    }
+
+    public boolean validateExpiration(Timestamp time, long updateThresholdHours) {
+        LocalDateTime updatedAt = LocalDateTime.ofInstant(time.toInstant(), ZoneId.systemDefault());
+        if (updatedAt.isAfter(LocalDateTime.now().minusHours(updateThresholdHours))) {
+            return true;
+        }
+
+        return false;
     }
 
 

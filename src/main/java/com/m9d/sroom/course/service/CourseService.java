@@ -261,7 +261,7 @@ public class CourseService {
         Playlist playlist;
         Long playlistId;
 
-        if (playlistOptional.isPresent() && validateExpiration(playlistOptional.get().getUpdatedAt(), PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
+        if (playlistOptional.isPresent() && dateUtil.validateExpiration(playlistOptional.get().getUpdatedAt(), PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
             playlist = playlistOptional.get();
         } else {
             playlist = getPlaylistFromYoutube(playlistCode);
@@ -289,15 +289,6 @@ public class CourseService {
 
     }
 
-    private boolean validateExpiration(Timestamp time, long updateThresholdHours) {
-        LocalDateTime updatedAt = LocalDateTime.ofInstant(time.toInstant(), ZoneId.systemDefault());
-        if (updatedAt.isAfter(LocalDateTime.now().minusHours(updateThresholdHours))) {
-            return true;
-        }
-
-        return false;
-    }
-
     private Playlist getPlaylistFromYoutube(String playlistCode) {
         CompletableFuture<JsonNode> youtubeResource = youtubeUtil.getYoutubeResource(PlaylistReq.builder()
                 .playlistCode(playlistCode)
@@ -313,6 +304,7 @@ public class CourseService {
         String description = snippetJsonNode.get(JSONNODE_DESCRIPTION).asText();
         String publishedAtString = snippetJsonNode.get(JSONNODE_PUBLISHED_AT).asText();
         Timestamp publishedAt = Timestamp.from(Instant.parse(publishedAtString));
+        int videoCount = playlistNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_CONTENT_DETAIL).get(JSONNODE_ITEM_COUNT).asInt();
 
         return Playlist.builder()
                 .playlistCode(playlistCode)
@@ -321,6 +313,7 @@ public class CourseService {
                 .channel(channel)
                 .description(description)
                 .publishedAt(publishedAt)
+                .lectureCount(videoCount)
                 .build();
     }
 
@@ -360,7 +353,7 @@ public class CourseService {
 
         Video video;
         Long videoId;
-        if (videoOptional.isPresent() && validateExpiration(videoOptional.get().getUpdatedAt(), VIDEO_UPDATE_THRESHOLD_HOURS)) {
+        if (videoOptional.isPresent() && dateUtil.validateExpiration(videoOptional.get().getUpdatedAt(), VIDEO_UPDATE_THRESHOLD_HOURS)) {
             video = videoOptional.get();
             videoId = video.getVideoId();
             video.setVideoId(videoId);
@@ -393,6 +386,7 @@ public class CourseService {
         String description = videoNode.get(JSONNODE_SNIPPET).get(JSONNODE_DESCRIPTION).asText();
         String title = videoNode.get(JSONNODE_SNIPPET).get(JSONNODE_TITLE).asText();
         String thumbnail = youtubeUtil.selectThumbnail(videoNode.get(JSONNODE_SNIPPET).get(JSONNODE_THUMBNAILS));
+        Long viewCount = videoNode.get(JSONNODE_STATISTICS).get(JSONNODE_VIEW_COUNT).asLong();
 
         return Video.builder()
                 .videoCode(videoCode)
@@ -402,6 +396,7 @@ public class CourseService {
                 .license(licence)
                 .duration(videoDuration)
                 .description(description)
+                .viewCount(viewCount)
                 .title(title)
                 .build();
     }
