@@ -4,6 +4,7 @@ import com.m9d.sroom.lecture.dto.response.KeywordSearch;
 import com.m9d.sroom.lecture.dto.response.PlaylistDetail;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.util.ControllerTest;
+import lombok.extern.java.Log;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -243,5 +244,16 @@ public class LectureControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("유저 ID를 통해 ")
+    @DisplayName("유저 ID를 통해 추천 강의 5개를 불러옵니다.")
+    void getRecommendations() throws Exception {
+        //given
+        Login login = getNewLogin();
+
+        //expected
+        mockMvc.perform(get("/lectures/recommendations")
+                .header("Authorization", login.getAccessToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.recommendations").isArray())
+                .andExpect(jsonPath("$.recommendations", hasSize(5)));
+    }
 }
