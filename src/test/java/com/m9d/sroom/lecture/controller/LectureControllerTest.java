@@ -4,6 +4,7 @@ import com.m9d.sroom.lecture.dto.response.KeywordSearch;
 import com.m9d.sroom.lecture.dto.response.PlaylistDetail;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.util.ControllerTest;
+import lombok.extern.java.Log;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -240,5 +241,19 @@ public class LectureControllerTest extends ControllerTest {
                         .queryParam("index_only", indexOnly))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", is("reviewOnly와 indexOnly를 동시에 true로 설정할 수 없습니다.")));
+    }
+
+    @Test
+    @DisplayName("유저 ID를 통해 추천 강의 5개를 불러옵니다.")
+    void getRecommendations() throws Exception {
+        //given
+        Login login = getNewLogin();
+
+        //expected
+        mockMvc.perform(get("/lectures/recommendations")
+                .header("Authorization", login.getAccessToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.recommendations").isArray())
+                .andExpect(jsonPath("$.recommendations", hasSize(5)));
     }
 }

@@ -26,7 +26,7 @@ public class DashboardController {
 
     @Auth
     @GetMapping("")
-    @Tag(name = "대시보드 불러오기")
+    @Tag(name = "대시보드")
     @Operation(summary = "대시보드 불러오기", description = "유저 ID 바탕으로 대시보드 정보 불러오기")
     @ApiResponse(responseCode = "200", description = "성공적으로 대시보드를 반환하였습니다.", content = @Content(schema = @Schema(implementation = Dashboard.class)))
     public Dashboard getDashboard() {

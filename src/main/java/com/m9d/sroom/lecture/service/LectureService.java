@@ -393,4 +393,24 @@ public class LectureService {
             throw new VideoIndexParamException();
         }
     }
+
+    public Recommendations getRecommendations(Long memberId) {
+        return null;
+    }
+
+    public List<RecommendLecture> getTopRatedVideos() {
+        return null;
+    }
+
+    public List<RecommendLecture> getTopRatedPlaylists() {
+        return null;
+    }
+
+    public List<RecommendLecture> getRecommendsByChannel(Long memberId) {
+        return null;
+    }
+
+    public List<String> getMostEnrolledChannels(Long memberId) {
+        return null;
+    }
 }
