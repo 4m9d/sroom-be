@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -70,5 +71,14 @@ public class LectureController {
 
         ResponseEntity<?> lectureDetail = lectureService.getLectureDetail(memberId, isPlaylist, lectureCode, lectureDetailParam);
         return lectureDetail;
+    }
+
+    @Auth
+    @GetMapping("/recommendations")
+    @Tag(name = "강의 검색")
+    @Operation(summary = "강의 추천", description = "유저 ID를 받아 적당한 강의를 추천한다.")
+    @ApiResponse(responseCode = "200", description = "성공적으로 추천 결과를 반환하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Recommendations.class))})
+    public Recommendations getRecommendations() {
+        return null;
     }
 }
