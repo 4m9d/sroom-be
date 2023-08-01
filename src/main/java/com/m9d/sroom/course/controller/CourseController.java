@@ -52,6 +52,9 @@ public class CourseController {
 
     @Auth
     @PostMapping("/{courseId}")
+    @Tag(name = "강의 등록")
+    @Operation(summary = "기존 코스 강의 등록", description = "강의코드와 코스ID를 받아 코스에 추가합니다.")
+    @ApiResponse(responseCode = "200", description = "성공적으로 코스에 강의를 추가하였습니다.", content = @Content(schema = @Schema(implementation = EnrolledCourseInfo.class)))
     public EnrolledCourseInfo addLectureInCourse(@PathVariable("courseId") Long courseId, @Valid @RequestBody NewLecture newLecture){
         Long memberId = jwtUtil.getMemberIdFromRequest();
         EnrolledCourseInfo enrolledCourseInfo = courseService.addLectureInCourse(memberId, courseId, newLecture);
