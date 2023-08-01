@@ -1,5 +1,6 @@
 package com.m9d.sroom.lecture.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
@@ -21,6 +22,7 @@ public class RecommendLecture {
     @Schema(description = "강의 ID")
     private String lectureCode;
 
+    @JsonProperty("is_playlist")
     @Schema(description = "플레이리스트 여부")
     private boolean isPlaylist;
 
