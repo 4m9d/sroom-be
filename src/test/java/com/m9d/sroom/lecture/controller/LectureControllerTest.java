@@ -241,4 +241,7 @@ public class LectureControllerTest extends ControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message", is("reviewOnly와 indexOnly를 동시에 true로 설정할 수 없습니다.")));
     }
+
+    @Test
+    @DisplayName("유저 ID를 통해 ")
 }
