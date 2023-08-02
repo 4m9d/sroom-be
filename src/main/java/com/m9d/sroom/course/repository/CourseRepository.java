@@ -40,7 +40,7 @@ public class CourseRepository {
         return jdbcTemplate.query(CourseSqlQuery.GET_COURSES_BY_MEMBER_ID_QUERY,
                 (rs, rowNum) -> CourseInfo.builder()
                         .courseId(rs.getLong("course_id"))
-                        .duration(rs.getInt("course_duration") / 60)
+                        .duration(rs.getInt("course_duration"))
                         .thumbnail(rs.getString("thumbnail"))
                         .progress(rs.getInt("progress"))
                         .courseTitle(rs.getString("course_title"))
