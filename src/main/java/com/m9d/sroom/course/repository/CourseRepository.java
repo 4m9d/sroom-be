@@ -7,6 +7,7 @@ import com.m9d.sroom.course.domain.Video;
 import com.m9d.sroom.course.exception.CourseNotFoundException;
 import com.m9d.sroom.course.sql.CourseSqlQuery;
 import com.m9d.sroom.dashbord.sql.DashboardSqlQuery;
+import com.m9d.sroom.lecture.dto.response.CourseBrief;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.m9d.sroom.course.sql.CourseSqlQuery.*;
+
 import java.util.HashSet;
 import java.util.List;
 
@@ -103,6 +105,16 @@ public class CourseRepository {
         return jdbcTemplate.queryForObject(GET_COURSE_ID_BY_LECTURE_ID_QUERY, Long.class, lectureId);
     }
 
+    public List<CourseBrief> getCourseBriefListByMember(Long memberId) {
+        return jdbcTemplate.query(GET_COURSE_LIST_QUERY,
+                ((rs, rowNum) -> CourseBrief.builder()
+                        .title(rs.getString("course_title"))
+                        .courseId(rs.getLong("course_id"))
+                        .videoCount(rs.getInt("video_count"))
+                        .build()), memberId
+        );
+    }
+
     public Optional<Playlist> findPlaylist(String lectureCode) {
         Playlist playlist = queryForObjectOrNull(FIND_PLAYLIST_QUERY, (rs, rowNum) -> Playlist.builder()
                 .playlistId(rs.getLong("playlist_id"))
@@ -152,9 +164,9 @@ public class CourseRepository {
     }
 
     public Long getMemberIdByCourseId(Long courseId) {
-        try{
+        try {
             return jdbcTemplate.queryForObject(GET_MEMBER_ID_BY_COURSE_ID_QUERY, Long.class, courseId);
-        }catch (EmptyResultDataAccessException e){
+        } catch (EmptyResultDataAccessException e) {
             throw new CourseNotFoundException();
         }
     }

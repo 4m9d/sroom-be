@@ -21,6 +21,6 @@ public class IndexInfo {
     @Schema(description = "다음 페이지 토큰", example = "EAAaBlBUOkNBbw")
     private String nextPageToken;
 
-    @Schema(description = "총 재생 시간", example = "5:12:34")
-    private String totalDuration;
+    @Schema(description = "총 재생 시간", example = "245212")
+    private int totalDuration;
 }

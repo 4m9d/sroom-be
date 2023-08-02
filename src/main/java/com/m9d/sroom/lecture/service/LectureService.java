@@ -3,6 +3,7 @@ package com.m9d.sroom.lecture.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.m9d.sroom.course.domain.Playlist;
 import com.m9d.sroom.course.domain.Video;
+import com.m9d.sroom.course.repository.CourseRepository;
 import com.m9d.sroom.lecture.dto.request.KeywordSearchParam;
 import com.m9d.sroom.lecture.dto.request.LectureDetailParam;
 import com.m9d.sroom.lecture.dto.response.Index;
@@ -44,11 +45,13 @@ import static com.m9d.sroom.util.youtube.YoutubeConstant.*;
 public class LectureService {
 
     private final LectureRepository lectureRepository;
+    private final CourseRepository courseRepository;
     private final YoutubeUtil youtubeUtil;
     private final DateUtil dateUtil;
 
-    public LectureService(LectureRepository lectureRepository, YoutubeUtil youtubeUtil, DateUtil dateUtil) {
+    public LectureService(LectureRepository lectureRepository, CourseRepository courseRepository, YoutubeUtil youtubeUtil, DateUtil dateUtil) {
         this.lectureRepository = lectureRepository;
+        this.courseRepository = courseRepository;
         this.youtubeUtil = youtubeUtil;
         this.dateUtil = dateUtil;
     }
@@ -82,6 +85,7 @@ public class LectureService {
         Set<String> enrolledVideoSet = getEnrolledVideoByMemberId(memberId);
 
         VideoDetail videoDetail = buildVideoDetailResponse(resultNode, reviewLimit, enrolledVideoSet);
+        videoDetail.setCourses(courseRepository.getCourseBriefListByMember(memberId));
         return videoDetail;
     }
 
@@ -108,6 +112,7 @@ public class LectureService {
         Set<String> enrolledPlaylistSet = getEnrolledPlaylistByMemberId(memberId);
 
         PlaylistDetail playlistDetail = buildPlaylistDetailResponse(playlistNode, indexNode, reviewLimit, enrolledPlaylistSet);
+        playlistDetail.setCourses(courseRepository.getCourseBriefListByMember(memberId));
         return playlistDetail;
     }
 
@@ -256,7 +261,7 @@ public class LectureService {
         List<ReviewBrief> reviewBriefList = lectureRepository.getReviewBriefList(resultNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_ID).asText(), DEFAULT_REVIEW_OFFSET, reviewLimit);
 
         String lectureCode = resultNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_ID).asText();
-        String videoDuration = dateUtil.formatDuration(resultNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_CONTENT_DETAIL).get(JSONNODE_DURATION).asText());
+        int videoDuration = dateUtil.convertISOToSeconds(resultNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_CONTENT_DETAIL).get(JSONNODE_DURATION).asText());
 
         boolean isEnrolled = enrolledVideoSet.contains(lectureCode);
         String lectureTitle = snippetJsonNode.get(JSONNODE_TITLE).asText();
@@ -329,7 +334,7 @@ public class LectureService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        String totalDuration = dateUtil.formatDuration(Duration.ofSeconds(totalDurationSeconds.get()).toString());
+        int totalDuration = totalDurationSeconds.intValue();
 
         return IndexInfo.builder()
                 .indexList(indexList)
@@ -353,7 +358,7 @@ public class LectureService {
                         .index(snippetNode.get(JSONNODE_POSITION).asInt())
                         .lectureTitle(unescapeHtml(snippetNode.get(JSONNODE_TITLE).asText()))
                         .thumbnail(thumbnail)
-                        .duration(dateUtil.formatDuration(videoDuration))
+                        .duration(dateUtil.convertISOToSeconds(videoDuration))
                         .build();
             }
             return null;

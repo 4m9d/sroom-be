@@ -23,5 +23,5 @@ public class Index {
     private String lectureTitle;
 
     @Schema(description = "영상 길이", example = "44:23")
-    private String duration;
+    private int duration;
 }

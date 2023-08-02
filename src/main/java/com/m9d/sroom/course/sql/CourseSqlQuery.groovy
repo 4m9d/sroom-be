@@ -161,6 +161,14 @@ class CourseSqlQuery {
     WHERE course_id = ?
     """
 
+    public static final String GET_COURSE_LIST_QUERY = """
+    SELECT c.course_title, c.course_id, COUNT(cv.course_id) as video_count
+    FROM COURSE c
+    LEFT JOIN COURSEVIDEO cv ON c.course_id = cv.course_id
+    WHERE c.member_id = ?
+    GROUP BY c.course_id;
+    """
+
     public static final String GET_LAST_INSERT_ID_QUERY = """
     SELECT LAST_INSERT_ID()
     """
