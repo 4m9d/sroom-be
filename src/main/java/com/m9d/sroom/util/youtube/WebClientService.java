@@ -1,21 +1,18 @@
 package com.m9d.sroom.util.youtube;
 
-import com.google.common.net.HttpHeaders;
-import com.m9d.sroom.util.youtube.resource.LectureListReq;
-import com.m9d.sroom.util.youtube.resource.PlaylistItemReq;
-import com.m9d.sroom.util.youtube.resource.PlaylistReq;
-import com.m9d.sroom.util.youtube.resource.VideoReq;
-import com.m9d.sroom.util.youtube.vo.playlist.PlaylistVo;
-import com.m9d.sroom.util.youtube.vo.playlistitem.PlaylistVideoVo;
-import com.m9d.sroom.util.youtube.vo.search.SearchItemVo;
-import com.m9d.sroom.util.youtube.vo.video.VideoVo;
+import com.m9d.sroom.util.youtube.resource.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
+import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.DefaultUriBuilderFactory;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
-import java.util.Map;
-
+@Service
+@Slf4j
+@RequiredArgsConstructor
 public class WebClientService implements YoutubeApi {
 
     @Value("${google-cloud-api-key}")
@@ -26,52 +23,20 @@ public class WebClientService implements YoutubeApi {
 
     private final WebClient webClient;
 
-    public WebClientService() {
-        this.webClient = WebClient.builder()
-                .baseUrl(baseUrl)
-                .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                .build();
-    }
-
     @Override
-    public Mono<SearchItemVo> getSearchVo(LectureListReq lectureListReq) {
-//        String path = baseUrl.concat(lectureListReq.getEndpoint());
-//        return this.webClient.get()
-//                .uri(uriBuilder -> {
-//                    uriBuilder.path(path);
-//                    Map<String, String> params = lectureListReq.getParameters();
-//
-//                    for (Map.Entry<String, String> entry : params.entrySet()) {
-//                        String paramName = entry.getKey();
-//                        String paramValue = entry.getValue();
-//
-//                        uriBuilder.queryParam(paramName, paramValue);
-//                    }
-//                    return uriBuilder.build();
-//                })
-//                .retrieve()
-//                .bodyToMono(SearchItemVo.class);
-        return null;
-    }
+    public Mono<String> getYoutubeVoStr(YoutubeResource resource) {
+        return this.webClient
+                .get()
+                .uri(uriBuilder -> {
+                    UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl)
+                            .path(resource.getEndpoint())
+                            .queryParam("key", googleCloudApiKey);
 
-    @Override
-    public VideoVo getVideoVo(VideoReq videoReq) {
-//        String path = baseUrl.concat(videoReq.getEndpoint());
-//        return this.webClient.get()
-//                .uri(uriBuilder -> {
-//                    uriBuilder.path(path);
-//
-//                })
-        return null;
-    }
+                    resource.getParameters().forEach(uriComponentsBuilder::queryParam);
 
-    @Override
-    public PlaylistVo getPlaylist(PlaylistReq playlistReq) {
-        return null;
-    }
-
-    @Override
-    public PlaylistVideoVo getPlaylistVideo(PlaylistItemReq playlistItemReq) {
-        return null;
+                    return uriComponentsBuilder.build().toUri();
+                })
+                .retrieve()
+                .bodyToMono(String.class);
     }
 }

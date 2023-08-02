@@ -15,7 +15,7 @@ public class PlaylistItemReq implements YoutubeResource {
     private final String nextPageToken;
     private final int limit;
 
-    private static final String ENDPOINT = "playlistItems?";
+    private static final String ENDPOINT = "/playlistItems";
 
     @Override
     public Map<String, String> getParameters() {

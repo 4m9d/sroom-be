@@ -15,7 +15,7 @@ public class VideoReq implements YoutubeResource {
 
     private final String videoCode;
 
-    private static final String ENDPOINT = "videos?";
+    private static final String ENDPOINT = "/videos";
 
     @Override
     public Map<String, String> getParameters() {

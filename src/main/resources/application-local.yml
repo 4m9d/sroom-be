@@ -22,7 +22,10 @@ spring:
       suffix: .html
 
 youtube:
-  base-url: https://www.googleapis.com/youtube/v3/
+  base-url: https://www.googleapis.com/youtube/v3
+  schema: https
+  host: www.googleapis.com
+  path: youtube/v3
 
 #Devtool
 devtools:

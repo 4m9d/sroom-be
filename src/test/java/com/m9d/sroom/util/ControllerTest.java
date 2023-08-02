@@ -232,7 +232,7 @@ public class ControllerTest extends SroomTest {
 
         KeywordSearch keywordSearch;
 
-        k.class);
+        keywordSearch = gson.fromJson(jsonStr, KeywordSearch.class);
 
         System.out.println(keywordSearch.toString());
 
@@ -241,12 +241,6 @@ public class ControllerTest extends SroomTest {
     @Test
     @DisplayName("web client non-block을 테스트합니다.")
     void testNonBlocking() throws Exception {
-        String baseUrl = "https://www.googleapis.com/youtube/v3/";
-
-        WebClient webClient = WebClient.builder()
-                .baseUrl(baseUrl)
-                .defaultHeader(HttpHeaders.ACCEPT, MediaType.APPLICATION_JSON_VALUE)
-                .build();
         LectureListReq lectureListReq = LectureListReq.builder()
                 .keyword("네트워크")
                 .filter("all")
@@ -254,25 +248,14 @@ public class ControllerTest extends SroomTest {
                 .pageToken(null)
                 .build();
         System.out.println(System.currentTimeMillis());
-        Mono<String> searchstrMono = webClient.get()
-                .uri(uriBuilder -> {
-                    uriBuilder
-                            .path("/search")
-                            .queryParam("key", "AIzaSyC-gma83Zhph704n0dmKTR71Rbb_xoNfoU");
-                    Map<String, String> params = lectureListReq.getParameters();
-                    params.forEach(uriBuilder::queryParam);
-                    return uriBuilder.build();
-                })
-                .retrieve()
-                .bodyToMono(String.class);
+        Mono<String> testStr = youtubeApi.getYoutubeVoStr(lectureListReq);
         System.out.println(System.currentTimeMillis());
-        String searchStr = searchstrMono.block();
+        String test = testStr.block();
         System.out.println(System.currentTimeMillis());
         Gson gson = new Gson();
-        SearchVo searchVo = gson.fromJson(searchStr, SearchVo.class); //예외처리 추가
-        String json = gson.toJson(searchVo);
+        SearchVo searchVo = gson.fromJson(test, SearchVo.class); //예외처리 추가
+        System.out.println(System.currentTimeMillis());
 
-        System.out.println(json);
         System.out.println(searchVo);
     }
 }

@@ -17,7 +17,7 @@ public class LectureListReq implements YoutubeResource {
     private final String pageToken;
     private final String type;
 
-    private static final String ENDPOINT = "search?";
+    private static final String ENDPOINT = "/search";
 
     @Override
     public Map<String, String> getParameters() {
