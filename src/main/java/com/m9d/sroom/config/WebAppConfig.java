@@ -1,6 +1,7 @@
 package com.m9d.sroom.config;
 
 import com.google.common.base.CaseFormat;
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +34,11 @@ public class WebAppConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry
                 .addInterceptor(authInterceptor);
+    }
+
+    @Bean
+    public Gson gson() {
+        return new Gson();
     }
 
 }

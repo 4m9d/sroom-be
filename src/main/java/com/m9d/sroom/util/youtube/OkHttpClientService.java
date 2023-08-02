@@ -1,6 +1,11 @@
 package com.m9d.sroom.util.youtube;
 
+import com.google.gson.Gson;
 import com.m9d.sroom.util.youtube.resource.YoutubeResource;
+import com.m9d.sroom.util.youtube.vo.playlist.PlaylistVo;
+import com.m9d.sroom.util.youtube.vo.playlistitem.PlaylistVideoVo;
+import com.m9d.sroom.util.youtube.vo.search.SearchVo;
+import com.m9d.sroom.util.youtube.vo.video.VideoVo;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -13,7 +18,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Service
+//@Service
 @Slf4j
 public class OkHttpClientService implements YoutubeApi {
 
@@ -23,21 +28,10 @@ public class OkHttpClientService implements YoutubeApi {
     @Value("${youtube.base-url}")
     private String baseUrl;
 
-    @Override
-    public Mono<String> getYoutubeVoStr(YoutubeResource resource) {
-        OkHttpClient client = new OkHttpClient();
-        String url = buildYoutubeApiRequest(resource.getEndpoint(), resource.getParameters());
+    private final Gson gson;
 
-        Request request = new Request.Builder()
-                .url(url)
-                .get()
-                .build();
-        try (Response response = client.newCall(request).execute()) {
-            return Mono.just(response.body().string());
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            throw new RuntimeException(e);
-        }
+    public OkHttpClientService(Gson gson) {
+        this.gson = gson;
     }
 
     private String buildYoutubeApiRequest(String endPoint, Map<String, String> params) {
@@ -49,5 +43,43 @@ public class OkHttpClientService implements YoutubeApi {
         url = url.concat("&key=" + googleCloudApiKey);
 
         return url;
+    }
+
+    @Override
+    public Mono<SearchVo> getSearchVo(YoutubeResource resource) {
+        return getYoutubeVo(resource, SearchVo.class);
+    }
+
+    @Override
+    public Mono<VideoVo> getVideoVo(YoutubeResource resource) {
+        return getYoutubeVo(resource, VideoVo.class);
+    }
+
+    @Override
+    public Mono<PlaylistVo> getPlaylistVo(YoutubeResource resource) {
+        return getYoutubeVo(resource, PlaylistVo.class);
+    }
+
+    @Override
+    public Mono<PlaylistVideoVo> getPlaylistVideoVo(YoutubeResource resource) {
+        return getYoutubeVo(resource, PlaylistVideoVo.class);
+    }
+
+    public <T> Mono<T> getYoutubeVo(YoutubeResource resource, Class<T> resultClass) {
+        OkHttpClient client = new OkHttpClient();
+        String url = buildYoutubeApiRequest(resource.getEndpoint(), resource.getParameters());
+
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            T resultVo = gson.fromJson(response.body().string(), resultClass);
+            return Mono.just(resultVo);
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
     }
 }

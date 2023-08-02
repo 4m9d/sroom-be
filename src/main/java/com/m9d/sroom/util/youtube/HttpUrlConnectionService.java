@@ -1,7 +1,12 @@
 package com.m9d.sroom.util.youtube;
 
+import com.google.gson.Gson;
 import com.m9d.sroom.lecture.exception.LectureNotFoundException;
 import com.m9d.sroom.util.youtube.resource.YoutubeResource;
+import com.m9d.sroom.util.youtube.vo.playlist.PlaylistVo;
+import com.m9d.sroom.util.youtube.vo.playlistitem.PlaylistVideoVo;
+import com.m9d.sroom.util.youtube.vo.search.SearchVo;
+import com.m9d.sroom.util.youtube.vo.video.VideoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -29,15 +34,42 @@ public class HttpUrlConnectionService implements YoutubeApi {
     @Value("${youtube.base-url}")
     private String baseUrl;
 
+    private final Gson gson;
+
+    public HttpUrlConnectionService(Gson gson) {
+        this.gson = gson;
+    }
+
     @Override
-    public Mono<String> getYoutubeVoStr(YoutubeResource resource) {
+    public Mono<SearchVo> getSearchVo(YoutubeResource resource) {
+        return getYoutubeVo(resource, SearchVo.class);
+    }
+
+    @Override
+    public Mono<VideoVo> getVideoVo(YoutubeResource resource) {
+        return getYoutubeVo(resource, VideoVo.class);
+    }
+
+    @Override
+    public Mono<PlaylistVo> getPlaylistVo(YoutubeResource resource) {
+        return getYoutubeVo(resource, PlaylistVo.class);
+    }
+
+    @Override
+    public Mono<PlaylistVideoVo> getPlaylistVideoVo(YoutubeResource resource) {
+        return getYoutubeVo(resource, PlaylistVideoVo.class);
+    }
+
+    @Override
+    public <T> Mono<T> getYoutubeVo(YoutubeResource resource, Class<T> resultClass) {
         String url = buildYoutubeApiRequest(resource.getEndpoint(), resource.getParameters());
 
         HttpURLConnection connection = establishConnection(url);
 
         String response = getAndReadResponse(connection);
 
-        return Mono.just(response);
+        T resultVo = gson.fromJson(response, resultClass);
+        return Mono.just(resultVo);
     }
 
     private String buildYoutubeApiRequest(String endPoint, Map<String, String> params) {
