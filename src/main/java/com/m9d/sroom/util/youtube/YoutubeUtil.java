@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.m9d.sroom.lecture.exception.LectureNotFoundException;
 import com.m9d.sroom.util.youtube.resource.YoutubeResource;
+import com.m9d.sroom.util.youtube.vo.global.ThumbnailVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -58,7 +59,7 @@ public class YoutubeUtil {
                 .map(entry -> entry.getKey() + "=" + entry.getValue())
                 .collect(Collectors.joining("&"));
 
-        String url = baseUrl + endPoint + query;
+        String url = baseUrl + endPoint + "?" + query;
         url = url.concat("&key=" + googleCloudApiKey);
 
         return url;
@@ -126,6 +127,21 @@ public class YoutubeUtil {
         JsonNode maxresThumbnailNode = thumbnailsNode.get(JSONNODE_THUMBNAIL_MAXRES);
         if (maxresThumbnailNode != null) {
             return maxresThumbnailNode.get(JSONNODE_THUMBNAIL_URL).asText();
+        }
+
+        return selectedThumbnailUrl;
+    }
+
+    public String selectThumbnailInVo(ThumbnailVo thumbnailVo) {
+        String selectedThumbnailUrl = "";
+
+
+        if (thumbnailVo.getMedium() != null) {
+            selectedThumbnailUrl = thumbnailVo.getMedium().getUrl();
+        }
+
+        if (thumbnailVo.getMaxres() != null){
+            return thumbnailVo.getMaxres().getUrl();
         }
 
         return selectedThumbnailUrl;

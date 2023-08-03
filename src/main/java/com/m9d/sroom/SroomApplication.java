@@ -21,8 +21,8 @@ public class SroomApplication {
 	@Bean
 	public Executor taskExecutor() {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(8);
-		executor.setMaxPoolSize(15);
+		executor.setCorePoolSize(10);
+		executor.setMaxPoolSize(20);
 		executor.setQueueCapacity(100);
 		executor.setThreadNamePrefix("AsyncThread-");
 		executor.initialize();

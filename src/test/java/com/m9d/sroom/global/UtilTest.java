@@ -1,7 +1,6 @@
 package com.m9d.sroom.global;
 
 import com.google.gson.Gson;
-import com.m9d.sroom.lecture.dto.response.KeywordSearch;
 import com.m9d.sroom.util.SroomTest;
 import com.m9d.sroom.util.youtube.resource.LectureListReq;
 import com.m9d.sroom.util.youtube.vo.search.SearchVo;
@@ -41,160 +40,311 @@ public class UtilTest extends SroomTest {
     @DisplayName("객체의 필드객체도 매핑이 되는지 확인합니다.")
     void mappingObject() throws Exception {
         String jsonStr = "{\n" +
-                "  \"result_per_page\": 10,\n" +
-                "  \"next_page_token\": \"CAoQAA\",\n" +
-                "  \"prev_page_token\": null,\n" +
-                "  \"lectures\": [\n" +
+                "  \"nextPageToken\": \"CAoQAA\",\n" +
+                "  \"pageInfo\": {\n" +
+                "    \"totalResults\": 1000000,\n" +
+                "    \"resultsPerPage\": 10\n" +
+                "  },\n" +
+                "  \"items\": [\n" +
                 "    {\n" +
-                "      \"lecture_title\": \"네트워크 기초(개정판)\",\n" +
-                "      \"description\": \"OSI 7계층에서 각 계층의 다양한 프로토콜들을 통해서 배우는 네트워크 기초에 대한 강의입니다.\",\n" +
-                "      \"channel\": \"따라하면서 배우는 IT\",\n" +
-                "      \"lecture_code\": \"PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi\",\n" +
-                "      \"rating\": 0.0,\n" +
-                "      \"review_count\": 0,\n" +
-                "      \"thumbnail\": \"https://i.ytimg.com/vi/Av9UFzl_wis/mqdefault.jpg\",\n" +
-                "      \"is_enrolled\": true,\n" +
-                "      \"is_playlist\": true,\n" +
-                "      \"view_count\": 0,\n" +
-                "      \"lecture_count\": 8,\n" +
-                "      \"published_at\": \"2023-07-27 10:30:21\"\n" +
+                "      \"id\": {\n" +
+                "        \"kind\": \"youtube#playlist\",\n" +
+                "        \"playlistId\": \"PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi\"\n" +
+                "      },\n" +
+                "      \"snippet\": {\n" +
+                "        \"title\": \"네트워크 기초(개정판)\",\n" +
+                "        \"description\": \"OSI 7계층에서 각 계층의 다양한 프로토콜들을 통해서 배우는 네트워크 기초에 대한 강의입니다.\",\n" +
+                "        \"thumbnails\": {\n" +
+                "          \"default\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/Av9UFzl_wis/default.jpg\",\n" +
+                "            \"width\": 120,\n" +
+                "            \"height\": 90\n" +
+                "          },\n" +
+                "          \"medium\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/Av9UFzl_wis/mqdefault.jpg\",\n" +
+                "            \"width\": 320,\n" +
+                "            \"height\": 180\n" +
+                "          },\n" +
+                "          \"high\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/Av9UFzl_wis/hqdefault.jpg\",\n" +
+                "            \"width\": 480,\n" +
+                "            \"height\": 360\n" +
+                "          }\n" +
+                "        },\n" +
+                "        \"channelTitle\": \"따라하면서 배우는 IT\",\n" +
+                "        \"publishTime\": \"2020-01-02T13:15:51Z\"\n" +
+                "      }\n" +
                 "    },\n" +
                 "    {\n" +
-                "      \"lecture_title\": \"네트워크 기초 이론\",\n" +
-                "      \"description\": \"\",\n" +
-                "      \"channel\": \"널널한 개발자 TV\",\n" +
-                "      \"lecture_code\": \"PLXvgR_grOs1BFH-TuqFsfHqbh-gpMbFoy\",\n" +
-                "      \"rating\": 0.0,\n" +
-                "      \"review_count\": 0,\n" +
-                "      \"thumbnail\": \"https://i.ytimg.com/vi/k1gyh9BlOT8/mqdefault.jpg\",\n" +
-                "      \"is_enrolled\": false,\n" +
-                "      \"is_playlist\": true,\n" +
-                "      \"view_count\": 0,\n" +
-                "      \"lecture_count\": 8,\n" +
-                "      \"published_at\": \"2021-02-27 10:30:21\"\n" +
+                "      \"id\": {\n" +
+                "        \"kind\": \"youtube#playlist\",\n" +
+                "        \"playlistId\": \"PLXvgR_grOs1BFH-TuqFsfHqbh-gpMbFoy\"\n" +
+                "      },\n" +
+                "      \"snippet\": {\n" +
+                "        \"title\": \"네트워크 기초 이론\",\n" +
+                "        \"description\": \"\",\n" +
+                "        \"thumbnails\": {\n" +
+                "          \"default\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/k1gyh9BlOT8/default.jpg\",\n" +
+                "            \"width\": 120,\n" +
+                "            \"height\": 90\n" +
+                "          },\n" +
+                "          \"medium\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/k1gyh9BlOT8/mqdefault.jpg\",\n" +
+                "            \"width\": 320,\n" +
+                "            \"height\": 180\n" +
+                "          },\n" +
+                "          \"high\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/k1gyh9BlOT8/hqdefault.jpg\",\n" +
+                "            \"width\": 480,\n" +
+                "            \"height\": 360\n" +
+                "          }\n" +
+                "        },\n" +
+                "        \"channelTitle\": \"널널한 개발자 TV\",\n" +
+                "        \"publishTime\": \"2022-03-01T12:41:22Z\"\n" +
+                "      }\n" +
                 "    },\n" +
                 "    {\n" +
-                "      \"lecture_title\": \"윈도우10 꿀팁 네트워크 연결이 안될때 네트워크 공유 진짜 쉽게하기 네트워크설정 프린터찾기 진짜 컴퓨터기사가 알려주는 네트워크 설정 방법\",\n" +
-                "      \"description\": \"네트워크연결이안될때 #네트워크공유 #네트워크 #네트워크설정 #윈도우10꿀팁 네트워크 연결이 안될때 윈도우10 꿀팁 네트워크 ...\",\n" +
-                "      \"channel\": \"곰손장인-TV\",\n" +
-                "      \"lecture_code\": \"ZBy1FZBpFrk\",\n" +
-                "      \"rating\": 0.0,\n" +
-                "      \"review_count\": 0,\n" +
-                "      \"thumbnail\": \"https://i.ytimg.com/vi/ZBy1FZBpFrk/mqdefault.jpg\",\n" +
-                "      \"is_enrolled\": false,\n" +
-                "      \"is_playlist\": false,\n" +
-                "      \"view_count\": 123,\n" +
-                "      \"lecture_count\": 1,\n" +
-                "      \"published_at\": \"2022-05-23 10:30:21\"\n" +
+                "      \"id\": {\n" +
+                "        \"kind\": \"youtube#video\",\n" +
+                "        \"videoId\": \"Av9UFzl_wis\"\n" +
+                "      },\n" +
+                "      \"snippet\": {\n" +
+                "        \"title\": \"[따라學IT] 01. 네트워크란 무엇인가?\",\n" +
+                "        \"description\": \"\",\n" +
+                "        \"thumbnails\": {\n" +
+                "          \"default\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/Av9UFzl_wis/default.jpg\",\n" +
+                "            \"width\": 120,\n" +
+                "            \"height\": 90\n" +
+                "          },\n" +
+                "          \"medium\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/Av9UFzl_wis/mqdefault.jpg\",\n" +
+                "            \"width\": 320,\n" +
+                "            \"height\": 180\n" +
+                "          },\n" +
+                "          \"high\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/Av9UFzl_wis/hqdefault.jpg\",\n" +
+                "            \"width\": 480,\n" +
+                "            \"height\": 360\n" +
+                "          }\n" +
+                "        },\n" +
+                "        \"channelTitle\": \"따라하면서 배우는 IT\",\n" +
+                "        \"publishTime\": \"2020-08-29T05:35:37Z\"\n" +
+                "      }\n" +
                 "    },\n" +
                 "    {\n" +
-                "      \"lecture_title\": \"누구나 3만원으로 홈 네트워크 만들기, 인터넷 기사님이 안해주는 이유\",\n" +
-                "      \"description\": \"종종 에어플레이를 지원하는데 연결이 안된다거나, 홈팟을 스테레오로 쓸 수가 없다거나 하는 문제들 겪으시는 분들 많으시죠?\",\n" +
-                "      \"channel\": \"서울리안 SEOULiAN\",\n" +
-                "      \"lecture_code\": \"FxGQ1le-Si8\",\n" +
-                "      \"rating\": 0.0,\n" +
-                "      \"review_count\": 0,\n" +
-                "      \"thumbnail\": \"https://i.ytimg.com/vi/FxGQ1le-Si8/mqdefault.jpg\",\n" +
-                "      \"is_enrolled\": false,\n" +
-                "      \"is_playlist\": false,\n" +
-                "      \"view_count\": 29487,\n" +
-                "      \"lecture_count\": 1,\n" +
-                "      \"published_at\": \"2012-11-21 10:30:21\"\n" +
+                "      \"id\": {\n" +
+                "        \"kind\": \"youtube#video\",\n" +
+                "        \"videoId\": \"6l7xP7AnB64\"\n" +
+                "      },\n" +
+                "      \"snippet\": {\n" +
+                "        \"title\": \"[입문용] 프로토콜과 OSI 7 layer 설명! 네트워크의 기능들이 어떻게 구조화 돼서 동작하는지를 설명합니다! \uD83D\uDC4D\",\n" +
+                "        \"description\": \"프로토콜 #OSI모델 #네트워크 #쉬운코드 #백발백중 네트워크에서 통신을 하기 위해서는 프로토콜이 필요합니다 그리고 그 프로토콜 ...\",\n" +
+                "        \"thumbnails\": {\n" +
+                "          \"default\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/6l7xP7AnB64/default.jpg\",\n" +
+                "            \"width\": 120,\n" +
+                "            \"height\": 90\n" +
+                "          },\n" +
+                "          \"medium\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/6l7xP7AnB64/mqdefault.jpg\",\n" +
+                "            \"width\": 320,\n" +
+                "            \"height\": 180\n" +
+                "          },\n" +
+                "          \"high\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/6l7xP7AnB64/hqdefault.jpg\",\n" +
+                "            \"width\": 480,\n" +
+                "            \"height\": 360\n" +
+                "          }\n" +
+                "        },\n" +
+                "        \"channelTitle\": \"쉬운코드\",\n" +
+                "        \"publishTime\": \"2023-03-27T13:00:08Z\"\n" +
+                "      }\n" +
                 "    },\n" +
                 "    {\n" +
-                "      \"lecture_title\": \"☆ 쉬움주의) 네트워크 기초 기술 모르시는 분들 이 정도만 알면 기술사만큼 됩니다. 책한권 뚝딱 누구나 알면 좋을 컴퓨터 상식\",\n" +
-                "      \"description\": \"네트워크#기초#기술#컴퓨터#기술사 네트워크 기술 쉽게 설명 드려봅니다! 해당 도서 구매 링크 https://link.coupang.com/a/PA9VQ ...\",\n" +
-                "      \"channel\": \"기술노트with 알렉\",\n" +
-                "      \"lecture_code\": \"65h9uxHKGPk\",\n" +
-                "      \"rating\": 0.0,\n" +
-                "      \"review_count\": 0,\n" +
-                "      \"thumbnail\": \"https://i.ytimg.com/vi/65h9uxHKGPk/mqdefault.jpg\",\n" +
-                "      \"is_enrolled\": false,\n" +
-                "      \"is_playlist\": false,\n" +
-                "      \"view_count\": 23,\n" +
-                "      \"lecture_count\": 1,\n" +
-                "      \"published_at\": \"2023-07-30 10:30:21\"\n" +
+                "      \"id\": {\n" +
+                "        \"kind\": \"youtube#video\",\n" +
+                "        \"videoId\": \"65h9uxHKGPk\"\n" +
+                "      },\n" +
+                "      \"snippet\": {\n" +
+                "        \"title\": \"☆ 쉬움주의) 네트워크 기초 기술 모르시는 분들 이 정도만 알면 기술사만큼 됩니다. 책한권 뚝딱 누구나 알면 좋을 컴퓨터 상식\",\n" +
+                "        \"description\": \"네트워크#기초#기술#컴퓨터#기술사 네트워크 기술 쉽게 설명 드려봅니다! 해당 도서 구매 링크 https://link.coupang.com/a/PA9VQ ...\",\n" +
+                "        \"thumbnails\": {\n" +
+                "          \"default\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/65h9uxHKGPk/default.jpg\",\n" +
+                "            \"width\": 120,\n" +
+                "            \"height\": 90\n" +
+                "          },\n" +
+                "          \"medium\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/65h9uxHKGPk/mqdefault.jpg\",\n" +
+                "            \"width\": 320,\n" +
+                "            \"height\": 180\n" +
+                "          },\n" +
+                "          \"high\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/65h9uxHKGPk/hqdefault.jpg\",\n" +
+                "            \"width\": 480,\n" +
+                "            \"height\": 360\n" +
+                "          }\n" +
+                "        },\n" +
+                "        \"channelTitle\": \"기술노트with 알렉\",\n" +
+                "        \"publishTime\": \"2020-01-05T15:08:21Z\"\n" +
+                "      }\n" +
                 "    },\n" +
                 "    {\n" +
-                "      \"lecture_title\": \"NAD CS1 국내 출시! 차이파이 가격으로 즐기는 하이파이 #네트워크 #플레이어 #스트리머 #하이파이 #오디오  추천\",\n" +
-                "      \"description\": \"앙증맞은 크기와 심플한 인터페이스에도 불구하고 고성능 DAC을 내장하고 강력한 스트리밍 기능 까지 갖춘 NAD CS1! 소리샵 청담 ...\",\n" +
-                "      \"channel\": \"소리샵 Sorishop_TUBE\",\n" +
-                "      \"lecture_code\": \"j8icUtaRc1E\",\n" +
-                "      \"rating\": 0.0,\n" +
-                "      \"review_count\": 0,\n" +
-                "      \"thumbnail\": \"https://i.ytimg.com/vi/j8icUtaRc1E/mqdefault.jpg\",\n" +
-                "      \"is_enrolled\": false,\n" +
-                "      \"is_playlist\": false,\n" +
-                "      \"view_count\": 1212233,\n" +
-                "      \"lecture_count\": 1,\n" +
-                "      \"published_at\": \"2002-05-03 10:30:21\"\n" +
+                "      \"id\": {\n" +
+                "        \"kind\": \"youtube#video\",\n" +
+                "        \"videoId\": \"WdsZGu8gcvY\"\n" +
+                "      },\n" +
+                "      \"snippet\": {\n" +
+                "        \"title\": \"윈도우 인터넷 문제 네트워크 초기화로 완벽히 해결 해 봅시다\",\n" +
+                "        \"description\": \"모바일랩 채널 가입 ♥ https://bit.ly/38XzZfO ※ 코인만랩 채널 : https://bit.ly/3Eerz39 ※ 젤리초코 채널 ...\",\n" +
+                "        \"thumbnails\": {\n" +
+                "          \"default\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/WdsZGu8gcvY/default.jpg\",\n" +
+                "            \"width\": 120,\n" +
+                "            \"height\": 90\n" +
+                "          },\n" +
+                "          \"medium\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/WdsZGu8gcvY/mqdefault.jpg\",\n" +
+                "            \"width\": 320,\n" +
+                "            \"height\": 180\n" +
+                "          },\n" +
+                "          \"high\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/WdsZGu8gcvY/hqdefault.jpg\",\n" +
+                "            \"width\": 480,\n" +
+                "            \"height\": 360\n" +
+                "          }\n" +
+                "        },\n" +
+                "        \"channelTitle\": \"모바일랩\",\n" +
+                "        \"publishTime\": \"2023-07-02T02:18:28Z\"\n" +
+                "      }\n" +
                 "    },\n" +
                 "    {\n" +
-                "      \"lecture_title\": \"[따라學IT] 01. 네트워크란 무엇인가?\",\n" +
-                "      \"description\": \"\",\n" +
-                "      \"channel\": \"따라하면서 배우는 IT\",\n" +
-                "      \"lecture_code\": \"Av9UFzl_wis\",\n" +
-                "      \"rating\": 0.0,\n" +
-                "      \"review_count\": 0,\n" +
-                "      \"thumbnail\": \"https://i.ytimg.com/vi/Av9UFzl_wis/mqdefault.jpg\",\n" +
-                "      \"is_enrolled\": true,\n" +
-                "      \"is_playlist\": false,\n" +
-                "      \"view_count\": 10003254,\n" +
-                "      \"lecture_count\": 1,\n" +
-                "      \"published_at\": \"2022-04-17 10:30:21\"\n" +
+                "      \"id\": {\n" +
+                "        \"kind\": \"youtube#video\",\n" +
+                "        \"videoId\": \"GmxPT-P331s\"\n" +
+                "      },\n" +
+                "      \"snippet\": {\n" +
+                "        \"title\": \"“느려”… 스튜디오 네트워크 속도 답답해서 10기가 NAS 만들기 도전해봤습니다?\",\n" +
+                "        \"description\": \"이전에 10Gbps 에드온 카드를 시놀로지 NAS에 연결해서 속도를 뚫어줬습니다. 이후 문제는 해당 랜카드는 포트가 2개 뿐이라 2대의 ...\",\n" +
+                "        \"thumbnails\": {\n" +
+                "          \"default\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/GmxPT-P331s/default.jpg\",\n" +
+                "            \"width\": 120,\n" +
+                "            \"height\": 90\n" +
+                "          },\n" +
+                "          \"medium\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/GmxPT-P331s/mqdefault.jpg\",\n" +
+                "            \"width\": 320,\n" +
+                "            \"height\": 180\n" +
+                "          },\n" +
+                "          \"high\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/GmxPT-P331s/hqdefault.jpg\",\n" +
+                "            \"width\": 480,\n" +
+                "            \"height\": 360\n" +
+                "          }\n" +
+                "        },\n" +
+                "        \"channelTitle\": \"ITSub잇섭\",\n" +
+                "        \"publishTime\": \"2023-01-11T11:00:14Z\"\n" +
+                "      }\n" +
                 "    },\n" +
                 "    {\n" +
-                "      \"lecture_title\": \"“느려”… 스튜디오 네트워크 속도 답답해서 10기가 NAS 만들기 도전해봤습니다?\",\n" +
-                "      \"description\": \"이전에 10Gbps 에드온 카드를 시놀로지 NAS에 연결해서 속도를 뚫어줬습니다. 이후 문제는 해당 랜카드는 포트가 2개 뿐이라 2대의 ...\",\n" +
-                "      \"channel\": \"ITSub잇섭\",\n" +
-                "      \"lecture_code\": \"GmxPT-P331s\",\n" +
-                "      \"rating\": 0.0,\n" +
-                "      \"review_count\": 0,\n" +
-                "      \"thumbnail\": \"https://i.ytimg.com/vi/GmxPT-P331s/mqdefault.jpg\",\n" +
-                "      \"is_enrolled\": false,\n" +
-                "      \"is_playlist\": false,\n" +
-                "      \"view_count\": 12345,\n" +
-                "      \"lecture_count\": 1,\n" +
-                "      \"published_at\": \"2021-01-23 10:30:21\"\n" +
+                "      \"id\": {\n" +
+                "        \"kind\": \"youtube#video\",\n" +
+                "        \"videoId\": \"ZBy1FZBpFrk\"\n" +
+                "      },\n" +
+                "      \"snippet\": {\n" +
+                "        \"title\": \"윈도우10 꿀팁 네트워크 연결이 안될때 네트워크 공유 진짜 쉽게하기 네트워크설정 프린터찾기 진짜 컴퓨터기사가 알려주는 네트워크 설정 방법\",\n" +
+                "        \"description\": \"네트워크연결이안될때 #네트워크공유 #네트워크 #네트워크설정 #윈도우10꿀팁 네트워크 연결이 안될때 윈도우10 꿀팁 네트워크 ...\",\n" +
+                "        \"thumbnails\": {\n" +
+                "          \"default\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/ZBy1FZBpFrk/default.jpg\",\n" +
+                "            \"width\": 120,\n" +
+                "            \"height\": 90\n" +
+                "          },\n" +
+                "          \"medium\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/ZBy1FZBpFrk/mqdefault.jpg\",\n" +
+                "            \"width\": 320,\n" +
+                "            \"height\": 180\n" +
+                "          },\n" +
+                "          \"high\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/ZBy1FZBpFrk/hqdefault.jpg\",\n" +
+                "            \"width\": 480,\n" +
+                "            \"height\": 360\n" +
+                "          }\n" +
+                "        },\n" +
+                "        \"channelTitle\": \"곰손장인-TV\",\n" +
+                "        \"publishTime\": \"2020-08-24T22:27:19Z\"\n" +
+                "      }\n" +
                 "    },\n" +
                 "    {\n" +
-                "      \"lecture_title\": \"이해하면 인생이 바뀌는 TCP 송/수신 원리\",\n" +
-                "      \"description\": \"소켓 프로그램 개발자, 운영체제 개발(혹은 튜닝) 가능자, 네트워크 관리자...이 세 가지 관점을 모두 이해하면 알 수 있는 TCP Segment ...\",\n" +
-                "      \"channel\": \"널널한 개발자 TV\",\n" +
-                "      \"lecture_code\": \"K9L9YZhEjC0\",\n" +
-                "      \"rating\": 0.0,\n" +
-                "      \"review_count\": 0,\n" +
-                "      \"thumbnail\": \"https://i.ytimg.com/vi/K9L9YZhEjC0/mqdefault.jpg\",\n" +
-                "      \"is_enrolled\": false,\n" +
-                "      \"is_playlist\": false,\n" +
-                "      \"view_count\": 0,\n" +
-                "      \"lecture_count\": 1,\n" +
-                "      \"published_at\": \"2023-07-23 10:30:21\"\n" +
+                "      \"id\": {\n" +
+                "        \"kind\": \"youtube#video\",\n" +
+                "        \"videoId\": \"ihIWWWf4NNU\"\n" +
+                "      },\n" +
+                "      \"snippet\": {\n" +
+                "        \"title\": \"[코인리더][마스크네트워크코인]머스크도하고 저커버그도 하는? 마스크네트워크|오랜만에 나온 반등| SNS와 웹3 두 마리 토끼 다 잡았다! #마스크네트워크호재 #-이프로\",\n" +
+                "        \"description\": \"코인 정보 어플 간편설치링크▽ https://coinreader.co.kr/ 코인을 처음시작하는 초보자, 중수, 고수 모든분들에게 필요한 정보를 빠르게 ...\",\n" +
+                "        \"thumbnails\": {\n" +
+                "          \"default\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/ihIWWWf4NNU/default.jpg\",\n" +
+                "            \"width\": 120,\n" +
+                "            \"height\": 90\n" +
+                "          },\n" +
+                "          \"medium\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/ihIWWWf4NNU/mqdefault.jpg\",\n" +
+                "            \"width\": 320,\n" +
+                "            \"height\": 180\n" +
+                "          },\n" +
+                "          \"high\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/ihIWWWf4NNU/hqdefault.jpg\",\n" +
+                "            \"width\": 480,\n" +
+                "            \"height\": 360\n" +
+                "          }\n" +
+                "        },\n" +
+                "        \"channelTitle\": \"코인리더\",\n" +
+                "        \"publishTime\": \"2023-07-31T08:50:54Z\"\n" +
+                "      }\n" +
                 "    },\n" +
                 "    {\n" +
-                "      \"lecture_title\": \"영업 비밀 노출) 서버 네트워크 데이터베이스 이정도만 알면 \uD83D\uDE0E\",\n" +
-                "      \"description\": \"서버#네트워크#데이터베이스 서버 네트워크 데이터 베이스에 대해서 설명드려봅니다. 멤버쉽 가입하시면 IT분야 진로 상담, 앱개발 ...\",\n" +
-                "      \"channel\": \"기술노트with 알렉\",\n" +
-                "      \"lecture_code\": \"Pc6n6HgWU5c\",\n" +
-                "      \"rating\": 0.0,\n" +
-                "      \"review_count\": 0,\n" +
-                "      \"thumbnail\": \"https://i.ytimg.com/vi/Pc6n6HgWU5c/mqdefault.jpg\",\n" +
-                "      \"is_enrolled\": false,\n" +
-                "      \"is_playlist\": false,\n" +
-                "      \"view_count\": 504,\n" +
-                "      \"lecture_count\": 1,\n" +
-                "      \"published_at\": \"2022-12-21 10:30:21\"\n" +
+                "      \"id\": {\n" +
+                "        \"kind\": \"youtube#video\",\n" +
+                "        \"videoId\": \"K9L9YZhEjC0\"\n" +
+                "      },\n" +
+                "      \"snippet\": {\n" +
+                "        \"title\": \"이해하면 인생이 바뀌는 TCP 송/수신 원리\",\n" +
+                "        \"description\": \"소켓 프로그램 개발자, 운영체제 개발(혹은 튜닝) 가능자, 네트워크 관리자...이 세 가지 관점을 모두 이해하면 알 수 있는 TCP Segment ...\",\n" +
+                "        \"thumbnails\": {\n" +
+                "          \"default\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/K9L9YZhEjC0/default.jpg\",\n" +
+                "            \"width\": 120,\n" +
+                "            \"height\": 90\n" +
+                "          },\n" +
+                "          \"medium\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/K9L9YZhEjC0/mqdefault.jpg\",\n" +
+                "            \"width\": 320,\n" +
+                "            \"height\": 180\n" +
+                "          },\n" +
+                "          \"high\": {\n" +
+                "            \"url\": \"https://i.ytimg.com/vi/K9L9YZhEjC0/hqdefault.jpg\",\n" +
+                "            \"width\": 480,\n" +
+                "            \"height\": 360\n" +
+                "          }\n" +
+                "        },\n" +
+                "        \"channelTitle\": \"널널한 개발자 TV\",\n" +
+                "        \"publishTime\": \"2022-03-20T11:31:53Z\"\n" +
+                "      }\n" +
                 "    }\n" +
                 "  ]\n" +
                 "}";
 
         Gson gson = new Gson();
 
-        KeywordSearch keywordSearch;
 
-        keywordSearch = gson.fromJson(jsonStr, KeywordSearch.class);
+        SearchVo searchVo = gson.fromJson(jsonStr, SearchVo.class);
 
-        System.out.println(keywordSearch.toString());
+        System.out.println(searchVo.toString());
 
     }
 
@@ -208,14 +358,12 @@ public class UtilTest extends SroomTest {
                 .pageToken(null)
                 .build();
         System.out.println(System.currentTimeMillis());
-        Mono<String> testStr = youtubeApi.getYoutubeVoStr(lectureListReq);
+        Mono<SearchVo> test = youtubeApi.getSearchVo(lectureListReq);
         System.out.println(System.currentTimeMillis());
-        String test = testStr.block();
+        SearchVo searchVo = lectureServiceV2.safeGetVo(test);
         System.out.println(System.currentTimeMillis());
-        Gson gson = new Gson();
-        SearchVo searchVo = gson.fromJson(test, SearchVo.class); //예외처리 추가
+        System.out.println(searchVo.toString());
         System.out.println(System.currentTimeMillis());
 
-        System.out.println(searchVo);
     }
 }

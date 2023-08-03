@@ -15,5 +15,4 @@ public interface YoutubeApi {
     Mono<PlaylistVideoVo> getPlaylistVideoVo(YoutubeResource resource);
 
     <T> Mono<T> getYoutubeVo(YoutubeResource resource, Class<T> resultClass);
-
 }

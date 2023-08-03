@@ -11,7 +11,6 @@ import com.m9d.sroom.lecture.dto.response.ReviewBrief;
 import com.m9d.sroom.lecture.dto.response.*;
 import com.m9d.sroom.lecture.exception.TwoOnlyParamTrueException;
 import com.m9d.sroom.lecture.exception.VideoIndexParamException;
-import com.m9d.sroom.lecture.exception.VideoNotFoundException;
 import com.m9d.sroom.lecture.repository.LectureRepository;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.util.youtube.YoutubeUtil;
@@ -39,7 +38,7 @@ import static com.m9d.sroom.course.constant.CourseConstant.VIDEO_UPDATE_THRESHOL
 import static com.m9d.sroom.lecture.constant.LectureConstant.*;
 import static com.m9d.sroom.util.youtube.YoutubeConstant.*;
 
-@Service
+//@Service
 @Slf4j
 public class LectureService {
 
@@ -47,10 +46,13 @@ public class LectureService {
     private final YoutubeUtil youtubeUtil;
     private final DateUtil dateUtil;
 
-    public LectureService(LectureRepository lectureRepository, YoutubeUtil youtubeUtil, DateUtil dateUtil) {
+    private final LectureServiceV2 lectureServiceV2;
+
+    public LectureService(LectureRepository lectureRepository, YoutubeUtil youtubeUtil, DateUtil dateUtil, LectureServiceV2 lectureServiceV2) {
         this.lectureRepository = lectureRepository;
         this.youtubeUtil = youtubeUtil;
         this.dateUtil = dateUtil;
+        this.lectureServiceV2 = lectureServiceV2;
     }
 
     @Transactional
@@ -70,45 +72,11 @@ public class LectureService {
     }
 
     public VideoDetail getVideoDetail(Long memberId, String lectureCode, int reviewLimit) {
-        VideoReq videoReq = VideoReq.builder()
-                .videoCode(lectureCode)
-                .build();
-        JsonNode resultNode = youtubeUtil.safeGet(youtubeUtil.getYoutubeResource(videoReq));
-
-        if (resultNode.get(JSONNODE_PAGE_INFO).get(JSONNODE_TOTAL_RESULTS).asInt() == 0) {
-            throw new VideoNotFoundException();
-        }
-
-        Set<String> enrolledVideoSet = getEnrolledVideoByMemberId(memberId);
-
-        VideoDetail videoDetail = buildVideoDetailResponse(resultNode, reviewLimit, enrolledVideoSet);
-        return videoDetail;
+        return lectureServiceV2.getVideoDetail(memberId, lectureCode, reviewLimit);
     }
 
     public PlaylistDetail getPlaylistDetail(Long memberId, String lectureCode, String indexNextToken, int reviewLimit) {
-        PlaylistReq playlistReq = PlaylistReq.builder()
-                .playlistCode(lectureCode)
-                .build();
-        PlaylistItemReq playlistItemReq = PlaylistItemReq.builder()
-                .playlistCode(lectureCode)
-                .nextPageToken(indexNextToken)
-                .limit(DEFAULT_INDEX_COUNT)
-                .build();
-
-        CompletableFuture<JsonNode> playlistFuture = youtubeUtil.getYoutubeResource(playlistReq);
-        CompletableFuture<JsonNode> indexFuture = youtubeUtil.getYoutubeResource(playlistItemReq);
-        CompletableFuture.allOf(playlistFuture, indexFuture).join();
-
-        JsonNode playlistNode = youtubeUtil.safeGet(playlistFuture);
-        JsonNode indexNode = youtubeUtil.safeGet(indexFuture);
-
-        youtubeUtil.validateNodeIfNotFound(playlistNode);
-        youtubeUtil.validateNodeIfNotFound(indexNode);
-
-        Set<String> enrolledPlaylistSet = getEnrolledPlaylistByMemberId(memberId);
-
-        PlaylistDetail playlistDetail = buildPlaylistDetailResponse(playlistNode, indexNode, reviewLimit, enrolledPlaylistSet);
-        return playlistDetail;
+        return lectureServiceV2.getPlaylistDetail(memberId, lectureCode, indexNextToken, reviewLimit);
     }
 
     public IndexInfo getPlaylistItems(String lectureCode, String indexNextToken, int indexLimit) {
@@ -206,7 +174,7 @@ public class LectureService {
     }
 
     private Video getViewCountAndDescription(String lectureCode) {
-        Optional<Video> videoOptional = lectureRepository.findViewCountAndDescriptioin(lectureCode);
+        Optional<Video> videoOptional = lectureRepository.findVideo(lectureCode);
 
         Video video;
         if (videoOptional.isPresent() && dateUtil.validateExpiration(videoOptional.get().getUpdatedAt(), VIDEO_UPDATE_THRESHOLD_HOURS)) {
@@ -256,7 +224,7 @@ public class LectureService {
         List<ReviewBrief> reviewBriefList = lectureRepository.getReviewBriefList(resultNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_ID).asText(), DEFAULT_REVIEW_OFFSET, reviewLimit);
 
         String lectureCode = resultNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_ID).asText();
-        String videoDuration = dateUtil.formatDuration(resultNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_CONTENT_DETAIL).get(JSONNODE_DURATION).asText());
+        int videoDuration = dateUtil.convertISOToSeconds(resultNode.get(JSONNODE_ITEMS).get(FIRST_INDEX).get(JSONNODE_CONTENT_DETAIL).get(JSONNODE_DURATION).asText());
 
         boolean isEnrolled = enrolledVideoSet.contains(lectureCode);
         String lectureTitle = snippetJsonNode.get(JSONNODE_TITLE).asText();
@@ -329,7 +297,7 @@ public class LectureService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        String totalDuration = dateUtil.formatDuration(Duration.ofSeconds(totalDurationSeconds.get()).toString());
+        int totalDuration = (int) totalDurationSeconds.get();
 
         return IndexInfo.builder()
                 .indexList(indexList)
@@ -353,7 +321,7 @@ public class LectureService {
                         .index(snippetNode.get(JSONNODE_POSITION).asInt())
                         .lectureTitle(unescapeHtml(snippetNode.get(JSONNODE_TITLE).asText()))
                         .thumbnail(thumbnail)
-                        .duration(dateUtil.formatDuration(videoDuration))
+                        .duration(dateUtil.convertISOToSeconds(videoDuration))
                         .build();
             }
             return null;

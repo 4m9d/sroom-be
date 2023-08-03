@@ -45,14 +45,17 @@ public class LectureRepository {
         return new HashSet<>(jdbcTemplate.query(LectureSqlQuery.GET_PLAYLIST_BY_MEMBER_ID_QUERY, (rs, rowNum) -> rs.getString("playlist_code"), memberId));
     }
 
-    public Optional<Video> findViewCountAndDescriptioin(String lectureCode) {
-        String query = "SELECT view_count, updated_at, description FROM VIDEO WHERE video_code = ?";
+    public Optional<Video> findVideo(String lectureCode) {
+        String query = "SELECT title, view_count, updated_at, description, thumbnail, duration FROM VIDEO WHERE video_code = ?";
 
         Video video = queryForObjectOrNull(query,
                 (rs, rowNum) -> Video.builder()
+                        .title(rs.getString("title"))
                         .viewCount(rs.getLong("view_count"))
                         .updatedAt(rs.getTimestamp("updated_at"))
                         .description(rs.getString("description"))
+                        .thumbnail(rs.getString("thumbnail"))
+                        .duration(rs.getInt("duration"))
                         .build(), lectureCode);
         return Optional.ofNullable(video);
     }
