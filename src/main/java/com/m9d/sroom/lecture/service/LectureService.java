@@ -12,7 +12,6 @@ import com.m9d.sroom.lecture.dto.response.ReviewBrief;
 import com.m9d.sroom.lecture.dto.response.*;
 import com.m9d.sroom.lecture.exception.TwoOnlyParamTrueException;
 import com.m9d.sroom.lecture.exception.VideoIndexParamException;
-import com.m9d.sroom.lecture.exception.VideoNotFoundException;
 import com.m9d.sroom.lecture.repository.LectureRepository;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.util.youtube.YoutubeUtil;
@@ -40,7 +39,7 @@ import static com.m9d.sroom.course.constant.CourseConstant.VIDEO_UPDATE_THRESHOL
 import static com.m9d.sroom.lecture.constant.LectureConstant.*;
 import static com.m9d.sroom.util.youtube.YoutubeConstant.*;
 
-@Service
+//@Service
 @Slf4j
 public class LectureService {
 
@@ -54,6 +53,7 @@ public class LectureService {
         this.courseRepository = courseRepository;
         this.youtubeUtil = youtubeUtil;
         this.dateUtil = dateUtil;
+        this.lectureServiceV2 = lectureServiceV2;
     }
 
     @Transactional
@@ -211,7 +211,7 @@ public class LectureService {
     }
 
     private Video getViewCountAndDescription(String lectureCode) {
-        Optional<Video> videoOptional = lectureRepository.findViewCountAndDescriptioin(lectureCode);
+        Optional<Video> videoOptional = lectureRepository.findVideo(lectureCode);
 
         Video video;
         if (videoOptional.isPresent() && dateUtil.validateExpiration(videoOptional.get().getUpdatedAt(), VIDEO_UPDATE_THRESHOLD_HOURS)) {

@@ -13,7 +13,7 @@ public class PlaylistReq implements YoutubeResource {
 
     private final String playlistCode;
 
-    private static final String ENDPOINT = "playlists?";
+    private static final String ENDPOINT = "/playlists";
 
     @Override
     public Map<String, String> getParameters() {

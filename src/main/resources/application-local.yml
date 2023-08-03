@@ -22,7 +22,7 @@ spring:
       suffix: .html
 
 youtube:
-  base-url: https://www.googleapis.com/youtube/v3/
+  base-url: https://www.googleapis.com/youtube/v3
 
 #Devtool
 devtools:

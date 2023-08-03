@@ -3,7 +3,7 @@ package com.m9d.sroom.lecture.controller;
 import com.m9d.sroom.lecture.dto.request.KeywordSearchParam;
 import com.m9d.sroom.lecture.dto.request.LectureDetailParam;
 import com.m9d.sroom.lecture.dto.response.*;
-import com.m9d.sroom.lecture.service.LectureService;
+import com.m9d.sroom.lecture.service.LectureServiceV2;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
 import com.m9d.sroom.util.youtube.YoutubeUtil;
@@ -30,7 +30,8 @@ import java.util.List;
 @Slf4j
 public class LectureController {
 
-    private final LectureService lectureService;
+    //private final LectureService lectureService;
+    private final LectureServiceV2 lectureServiceV2;
     private final JwtUtil jwtUtil;
     private final YoutubeUtil youtubeUtil;
 
@@ -48,7 +49,7 @@ public class LectureController {
     @ApiResponse(responseCode = "200", description = "성공적으로 검색 결과를 반환하였습니다.", content = @Content(schema = @Schema(implementation = KeywordSearch.class)))
     public KeywordSearch getLecturesByKeyword(@Valid @ModelAttribute KeywordSearchParam keywordSearchParam) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
-        KeywordSearch keywordSearch = lectureService.searchByKeyword(memberId, keywordSearchParam);
+        KeywordSearch keywordSearch = lectureServiceV2.searchByKeyword(memberId, keywordSearchParam);
         return keywordSearch;
     }
 
@@ -62,14 +63,15 @@ public class LectureController {
             @Parameter(in = ParameterIn.QUERY, name = "index_only", description = "목차만 응답 여부", required = false, example = "false"),
             @Parameter(in = ParameterIn.QUERY, name = "review_only", description = "후기만 응답 여부", required = false, example = "false"),
             @Parameter(in = ParameterIn.QUERY, name = "index_limit", description = "결과의 최대 개수", required = false, example = "50"),
-            @Parameter(in = ParameterIn.QUERY, name = "review_limit", description = "후기의 최대 개수", required = false, example = "10")
+            @Parameter(in = ParameterIn.QUERY, name = "review_limit", description = "후기의 최대 개수", required = false, example = "10"),
+            @Parameter(in = ParameterIn.QUERY, name = "index_next_token", description = "목차 다음 페이지 토큰", required = false, example = "EAAaBlBUOkNESQ")
     })
     @ApiResponse(responseCode = "200", description = "성공적으로 강의 상세 정보를 반환하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(oneOf = {PlaylistDetail.class, VideoDetail.class, IndexInfo.class}))})
     public ResponseEntity<?> getLectureDetail(@PathVariable(name = "lectureCode") String lectureCode, @ModelAttribute LectureDetailParam lectureDetailParam) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
         boolean isPlaylist = youtubeUtil.checkIfPlaylist(lectureCode);
 
-        ResponseEntity<?> lectureDetail = lectureService.getLectureDetail(memberId, isPlaylist, lectureCode, lectureDetailParam);
+        ResponseEntity<?> lectureDetail = lectureServiceV2.getLectureDetail(memberId, isPlaylist, lectureCode, lectureDetailParam);
         return lectureDetail;
     }
 

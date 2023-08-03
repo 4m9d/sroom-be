@@ -1,22 +1,31 @@
 package com.m9d.sroom.util;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.common.net.HttpHeaders;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.lecture.dto.response.KeywordSearch;
 import com.m9d.sroom.lecture.dto.response.PlaylistDetail;
 import com.m9d.sroom.member.domain.Member;
 import com.m9d.sroom.member.dto.response.Login;
+import com.m9d.sroom.util.youtube.resource.LectureListReq;
+import com.m9d.sroom.util.youtube.vo.search.SearchVo;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
+import java.util.Map;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-public class ControllerTest extends SroomTest{
+public class ControllerTest extends SroomTest {
 
     public Login getNewLogin() {
         Member member = getNewMember();

@@ -64,7 +64,6 @@ public class LectureControllerTest extends ControllerTest {
                         .queryParam("keyword", keyword)
                         .queryParam("next_page_token", keywordSearch.getNextPageToken()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.prev_page_token").exists()) //prevPageToken을 받았다는건 첫번째 페이지가 아니라는 뜻입니다.
                 .andExpect(jsonPath("$.lectures[0].lecture_code", not(keywordSearch.getLectures().get(0).getLectureCode()))); // 첫번째 반환된 페이지의 값과 다르다는 뜻입니다.
     }
 

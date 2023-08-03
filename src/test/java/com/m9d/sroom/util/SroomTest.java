@@ -7,8 +7,10 @@ import com.m9d.sroom.course.service.CourseService;
 import com.m9d.sroom.dashbord.repository.DashboardRepository;
 import com.m9d.sroom.dashbord.service.DashboardService;
 import com.m9d.sroom.lecture.service.LectureService;
+import com.m9d.sroom.lecture.service.LectureServiceV2;
 import com.m9d.sroom.member.repository.MemberRepository;
 import com.m9d.sroom.member.service.MemberService;
+import com.m9d.sroom.util.youtube.YoutubeApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -57,6 +59,12 @@ public class SroomTest {
 
     @Autowired
     protected DateUtil dateUtil;
+
+    @Autowired
+    protected YoutubeApi youtubeApi;
+
+    @Autowired
+    protected LectureServiceV2 lectureServiceV2;
 
 
     protected static final String VIDEO_CODE = "Z9dvM7qgN9s";
