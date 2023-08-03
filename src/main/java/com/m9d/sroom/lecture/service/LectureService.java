@@ -3,6 +3,7 @@ package com.m9d.sroom.lecture.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.m9d.sroom.course.domain.Playlist;
 import com.m9d.sroom.course.domain.Video;
+import com.m9d.sroom.course.repository.CourseRepository;
 import com.m9d.sroom.lecture.dto.request.KeywordSearchParam;
 import com.m9d.sroom.lecture.dto.request.LectureDetailParam;
 import com.m9d.sroom.lecture.dto.response.Index;
@@ -43,13 +44,13 @@ import static com.m9d.sroom.util.youtube.YoutubeConstant.*;
 public class LectureService {
 
     private final LectureRepository lectureRepository;
+    private final CourseRepository courseRepository;
     private final YoutubeUtil youtubeUtil;
     private final DateUtil dateUtil;
 
-    private final LectureServiceV2 lectureServiceV2;
-
-    public LectureService(LectureRepository lectureRepository, YoutubeUtil youtubeUtil, DateUtil dateUtil, LectureServiceV2 lectureServiceV2) {
+    public LectureService(LectureRepository lectureRepository, CourseRepository courseRepository, YoutubeUtil youtubeUtil, DateUtil dateUtil) {
         this.lectureRepository = lectureRepository;
+        this.courseRepository = courseRepository;
         this.youtubeUtil = youtubeUtil;
         this.dateUtil = dateUtil;
         this.lectureServiceV2 = lectureServiceV2;
@@ -72,11 +73,47 @@ public class LectureService {
     }
 
     public VideoDetail getVideoDetail(Long memberId, String lectureCode, int reviewLimit) {
-        return lectureServiceV2.getVideoDetail(memberId, lectureCode, reviewLimit);
+        VideoReq videoReq = VideoReq.builder()
+                .videoCode(lectureCode)
+                .build();
+        JsonNode resultNode = youtubeUtil.safeGet(youtubeUtil.getYoutubeResource(videoReq));
+
+        if (resultNode.get(JSONNODE_PAGE_INFO).get(JSONNODE_TOTAL_RESULTS).asInt() == 0) {
+            throw new VideoNotFoundException();
+        }
+
+        Set<String> enrolledVideoSet = getEnrolledVideoByMemberId(memberId);
+
+        VideoDetail videoDetail = buildVideoDetailResponse(resultNode, reviewLimit, enrolledVideoSet);
+        videoDetail.setCourses(courseRepository.getCourseBriefListByMember(memberId));
+        return videoDetail;
     }
 
     public PlaylistDetail getPlaylistDetail(Long memberId, String lectureCode, String indexNextToken, int reviewLimit) {
-        return lectureServiceV2.getPlaylistDetail(memberId, lectureCode, indexNextToken, reviewLimit);
+        PlaylistReq playlistReq = PlaylistReq.builder()
+                .playlistCode(lectureCode)
+                .build();
+        PlaylistItemReq playlistItemReq = PlaylistItemReq.builder()
+                .playlistCode(lectureCode)
+                .nextPageToken(indexNextToken)
+                .limit(DEFAULT_INDEX_COUNT)
+                .build();
+
+        CompletableFuture<JsonNode> playlistFuture = youtubeUtil.getYoutubeResource(playlistReq);
+        CompletableFuture<JsonNode> indexFuture = youtubeUtil.getYoutubeResource(playlistItemReq);
+        CompletableFuture.allOf(playlistFuture, indexFuture).join();
+
+        JsonNode playlistNode = youtubeUtil.safeGet(playlistFuture);
+        JsonNode indexNode = youtubeUtil.safeGet(indexFuture);
+
+        youtubeUtil.validateNodeIfNotFound(playlistNode);
+        youtubeUtil.validateNodeIfNotFound(indexNode);
+
+        Set<String> enrolledPlaylistSet = getEnrolledPlaylistByMemberId(memberId);
+
+        PlaylistDetail playlistDetail = buildPlaylistDetailResponse(playlistNode, indexNode, reviewLimit, enrolledPlaylistSet);
+        playlistDetail.setCourses(courseRepository.getCourseBriefListByMember(memberId));
+        return playlistDetail;
     }
 
     public IndexInfo getPlaylistItems(String lectureCode, String indexNextToken, int indexLimit) {
@@ -297,7 +334,7 @@ public class LectureService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        int totalDuration = (int) totalDurationSeconds.get();
+        int totalDuration = totalDurationSeconds.intValue();
 
         return IndexInfo.builder()
                 .indexList(indexList)
@@ -360,5 +397,25 @@ public class LectureService {
         if (!isPlaylist && lectureDetailParam.isIndex_only()) {
             throw new VideoIndexParamException();
         }
+    }
+
+    public Recommendations getRecommendations(Long memberId) {
+        return null;
+    }
+
+    public List<RecommendLecture> getTopRatedVideos() {
+        return null;
+    }
+
+    public List<RecommendLecture> getTopRatedPlaylists() {
+        return null;
+    }
+
+    public List<RecommendLecture> getRecommendsByChannel(Long memberId) {
+        return null;
+    }
+
+    public List<String> getMostEnrolledChannels(Long memberId) {
+        return null;
     }
 }

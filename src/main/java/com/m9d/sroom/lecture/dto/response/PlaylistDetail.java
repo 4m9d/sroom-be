@@ -56,4 +56,7 @@ public class PlaylistDetail {
 
     @Schema(description = "강의 후기 요약 정보")
     private List<ReviewBrief> reviews;
+
+    @Schema(description = "멤버의 코스 리스트")
+    private List<CourseBrief> courses;
 }

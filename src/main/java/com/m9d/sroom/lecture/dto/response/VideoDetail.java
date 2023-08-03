@@ -28,8 +28,8 @@ public class VideoDetail {
     @Schema(description = "강의 설명", example = "OSI 7계층에서 각 계층의 다양한 프로토콜들을 통해서 배우는 네트워크 기초에 대한 강의입니다.")
     private String description;
 
-    @Schema(description = "강의 재생 길이", example = "3:45")
-    private String duration;
+    @Schema(description = "강의 재생 길이", example = "11424")
+    private int duration;
 
     @Schema(description = "강의 등록 여부", example = "false")
     private boolean enrolled;
@@ -54,4 +54,7 @@ public class VideoDetail {
 
     @Schema(description = "강의 리뷰 목록")
     private List<ReviewBrief> reviews;
+
+    @Schema(description = "멤버의 코스 리스트")
+    private List<CourseBrief> courses;
 }
