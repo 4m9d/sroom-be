@@ -9,13 +9,13 @@ class CourseSqlQuery {
     """;
 
     public static final String GET_TOTAL_LECTURE_COUNT_BY_COURSE_ID_QUERY = """
-    SELECT COUNT(*) as lecture_count
+    SELECT COUNT(1) as lecture_count
     FROM COURSEVIDEO c
     WHERE c.course_id = ?
     """
 
     public static final String GET_COMPLETED_LECTURE_COUNT_BY_COURSE_ID_QUERY = """
-    SELECT COUNT(*) as completed_lecture_count
+    SELECT COUNT(1) as completed_lecture_count
     FROM COURSEVIDEO cv
     WHERE cv.course_id = ? AND cv.is_complete = true
     """
@@ -137,7 +137,7 @@ class CourseSqlQuery {
     """
 
     public static final String GET_LAST_LECTURE_INDEX_QUERY = """
-    SELECT MAX(lecture_index) 
+    SELECT MAX(lecture_index)
     FROM LECTURE 
     WHERE course_id = ?
     """

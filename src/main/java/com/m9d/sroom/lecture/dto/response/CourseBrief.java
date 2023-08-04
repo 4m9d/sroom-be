@@ -12,8 +12,8 @@ public class CourseBrief {
     private Long courseId;
 
     @Schema(description = "코스 제목", example = "침착맨 vs 주호민 산다면 누구 인생으로?")
-    private String title;
+    private String courseTitle;
 
     @Schema(description = "코스에 해당하는 영상 개수", example = "111")
-    private int videoCount;
+    private int totalVideoCount;
 }

@@ -6,7 +6,6 @@ import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.domain.Video;
 import com.m9d.sroom.course.exception.CourseNotFoundException;
 import com.m9d.sroom.course.sql.CourseSqlQuery;
-import com.m9d.sroom.dashbord.sql.DashboardSqlQuery;
 import com.m9d.sroom.lecture.dto.response.CourseBrief;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -108,9 +107,9 @@ public class CourseRepository {
     public List<CourseBrief> getCourseBriefListByMember(Long memberId) {
         return jdbcTemplate.query(GET_COURSE_LIST_QUERY,
                 ((rs, rowNum) -> CourseBrief.builder()
-                        .title(rs.getString("course_title"))
+                        .courseTitle(rs.getString("course_title"))
                         .courseId(rs.getLong("course_id"))
-                        .videoCount(rs.getInt("video_count"))
+                        .totalVideoCount(rs.getInt("video_count"))
                         .build()), memberId
         );
     }
