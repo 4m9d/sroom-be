@@ -367,4 +367,7 @@ public class LectureServiceV2 {
         }
     }
 
+    public CourseDetail getCourseDetail(Long memberId, Long courseId) {
+        return new CourseDetail();
+    }
 }
