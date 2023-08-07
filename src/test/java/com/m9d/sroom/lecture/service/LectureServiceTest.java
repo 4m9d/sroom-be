@@ -30,9 +30,9 @@ public class LectureServiceTest extends ServiceTest {
     @DisplayName("평점이 높은 순으로 비디오를 불러옵니다.")
     void getTopRatedVideoTest() {
         //given
-        saveVideo("code1", 100, "channel1", "thumbnail url", 3.5, 150, "title1", " ", 1500);
-        saveVideo("code2", 321, "channel1", "thumbnail url", 4.8, 300, "title2", " ", 300);
-        saveVideo("code3", 12, "channel2", "thumbnail url", 3.9, 200, "title3", " ", 300000);
+        saveVideo("code1", 100, "channel1", "thumbnail url", 0, 0, "title1", " ", 1500);
+        saveVideo("code2", 321, "channel1", "thumbnail url", 1470, 300, "title2", " ", 300);
+        saveVideo("code3", 12, "channel2", "thumbnail url", 900, 200, "title3", " ", 300000);
 
         //when
         List<RecommendLecture> topRatedVideos = lectureService.getTopRatedVideos();
@@ -47,17 +47,17 @@ public class LectureServiceTest extends ServiceTest {
     @DisplayName("평점이 높은 순으로 플레이리스트를 불러옵니다.")
     void getTopRatedPlaylistTest() {
         //given
-        savePlaylist("code1", 100, "channel1", "thumbnail url", 3.5, 150, "title1");
-        savePlaylist("code2", 100, "channel1", "thumbnail url", 3.1, 150, "title2");
-        savePlaylist("code3", 100, "channel1", "thumbnail url", 2.2, 150, "title3");
+        savePlaylist("code1", 100, "channel1", "thumbnail url", 100, 150, "title1");
+        savePlaylist("code2", 100, "channel1", "thumbnail url", 700, 150, "title2");
+        savePlaylist("code3", 100, "channel1", "thumbnail url", 600, 150, "title3");
 
         //when
         List<RecommendLecture> topRatedPlaylists = lectureService.getTopRatedPlaylists();
 
         //then
-        Assertions.assertEquals("title1", topRatedPlaylists.get(0).getLectureTitle());
-        Assertions.assertEquals("title2", topRatedPlaylists.get(1).getLectureTitle());
-        Assertions.assertEquals("title3", topRatedPlaylists.get(2).getLectureTitle());
+        Assertions.assertEquals("title2", topRatedPlaylists.get(0).getLectureTitle());
+        Assertions.assertEquals("title3", topRatedPlaylists.get(1).getLectureTitle());
+        Assertions.assertEquals("title1", topRatedPlaylists.get(2).getLectureTitle());
     }
 
     @Test
