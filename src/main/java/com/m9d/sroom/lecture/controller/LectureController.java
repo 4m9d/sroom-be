@@ -86,7 +86,7 @@ public class LectureController {
 
 
     @Auth
-    @GetMapping("/{courseId}")
+    @GetMapping("/courses/{courseId}")
     @Tag(name = "강의 수강")
     @Operation(summary = "수강페이지 코스정보", description = "코스 ID를 받아 해당 코스 정보와 수강할 영상 리스트를 반환합니다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 수강 정보를 반환하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CourseDetail.class))})

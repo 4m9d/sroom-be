@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 
 import static com.m9d.sroom.util.youtube.YoutubeConstant.DEFAULT_INDEX_COUNT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.hamcrest.Matchers.*;
@@ -250,9 +251,42 @@ public class LectureControllerTest extends ControllerTest {
 
         //expected
         mockMvc.perform(get("/lectures/recommendations")
-                .header("Authorization", login.getAccessToken()))
+                        .header("Authorization", login.getAccessToken()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.recommendations").isArray())
                 .andExpect(jsonPath("$.recommendations", hasSize(5)));
+    }
+
+    @Test
+    @DisplayName("수강 페이지 정보를 적절히 받아옵니다 - 스케줄링 함")
+    void getCourseDetailSchedule200() throws Exception {
+        //given
+        Login login = getNewLogin();
+        Long courseId = enrollNewCourseWithPlaylistSchedule(login);
+
+        //expected
+        mockMvc.perform(get("/lectures/courses/{courseId}", courseId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", login.getAccessToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.weeks", hasSize(3)))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("수강 페이지 정보를 적절히 받아옵니다 - 스케줄링 안함")
+    void getCourseDetail200() throws Exception {
+        //given
+        Login login = getNewLogin();
+        Long courseId = enrollNewCourseWithPlaylist(login);
+
+        //expected
+        mockMvc.perform(get("/lectures/courses/{courseId}", courseId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", login.getAccessToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.weeks", hasSize(1)))
+                .andExpect(jsonPath("$.weeks[0].videos", hasSize(PLAYLIST_VIDEO_COUNT)))
+                .andDo(print());
     }
 }
