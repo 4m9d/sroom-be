@@ -2,7 +2,9 @@ package com.m9d.sroom.lecture.repository;
 
 import com.m9d.sroom.course.domain.Playlist;
 import com.m9d.sroom.course.domain.Video;
+import com.m9d.sroom.lecture.dto.response.RecommendLecture;
 import com.m9d.sroom.lecture.dto.response.ReviewBrief;
+import com.m9d.sroom.lecture.service.LectureService;
 import com.m9d.sroom.lecture.sql.LectureSqlQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -67,6 +69,69 @@ public class LectureRepository {
                         .description(rs.getString("description"))
                         .build(), lectureCode);
         return Optional.ofNullable(playlist);
+    }
+
+
+    public List<RecommendLecture> getVideosSortedByRating() {
+        return jdbcTemplate.query(LectureSqlQuery.GET_VIDEOS_SORTED_RATING, recommenVideoRowMapper(),5);
+    }
+
+    public List<RecommendLecture> getPlaylistsSortedByRating() {
+        return jdbcTemplate.query(LectureSqlQuery.GET_PLAYLISTS_SORTED_RATING, recommendPlaylistRowMapper(), 5);
+    }
+
+    public List<String> getMostEnrolledChannels(Long member_id) {
+        return new ArrayList<>(jdbcTemplate.query(LectureSqlQuery.GET_MOST_ENROLLED_CHANNELS_BY_MEMBER_ID_QUERY, (rs, rowNum) -> rs.getString("channel"), member_id));
+    }
+
+    public List<RecommendLecture> getRandomVideosByChannel(String channel, int limit) {
+        return jdbcTemplate.query(LectureSqlQuery.GET_RANDOM_VIDEOS_BY_CHANNEL_QUERY, recommenVideoRowMapper(), channel, limit);
+    }
+
+    public List<RecommendLecture> getRandomPlaylistsByChannel(String channel, int limit) {
+        return jdbcTemplate.query(LectureSqlQuery.GET_RANDOM_PLAYLISTS_BY_CHANNEL_QUERY, recommendPlaylistRowMapper(), channel, limit);
+    }
+
+    public List<RecommendLecture> getMostViewedVideosByChannel(String channel, int limit) {
+        return jdbcTemplate.query(LectureSqlQuery.GET_MOST_VIEWED_VIDEOS_BY_CHANNEL_QUERY, recommenVideoRowMapper(), channel, limit);
+    }
+
+    public List<RecommendLecture> getMostViewedPlaylistsByChannel(String channel, int limit) {
+        return jdbcTemplate.query(LectureSqlQuery.GET_MOST_VIEWED_PLAYLISTS_BY_CHANNEL_QUERY, recommendPlaylistRowMapper(), channel, limit);
+    }
+
+    public List<RecommendLecture> getLatestVideosByChannel(String channel, int limit) {
+        return jdbcTemplate.query(LectureSqlQuery.GET_LATEST_VIDEOS_BY_CHANNEL_QUERY, recommenVideoRowMapper(), channel, limit);
+    }
+
+    public List<RecommendLecture> getLatestPlaylistsByChannel(String channel, int limit) {
+        return jdbcTemplate.query(LectureSqlQuery.GET_LATEST_PLAYLISTS_BY_CHANNEL_QUERY, recommendPlaylistRowMapper(), channel, limit);
+    }
+
+    private RowMapper<RecommendLecture> recommenVideoRowMapper() {
+        return ((rs, rowNum) -> RecommendLecture.builder()
+                .lectureTitle(rs.getString("title"))
+                .description(rs.getString("description"))
+                .channel(rs.getString("channel"))
+                .lectureCode(rs.getString("video_code"))
+                .rating(rs.getDouble("rating"))
+                .reviewCount(rs.getInt("review_count"))
+                .thumbnail(rs.getString("thumbnail"))
+                .isPlaylist(false)
+                .build());
+    }
+
+    private RowMapper<RecommendLecture> recommendPlaylistRowMapper() {
+        return ((rs, rowNum) -> RecommendLecture.builder()
+                .lectureTitle(rs.getString("title"))
+                .description(rs.getString("description"))
+                .channel(rs.getString("channel"))
+                .lectureCode(rs.getString("playlist_code"))
+                .rating(rs.getDouble("rating"))
+                .reviewCount(rs.getInt("review_count"))
+                .thumbnail(rs.getString("thumbnail"))
+                .isPlaylist(true)
+                .build());
     }
 
     private <T> T queryForObjectOrNull(String sql, RowMapper<T> rowMapper, Object... args) {
