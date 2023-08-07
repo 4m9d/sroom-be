@@ -1,11 +1,9 @@
 package com.m9d.sroom.course.controller;
 
-import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.course.dto.response.MyCourses;
 import com.m9d.sroom.course.service.CourseService;
-import com.m9d.sroom.course.service.CourseServiceV2;
 import com.m9d.sroom.lecture.dto.response.CourseDetail;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;

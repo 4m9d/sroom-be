@@ -14,7 +14,8 @@ spring:
     url: ${url}
     username: ${username}
     password:
-#    hikari:
+    driver-class-name: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+  #    hikari:
 #      connection-timeout: 250
 #      max-lifetime: 500
   mvc:

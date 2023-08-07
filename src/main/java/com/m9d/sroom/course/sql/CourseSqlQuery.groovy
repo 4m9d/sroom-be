@@ -87,9 +87,9 @@ class CourseSqlQuery {
     """
 
     public static final String GET_DURATION_BY_PLAYLIST_ID_QUERY = """
-    SELECT SUM(v.duration)
+    SELECT v.duration
     FROM VIDEO v
-    INNER JOIN PLAYLISTVIDEO pv 
+    JOIN PLAYLISTVIDEO pv 
     ON v.video_id = pv.video_id
     WHERE pv.playlist_id = ?
     """
@@ -136,8 +136,8 @@ class CourseSqlQuery {
     ORDER BY video_index
     """
 
-    public static final String GET_LAST_LECTURE_INDEX_QUERY = """
-    SELECT MAX(lecture_index)
+    public static final String GET_LECTURE_INDEX_LIST_QUERY = """
+    SELECT lecture_index
     FROM LECTURE 
     WHERE course_id = ?
     """

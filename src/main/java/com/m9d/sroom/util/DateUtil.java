@@ -84,7 +84,6 @@ public class DateUtil {
     }
 
     public Timestamp convertISOToTimestamp(String isoString) {
-        log.debug("isoString = {}", isoString);
         try {
             Instant instant = Instant.parse(isoString);
             return Timestamp.from(instant);
