@@ -9,7 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
-import static com.m9d.sroom.util.youtube.YoutubeConstant.DEFAULT_INDEX_COUNT;
+import static com.m9d.sroom.util.youtube.YoutubeUtil.DEFAULT_INDEX_COUNT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;

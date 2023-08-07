@@ -7,7 +7,6 @@ import com.m9d.sroom.course.service.CourseService;
 import com.m9d.sroom.dashbord.repository.DashboardRepository;
 import com.m9d.sroom.dashbord.service.DashboardService;
 import com.m9d.sroom.lecture.service.LectureService;
-import com.m9d.sroom.lecture.service.LectureServiceV2;
 import com.m9d.sroom.member.repository.MemberRepository;
 import com.m9d.sroom.member.service.MemberService;
 import com.m9d.sroom.util.youtube.YoutubeApi;
@@ -62,10 +61,6 @@ public class SroomTest {
 
     @Autowired
     protected YoutubeApi youtubeApi;
-
-    @Autowired
-    protected LectureServiceV2 lectureServiceV2;
-
 
     protected static final String VIDEO_CODE = "Z9dvM7qgN9s";
     protected static final String PLAYLIST_CODE = "PLv2d7VI9OotQUUsgcTBHuy5vJkSgzVHL0";

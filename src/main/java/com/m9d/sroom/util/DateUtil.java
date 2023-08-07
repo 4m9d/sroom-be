@@ -10,6 +10,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.Date;
@@ -29,6 +30,8 @@ public class DateUtil {
     public static final int DAYS_IN_WEEK = 7;
     public static final String FORMAT_WITH_HOUR = "%d:%02d:%02d";
     public static final String FORMAT_WITHOUT_HOUR = "%d:%02d";
+
+    public static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public Long convertTimeToSeconds(String time) {
         String[] parts = time.split(":");

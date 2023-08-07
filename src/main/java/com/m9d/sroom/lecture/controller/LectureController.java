@@ -3,7 +3,7 @@ package com.m9d.sroom.lecture.controller;
 import com.m9d.sroom.lecture.dto.request.KeywordSearchParam;
 import com.m9d.sroom.lecture.dto.request.LectureDetailParam;
 import com.m9d.sroom.lecture.dto.response.*;
-import com.m9d.sroom.lecture.service.LectureServiceV2;
+import com.m9d.sroom.lecture.service.LectureService;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
 import com.m9d.sroom.util.youtube.YoutubeUtil;
@@ -21,8 +21,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -30,8 +28,7 @@ import java.util.List;
 @Slf4j
 public class LectureController {
 
-    //private final LectureService lectureService;
-    private final LectureServiceV2 lectureServiceV2;
+    private final LectureService lectureService;
     private final JwtUtil jwtUtil;
     private final YoutubeUtil youtubeUtil;
 
@@ -49,7 +46,7 @@ public class LectureController {
     @ApiResponse(responseCode = "200", description = "성공적으로 검색 결과를 반환하였습니다.", content = @Content(schema = @Schema(implementation = KeywordSearch.class)))
     public KeywordSearch getLecturesByKeyword(@Valid @ModelAttribute KeywordSearchParam keywordSearchParam) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
-        KeywordSearch keywordSearch = lectureServiceV2.searchByKeyword(memberId, keywordSearchParam);
+        KeywordSearch keywordSearch = lectureService.searchByKeyword(memberId, keywordSearchParam);
         return keywordSearch;
     }
 
@@ -83,7 +80,7 @@ public class LectureController {
         Long memberId = jwtUtil.getMemberIdFromRequest();
         boolean isPlaylist = youtubeUtil.checkIfPlaylist(lectureCode);
 
-        ResponseEntity<?> lectureDetail = lectureServiceV2.getLectureDetail(memberId, isPlaylist, lectureCode, lectureDetailParam);
+        ResponseEntity<?> lectureDetail = lectureService.getLectureDetail(memberId, isPlaylist, lectureCode, lectureDetailParam);
         return lectureDetail;
     }
 

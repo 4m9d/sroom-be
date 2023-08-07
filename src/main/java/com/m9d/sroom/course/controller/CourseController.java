@@ -26,7 +26,6 @@ public class CourseController {
 
     private final JwtUtil jwtUtil;
     private final CourseService courseService;
-    private final CourseServiceV2 courseServiceV2;
 
     @Auth
     @GetMapping("")
@@ -69,6 +68,6 @@ public class CourseController {
     @ApiResponse(responseCode = "200", description = "성공적으로 수강 정보를 반환하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CourseDetail.class))})
     public CourseDetail getCourseDetail(@PathVariable(name = "courseId") Long courseId) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
-        return courseServiceV2.getCourseDetail(memberId, courseId);
+        return courseService.getCourseDetail(memberId, courseId);
     }
 }

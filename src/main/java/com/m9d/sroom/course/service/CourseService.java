@@ -9,6 +9,7 @@ import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.course.dto.response.MyCourses;
 import com.m9d.sroom.course.exception.CourseNotMatchException;
 import com.m9d.sroom.course.repository.CourseRepository;
+import com.m9d.sroom.lecture.dto.response.CourseDetail;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.util.youtube.YoutubeApi;
 import com.m9d.sroom.util.youtube.YoutubeUtil;
@@ -33,7 +34,7 @@ import java.sql.Timestamp;
 import static com.m9d.sroom.course.constant.CourseConstant.*;
 import static com.m9d.sroom.util.DateUtil.DAYS_IN_WEEK;
 import static com.m9d.sroom.util.DateUtil.SECONDS_IN_MINUTE;
-import static com.m9d.sroom.util.youtube.YoutubeConstant.*;
+import static com.m9d.sroom.util.youtube.YoutubeUtil.*;
 
 @Service
 @Slf4j
@@ -226,6 +227,7 @@ public class CourseService {
 
         Long courseId;
         if (useSchedule) {
+            validateScheduleField(newLecture);
             Date expectedEndDate = dateUtil.convertStringToDate(newLecture.getExpectedEndTime());
             courseId = courseRepository.saveCourseWithSchedule(memberId, playlist.getTitle(), playlist.getDuration(), playlist.getThumbnail(), newLecture.getScheduling().size(), newLecture.getDailyTargetTime(), expectedEndDate);
         } else {
@@ -450,4 +452,8 @@ public class CourseService {
         return Collections.max(lectureIndexList);
     }
 
+    public CourseDetail getCourseDetail(Long memberId, Long courseId) {
+        return new CourseDetail();
+
+    }
 }

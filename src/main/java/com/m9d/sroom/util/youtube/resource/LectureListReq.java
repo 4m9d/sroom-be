@@ -1,6 +1,6 @@
 package com.m9d.sroom.util.youtube.resource;
 
-import com.m9d.sroom.util.youtube.YoutubeConstant;
+import com.m9d.sroom.util.youtube.YoutubeUtil;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 
@@ -21,7 +21,7 @@ public class LectureListReq implements YoutubeResource {
 
     @Override
     public Map<String, String> getParameters() {
-        Map<String, String> params = new HashMap<>(YoutubeConstant.LECTURE_LIST_PARAMETERS);
+        Map<String, String> params = new HashMap<>(YoutubeUtil.LECTURE_LIST_PARAMETERS);
         params.put("maxResults", String.valueOf(limit));
         if (filter.equals("all")) {
             params.put("type", "playlist,video");

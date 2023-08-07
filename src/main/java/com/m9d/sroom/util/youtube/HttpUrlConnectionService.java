@@ -21,8 +21,8 @@ import java.net.URL;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.m9d.sroom.util.youtube.YoutubeConstant.REQUEST_METHOD_GET;
-import static com.m9d.sroom.util.youtube.YoutubeConstant.YOUTUBE_REQUEST_CONTENT_TYPE;
+import static com.m9d.sroom.util.youtube.YoutubeUtil.REQUEST_METHOD_GET;
+import static com.m9d.sroom.util.youtube.YoutubeUtil.YOUTUBE_REQUEST_CONTENT_TYPE;
 
 //@Service
 @Slf4j
