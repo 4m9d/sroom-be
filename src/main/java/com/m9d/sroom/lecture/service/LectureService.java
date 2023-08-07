@@ -400,22 +400,70 @@ public class LectureService {
     }
 
     public Recommendations getRecommendations(Long memberId) {
-        return null;
+        HashSet<RecommendLecture> recommendLectureHashSet = new HashSet<>();
+        List<RecommendLecture> recommendLectureList = new ArrayList<>();
+        List<RecommendLecture> topRatedVideos = getTopRatedVideos();
+        List<RecommendLecture> topRatedPlaylists = getTopRatedPlaylists();
+        List<RecommendLecture> recommendLecturesByChannel = getRecommendsByChannel(memberId);
+
+        Set<String> enrolledLectureSet = youtubeUtil.safeGet(getLecturesByMemberId(memberId));
+
+        recommendLectureHashSet.addAll(topRatedVideos);
+        recommendLectureHashSet.addAll(topRatedPlaylists);
+        recommendLectureHashSet.addAll(recommendLecturesByChannel);
+
+        for(String lectureCode: enrolledLectureSet) {
+            recommendLectureHashSet.removeIf(recommendLecture -> (recommendLecture.getLectureCode().equals(lectureCode)));
+        }
+
+        recommendLectureList.addAll(recommendLectureHashSet);
+        Collections.shuffle(recommendLectureList);
+
+        Recommendations recommendations = Recommendations.builder()
+                .recommendations(recommendLectureList)
+                .build();
+
+        return recommendations;
     }
 
     public List<RecommendLecture> getTopRatedVideos() {
-        return null;
+        return lectureRepository.getVideosSortedByRating();
     }
 
     public List<RecommendLecture> getTopRatedPlaylists() {
-        return null;
+        return lectureRepository.getPlaylistsSortedByRating();
     }
 
     public List<RecommendLecture> getRecommendsByChannel(Long memberId) {
-        return null;
+        List<RecommendLecture> recommendLecturesByChannel = new ArrayList<>();
+        List<String> channels = getMostEnrolledChannels(memberId);
+
+        final int SELECT_BY_RANDOM_LIMIT = 1;
+        final int SELECT_BY_PUBLISH_DATE_LIMIT = 2;
+        final int SELECT_BY_VIEWED_LIMIT = 3;
+
+        for (String channelName: channels) {
+            List<RecommendLecture> randomVideosByChannel = lectureRepository.getRandomVideosByChannel(channelName, SELECT_BY_RANDOM_LIMIT);
+            List<RecommendLecture> randomPlaylistsByChannel = lectureRepository.getRandomPlaylistsByChannel(channelName, SELECT_BY_RANDOM_LIMIT);
+
+            List<RecommendLecture> mostViewedVideosByChannel = lectureRepository.getMostViewedVideosByChannel(channelName, SELECT_BY_VIEWED_LIMIT);
+            List<RecommendLecture> mostViewedPlaylistsByChannel = lectureRepository.getMostViewedPlaylistsByChannel(channelName, SELECT_BY_VIEWED_LIMIT);
+
+            List<RecommendLecture> latestPublishedVideosByChannel = lectureRepository.getLatestVideosByChannel(channelName, SELECT_BY_PUBLISH_DATE_LIMIT);
+            List<RecommendLecture> latestPublishedPlaylistsByChannel = lectureRepository.getLatestPlaylistsByChannel(channelName, SELECT_BY_PUBLISH_DATE_LIMIT);
+
+            recommendLecturesByChannel.addAll(randomVideosByChannel);
+            recommendLecturesByChannel.addAll(randomPlaylistsByChannel);
+            recommendLecturesByChannel.addAll(mostViewedPlaylistsByChannel);
+            recommendLecturesByChannel.addAll(mostViewedVideosByChannel);
+            recommendLecturesByChannel.addAll(latestPublishedVideosByChannel);
+            recommendLecturesByChannel.addAll(latestPublishedPlaylistsByChannel);
+        }
+
+        return recommendLecturesByChannel;
     }
 
     public List<String> getMostEnrolledChannels(Long memberId) {
-        return null;
+        return lectureRepository.getMostEnrolledChannels(memberId);
     }
 }

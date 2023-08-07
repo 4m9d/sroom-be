@@ -53,6 +53,18 @@ public class LectureController {
         return keywordSearch;
     }
 
+    @Auth
+    @GetMapping("/recommendations")
+    @Tag(name = "강의 검색")
+    @Operation(summary = "강의 추천", description = "유저 ID를 받아 적당한 강의를 추천한다.")
+    @ApiResponse(responseCode = "200", description = "성공적으로 추천 결과를 반환하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Recommendations.class))})
+    public Recommendations getRecommendations() {
+        Long memberId = jwtUtil.getMemberIdFromRequest();
+        log.info("recommend start");
+        Recommendations recommendations = lectureService.getRecommendations(memberId);
+
+        return recommendations;
+    }
 
     @Auth
     @GetMapping("/{lectureCode}")
@@ -75,12 +87,4 @@ public class LectureController {
         return lectureDetail;
     }
 
-    @Auth
-    @GetMapping("/recommendations")
-    @Tag(name = "강의 검색")
-    @Operation(summary = "강의 추천", description = "유저 ID를 받아 적당한 강의를 추천한다.")
-    @ApiResponse(responseCode = "200", description = "성공적으로 추천 결과를 반환하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Recommendations.class))})
-    public Recommendations getRecommendations() {
-        return null;
-    }
 }

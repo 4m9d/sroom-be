@@ -16,34 +16,17 @@ public class ServiceTest extends SroomTest{
         return memberService.findOrCreateMemberByMemberCode(memberCode);
     }
 
-    protected void saveVideo(String videoCode, int duration, String channel, String thumbnail, double rating, int reviewCount, String title, String license, int viewCount) {
-        Video video = Video.builder()
-                .videoCode(videoCode)
-                .duration(duration)
-                .channel(channel)
-                .thumbnail(thumbnail)
-                .rating(rating)
-                .reviewCount(reviewCount)
-                .title(title)
-                .license(license)
-                .viewCount(viewCount)
-                .build();
+    protected void saveVideo(String videoCode, int duration, String channel, String thumbnail, int accumulated_rating, int reviewCount, String title, String license, int viewCount) {
 
-        courseRepository.saveVideo(video);
+        String sql = "INSERT INTO VIDEO(video_code, duration, channel, thumbnail, accumulated_rating, review_count, title, license, view_count) values(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        jdbcTemplate.update(sql, videoCode, duration, channel, thumbnail, accumulated_rating, reviewCount, title, license, viewCount);
+
     }
 
-    protected void savePlaylist(String playlistCode, int duration, String channel, String thumbnail, double rating, int reviewCount, String title) {
-        Playlist playlist = Playlist.builder()
-                .playlistCode(playlistCode)
-                .duration(duration)
-                .channel(channel)
-                .thumbnail(thumbnail)
-                .rating(rating)
-                .reviewCount(reviewCount)
-                .title(title)
-                .publishedAt(new Timestamp(System.currentTimeMillis()))
-                .build();
+    protected void savePlaylist(String playlistCode, int duration, String channel, String thumbnail, int accumulated_rating, int reviewCount, String title) {
 
-        courseRepository.savePlaylist(playlist);
+        String sql = "INSERT INTO PLAYLIST(playlist_code, duration, channel, thumbnail, accumulated_rating, review_count, title, published_at, video_count) values(?, ?, ?, ?, ?, ?, ?, ?, 10)";
+        jdbcTemplate.update(sql, playlistCode, duration, channel, thumbnail, accumulated_rating, reviewCount, title, new Timestamp(System.currentTimeMillis()));
+
     }
 }
