@@ -8,6 +8,7 @@ import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.course.dto.response.MyCourses;
 import com.m9d.sroom.course.exception.CourseNotMatchException;
+import com.m9d.sroom.course.model.PlaylistPageResult;
 import com.m9d.sroom.course.repository.CourseRepository;
 import com.m9d.sroom.lecture.dto.response.CourseDetail;
 import com.m9d.sroom.util.DateUtil;
@@ -23,6 +24,7 @@ import com.m9d.sroom.util.youtube.vo.playlistitem.PlaylistVideoVo;
 import com.m9d.sroom.util.youtube.vo.video.VideoItemVo;
 import com.m9d.sroom.util.youtube.vo.video.VideoVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
@@ -30,6 +32,9 @@ import reactor.core.publisher.Mono;
 import java.util.*;
 import java.security.InvalidParameterException;
 import java.sql.Timestamp;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 import static com.m9d.sroom.course.constant.CourseConstant.*;
 import static com.m9d.sroom.util.DateUtil.DAYS_IN_WEEK;
@@ -126,10 +131,21 @@ public class CourseService {
             Playlist playlist = getPlaylistWithUpdate(newLecture.getLectureCode());
             enrolledCourseInfo = addPlaylistInCourse(course, playlist);
         } else {
-            Video video = getVideoWithUpdateAsync(newLecture.getLectureCode());
+            Video video;
+            video = safeGetVideo(newLecture.getLectureCode());
             enrolledCourseInfo = addVideoInCourse(course, video);
         }
         return enrolledCourseInfo;
+    }
+
+    private Video safeGetVideo(String videoCode) {
+        Video video;
+        try {
+            video = getVideoWithUpdateAsync(videoCode).get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        return video;
     }
 
     private EnrolledCourseInfo addVideoInCourse(Course course, Video video) {
@@ -261,9 +277,7 @@ public class CourseService {
             }
             playlist.setPlaylistId(playlistId);
             courseRepository.deletePlaylistVideo(playlistId);
-            putPlaylistItem(playlistCode, playlistId, playlist.getLectureCount());
-            List<Integer> videoDurations = courseRepository.getVideoDurationsByPlaylistId(playlistId);
-            int playlistDuration = getSumList(videoDurations);
+            int playlistDuration = putPlaylistItemAndGetPlaylistDuration(playlistCode, playlistId, playlist.getLectureCount());
             courseRepository.updatePlaylistDuration(playlistId, playlistDuration);
             playlist.setDuration(playlistDuration);
         }
@@ -296,15 +310,19 @@ public class CourseService {
                 .build();
     }
 
-    public void putPlaylistItem(String playlistCode, Long playlistId, int lectureCount) {
+    public int putPlaylistItemAndGetPlaylistDuration(String playlistCode, Long playlistId, int lectureCount) {
         String nextPageToken = null;
+        int playlistDuration = 0;
         int pageCount = (lectureCount / DEFAULT_INDEX_COUNT) + 1;
         for (int i = 0; i < pageCount; i++) {
-            nextPageToken = putPlaylistItemPerPage(playlistCode, playlistId, nextPageToken);
+            PlaylistPageResult result = putPlaylistItemPerPage(playlistCode, playlistId, nextPageToken);
+            nextPageToken = result.getNextPageToken();
+            playlistDuration += result.getTotalDurationPerPage();
         }
+        return playlistDuration;
     }
 
-    private String putPlaylistItemPerPage(String lectureCode, Long playlistId, String nextPageToken) {
+    private PlaylistPageResult putPlaylistItemPerPage(String lectureCode, Long playlistId, String nextPageToken) {
         Mono<PlaylistVideoVo> playlistVideoVoMono = youtubeApi.getPlaylistVideoVo(PlaylistItemReq.builder()
                 .playlistCode(lectureCode)
                 .limit(DEFAULT_INDEX_COUNT)
@@ -312,43 +330,56 @@ public class CourseService {
                 .build());
         PlaylistVideoVo playlistVideoVo = safeGetVo(playlistVideoVoMono);
 
-        List<Video> videoList = new ArrayList<>();
-
+        List<CompletableFuture<Video>> futureVideos = new ArrayList<>();
         for (PlaylistVideoItemVo itemVo : playlistVideoVo.getItems()) {
             if (itemVo.getStatus().getPrivacyStatus().equals(JSONNODE_PRIVATE)) {
                 continue;
             }
-            Video video = getVideoWithUpdateAsync(itemVo.getSnippet().getResourceId().getVideoId());
-            videoList.add(video);
+            CompletableFuture<Video> videoFuture = getVideoWithUpdateAsync(itemVo.getSnippet().getResourceId().getVideoId());
+            futureVideos.add(videoFuture);
+        }
+        CompletableFuture<Void> allFutures = CompletableFuture.allOf(futureVideos.toArray(new CompletableFuture[0]));
+        CompletableFuture<List<Video>> allVideoFuture = allFutures.thenApply(v ->
+                futureVideos.stream()
+                        .map(future -> future.join())
+                        .collect(Collectors.toList()));
+        List<Video> videoList = allVideoFuture.join();
+        int totalDurationPerPage = videoList.stream().mapToInt(Video::getDuration).sum();
+        saveVideoList(playlistId, videoList, playlistVideoVo.getItems());
+
+        try {
+            nextPageToken = playlistVideoVo.getNextPageToken();
+        } catch (NullPointerException e) {
+            nextPageToken = null;
         }
 
-        saveVideoList(playlistId, videoList, playlistVideoVo.getItems());
-        try {
-            return playlistVideoVo.getNextPageToken();
-        } catch (NullPointerException e) {
-            return null;
-        }
+        return new PlaylistPageResult(nextPageToken, totalDurationPerPage);
     }
 
     public void saveVideoList(Long playlistId, List<Video> videos, List<PlaylistVideoItemVo> items) {
+        int playlistDurationPlus = 0;
         for (int i = 0; i < videos.size(); i++) {
             int index = items.get(i).getSnippet().getPosition();
             courseRepository.savePlaylistVideo(playlistId, videos.get(i).getVideoId(), index + 1);
         }
     }
 
-    public Video getVideoWithUpdateAsync(String videoCode) {
+    @Async
+    public CompletableFuture<Video> getVideoWithUpdateAsync(String videoCode) {
         Optional<Video> videoOptional = courseRepository.findVideo(videoCode);
-        Video video;
+        CompletableFuture<Video> result;
 
         if (videoOptional.isPresent() && dateUtil.validateExpiration(videoOptional.get().getUpdatedAt(), VIDEO_UPDATE_THRESHOLD_HOURS)) {
-            video = videoOptional.get();
+            result = CompletableFuture.completedFuture(videoOptional.get());
         } else {
-            video = getVideoFromYoutube(videoCode);
-            Long videoId = courseRepository.saveVideo(video);
-            video.setVideoId(videoId);
+            result = CompletableFuture.supplyAsync(() -> {
+                Video video = getVideoFromYoutube(videoCode);
+                Long videoId = courseRepository.saveVideo(video);
+                video.setVideoId(videoId);
+                return video;
+            });
         }
-        return video;
+        return result;
     }
 
     private Video getVideoFromYoutube(String videoCode) {
@@ -403,7 +434,7 @@ public class CourseService {
     }
 
     private EnrolledCourseInfo saveCourseWithVideo(Long memberId, NewLecture newLecture, boolean useSchedule) {
-        Video video = getVideoWithUpdateAsync(newLecture.getLectureCode());
+        Video video = safeGetVideo(newLecture.getLectureCode());
 
         Long courseId;
         if (useSchedule) {
