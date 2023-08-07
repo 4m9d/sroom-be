@@ -153,7 +153,7 @@ public class LectureService {
                 .playlist(true)
                 .publishedAt(snippetVo.getPublishedAt().substring(PUBLISHED_DATE_START_INDEX, PUBLISHED_DATE_END_INDEX))
                 .enrolled(enrolledPlaylistSet.contains(playlistCode))
-                .lectureCount(indexInfo.getIndexList().size())
+                .lectureCount(playlistVo.getItems().get(FIRST_INDEX).getContentDetails().getItemCount())
                 .thumbnail(thumbnail)
                 .indexes(indexInfo)
                 .reviews(lectureRepository.getReviewBriefList(playlistCode, DEFAULT_REVIEW_OFFSET, reviewLimit))
