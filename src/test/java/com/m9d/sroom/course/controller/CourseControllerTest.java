@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -175,6 +176,39 @@ public class CourseControllerTest extends ControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.course_id").isNotEmpty())
                 .andExpect(jsonPath("$.lecture_id").isNotEmpty())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("수강 페이지 정보를 적절히 받아옵니다 - 스케줄링 함")
+    void getCourseDetailSchedule200() throws Exception {
+        //given
+        Login login = getNewLogin();
+        Long courseId = enrollNewCourseWithPlaylistSchedule(login);
+
+        //expected
+        mockMvc.perform(get("/courses/{courseId}", courseId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", login.getAccessToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.sections", hasSize(3)))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("수강 페이지 정보를 적절히 받아옵니다 - 스케줄링 안함")
+    void getCourseDetail200() throws Exception {
+        //given
+        Login login = getNewLogin();
+        Long courseId = enrollNewCourseWithPlaylist(login);
+
+        //expected
+        mockMvc.perform(get("/courses/{courseId}", courseId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", login.getAccessToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.sections", hasSize(1)))
+                .andExpect(jsonPath("$.sections[0].videos", hasSize(PLAYLIST_VIDEO_COUNT)))
                 .andDo(print());
     }
 }

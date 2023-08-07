@@ -10,10 +10,10 @@ import java.util.List;
 @Schema(description = "강의 일정의 주별 정보")
 @Data
 @Builder
-public class Week {
+public class Section {
 
     @Schema(description = "주차 번호", example = "1")
-    private int week;
+    private int section;
 
     @Schema(description = "해당 주차의 총 강의 기간 (분 단위)", example = "120")
     private int weekDuration;

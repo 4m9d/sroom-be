@@ -367,8 +367,4 @@ public class LectureServiceV2 {
             throw new VideoIndexParamException();
         }
     }
-
-    public CourseDetail getCourseDetail(Long memberId, Long courseId) {
-        return new CourseDetail();
-    }
 }

@@ -46,5 +46,5 @@ public class CourseDetail {
     private LastVideoInfo lastVideo;
 
     @Schema(description = "강의 일정의 주 리스트")
-    private List<Week> weeks;
+    private List<Section> sections;
 }

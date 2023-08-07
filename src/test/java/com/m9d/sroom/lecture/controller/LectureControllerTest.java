@@ -256,37 +256,4 @@ public class LectureControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.recommendations").isArray())
                 .andExpect(jsonPath("$.recommendations", hasSize(5)));
     }
-
-    @Test
-    @DisplayName("수강 페이지 정보를 적절히 받아옵니다 - 스케줄링 함")
-    void getCourseDetailSchedule200() throws Exception {
-        //given
-        Login login = getNewLogin();
-        Long courseId = enrollNewCourseWithPlaylistSchedule(login);
-
-        //expected
-        mockMvc.perform(get("/lectures/courses/{courseId}", courseId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", login.getAccessToken()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.weeks", hasSize(3)))
-                .andDo(print());
-    }
-
-    @Test
-    @DisplayName("수강 페이지 정보를 적절히 받아옵니다 - 스케줄링 안함")
-    void getCourseDetail200() throws Exception {
-        //given
-        Login login = getNewLogin();
-        Long courseId = enrollNewCourseWithPlaylist(login);
-
-        //expected
-        mockMvc.perform(get("/lectures/courses/{courseId}", courseId)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", login.getAccessToken()))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.weeks", hasSize(1)))
-                .andExpect(jsonPath("$.weeks[0].videos", hasSize(PLAYLIST_VIDEO_COUNT)))
-                .andDo(print());
-    }
 }
