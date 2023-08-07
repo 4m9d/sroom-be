@@ -51,17 +51,17 @@ public class CourseService {
         this.youtubeUtil = youtubeUtil;
         this.dateUtil = dateUtil;
     }
-  
+
     public MyCourses getMyCourses(Long memberId) {
-  
+
         List<CourseInfo> courseInfoList = courseRepository.getCourseListByMemberId(memberId);
         int unfinishedCourseCount = getUnfinishedCourseCount(courseInfoList);
 
         int courseCount = courseInfoList.size();
 
-        int completionRate = (int) ((float)(courseCount - unfinishedCourseCount) / courseCount * 100);
+        int completionRate = (int) ((float) (courseCount - unfinishedCourseCount) / courseCount * 100);
 
-        for(int i = 0; i < courseInfoList.size(); i++) {
+        for (int i = 0; i < courseInfoList.size(); i++) {
 
             Long courseId = courseInfoList.get(i).getCourseId();
             HashSet<String> channels = courseRepository.getChannelSetByCourseId(courseId);
@@ -74,10 +74,10 @@ public class CourseService {
         }
 
         MyCourses myCourses = MyCourses.builder()
-                    .unfinishedCourse(unfinishedCourseCount)
-                    .completionRate(completionRate)
-                    .courses(courseInfoList)
-                    .build();
+                .unfinishedCourse(unfinishedCourseCount)
+                .completionRate(completionRate)
+                .courses(courseInfoList)
+                .build();
 
         return myCourses;
     }
@@ -86,8 +86,8 @@ public class CourseService {
 
         int unfinishedCourseCount = 0;
 
-        for(int i = 0; i < courseInfoList.size(); i++) {
-            if(courseInfoList.get(i).getProgress() < 100) {
+        for (int i = 0; i < courseInfoList.size(); i++) {
+            if (courseInfoList.get(i).getProgress() < 100) {
                 unfinishedCourseCount++;
             }
         }
@@ -375,6 +375,9 @@ public class CourseService {
         JsonNode playlistItem = youtubeUtil.safeGet(youtubeResource);
 
         for (JsonNode item : playlistItem.get(JSONNODE_ITEMS)) {
+            if(item.get(JSONNODE_STATUS).get(JSONNODE_PRIVACY_STATUS).asText().equals(JSONNODE_PRIVATE)){
+                continue;
+            }
             int index = item.get(JSONNODE_SNIPPET).get(JSONNODE_POSITION).asInt();
             CompletableFuture<Video> videoFuture = putAndGetVideo(item.get(JSONNODE_SNIPPET).get(JSONNODE_RESOURCE_ID).get(JSONNODE_VIDEO_ID).asText());
             videoFuture.thenAccept(video -> courseRepository.savePlaylistVideo(playlistId, video.getVideoId(), index + 1));
@@ -427,7 +430,8 @@ public class CourseService {
         String description = videoNode.get(JSONNODE_SNIPPET).get(JSONNODE_DESCRIPTION).asText();
         String title = videoNode.get(JSONNODE_SNIPPET).get(JSONNODE_TITLE).asText();
         String thumbnail = youtubeUtil.selectThumbnail(videoNode.get(JSONNODE_SNIPPET).get(JSONNODE_THUMBNAILS));
-        Long viewCount = videoNode.get(JSONNODE_STATISTICS).get(JSONNODE_VIEW_COUNT).asLong();
+        long viewCount = videoNode.get(JSONNODE_STATISTICS).get(JSONNODE_VIEW_COUNT).asLong();
+        Timestamp publishedAt = dateUtil.convertISOToTimestamp(videoNode.get(JSONNODE_SNIPPET).get(JSONNODE_PUBLISHED_AT).asText());
 
         return Video.builder()
                 .videoCode(videoCode)
@@ -437,6 +441,7 @@ public class CourseService {
                 .license(licence)
                 .duration(videoDuration)
                 .description(description)
+                .publishedAt(publishedAt)
                 .viewCount(viewCount)
                 .title(title)
                 .build();

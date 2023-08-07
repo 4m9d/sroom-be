@@ -28,7 +28,7 @@ public class Video {
 
     private long viewCount;
 
-    private String publishedAt;
+    private Timestamp publishedAt;
 
     private double rating;
 
@@ -45,4 +45,5 @@ public class Video {
     private Timestamp updatedAt;
 
     private boolean complete;
+
 }

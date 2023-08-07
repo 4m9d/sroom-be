@@ -63,6 +63,7 @@ public class YoutubeConstant {
     public static final String JSONNODE_STATUS = "status";
     public static final String JSONNODE_LICENCE = "license";
     public static final String JSONNODE_PRIVACY_STATUS = "privacyStatus";
+    public static final String JSONNODE_PRIVATE = "private";
     public static final String JSONNODE_PUBLIC = "public";
     public static final String JSONNODE_LANGUAGE = "defaultAudioLanguage";
     public static final String JSONNODE_POSITION = "position";

@@ -73,7 +73,7 @@ public class CourseRepository {
     }
 
     public Long saveVideo(Video video) {
-        jdbcTemplate.update(SAVE_VIDEO_QUERY, video.getVideoCode(), video.getDuration(), video.getChannel(), video.getThumbnail(), video.getDescription(), video.getTitle(), video.getLanguage(), video.getLicense(), video.getViewCount());
+        jdbcTemplate.update(SAVE_VIDEO_QUERY, video.getVideoCode(), video.getDuration(), video.getChannel(), video.getThumbnail(), video.getDescription(), video.getTitle(), video.getLanguage(), video.getLicense(), video.getViewCount(), video.getPublishedAt());
 
         return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
     }
@@ -138,6 +138,7 @@ public class CourseRepository {
                 .duration(rs.getInt("duration"))
                 .title(rs.getString("title"))
                 .updatedAt(rs.getTimestamp("updated_at"))
+                .publishedAt(rs.getTimestamp("published_at"))
                 .build(), lectureCode);
         return Optional.ofNullable(video);
     }

@@ -38,8 +38,8 @@ class CourseSqlQuery {
     """
 
     public static final String SAVE_VIDEO_QUERY = """
-    INSERT INTO VIDEO (video_code, duration, channel, thumbnail, description, title, language, license, view_count)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO VIDEO (video_code, duration, channel, thumbnail, description, title, language, license, view_count, published_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """
 
     public static final String SAVE_PLAYLIST_QUERY = """
@@ -74,7 +74,7 @@ class CourseSqlQuery {
     """
 
     public static final String FIND_VIDEO_QUERY = """
-    SELECT video_id, video_code, channel, thumbnail, language, license, duration, description, title, updated_at 
+    SELECT video_id, video_code, channel, thumbnail, language, license, duration, description, title, updated_at, published_at
     FROM VIDEO 
     WHERE video_code = ?
     """
