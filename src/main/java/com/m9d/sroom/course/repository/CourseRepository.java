@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.SingleColumnRowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.text.SimpleDateFormat;
@@ -73,7 +72,7 @@ public class CourseRepository {
     }
 
     public Long saveVideo(Video video) {
-        jdbcTemplate.update(SAVE_VIDEO_QUERY, video.getVideoCode(), video.getDuration(), video.getChannel(), video.getThumbnail(), video.getDescription(), video.getTitle(), video.getLanguage(), video.getLicense(), video.getViewCount());
+        jdbcTemplate.update(SAVE_VIDEO_QUERY, video.getVideoCode(), video.getDuration(), video.getChannel(), video.getThumbnail(), video.getDescription(), video.getTitle(), video.getLanguage(), video.getLicense(), video.getViewCount(), video.getPublishedAt());
 
         return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
     }
@@ -84,10 +83,8 @@ public class CourseRepository {
         return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
     }
 
-    public Long savePlaylistVideo(Long playlistId, Long videoId, int videoIndex) {
+    public void savePlaylistVideo(Long playlistId, Long videoId, int videoIndex) {
         jdbcTemplate.update(SAVE_PLAYLIST_VIDEO_QUERY, playlistId, videoId, videoIndex);
-
-        return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
     }
 
     public Long saveLecture(Long memberId, Long courseId, Long sourceId, String channel, boolean isPlaylist, int lectureIndex) {
@@ -138,6 +135,7 @@ public class CourseRepository {
                 .duration(rs.getInt("duration"))
                 .title(rs.getString("title"))
                 .updatedAt(rs.getTimestamp("updated_at"))
+                .publishedAt(rs.getTimestamp("published_at"))
                 .build(), lectureCode);
         return Optional.ofNullable(video);
     }
@@ -157,9 +155,8 @@ public class CourseRepository {
                 .build()), playlistId);
     }
 
-    public int getDurationByPlaylistId(Long playlistId) {
-        Integer totalDuration = jdbcTemplate.queryForObject(GET_DURATION_BY_PLAYLIST_ID_QUERY, Integer.class, playlistId);
-        return totalDuration == null ? 0 : totalDuration;
+    public List<Integer> getVideoDurationsByPlaylistId(Long playlistId) {
+        return jdbcTemplate.query(GET_DURATION_BY_PLAYLIST_ID_QUERY, (rs, rowNum) -> rs.getInt("duration"), playlistId);
     }
 
     public Long getMemberIdByCourseId(Long courseId) {
@@ -206,13 +203,8 @@ public class CourseRepository {
                 .build()), courseId);
     }
 
-    public int getLastLectureIndex(Long courseId) {
-        try {
-            Integer lastIndex = jdbcTemplate.queryForObject(GET_LAST_LECTURE_INDEX_QUERY, new SingleColumnRowMapper<>(), courseId);
-            return lastIndex != null ? lastIndex : 0;
-        } catch (EmptyResultDataAccessException e) {
-            return 0;
-        }
+    public List<Integer> getLectureIndexList(Long courseId) {
+        return jdbcTemplate.query(GET_LECTURE_INDEX_LIST_QUERY, (rs, rowNum) -> rs.getInt("lecture_index"), courseId);
     }
 
     public List<Video> getVideosByCourseId(Long courseId) {

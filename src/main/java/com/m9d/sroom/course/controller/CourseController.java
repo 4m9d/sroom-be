@@ -1,10 +1,10 @@
 package com.m9d.sroom.course.controller;
 
-import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.course.dto.response.MyCourses;
 import com.m9d.sroom.course.service.CourseService;
+import com.m9d.sroom.lecture.dto.response.CourseDetail;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,6 +26,7 @@ public class CourseController {
 
     private final JwtUtil jwtUtil;
     private final CourseService courseService;
+    private final CourseServiceV2 courseServiceV2;
 
     @Auth
     @GetMapping("")
@@ -59,5 +60,15 @@ public class CourseController {
         Long memberId = jwtUtil.getMemberIdFromRequest();
         EnrolledCourseInfo enrolledCourseInfo = courseService.addLectureInCourse(memberId, courseId, newLecture);
         return enrolledCourseInfo;
+    }
+
+    @Auth
+    @GetMapping("/{courseId}")
+    @Tag(name = "강의 수강")
+    @Operation(summary = "수강페이지 코스정보", description = "코스 ID를 받아 해당 코스 정보와 수강할 영상 리스트를 반환합니다.")
+    @ApiResponse(responseCode = "200", description = "성공적으로 수강 정보를 반환하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CourseDetail.class))})
+    public CourseDetail getCourseDetail(@PathVariable(name = "courseId") Long courseId) {
+        Long memberId = jwtUtil.getMemberIdFromRequest();
+        return courseServiceV2.getCourseDetail(memberId, courseId);
     }
 }

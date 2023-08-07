@@ -7,10 +7,13 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 import java.util.TimeZone;
 
 /**
@@ -62,9 +65,9 @@ public class DateUtil {
         return totalSeconds;
     }
 
-    public Date convertStringToDate(String strDate){
+    public Date convertStringToDate(String strDate) {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-        try{
+        try {
             return format.parse(strDate);
         } catch (ParseException e) {
             throw new IllegalArgumentException("입력한 날짜 형식이 올바르지 않습니다.");
@@ -80,6 +83,15 @@ public class DateUtil {
         return false;
     }
 
+    public Timestamp convertISOToTimestamp(String isoString) {
+        try {
+            Instant instant = Instant.parse(isoString);
+            return Timestamp.from(instant);
+        } catch (DateTimeParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 
     /**

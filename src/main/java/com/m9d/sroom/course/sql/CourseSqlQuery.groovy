@@ -38,8 +38,8 @@ class CourseSqlQuery {
     """
 
     public static final String SAVE_VIDEO_QUERY = """
-    INSERT INTO VIDEO (video_code, duration, channel, thumbnail, description, title, language, license, view_count)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO VIDEO (video_code, duration, channel, thumbnail, description, title, language, license, view_count, published_at)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """
 
     public static final String SAVE_PLAYLIST_QUERY = """
@@ -74,7 +74,7 @@ class CourseSqlQuery {
     """
 
     public static final String FIND_VIDEO_QUERY = """
-    SELECT video_id, video_code, channel, thumbnail, language, license, duration, description, title, updated_at 
+    SELECT video_id, video_code, channel, thumbnail, language, license, duration, description, title, updated_at, published_at
     FROM VIDEO 
     WHERE video_code = ?
     """
@@ -87,9 +87,9 @@ class CourseSqlQuery {
     """
 
     public static final String GET_DURATION_BY_PLAYLIST_ID_QUERY = """
-    SELECT SUM(v.duration)
+    SELECT v.duration
     FROM VIDEO v
-    INNER JOIN PLAYLISTVIDEO pv 
+    JOIN PLAYLISTVIDEO pv 
     ON v.video_id = pv.video_id
     WHERE pv.playlist_id = ?
     """
@@ -136,8 +136,8 @@ class CourseSqlQuery {
     ORDER BY video_index
     """
 
-    public static final String GET_LAST_LECTURE_INDEX_QUERY = """
-    SELECT MAX(lecture_index)
+    public static final String GET_LECTURE_INDEX_LIST_QUERY = """
+    SELECT lecture_index
     FROM LECTURE 
     WHERE course_id = ?
     """

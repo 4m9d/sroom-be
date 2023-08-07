@@ -251,7 +251,7 @@ public class LectureControllerTest extends ControllerTest {
 
         //expected
         mockMvc.perform(get("/lectures/recommendations")
-                .header("Authorization", login.getAccessToken()))
+                        .header("Authorization", login.getAccessToken()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.recommendations").isArray())
                 .andDo(print());

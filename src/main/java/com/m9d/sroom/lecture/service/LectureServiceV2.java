@@ -81,23 +81,20 @@ public class LectureServiceV2 {
     @Transactional
     public ResponseEntity<?> getLectureDetail(Long memberId, boolean isPlaylist, String lectureCode, LectureDetailParam lectureDetailParam) {
         lectureDetailParamValidate(isPlaylist, lectureDetailParam);
+        log.info("lecture detail request. memberId = {}, lectureCode = {}", memberId, lectureCode);
 
         if (lectureDetailParam.isIndex_only()) {
-            log.info("lecture detail request : index_only");
             IndexInfo indexInfo = getPlaylistItems(lectureCode, lectureDetailParam.getIndex_next_token(), lectureDetailParam.getIndex_limit());
             return ResponseEntity.ok(indexInfo);
         }
         if (lectureDetailParam.isReview_only()) {
-            log.info("lecture detail request : review_only");
             List<ReviewBrief> reviewBriefList = getReviewBriefList(lectureCode, lectureDetailParam.getReview_offset(), lectureDetailParam.getReview_limit());
             return ResponseEntity.ok(reviewBriefList);
         }
         if (isPlaylist) {
-            log.info("lecture detail request : playlist");
             PlaylistDetail playlistDetail = getPlaylistDetail(memberId, lectureCode, lectureDetailParam.getIndex_next_token(), lectureDetailParam.getReview_limit());
             return ResponseEntity.ok(playlistDetail);
         }
-        log.info("lecture detail request : video");
         VideoDetail videoDetail = getVideoDetail(memberId, lectureCode, lectureDetailParam.getReview_limit());
         return ResponseEntity.ok(videoDetail);
     }
@@ -156,7 +153,7 @@ public class LectureServiceV2 {
                 .playlist(true)
                 .publishedAt(snippetVo.getPublishedAt().substring(PUBLISHED_DATE_START_INDEX, PUBLISHED_DATE_END_INDEX))
                 .enrolled(enrolledPlaylistSet.contains(playlistCode))
-                .lectureCount(playlistVo.getItems().get(FIRST_INDEX).getContentDetails().getItemCount())
+                .lectureCount(indexInfo.getIndexList().size())
                 .thumbnail(thumbnail)
                 .indexes(indexInfo)
                 .reviews(lectureRepository.getReviewBriefList(playlistCode, DEFAULT_REVIEW_OFFSET, reviewLimit))
@@ -167,8 +164,12 @@ public class LectureServiceV2 {
         AtomicInteger totalDurationSeconds = new AtomicInteger(0);
         List<CompletableFuture<Index>> futureList = new ArrayList<>();
         PlaylistVideoVo playlistVideoVo = safeGetVo(playlistVideoVoMono);
+        log.debug("index output = {}", playlistVideoVo.toString());
 
         for (PlaylistVideoItemVo itemVo : playlistVideoVo.getItems()) {
+            if (itemVo.getStatus().getPrivacyStatus().equals(JSONNODE_PRIVATE)) {
+                continue;
+            }
             String videoCode = itemVo.getSnippet().getResourceId().getVideoId();
             int videoIndex = itemVo.getSnippet().getPosition();
             CompletableFuture<Index> future = CompletableFuture.supplyAsync(() -> buildIndex(videoIndex, videoCode));
@@ -366,5 +367,4 @@ public class LectureServiceV2 {
             throw new VideoIndexParamException();
         }
     }
-
 }
