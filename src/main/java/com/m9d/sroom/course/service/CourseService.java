@@ -45,7 +45,6 @@ import static com.m9d.sroom.util.DateUtil.SECONDS_IN_MINUTE;
 import static com.m9d.sroom.util.youtube.YoutubeUtil.*;
 
 @Service
-@Transactional
 @Slf4j
 public class CourseService {
 
@@ -109,6 +108,7 @@ public class CourseService {
         log.info("request to AI server. videoCode = {}, language = {}", videoCode, defaultLanguage);
     }
 
+    @Transactional
     public EnrolledCourseInfo enrollCourse(Long memberId, NewLecture newLecture, boolean useSchedule) {
         EnrolledCourseInfo enrolledCourseInfo;
 
@@ -123,6 +123,7 @@ public class CourseService {
         return enrolledCourseInfo;
     }
 
+    @Transactional
     public EnrolledCourseInfo addLectureInCourse(Long memberId, Long courseId, NewLecture newLecture) {
         validateCourseId(memberId, courseId);
         boolean isPlaylist = youtubeUtil.checkIfPlaylist(newLecture.getLectureCode());
@@ -341,7 +342,7 @@ public class CourseService {
         CompletableFuture<Void> allFutures = CompletableFuture.allOf(futureVideos.toArray(new CompletableFuture[0]));
         CompletableFuture<List<Video>> allVideoFuture = allFutures.thenApply(v ->
                 futureVideos.stream()
-                        .map(future -> future.join())
+                        .map(CompletableFuture::join)
                         .collect(Collectors.toList()));
         List<Video> videoList = allVideoFuture.join();
         int totalDurationPerPage = videoList.stream().mapToInt(Video::getDuration).sum();
@@ -357,7 +358,6 @@ public class CourseService {
     }
 
     public void saveVideoList(Long playlistId, List<Video> videos, List<PlaylistVideoItemVo> items) {
-        int playlistDurationPlus = 0;
         for (int i = 0; i < videos.size(); i++) {
             int index = items.get(i).getSnippet().getPosition();
             courseRepository.savePlaylistVideo(playlistId, videos.get(i).getVideoId(), index + 1);
@@ -471,7 +471,6 @@ public class CourseService {
 
     private void validateScheduleField(NewLecture newLecture) {
         if (newLecture.getDailyTargetTime() == 0 ||
-                newLecture.getScheduling().equals(null) ||
                 newLecture.getExpectedEndTime() == null) {
             throw new InvalidParameterException("스케줄 필드를 적절히 입력해주세요");
         }
@@ -488,6 +487,7 @@ public class CourseService {
         return Collections.max(lectureIndexList);
     }
 
+    @Transactional
     public CourseDetail getCourseDetail(Long memberId, Long courseId) {
         validateCourseId(memberId, courseId);
         Course course = courseRepository.getCourse(courseId);
@@ -518,7 +518,7 @@ public class CourseService {
                 .videoCount(videoCount)
                 .completedVideoCount(completedVideoCount)
                 .progress(progress)
-                .lastVideo(lastVideoInfo)
+                .laseViewVideo(lastVideoInfo)
                 .sections(sections)
                 .build();
     }

@@ -21,7 +21,7 @@ public class LastVideoInfo {
     @Schema(description = "비디오가 제공되는 채널", example = "래퍼 손경식")
     private String channel;
 
-    @Schema(description = "마지막으로 시청한 비디오의 기간 (분 단위)", example = "30")
-    private int lastDuration;
+    @Schema(description = "마지막으로 시청한 비디오의 기간 (초 단위)", example = "30")
+    private int lastViewDuration;
 
 }

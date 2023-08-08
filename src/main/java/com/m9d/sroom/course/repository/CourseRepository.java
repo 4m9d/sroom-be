@@ -243,7 +243,7 @@ public class CourseRepository {
                     .videoTitle(rs.getString("title"))
                     .videoCode(rs.getString("video_code"))
                     .channel(rs.getString("channel"))
-                    .lastDuration(rs.getInt("start_time"))
+                    .lastViewDuration(rs.getInt("start_time"))
                     .build(), courseId);
         } catch (EmptyResultDataAccessException e) {
             throw new CourseVideoNotFoundException();
