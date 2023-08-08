@@ -2,6 +2,7 @@ package com.m9d.sroom.lecture.service;
 
 import com.m9d.sroom.course.domain.Playlist;
 import com.m9d.sroom.course.domain.Video;
+import com.m9d.sroom.course.repository.CourseRepository;
 import com.m9d.sroom.lecture.dto.request.KeywordSearchParam;
 import com.m9d.sroom.lecture.dto.request.LectureDetailParam;
 import com.m9d.sroom.lecture.dto.response.Index;
@@ -51,12 +52,14 @@ import static com.m9d.sroom.util.youtube.YoutubeUtil.*;
 public class LectureService {
 
     private final LectureRepository lectureRepository;
+    private final CourseRepository courseRepository;
     private final YoutubeUtil youtubeUtil;
     private final YoutubeApi youtubeApi;
     private final DateUtil dateUtil;
 
-    public LectureService(LectureRepository lectureRepository, YoutubeUtil youtubeUtil, YoutubeApi youtubeApi, DateUtil dateUtil) {
+    public LectureService(LectureRepository lectureRepository, CourseRepository courseRepository, YoutubeUtil youtubeUtil, YoutubeApi youtubeApi, DateUtil dateUtil) {
         this.lectureRepository = lectureRepository;
+        this.courseRepository = courseRepository;
         this.youtubeUtil = youtubeUtil;
         this.youtubeApi = youtubeApi;
         this.dateUtil = dateUtil;
@@ -144,6 +147,7 @@ public class LectureService {
         String thumbnail = youtubeUtil.selectThumbnailInVo(snippetVo.getThumbnails());
 
         IndexInfo indexInfo = buildIndexInfoResponse(playlistVideoVoMono);
+        List<CourseBrief> courseBriefList = courseRepository.getCourseBriefListByMember(memberId);
 
         return PlaylistDetail.builder()
                 .lectureCode(playlistCode)
@@ -157,6 +161,7 @@ public class LectureService {
                 .thumbnail(thumbnail)
                 .indexes(indexInfo)
                 .reviews(lectureRepository.getReviewBriefList(playlistCode, DEFAULT_REVIEW_OFFSET, reviewLimit))
+                .courses(courseBriefList)
                 .build();
     }
 
@@ -207,6 +212,7 @@ public class LectureService {
     private VideoDetail buildVideoDetailResponse(Long memberId, String videoCode, Mono<VideoVo> videoVoMono, int reviewLimit) {
         Set<String> enrolledVideoSet = getEnrolledVideoByMemberId(memberId);
         List<ReviewBrief> reviewBriefList = lectureRepository.getReviewBriefList(videoCode, DEFAULT_REVIEW_OFFSET, reviewLimit);
+        List<CourseBrief> courseBriefList = courseRepository.getCourseBriefListByMember(memberId);
 
         VideoVo videoVo = safeGetVo(videoVoMono);
         VideoSnippetVo snippetVo = videoVo.getItems().get(FIRST_INDEX).getSnippet();
@@ -226,6 +232,7 @@ public class LectureService {
                 .thumbnail(thumbnail)
                 .reviews(reviewBriefList)
                 .reviewCount(reviewBriefList.size())
+                .courses(courseBriefList)
                 .build();
     }
 
