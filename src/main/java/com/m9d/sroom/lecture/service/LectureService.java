@@ -160,6 +160,7 @@ public class LectureService {
                 .lectureCount(playlistVo.getItems().get(FIRST_INDEX).getContentDetails().getItemCount())
                 .thumbnail(thumbnail)
                 .indexes(indexInfo)
+                .duration(indexInfo.getTotalDuration())
                 .reviews(lectureRepository.getReviewBriefList(playlistCode, DEFAULT_REVIEW_OFFSET, reviewLimit))
                 .courses(courseBriefList)
                 .build();
