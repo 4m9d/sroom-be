@@ -74,7 +74,7 @@ class CourseSqlQuery {
     """
 
     public static final String FIND_VIDEO_QUERY = """
-    SELECT video_id, video_code, channel, thumbnail, language, license, duration, description, title, updated_at, published_at
+    SELECT video_id, video_code, channel, thumbnail, language, license, duration, description, title, updated_at, published_at, view_count
     FROM VIDEO 
     WHERE video_code = ?
     """
@@ -102,7 +102,7 @@ class CourseSqlQuery {
 
     public static final String UPDATE_PLAYLIST_AND_GET_ID_QUERY = """
     UPDATE PLAYLIST 
-    SET title = ?, channel = ?, description = ?, published_at = ?, video_count = ?
+    SET title = ?, channel = ?, description = ?, published_at = ?, video_count = ?, updated_at = current_timestamp()
     WHERE playlist_code = ?
     """
 
@@ -151,8 +151,8 @@ class CourseSqlQuery {
     """
 
     public static final String UPDATE_VIDEO_SECTION_QUERY = """
-    UPDATE COURSEVIDEO SET section = ? 
-    WHERE course_id = ? AND video_id = ?
+    UPDATE COURSEVIDEO SET section = ?
+    WHERE course_id = ? AND video_index = ?
     """
 
     public static final String UPDATE_SCHEDULE_QUERY = """
@@ -167,6 +167,18 @@ class CourseSqlQuery {
     LEFT JOIN COURSEVIDEO cv ON c.course_id = cv.course_id
     WHERE c.member_id = ?
     GROUP BY c.course_id;
+    """
+
+    public static final String UPDATE_VIDEO_QUERY = """
+    UPDATE VIDEO
+    SET duration = ?, channel = ?, thumbnail = ?, language = ?, license = ?, description = ?, view_count = ?, title = ?, updated_at = current_timestamp()
+    WHERE video_code = ?
+    """
+
+    public static final String UPDATE_COURSE_DURATION_QUERY = """
+    UPDATE COURSE
+    SET course_duration = ?
+    WHERE course_id = ?
     """
 
     public static final String GET_LAST_INSERT_ID_QUERY = """

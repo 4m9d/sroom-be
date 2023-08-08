@@ -132,7 +132,9 @@ public class CourseRepository {
                 .thumbnail(rs.getString("thumbnail"))
                 .language(rs.getString("language"))
                 .license(rs.getString("license"))
+                .description(rs.getString("description"))
                 .duration(rs.getInt("duration"))
+                .viewCount(rs.getLong("view_count"))
                 .title(rs.getString("title"))
                 .updatedAt(rs.getTimestamp("updated_at"))
                 .publishedAt(rs.getTimestamp("published_at"))
@@ -215,11 +217,19 @@ public class CourseRepository {
                 .build(), courseId);
     }
 
-    public void updateVideoSection(Long courseId, Long videoId, int section) {
-        jdbcTemplate.update(UPDATE_VIDEO_SECTION_QUERY, section, courseId, videoId);
+    public void updateVideoSection(Long courseId, int index, int section) {
+        jdbcTemplate.update(UPDATE_VIDEO_SECTION_QUERY, section, courseId, index);
     }
 
     public void updateSchedule(Long courseId, int weeks, Date expectedEndDate) {
         jdbcTemplate.update(UPDATE_SCHEDULE_QUERY, weeks, expectedEndDate, courseId);
+    }
+
+    public void updateVideo(Video video) {
+        jdbcTemplate.update(UPDATE_VIDEO_QUERY, video.getDuration(), video.getChannel(), video.getThumbnail(), video.getLanguage(), video.getLicense(), video.getDescription(), video.getViewCount(), video.getTitle(), video.getVideoCode());
+    }
+
+    public void updateCourseDuration(Long courseId, int duration) {
+        jdbcTemplate.update(UPDATE_COURSE_DURATION_QUERY, duration, courseId);
     }
 }

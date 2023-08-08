@@ -42,6 +42,7 @@ import static com.m9d.sroom.util.DateUtil.SECONDS_IN_MINUTE;
 import static com.m9d.sroom.util.youtube.YoutubeUtil.*;
 
 @Service
+@Transactional
 @Slf4j
 public class CourseService {
 
@@ -105,7 +106,6 @@ public class CourseService {
         log.info("request to AI server. videoCode = {}, language = {}", videoCode, defaultLanguage);
     }
 
-    @Transactional
     public EnrolledCourseInfo enrollCourse(Long memberId, NewLecture newLecture, boolean useSchedule) {
         EnrolledCourseInfo enrolledCourseInfo;
 
@@ -120,7 +120,6 @@ public class CourseService {
         return enrolledCourseInfo;
     }
 
-    @Transactional
     public EnrolledCourseInfo addLectureInCourse(Long memberId, Long courseId, NewLecture newLecture) {
         validateCourseId(memberId, courseId);
         boolean isPlaylist = youtubeUtil.checkIfPlaylist(newLecture.getLectureCode());
@@ -159,6 +158,7 @@ public class CourseService {
         if (course.isScheduled()) {
             scheduleVideos(course);
         }
+        courseRepository.updateCourseDuration(course.getCourseId(), course.getDuration() + video.getDuration());
 
         return EnrolledCourseInfo.builder()
                 .title(video.getTitle())
@@ -185,6 +185,7 @@ public class CourseService {
         if (course.isScheduled()) {
             scheduleVideos(course);
         }
+        courseRepository.updateCourseDuration(course.getCourseId(), course.getDuration() + playlist.getDuration());
         return EnrolledCourseInfo.builder()
                 .title(course.getTitle())
                 .courseId(course.getCourseId())
@@ -204,7 +205,7 @@ public class CourseService {
         int lastSectionTime = 0;
 
         for (Video video : videoList) {
-            if (currentSectionTime + video.getDuration() > weeklyTargetTimeForSecond) {
+            if (currentSectionTime + (video.getDuration() / 2) > weeklyTargetTimeForSecond) {
                 section++;
                 currentSectionTime = 0;
             }
@@ -212,7 +213,7 @@ public class CourseService {
             currentSectionTime += video.getDuration();
             lastSectionTime = currentSectionTime;
 
-            courseRepository.updateVideoSection(course.getCourseId(), video.getVideoId(), section);
+            courseRepository.updateVideoSection(course.getCourseId(), video.getIndex(), section);
         }
 
         int lastSectionDays = (int) Math.ceil((double) lastSectionTime / dailyTargetTimeForSecond);
@@ -283,10 +284,6 @@ public class CourseService {
         }
 
         return playlist;
-    }
-
-    private int getSumList(List<Integer> videoDurations) {
-        return videoDurations.stream().mapToInt(Integer::intValue).sum();
     }
 
     private Playlist getPlaylistFromYoutube(String playlistCode) {
@@ -374,12 +371,17 @@ public class CourseService {
         } else {
             result = CompletableFuture.supplyAsync(() -> {
                 Video video = getVideoFromYoutube(videoCode);
-                Long videoId = courseRepository.saveVideo(video);
+                Long videoId = videoOptional.isPresent() ? updateVideo(videoOptional.get()) : courseRepository.saveVideo(video);
                 video.setVideoId(videoId);
                 return video;
             });
         }
         return result;
+    }
+
+    private Long updateVideo(Video video) {
+        courseRepository.updateVideo(video);
+        return video.getVideoId();
     }
 
     private Video getVideoFromYoutube(String videoCode) {
