@@ -10,7 +10,10 @@ import com.m9d.sroom.course.dto.response.MyCourses;
 import com.m9d.sroom.course.exception.CourseNotMatchException;
 import com.m9d.sroom.course.model.PlaylistPageResult;
 import com.m9d.sroom.course.repository.CourseRepository;
-import com.m9d.sroom.lecture.dto.response.CourseDetail;
+import com.m9d.sroom.course.dto.response.CourseDetail;
+import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
+import com.m9d.sroom.lecture.dto.response.Section;
+import com.m9d.sroom.lecture.dto.response.VideoBrief;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.util.youtube.YoutubeApi;
 import com.m9d.sroom.util.youtube.YoutubeUtil;
@@ -42,7 +45,6 @@ import static com.m9d.sroom.util.DateUtil.SECONDS_IN_MINUTE;
 import static com.m9d.sroom.util.youtube.YoutubeUtil.*;
 
 @Service
-@Transactional
 @Slf4j
 public class CourseService {
 
@@ -106,6 +108,7 @@ public class CourseService {
         log.info("request to AI server. videoCode = {}, language = {}", videoCode, defaultLanguage);
     }
 
+    @Transactional
     public EnrolledCourseInfo enrollCourse(Long memberId, NewLecture newLecture, boolean useSchedule) {
         EnrolledCourseInfo enrolledCourseInfo;
 
@@ -120,6 +123,7 @@ public class CourseService {
         return enrolledCourseInfo;
     }
 
+    @Transactional
     public EnrolledCourseInfo addLectureInCourse(Long memberId, Long courseId, NewLecture newLecture) {
         validateCourseId(memberId, courseId);
         boolean isPlaylist = youtubeUtil.checkIfPlaylist(newLecture.getLectureCode());
@@ -338,7 +342,7 @@ public class CourseService {
         CompletableFuture<Void> allFutures = CompletableFuture.allOf(futureVideos.toArray(new CompletableFuture[0]));
         CompletableFuture<List<Video>> allVideoFuture = allFutures.thenApply(v ->
                 futureVideos.stream()
-                        .map(future -> future.join())
+                        .map(CompletableFuture::join)
                         .collect(Collectors.toList()));
         List<Video> videoList = allVideoFuture.join();
         int totalDurationPerPage = videoList.stream().mapToInt(Video::getDuration).sum();
@@ -354,7 +358,6 @@ public class CourseService {
     }
 
     public void saveVideoList(Long playlistId, List<Video> videos, List<PlaylistVideoItemVo> items) {
-        int playlistDurationPlus = 0;
         for (int i = 0; i < videos.size(); i++) {
             int index = items.get(i).getSnippet().getPosition();
             courseRepository.savePlaylistVideo(playlistId, videos.get(i).getVideoId(), index + 1);
@@ -468,7 +471,6 @@ public class CourseService {
 
     private void validateScheduleField(NewLecture newLecture) {
         if (newLecture.getDailyTargetTime() == 0 ||
-                newLecture.getScheduling().equals(null) ||
                 newLecture.getExpectedEndTime() == null) {
             throw new InvalidParameterException("스케줄 필드를 적절히 입력해주세요");
         }
@@ -485,8 +487,71 @@ public class CourseService {
         return Collections.max(lectureIndexList);
     }
 
+    @Transactional
     public CourseDetail getCourseDetail(Long memberId, Long courseId) {
-        return new CourseDetail();
+        validateCourseId(memberId, courseId);
+        Course course = courseRepository.getCourse(courseId);
 
+        HashSet<String> channels = courseRepository.getChannelSetByCourseId(courseId);
+        LastVideoInfo lastVideoInfo = courseRepository.getLastCourseVideo(courseId);
+        List<Section> sections = getSectionList(course);
+        int currentDuration = sections.stream()
+                .mapToInt(Section::getCurrentWeekDuration)
+                .sum();
+        int videoCount = sections.stream()
+                .mapToInt(section -> section.getVideos().size())
+                .sum();
+        int completedVideoCount = sections.stream()
+                .mapToInt(section -> (int) section.getVideos().stream()
+                        .filter(VideoBrief::isCompleted)
+                        .count())
+                .sum();
+        int progress = (int) ((double) currentDuration / course.getDuration() * 100);
+
+        return CourseDetail.builder()
+                .courseId(courseId)
+                .courseTitle(course.getTitle())
+                .useSchedule(course.isScheduled())
+                .channels(String.join(", ", channels))
+                .courseDuration(course.getDuration())
+                .currentDuration(currentDuration)
+                .videoCount(videoCount)
+                .completedVideoCount(completedVideoCount)
+                .progress(progress)
+                .laseViewVideo(lastVideoInfo)
+                .sections(sections)
+                .build();
+    }
+
+    private List<Section> getSectionList(Course course) {
+        int sectionCount = course.getWeeks();
+        List<Section> sectionList = new ArrayList<>();
+        if (sectionCount == 0) {
+            sectionList.add(createSection(course.getCourseId(), 0));
+        }
+
+        for (int section = 1; section <= sectionCount; section++) {
+            sectionList.add(createSection(course.getCourseId(), section));
+        }
+        return sectionList;
+    }
+
+    private Section createSection(Long courseId, int section) {
+        List<VideoBrief> videoBriefList = courseRepository.getVideoBrief(courseId, section);
+        int weekDuration = videoBriefList.stream()
+                .mapToInt(VideoBrief::getVideoDuration)
+                .sum();
+        int currentWeekDuration = videoBriefList.stream()
+                .mapToInt(vb -> vb.isCompleted() ? vb.getVideoDuration() : vb.getLastDuration())
+                .sum();
+        boolean completed = videoBriefList.stream()
+                .allMatch(VideoBrief::isCompleted);
+        return Section.builder()
+                .section(section)
+                .currentWeekDuration(currentWeekDuration)
+                .completed(completed)
+                .weekDuration(weekDuration)
+                .videos(videoBriefList)
+                .build();
     }
 }

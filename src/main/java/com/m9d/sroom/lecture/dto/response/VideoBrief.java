@@ -25,4 +25,10 @@ public class VideoBrief {
 
     @Schema(description = "비디오의 코드", example = "JAVA_SPRING_BASICS")
     private String videoCode;
+
+    @Schema(description = "영상 시작시간", example = "11")
+    private int lastDuration;
+
+    @Schema(description = "영상 재생시간", example = "1000")
+    private int videoDuration;
 }

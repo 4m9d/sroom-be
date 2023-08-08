@@ -1,7 +1,7 @@
 package com.m9d.sroom.course.sql
 
 class CourseSqlQuery {
-  
+
     public static final String GET_CHANNELS_BY_COURSE_ID_QUERY = """
     SELECT l.channel
     FROM LECTURE l
@@ -26,7 +26,7 @@ class CourseSqlQuery {
     WHERE c.member_id = ?
     ORDER BY c.last_view_time DESC
     """
-  
+
     public static final String SAVE_COURSE_QUERY = """
     INSERT INTO COURSE (member_id, course_title, course_duration, thumbnail)
     VALUES (?, ?, ?, ?)
@@ -179,6 +179,23 @@ class CourseSqlQuery {
     UPDATE COURSE
     SET course_duration = ?
     WHERE course_id = ?
+    """
+
+    public static final String GET_LAST_COURSE_VIDEO = """
+    SELECT v.video_id, v.title, v.video_code, v.channel, cv.start_time
+    FROM COURSEVIDEO cv
+    JOIN video v ON cv.video_id = v.video_id
+    WHERE cv.course_id = ?
+    ORDER BY cv.last_view_time DESC, cv.video_index ASC
+    LIMIT 1
+    """
+
+    public static final String GET_VIDEO_BRIEF_QUERY = """
+    SELECT v.video_code, v.channel, v.title, cv.video_index, cv.is_complete, cv.start_time, v.duration
+    FROM COURSEVIDEO cv
+    JOIN video v ON cv.video_id = v.video_id
+    WHERE cv.course_id = ? AND cv.section = ?
+    ORDER BY cv.video_index ASC
     """
 
     public static final String GET_LAST_INSERT_ID_QUERY = """

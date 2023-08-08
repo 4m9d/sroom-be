@@ -5,8 +5,11 @@ import com.m9d.sroom.course.domain.Playlist;
 import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.domain.Video;
 import com.m9d.sroom.course.exception.CourseNotFoundException;
+import com.m9d.sroom.course.exception.CourseVideoNotFoundException;
 import com.m9d.sroom.course.sql.CourseSqlQuery;
 import com.m9d.sroom.lecture.dto.response.CourseBrief;
+import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
+import com.m9d.sroom.lecture.dto.response.VideoBrief;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -231,5 +234,31 @@ public class CourseRepository {
 
     public void updateCourseDuration(Long courseId, int duration) {
         jdbcTemplate.update(UPDATE_COURSE_DURATION_QUERY, duration, courseId);
+    }
+
+    public LastVideoInfo getLastCourseVideo(Long courseId) {
+        try {
+            return jdbcTemplate.queryForObject(GET_LAST_COURSE_VIDEO, (rs, rowNum) -> LastVideoInfo.builder()
+                    .videoId(rs.getLong("video_id"))
+                    .videoTitle(rs.getString("title"))
+                    .videoCode(rs.getString("video_code"))
+                    .channel(rs.getString("channel"))
+                    .lastViewDuration(rs.getInt("start_time"))
+                    .build(), courseId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new CourseVideoNotFoundException();
+        }
+    }
+
+    public List<VideoBrief> getVideoBrief(Long courseId, int section) {
+        return jdbcTemplate.query(GET_VIDEO_BRIEF_QUERY, (rs, rowNum) -> VideoBrief.builder()
+                .videoCode(rs.getString("video_code"))
+                .channel(rs.getString("channel"))
+                .videoTitle(rs.getString("title"))
+                .videoIndex(rs.getInt("video_index"))
+                .completed(rs.getBoolean("is_complete"))
+                .lastDuration(rs.getInt("start_time"))
+                .videoDuration(rs.getInt("duration"))
+                .build(), courseId, section);
     }
 }
