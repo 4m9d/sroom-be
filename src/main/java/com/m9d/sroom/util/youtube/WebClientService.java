@@ -13,7 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
-@Service
+//@Service
 @Slf4j
 @RequiredArgsConstructor
 public class WebClientService implements YoutubeApi {

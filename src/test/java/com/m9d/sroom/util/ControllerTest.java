@@ -11,7 +11,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -76,7 +75,7 @@ public class ControllerTest extends SroomTest {
                 .lectureCode(PLAYLIST_CODE)
                 .scheduling(new ArrayList<>(Arrays.asList(2, 1, 2)))
                 .dailyTargetTime(20)
-                .expectedEndTime("2023-09-22")
+                .expectedEndDate("2023-09-22")
                 .build();
         EnrolledCourseInfo courseInfo = courseService.enrollCourse(memberId, newLecture, true);
         return courseInfo.getCourseId();

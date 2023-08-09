@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotNull;
-import java.util.Date;
 import java.util.List;
 
 @Schema(description = "새로운 강의 정보")
@@ -28,7 +27,7 @@ public class NewLecture {
     private List<Integer> scheduling;
 
     @Schema(description = "예상 종료 시간", example = "2023-12-31")
-    private String expectedEndTime;
+    private String expectedEndDate;
 
 
 }

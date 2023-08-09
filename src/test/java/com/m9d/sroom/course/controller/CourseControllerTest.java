@@ -65,7 +65,7 @@ public class CourseControllerTest extends ControllerTest {
                 .lectureCode(VIDEO_CODE)
                 .dailyTargetTime(30)
                 .scheduling(List.of(1))
-                .expectedEndTime(expectedEndTime)
+                .expectedEndDate(expectedEndTime)
                 .build();
 
         String content = objectMapper.writeValueAsString(newLecture);
@@ -117,7 +117,7 @@ public class CourseControllerTest extends ControllerTest {
                 .lectureCode(VIDEO_CODE)
                 .dailyTargetTime(60)
                 .scheduling(List.of(1, 2, 3, 4))
-                .expectedEndTime(expectedEndTime)
+                .expectedEndDate(expectedEndTime)
                 .build();
 
         String content = objectMapper.writeValueAsString(newLecture);

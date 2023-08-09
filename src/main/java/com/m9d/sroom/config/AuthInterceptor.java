@@ -6,13 +6,19 @@ import com.m9d.sroom.member.exception.NoAuthorizationTokenException;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.Enumeration;
 import java.util.Map;
 
 @Component
@@ -27,9 +33,19 @@ public class AuthInterceptor implements HandlerInterceptor {
     @Autowired
     private JwtUtil jwtUtil;
 
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+        log.info("Request URI: {}", request.getRequestURI());
+        Enumeration<String> headerNames = request.getHeaderNames();
+        log.debug("HTTP Method: {}", request.getMethod());
+
+        if (headerNames != null) {
+            while (headerNames.hasMoreElements()) {
+                String headerName = headerNames.nextElement();
+                String headerValue = request.getHeader(headerName);
+                log.debug("Header Name: {}, Header Value: {}", headerName, headerValue);
+            }
+        }
 
         if (!(handler instanceof HandlerMethod))
             return true;
@@ -40,6 +56,12 @@ public class AuthInterceptor implements HandlerInterceptor {
             return true;
         }
         String token = request.getHeader("Authorization");
+
+        if (StringUtils.equals(request.getMethod(), "OPTIONS")) {
+            log.debug("if request options method is options, return true");
+
+            return true;
+        }
 
         if (token == null) {
             log.debug("No authorization token found");

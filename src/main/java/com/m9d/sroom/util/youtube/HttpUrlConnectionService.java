@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 import static com.m9d.sroom.util.youtube.YoutubeUtil.REQUEST_METHOD_GET;
 import static com.m9d.sroom.util.youtube.YoutubeUtil.YOUTUBE_REQUEST_CONTENT_TYPE;
 
-//@Service
+@Service
 @Slf4j
 public class HttpUrlConnectionService implements YoutubeApi {
 
@@ -78,6 +78,7 @@ public class HttpUrlConnectionService implements YoutubeApi {
                 .collect(Collectors.joining("&"));
 
         String url = baseUrl + endPoint + "?" + query;
+        log.debug("youtube data api request. url = {}", url);
         url = url.concat("&key=" + googleCloudApiKey);
 
         return url;

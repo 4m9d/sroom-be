@@ -249,7 +249,7 @@ public class CourseService {
         Long courseId;
         if (useSchedule) {
             validateScheduleField(newLecture);
-            Date expectedEndDate = dateUtil.convertStringToDate(newLecture.getExpectedEndTime());
+            Date expectedEndDate = dateUtil.convertStringToDate(newLecture.getExpectedEndDate());
             courseId = courseRepository.saveCourseWithSchedule(memberId, playlist.getTitle(), playlist.getDuration(), playlist.getThumbnail(), newLecture.getScheduling().size(), newLecture.getDailyTargetTime(), expectedEndDate);
         } else {
             courseId = courseRepository.saveCourse(memberId, playlist.getTitle(), playlist.getDuration(), playlist.getThumbnail());
@@ -444,7 +444,7 @@ public class CourseService {
         Long courseId;
         if (useSchedule) {
             validateScheduleField(newLecture);
-            Date expectedEndDate = dateUtil.convertStringToDate(newLecture.getExpectedEndTime());
+            Date expectedEndDate = dateUtil.convertStringToDate(newLecture.getExpectedEndDate());
             courseId = courseRepository.saveCourseWithSchedule(memberId, video.getTitle(), video.getDuration(), video.getThumbnail(), newLecture.getScheduling().size(), newLecture.getDailyTargetTime(), expectedEndDate);
             courseRepository.saveCourseVideo(memberId, courseId, video.getVideoId(), ENROLL_DEFAULT_SECTION_SCHEDULE, ENROLL_VIDEO_INDEX, ENROLL_LECTURE_INDEX);
         } else {
@@ -471,7 +471,7 @@ public class CourseService {
 
     private void validateScheduleField(NewLecture newLecture) {
         if (newLecture.getDailyTargetTime() == 0 ||
-                newLecture.getExpectedEndTime() == null) {
+                newLecture.getExpectedEndDate() == null) {
             throw new InvalidParameterException("스케줄 필드를 적절히 입력해주세요");
         }
     }
