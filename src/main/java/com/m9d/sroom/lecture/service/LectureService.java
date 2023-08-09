@@ -173,7 +173,7 @@ public class LectureService {
         log.debug("index output = {}", playlistVideoVo.toString());
 
         for (PlaylistVideoItemVo itemVo : playlistVideoVo.getItems()) {
-            if (itemVo.getStatus().getPrivacyStatus().equals(JSONNODE_PRIVATE)) {
+            if (youtubeUtil.isPrivacyStatusUnusable(itemVo)) {
                 continue;
             }
             String videoCode = itemVo.getSnippet().getResourceId().getVideoId();

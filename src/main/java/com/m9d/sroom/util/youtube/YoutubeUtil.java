@@ -1,6 +1,7 @@
 package com.m9d.sroom.util.youtube;
 
 import com.m9d.sroom.util.youtube.vo.global.ThumbnailVo;
+import com.m9d.sroom.util.youtube.vo.playlistitem.PlaylistVideoItemVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
@@ -70,6 +71,7 @@ public class YoutubeUtil {
     public static final String JSONNODE_LICENCE = "license";
     public static final String JSONNODE_PRIVACY_STATUS = "privacyStatus";
     public static final String JSONNODE_PRIVATE = "private";
+    public static final String JSONNODE_UNSPECIFIED = "privacyStatusUnspecified";
     public static final String JSONNODE_PUBLIC = "public";
     public static final String JSONNODE_LANGUAGE = "defaultAudioLanguage";
     public static final String JSONNODE_POSITION = "position";
@@ -99,5 +101,10 @@ public class YoutubeUtil {
         }
 
         return selectedThumbnailUrl;
+    }
+
+    public boolean isPrivacyStatusUnusable(PlaylistVideoItemVo itemVo) {
+        String privacyStatus = itemVo.getStatus().getPrivacyStatus();
+        return privacyStatus.equals(JSONNODE_PRIVATE) || privacyStatus.equals(JSONNODE_UNSPECIFIED);
     }
 }

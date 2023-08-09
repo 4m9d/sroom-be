@@ -333,7 +333,7 @@ public class CourseService {
 
         List<CompletableFuture<Video>> futureVideos = new ArrayList<>();
         for (PlaylistVideoItemVo itemVo : playlistVideoVo.getItems()) {
-            if (itemVo.getStatus().getPrivacyStatus().equals(JSONNODE_PRIVATE)) {
+            if (youtubeUtil.isPrivacyStatusUnusable(itemVo)) {
                 continue;
             }
             CompletableFuture<Video> videoFuture = getVideoWithUpdateAsync(itemVo.getSnippet().getResourceId().getVideoId());
