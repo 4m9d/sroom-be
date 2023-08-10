@@ -10,6 +10,9 @@ import lombok.Data;
 @Builder
 public class VideoBrief {
 
+    @Schema(description = "비디오 ID", example = "1111")
+    private Long videoId;
+
     @Schema(description = "비디오의 인덱스", example = "1")
     private int videoIndex;
 

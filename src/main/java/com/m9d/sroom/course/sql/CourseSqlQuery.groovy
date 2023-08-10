@@ -191,7 +191,7 @@ class CourseSqlQuery {
     """
 
     public static final String GET_VIDEO_BRIEF_QUERY = """
-    SELECT v.video_code, v.channel, v.title, cv.video_index, cv.is_complete, cv.start_time, v.duration
+    SELECT v.video_id, v.video_code, v.channel, v.title, cv.video_index, cv.is_complete, cv.start_time, v.duration
     FROM COURSEVIDEO cv
     JOIN video v ON cv.video_id = v.video_id
     WHERE cv.course_id = ? AND cv.section = ?

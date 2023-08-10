@@ -252,6 +252,7 @@ public class CourseRepository {
 
     public List<VideoBrief> getVideoBrief(Long courseId, int section) {
         return jdbcTemplate.query(GET_VIDEO_BRIEF_QUERY, (rs, rowNum) -> VideoBrief.builder()
+                .videoId(rs.getLong("video_id"))
                 .videoCode(rs.getString("video_code"))
                 .channel(rs.getString("channel"))
                 .videoTitle(rs.getString("title"))
