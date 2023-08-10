@@ -257,7 +257,7 @@ public class CourseRepository {
                 .videoTitle(rs.getString("title"))
                 .videoIndex(rs.getInt("video_index"))
                 .completed(rs.getBoolean("is_complete"))
-                .lastDuration(rs.getInt("start_time"))
+                .lastViewDuration(rs.getInt("start_time"))
                 .videoDuration(rs.getInt("duration"))
                 .build(), courseId, section);
     }

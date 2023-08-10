@@ -27,7 +27,7 @@ public class VideoBrief {
     private String videoCode;
 
     @Schema(description = "영상 시작시간", example = "11")
-    private int lastDuration;
+    private int lastViewDuration;
 
     @Schema(description = "영상 재생시간", example = "1000")
     private int videoDuration;

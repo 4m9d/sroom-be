@@ -542,7 +542,7 @@ public class CourseService {
                 .mapToInt(VideoBrief::getVideoDuration)
                 .sum();
         int currentWeekDuration = videoBriefList.stream()
-                .mapToInt(vb -> vb.isCompleted() ? vb.getVideoDuration() : vb.getLastDuration())
+                .mapToInt(vb -> vb.isCompleted() ? vb.getVideoDuration() : vb.getLastViewDuration())
                 .sum();
         boolean completed = videoBriefList.stream()
                 .allMatch(VideoBrief::isCompleted);
