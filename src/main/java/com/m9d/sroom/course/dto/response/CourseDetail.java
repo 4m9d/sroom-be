@@ -45,7 +45,7 @@ public class CourseDetail {
     private int progress;
 
     @Schema(description = "강의에서 마지막으로 시청한 비디오 정보")
-    private LastVideoInfo laseViewVideo;
+    private LastVideoInfo lastViewVideo;
 
     @Schema(description = "강의 일정의 주 리스트")
     private List<Section> sections;

@@ -518,7 +518,7 @@ public class CourseService {
                 .videoCount(videoCount)
                 .completedVideoCount(completedVideoCount)
                 .progress(progress)
-                .laseViewVideo(lastVideoInfo)
+                .lastViewVideo(lastVideoInfo)
                 .sections(sections)
                 .build();
     }
