@@ -193,6 +193,7 @@ public class CourseRepository {
                 .title(rs.getString("course_title"))
                 .duration(rs.getInt("course_duration"))
                 .scheduled(rs.getBoolean("is_scheduled"))
+                .thumbnail(rs.getString("thumbnail"))
                 .weeks(rs.getInt("weeks"))
                 .startDate(rs.getDate("start_date"))
                 .expectedEndTime(rs.getTimestamp("expected_end_date"))

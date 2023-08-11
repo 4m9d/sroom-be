@@ -124,7 +124,7 @@ class CourseSqlQuery {
     """
 
     public static final String GET_COURSE_QUERY = """
-    SELECT member_id, course_title, course_duration, is_scheduled, weeks, start_date, expected_end_date, daily_target_time
+    SELECT member_id, course_title, course_duration, is_scheduled, weeks, start_date, expected_end_date, daily_target_time, thumbnail
     FROM COURSE
     WHERE course_id = ?
     """

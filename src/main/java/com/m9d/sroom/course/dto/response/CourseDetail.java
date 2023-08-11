@@ -23,6 +23,9 @@ public class CourseDetail {
     @Schema(description = "강의가 일정을 사용하는지 여부", example = "true")
     private boolean useSchedule;
 
+    @Schema(description = "코스 썸네일", example = "https://i.ytimg.com/vi/c2cz_uF3NII/maxresdefault.jpg")
+    private String thumbnail;
+
     @Schema(description = "강의의 제목", example = "자바 기초")
     private String courseTitle;
 
@@ -36,7 +39,7 @@ public class CourseDetail {
     private int currentDuration;
 
     @Schema(description = "강의의 총 비디오 개수", example = "10")
-    private int videoCount;
+    private int totalVideoCount;
 
     @Schema(description = "강의에서 완료된 비디오 수", example = "5")
     private int completedVideoCount;

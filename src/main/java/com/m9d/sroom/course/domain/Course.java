@@ -21,6 +21,8 @@ public class Course {
 
     private String lectureCount;
 
+    private String thumbnail;
+
     private int duration;
 
     private Timestamp expectedEndTime;
