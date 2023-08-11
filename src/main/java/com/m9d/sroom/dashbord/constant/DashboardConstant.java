@@ -25,4 +25,6 @@ public class DashboardConstant {
     //Value
     public static final int TARGET_TIME_INTERVAL = 10;
 
+    public static final int SECONDS_PER_HOUR = 3600;
+
 }
