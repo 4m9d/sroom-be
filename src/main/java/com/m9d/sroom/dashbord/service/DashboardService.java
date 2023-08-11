@@ -67,7 +67,7 @@ public class DashboardService {
 
         String memberName = memberRepository.getMemberNameById(memberId);
         int consecutiveLearningDays = getConsecutiveLearningDay(learningHistories);
-        int totalLearningTime = dashboardMemberData.getTotalLearningTime();
+        int totalLearningTime = dashboardMemberData.getTotalLearningTime() / SECONDS_PER_HOUR;
         int leftTargetTime = TARGET_TIME_INTERVAL - (totalLearningTime % TARGET_TIME_INTERVAL);
         int targetTime = TARGET_TIME_INTERVAL * (totalLearningTime / TARGET_TIME_INTERVAL + 1);
 
