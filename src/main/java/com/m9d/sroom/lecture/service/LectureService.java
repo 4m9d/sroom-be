@@ -35,6 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 import reactor.core.publisher.Mono;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -68,8 +70,9 @@ public class LectureService {
     @Transactional
     public KeywordSearch searchByKeyword(Long memberId, KeywordSearchParam keywordSearchParam) {
         log.info("lecture keyword search. keyword : {}", keywordSearchParam.getKeyword());
+        String encodedKeyword = URLEncoder.encode(keywordSearchParam.getKeyword(), StandardCharsets.UTF_8);
         LectureListReq lectureListReq = LectureListReq.builder()
-                .keyword(keywordSearchParam.getKeyword())
+                .keyword(encodedKeyword)
                 .filter(keywordSearchParam.getFilter())
                 .limit(keywordSearchParam.getLimit())
                 .pageToken(keywordSearchParam.getNext_page_token())
