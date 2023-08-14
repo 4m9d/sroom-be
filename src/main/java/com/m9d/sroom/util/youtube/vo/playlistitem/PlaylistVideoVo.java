@@ -7,7 +7,10 @@ import java.util.List;
 
 @Data
 public class PlaylistVideoVo {
+
     private PageInfoVo pageInfo;
+
     private String nextPageToken;
+
     private List<PlaylistVideoItemVo> items;
 }

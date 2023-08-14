@@ -1,4 +1,4 @@
-package com.m9d.sroom.course.domain;
+package com.m9d.sroom.global.model;
 
 import lombok.Builder;
 import lombok.Getter;

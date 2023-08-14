@@ -1,7 +1,5 @@
 package com.m9d.sroom.util;
 
-import com.m9d.sroom.course.domain.Playlist;
-import com.m9d.sroom.course.domain.Video;
 import com.m9d.sroom.member.domain.Member;
 
 import java.sql.Timestamp;

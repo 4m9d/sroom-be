@@ -1,10 +1,9 @@
 package com.m9d.sroom.lecture.repository;
 
-import com.m9d.sroom.course.domain.Playlist;
-import com.m9d.sroom.course.domain.Video;
+import com.m9d.sroom.global.model.Playlist;
+import com.m9d.sroom.global.model.Video;
 import com.m9d.sroom.lecture.dto.response.RecommendLecture;
 import com.m9d.sroom.lecture.dto.response.ReviewBrief;
-import com.m9d.sroom.lecture.service.LectureService;
 import com.m9d.sroom.lecture.sql.LectureSqlQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
