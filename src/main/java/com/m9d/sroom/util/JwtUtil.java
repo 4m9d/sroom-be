@@ -1,7 +1,9 @@
 package com.m9d.sroom.util;
 
 import com.m9d.sroom.member.domain.Member;
+import com.m9d.sroom.member.exception.TokenExpiredException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,10 +46,15 @@ public class JwtUtil {
     }
 
     public Map<String, Object> getDetailFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
-                .parseClaimsJws(token)
-                .getBody();
+        Claims claims;
+        try {
+            claims = Jwts.parser()
+                    .setSigningKey(jwtSecret)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            throw new TokenExpiredException();
+        }
 
         Map<String, Object> details = new HashMap<>();
         details.put("expirationTime", claims.getExpiration().getTime() / 1000);

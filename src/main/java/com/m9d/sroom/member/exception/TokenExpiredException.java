@@ -6,7 +6,7 @@ public class TokenExpiredException extends UnauthorizedException {
 
     private static final String MESSAGE = "token이 만료되었습니다.";
 
-    public TokenExpiredException(String tokenType) {
-        super(tokenType + " " + MESSAGE);
+    public TokenExpiredException() {
+        super(MESSAGE);
     }
 }

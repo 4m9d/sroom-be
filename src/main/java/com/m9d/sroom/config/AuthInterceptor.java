@@ -39,14 +39,6 @@ public class AuthInterceptor implements HandlerInterceptor {
         Enumeration<String> headerNames = request.getHeaderNames();
         log.debug("HTTP Method: {}", request.getMethod());
 
-        if (headerNames != null) {
-            while (headerNames.hasMoreElements()) {
-                String headerName = headerNames.nextElement();
-                String headerValue = request.getHeader(headerName);
-                log.debug("Header Name: {}, Header Value: {}", headerName, headerValue);
-            }
-        }
-
         if (!(handler instanceof HandlerMethod))
             return true;
 
@@ -73,7 +65,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
             if ((Long) jwtDetail.get("expirationTime") <= System.currentTimeMillis() / 1000) {
                 log.debug("Token has expired");
-                throw new TokenExpiredException("access");
+                throw new TokenExpiredException();
             }
 
             request.setAttribute("memberId", jwtDetail.get("memberId"));
