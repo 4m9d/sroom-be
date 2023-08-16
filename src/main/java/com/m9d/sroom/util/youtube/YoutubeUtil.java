@@ -39,7 +39,7 @@ public class YoutubeUtil {
 
     public static final Map<String, String> VIDEO_PARAMETERS = Map.of(
             "part", "snippet,contentDetails,statistics,status",
-            "fields", "pageInfo(totalResults),items(id,snippet(publishedAt,title,description,thumbnails,channelTitle,defaultAudioLanguage),contentDetails(duration,dimension),status(uploadStatus,embeddable,license,publishAt),statistics(viewCount))"
+            "fields", "pageInfo(totalResults),items(id,snippet(publishedAt,title,description,thumbnails,channelTitle,defaultAudioLanguage),contentDetails(duration,dimension),status(uploadStatus,embeddable,license,publishAt,privacyStatus),statistics(viewCount))"
     );
 
     public static final Map<String, String> PLAYLIST_PARAMETERS = Map.of(
@@ -60,6 +60,7 @@ public class YoutubeUtil {
 
     //JsonNode
     public static final int FIRST_INDEX = 0;
+    public static final String JSONNODE_PROCESSED = "processed";
     public static final String JSONNODE_PRIVATE = "private";
     public static final String JSONNODE_UNSPECIFIED = "privacyStatusUnspecified";
 
@@ -104,6 +105,11 @@ public class YoutubeUtil {
         } else {
             language = UNKNOWN_LANGUAGE;
         }
+        boolean videoUsable = true;
+        Long viewCount = itemVo.getStatistics().getViewCount();
+        if(viewCount == null){
+            videoUsable = false;
+        }
 
         return Video.builder()
                 .videoCode(itemVo.getId())
@@ -117,6 +123,7 @@ public class YoutubeUtil {
                 .thumbnail(selectThumbnailInVo(itemVo.getSnippet().getThumbnails()))
                 .language(language)
                 .license(itemVo.getStatus().getLicense())
+                .usable(videoUsable)
                 .build();
     }
 

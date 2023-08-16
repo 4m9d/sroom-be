@@ -26,7 +26,7 @@ public class Video {
 
     private boolean playlist;
 
-    private long viewCount;
+    private Long viewCount;
 
     private Timestamp publishedAt;
 
@@ -45,5 +45,7 @@ public class Video {
     private Timestamp updatedAt;
 
     private boolean complete;
+
+    private boolean usable;
 
 }

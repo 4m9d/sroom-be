@@ -274,11 +274,19 @@ public class LectureService {
             futureList.add(future);
         }
 
-        return futureList.stream().map(CompletableFuture::join).collect(Collectors.toList());
+        return futureList.stream()
+                .map(CompletableFuture::join)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     private Index getIndex(int index, String videoCode) {
         Video video = getSearchedVideoLast(videoCode);
+
+        if (!video.isUsable()) {
+            return null;
+        }
+
         return Index.builder()
                 .index(index)
                 .lectureTitle(unescapeHtml(video.getTitle()))
@@ -294,10 +302,7 @@ public class LectureService {
         if (videoOptional.isPresent() && dateUtil.validateExpiration(videoOptional.get().getUpdatedAt(), VIDEO_UPDATE_THRESHOLD_HOURS)) {
             video = videoOptional.get();
         } else {
-            Mono<VideoVo> videoVoMono = youtubeApi.getVideoVo(VideoReq.builder()
-                    .videoCode(lectureCode)
-                    .build());
-            video = youtubeUtil.getVideoFromMono(videoVoMono);
+            video = youtubeUtil.getVideoWithBlocking(lectureCode);
         }
         return video;
     }
