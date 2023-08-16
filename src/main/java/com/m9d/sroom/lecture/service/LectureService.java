@@ -72,7 +72,7 @@ public class LectureService {
         Mono<SearchVo> searchVoMono = getSearchVoMono(keywordSearchParam);
         Set<String> enrolledLectureSet = getEnrolledLectures(memberId);
 
-        SearchVo searchVo = safeGetVo(searchVoMono);
+        SearchVo searchVo = blockFromMono(searchVoMono);
         String nextPageToken = Optional.of(searchVo)
                 .map(SearchVo::getNextPageToken)
                 .orElse(null);
@@ -80,7 +80,7 @@ public class LectureService {
 
         return KeywordSearch.builder()
                 .nextPageToken(nextPageToken)
-                .resultPerPage(searchVo.getPageInfo().getResultPerPage())
+                .resultPerPage(searchVo.getPageInfo().getResultsPerPage())
                 .lectures(lectureList)
                 .build();
     }
@@ -220,6 +220,7 @@ public class LectureService {
         Playlist playlist = youtubeUtil.getPlaylistFromMono(playlistVoMono);
         List<CourseBrief> courseBriefList = courseRepository.getCourseBriefListByMember(memberId);
         IndexInfo indexInfo = getIndexInfo(playlistVideoVoMono);
+        List<ReviewBrief> reviewList = lectureRepository.getReviewBriefList(playlistCode, DEFAULT_REVIEW_OFFSET, reviewLimit);
 
         return PlaylistDetail.builder()
                 .lectureCode(playlistCode)
@@ -233,7 +234,9 @@ public class LectureService {
                 .thumbnail(playlist.getThumbnail())
                 .indexes(indexInfo)
                 .duration(indexInfo.getTotalDuration())
-                .reviews(lectureRepository.getReviewBriefList(playlistCode, DEFAULT_REVIEW_OFFSET, reviewLimit))
+                .reviews(reviewList)
+                .reviewCount(reviewList.size())
+                .rating(calculateAverageRating(reviewList))
                 .courses(courseBriefList)
                 .build();
     }
@@ -241,7 +244,7 @@ public class LectureService {
     private IndexInfo getIndexInfo(Mono<PlaylistVideoVo> playlistVideoVoMono) {
         AtomicInteger totalDurationSeconds = new AtomicInteger(0);
         List<CompletableFuture<Index>> futureList = new ArrayList<>();
-        PlaylistVideoVo playlistVideoVo = safeGetVo(playlistVideoVoMono);
+        PlaylistVideoVo playlistVideoVo = blockFromMono(playlistVideoVoMono);
 
         List<Index> indexList = getIndexList(futureList, playlistVideoVo);
 
@@ -284,34 +287,6 @@ public class LectureService {
                 .build();
     }
 
-    public VideoDetail getVideoDetail(Long memberId, String videoCode, int reviewLimit) {
-        Mono<VideoVo> videoVoMono = youtubeApi.getVideoVo(VideoReq.builder()
-                .videoCode(videoCode)
-                .build());
-
-        Set<String> enrolledVideoSet = lectureRepository.getVideosByMemberId(memberId);
-        List<ReviewBrief> reviewBriefList = lectureRepository.getReviewBriefList(videoCode, DEFAULT_REVIEW_OFFSET, reviewLimit);
-        List<CourseBrief> courseBriefList = courseRepository.getCourseBriefListByMember(memberId);
-
-        Video video = youtubeUtil.getVideoFromMono(videoVoMono);
-
-        return VideoDetail.builder()
-                .lectureCode(videoCode)
-                .lectureTitle(unescapeHtml(video.getTitle()))
-                .channel(video.getChannel())
-                .description(unescapeHtml(video.getDescription()))
-                .duration(video.getDuration())
-                .playlist(false)
-                .enrolled(enrolledVideoSet.contains(videoCode))
-                .viewCount(video.getViewCount())
-                .publishedAt(video.getPublishedAt().toLocalDateTime().toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE))
-                .thumbnail(video.getThumbnail())
-                .reviews(reviewBriefList)
-                .reviewCount(reviewBriefList.size())
-                .courses(courseBriefList)
-                .build();
-    }
-
     private Video getSearchedVideoLast(String lectureCode) {
         Optional<Video> videoOptional = lectureRepository.findVideo(lectureCode);
 
@@ -327,7 +302,47 @@ public class LectureService {
         return video;
     }
 
-    public <T> T safeGetVo(Mono<T> vo) {
+    public VideoDetail getVideoDetail(Long memberId, String videoCode, int reviewLimit) {
+        Mono<VideoVo> videoVoMono = youtubeApi.getVideoVo(VideoReq.builder()
+                .videoCode(videoCode)
+                .build());
+
+        Set<String> enrolledVideoSet = lectureRepository.getVideosByMemberId(memberId);
+        List<ReviewBrief> reviewList = lectureRepository.getReviewBriefList(videoCode, DEFAULT_REVIEW_OFFSET, reviewLimit);
+        List<CourseBrief> courseBriefList = courseRepository.getCourseBriefListByMember(memberId);
+
+        Video video = youtubeUtil.getVideoFromMono(videoVoMono);
+
+        return VideoDetail.builder()
+                .lectureCode(videoCode)
+                .lectureTitle(unescapeHtml(video.getTitle()))
+                .channel(video.getChannel())
+                .description(unescapeHtml(video.getDescription()))
+                .duration(video.getDuration())
+                .playlist(false)
+                .enrolled(enrolledVideoSet.contains(videoCode))
+                .viewCount(video.getViewCount())
+                .publishedAt(video.getPublishedAt().toLocalDateTime().toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE))
+                .thumbnail(video.getThumbnail())
+                .reviews(reviewList)
+                .reviewCount(reviewList.size())
+                .rating(calculateAverageRating(reviewList))
+                .courses(courseBriefList)
+                .build();
+    }
+
+    private double calculateAverageRating(List<ReviewBrief> reviews) {
+        if (reviews == null || reviews.isEmpty()) {
+            return 0.0; // Return 0 if there are no reviews
+        }
+
+        return reviews.stream()
+                .mapToInt(ReviewBrief::getSubmittedRating)
+                .average()
+                .orElse(0.0);
+    }
+
+    public <T> T blockFromMono(Mono<T> vo) {
         if (vo == null) {
             log.warn("youtube data api 실행에 실패하였습니다.");
             throw new RuntimeException();
