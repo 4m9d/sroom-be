@@ -1,6 +1,6 @@
 package com.m9d.sroom.member.exception;
 
-import com.m9d.sroom.config.error.UnauthorizedException;
+import com.m9d.sroom.global.error.UnauthorizedException;
 
 public class NoAuthorizationTokenException extends UnauthorizedException {
 

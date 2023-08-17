@@ -1,4 +1,4 @@
-package com.m9d.sroom.config.error;
+package com.m9d.sroom.global.error;
 
 import lombok.Getter;
 

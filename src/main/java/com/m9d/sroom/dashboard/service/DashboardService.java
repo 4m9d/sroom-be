@@ -1,11 +1,11 @@
-package com.m9d.sroom.dashbord.service;
+package com.m9d.sroom.dashboard.service;
 
 import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.repository.CourseRepository;
-import com.m9d.sroom.dashbord.dto.response.Dashboard;
-import com.m9d.sroom.dashbord.dto.response.DashboardMemberData;
-import com.m9d.sroom.dashbord.dto.response.LearningHistory;
-import com.m9d.sroom.dashbord.repository.DashboardRepository;
+import com.m9d.sroom.dashboard.dto.response.Dashboard;
+import com.m9d.sroom.dashboard.dto.response.DashboardMemberData;
+import com.m9d.sroom.dashboard.dto.response.LearningHistory;
+import com.m9d.sroom.dashboard.repository.DashboardRepository;
 import com.m9d.sroom.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.*;
 
-import static com.m9d.sroom.dashbord.constant.DashboardConstant.*;
+import static com.m9d.sroom.dashboard.constant.DashboardConstant.*;
 
 @Service
 @Slf4j

@@ -1,6 +1,6 @@
 package com.m9d.sroom.course.exception;
 
-import com.m9d.sroom.config.error.NotMatchException;
+import com.m9d.sroom.global.error.NotMatchException;
 
 public class CourseNotMatchException extends NotMatchException {
 

@@ -45,7 +45,6 @@ import java.util.stream.Collectors;
 import static com.m9d.sroom.course.constant.CourseConstant.PLAYLIST_UPDATE_THRESHOLD_HOURS;
 import static com.m9d.sroom.course.constant.CourseConstant.VIDEO_UPDATE_THRESHOLD_HOURS;
 import static com.m9d.sroom.lecture.constant.LectureConstant.*;
-import static com.m9d.sroom.util.DateUtil.FORMATTER;
 import static com.m9d.sroom.util.youtube.YoutubeUtil.*;
 
 @Service
@@ -134,7 +133,7 @@ public class LectureService {
                 .channel(unescapeHtml(snippetVo.getChannelTitle()))
                 .lectureCode(lectureCode)
                 .enrolled(enrolledLectureSet.contains(lectureCode))
-                .publishedAt(ZonedDateTime.parse(snippetVo.getPublishTime()).format(FORMATTER))
+                .publishedAt(dateUtil.convertISOToString(snippetVo.getPublishTime()))
                 .playlist(isPlaylist)
                 .lectureCount(videoCount)
                 .viewCount(viewCount)

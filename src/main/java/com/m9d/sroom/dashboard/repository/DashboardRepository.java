@@ -1,9 +1,9 @@
-package com.m9d.sroom.dashbord.repository;
+package com.m9d.sroom.dashboard.repository;
 
 import com.m9d.sroom.course.dto.response.CourseInfo;
-import com.m9d.sroom.dashbord.dto.response.DashboardMemberData;
-import com.m9d.sroom.dashbord.dto.response.LearningHistory;
-import com.m9d.sroom.dashbord.sql.DashboardSqlQuery;
+import com.m9d.sroom.dashboard.dto.response.DashboardMemberData;
+import com.m9d.sroom.dashboard.dto.response.LearningHistory;
+import com.m9d.sroom.dashboard.sql.DashboardSqlQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;

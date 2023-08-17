@@ -1,7 +1,7 @@
-package com.m9d.sroom.dashbord.controller;
+package com.m9d.sroom.dashboard.controller;
 
-import com.m9d.sroom.dashbord.dto.response.Dashboard;
-import com.m9d.sroom.dashbord.service.DashboardService;
+import com.m9d.sroom.dashboard.dto.response.Dashboard;
+import com.m9d.sroom.dashboard.service.DashboardService;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
 import io.swagger.v3.oas.annotations.Operation;

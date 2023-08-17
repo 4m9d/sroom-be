@@ -1,4 +1,4 @@
-package com.m9d.sroom.dashbord.constant;
+package com.m9d.sroom.dashboard.constant;
 
 import java.util.ArrayList;
 import java.util.List;
