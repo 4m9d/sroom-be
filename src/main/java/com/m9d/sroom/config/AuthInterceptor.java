@@ -25,11 +25,11 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        log.info("Request URI: {}", request.getRequestURI());
-        log.debug("HTTP Method: {}", request.getMethod());
+        log.info("Request URI = {}, HTTP Method = {}", request.getRequestURI(), request.getMethod());
 
-        if (!(handler instanceof HandlerMethod))
+        if (!(handler instanceof HandlerMethod)) {
             return true;
+        }
 
         HandlerMethod handlerMethod = (HandlerMethod) handler;
         Auth auth = handlerMethod.getMethodAnnotation(Auth.class);
