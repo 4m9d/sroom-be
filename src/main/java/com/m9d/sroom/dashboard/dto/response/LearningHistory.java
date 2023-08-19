@@ -1,4 +1,4 @@
-package com.m9d.sroom.dashbord.dto.response;
+package com.m9d.sroom.dashboard.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

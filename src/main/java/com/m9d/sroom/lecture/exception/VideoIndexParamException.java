@@ -1,6 +1,6 @@
 package com.m9d.sroom.lecture.exception;
 
-import com.m9d.sroom.config.error.InvalidParameterException;
+import com.m9d.sroom.global.error.InvalidParameterException;
 
 public class VideoIndexParamException extends InvalidParameterException {
 

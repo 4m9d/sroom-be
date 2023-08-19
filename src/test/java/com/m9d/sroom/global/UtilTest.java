@@ -360,7 +360,7 @@ public class UtilTest extends SroomTest {
         System.out.println(System.currentTimeMillis());
         Mono<SearchVo> test = youtubeApi.getSearchVo(lectureListReq);
         System.out.println(System.currentTimeMillis());
-        SearchVo searchVo = lectureService.safeGetVo(test);
+        SearchVo searchVo = lectureService.blockFromMono(test);
         System.out.println(System.currentTimeMillis());
         System.out.println(searchVo.toString());
         System.out.println(System.currentTimeMillis());

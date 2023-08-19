@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class PageInfoVo {
     private int totalResults;
-    private int resultPerPage;
+    private int resultsPerPage;
 }

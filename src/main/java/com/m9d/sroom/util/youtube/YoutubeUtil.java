@@ -1,10 +1,20 @@
 package com.m9d.sroom.util.youtube;
 
+import com.m9d.sroom.global.model.Playlist;
+import com.m9d.sroom.global.model.Video;
+import com.m9d.sroom.util.DateUtil;
+import com.m9d.sroom.util.youtube.resource.PlaylistReq;
+import com.m9d.sroom.util.youtube.resource.VideoReq;
 import com.m9d.sroom.util.youtube.vo.global.ThumbnailVo;
+import com.m9d.sroom.util.youtube.vo.playlist.PlaylistItemVo;
+import com.m9d.sroom.util.youtube.vo.playlist.PlaylistVo;
 import com.m9d.sroom.util.youtube.vo.playlistitem.PlaylistVideoItemVo;
+import com.m9d.sroom.util.youtube.vo.video.VideoItemVo;
+import com.m9d.sroom.util.youtube.vo.video.VideoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.util.Map;
 
@@ -14,6 +24,14 @@ import static com.m9d.sroom.lecture.constant.LectureConstant.*;
 @Slf4j
 public class YoutubeUtil {
 
+    private final DateUtil dateUtil;
+    private final YoutubeApi youtubeApi;
+
+    public YoutubeUtil(DateUtil dateUtil, YoutubeApi youtubeApi) {
+        this.dateUtil = dateUtil;
+        this.youtubeApi = youtubeApi;
+    }
+
     public static final Map<String, String> LECTURE_LIST_PARAMETERS = Map.of(
             "part", "id,snippet",
             "fields", "nextPageToken,prevPageToken,pageInfo,items(id,snippet(title,channelTitle,thumbnails,description,publishTime))"
@@ -21,7 +39,7 @@ public class YoutubeUtil {
 
     public static final Map<String, String> VIDEO_PARAMETERS = Map.of(
             "part", "snippet,contentDetails,statistics,status",
-            "fields", "pageInfo(totalResults),items(id,snippet(publishedAt,title,description,thumbnails,channelTitle,defaultAudioLanguage),contentDetails(duration,dimension),status(uploadStatus,embeddable,license,publishAt),statistics(viewCount))"
+            "fields", "pageInfo(totalResults),items(id,snippet(publishedAt,title,description,thumbnails,channelTitle,defaultAudioLanguage),contentDetails(duration,dimension),status(uploadStatus,embeddable,license,publishAt,privacyStatus),statistics(viewCount))"
     );
 
     public static final Map<String, String> PLAYLIST_PARAMETERS = Map.of(
@@ -37,51 +55,86 @@ public class YoutubeUtil {
     public static final String REQUEST_METHOD_GET = HttpMethod.GET.name();
     public static final String YOUTUBE_REQUEST_CONTENT_TYPE = "application/json";
     public static final int DEFAULT_INDEX_COUNT = 50;
-    public static final int DEFAULT_INDEX_OFFSET = 0;
 
     public static final String UNKNOWN_LANGUAGE = "unknown";
 
     //JsonNode
     public static final int FIRST_INDEX = 0;
-    public static final String JSONNODE_ITEMS = "items";
-    public static final String JSONNODE_SNIPPET = "snippet";
-    public static final String JSONNODE_ID = "id";
-    public static final String JSONNODE_RESOURCE_ID = "resourceId";
-    public static final String JSONNODE_PLAYLIST_ID = "playlistId";
-    public static final String JSONNODE_VIDEO_ID = "videoId";
-    public static final String JSONNODE_KIND = "kind";
-    public static final String JSONNODE_THUMBNAILS = "thumbnails";
-    public static final String JSONNODE_THUMBNAIL_MEDIUM = "medium";
-    public static final String JSONNODE_THUMBNAIL_URL = "url";
-    public static final String JSONNODE_THUMBNAIL_MAXRES = "maxres";
-    public static final String JSONNODE_TITLE = "title";
-    public static final String JSONNODE_CHANNEL_TITLE = "channelTitle";
-    public static final String JSONNODE_DESCRIPTION = "description";
-    public static final String JSONNODE_NEXT_PAGE_TOKEN = "nextPageToken";
-    public static final String JSONNODE_PREV_PAGE_TOKEN = "prevPageToken";
-    public static final String JSONNODE_PAGE_INFO = "pageInfo";
-    public static final String JSONNODE_TOTAL_RESULTS = "totalResults";
-    public static final String JSONNODE_RESULT_PER_PAGE = "resultsPerPage";
-    public static final String JSONNODE_CONTENT_DETAIL = "contentDetails";
-    public static final String JSONNODE_DURATION = "duration";
-    public static final String JSONNODE_STATISTICS = "statistics";
-    public static final String JSONNODE_VIEW_COUNT = "viewCount";
-    public static final String JSONNODE_ITEM_COUNT = "itemCount";
-    public static final String JSONNODE_STATUS = "status";
-    public static final String JSONNODE_LICENCE = "license";
-    public static final String JSONNODE_PRIVACY_STATUS = "privacyStatus";
+    public static final String JSONNODE_PROCESSED = "processed";
     public static final String JSONNODE_PRIVATE = "private";
     public static final String JSONNODE_UNSPECIFIED = "privacyStatusUnspecified";
-    public static final String JSONNODE_PUBLIC = "public";
-    public static final String JSONNODE_LANGUAGE = "defaultAudioLanguage";
-    public static final String JSONNODE_POSITION = "position";
-    public static final String JSONNODE_PUBLISHETIME = "publishTime";
-    public static final String JSONNODE_PUBLISHED_AT = "publishedAt";
-    public static final int PUBLISHED_DATE_START_INDEX = 0;
-    public static final int PUBLISHED_DATE_END_INDEX = 10;
 
     public static final String JSONNODE_TYPE_PLAYLIST = "youtube#playlist";
     public static final String JSONNODE_TYPE_VIDEO = "youtube#video";
+
+    public Playlist getPlaylistWithBlocking(String playlistCode) {
+        Mono<PlaylistVo> playlistVoMono = youtubeApi.getPlaylistVo(PlaylistReq.builder()
+                .playlistCode(playlistCode)
+                .build());
+
+        return getPlaylistFromMono(playlistVoMono);
+    }
+
+    public Video getVideoWithBlocking(String videoCode) {
+        Mono<VideoVo> videoVoMono = youtubeApi.getVideoVo(VideoReq.builder()
+                .videoCode(videoCode)
+                .build());
+        return getVideoFromMono(videoVoMono);
+    }
+
+    public Playlist getPlaylistFromMono(Mono<PlaylistVo> playlistVoMono) {
+        PlaylistItemVo itemVo = safeGetVo(playlistVoMono).getItems().get(FIRST_INDEX);
+
+        return Playlist.builder()
+                .playlistCode(itemVo.getId())
+                .thumbnail(selectThumbnailInVo(itemVo.getSnippet().getThumbnails()))
+                .title(itemVo.getSnippet().getTitle())
+                .channel(itemVo.getSnippet().getChannelTitle())
+                .description(itemVo.getSnippet().getDescription())
+                .publishedAt(dateUtil.convertISOToTimestamp(itemVo.getSnippet().getPublishedAt()))
+                .lectureCount(itemVo.getContentDetails().getItemCount())
+                .build();
+    }
+
+    public Video getVideoFromMono(Mono<VideoVo> videoVoMono) {
+        VideoItemVo itemVo = safeGetVo(videoVoMono).getItems().get(FIRST_INDEX);
+
+        String language;
+        if (itemVo.getSnippet().getDefaultAudioLanguage() != null) {
+            language = itemVo.getSnippet().getDefaultAudioLanguage();
+        } else {
+            language = UNKNOWN_LANGUAGE;
+        }
+        boolean videoUsable = true;
+        Long viewCount = itemVo.getStatistics().getViewCount();
+        if(viewCount == null){
+            videoUsable = false;
+        }
+
+        return Video.builder()
+                .videoCode(itemVo.getId())
+                .title(itemVo.getSnippet().getTitle())
+                .channel(itemVo.getSnippet().getChannelTitle())
+                .description(itemVo.getSnippet().getDescription())
+                .duration(dateUtil.convertISOToSeconds(itemVo.getContentDetails().getDuration()))
+                .playlist(false)
+                .viewCount(itemVo.getStatistics().getViewCount())
+                .publishedAt(dateUtil.convertISOToTimestamp(itemVo.getSnippet().getPublishedAt()))
+                .thumbnail(selectThumbnailInVo(itemVo.getSnippet().getThumbnails()))
+                .language(language)
+                .license(itemVo.getStatus().getLicense())
+                .usable(videoUsable)
+                .build();
+    }
+
+    public <T> T safeGetVo(Mono<T> vo) {
+        if (vo == null) {
+            log.warn("youtube data api 실행에 실패하였습니다.");
+            throw new RuntimeException();
+        } else {
+            return vo.block();
+        }
+    }
 
     public boolean checkIfPlaylist(String lectureCode) {
         String firstTwoCharacters = lectureCode.substring(LECTURE_CODE_START_INDEX, LECTURE_CODE_PLAYLIST_INDICATOR_LENGTH);
@@ -96,7 +149,7 @@ public class YoutubeUtil {
             selectedThumbnailUrl = thumbnailVo.getMedium().getUrl();
         }
 
-        if (thumbnailVo.getMaxres() != null){
+        if (thumbnailVo.getMaxres() != null) {
             return thumbnailVo.getMaxres().getUrl();
         }
 

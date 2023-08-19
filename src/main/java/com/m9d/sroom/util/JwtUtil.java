@@ -1,22 +1,21 @@
 package com.m9d.sroom.util;
 
 import com.m9d.sroom.member.domain.Member;
+import com.m9d.sroom.member.exception.TokenExpiredException;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-@Service
+@Component
 public class JwtUtil {
 
     @Value("${jwt-secret}")
@@ -44,10 +43,15 @@ public class JwtUtil {
     }
 
     public Map<String, Object> getDetailFromToken(String token) {
-        Claims claims = Jwts.parser()
-                .setSigningKey(jwtSecret)
-                .parseClaimsJws(token)
-                .getBody();
+        Claims claims;
+        try {
+            claims = Jwts.parser()
+                    .setSigningKey(jwtSecret)
+                    .parseClaimsJws(token)
+                    .getBody();
+        } catch (ExpiredJwtException e) {
+            throw new TokenExpiredException();
+        }
 
         Map<String, Object> details = new HashMap<>();
         details.put("expirationTime", claims.getExpiration().getTime() / 1000);

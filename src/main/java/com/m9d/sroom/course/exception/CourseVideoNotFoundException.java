@@ -1,6 +1,6 @@
 package com.m9d.sroom.course.exception;
 
-import com.m9d.sroom.config.error.NotFoundException;
+import com.m9d.sroom.global.error.NotFoundException;
 
 public class CourseVideoNotFoundException extends NotFoundException {
 

@@ -1,4 +1,4 @@
-package com.m9d.sroom.course.domain;
+package com.m9d.sroom.global.model;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -26,7 +26,7 @@ public class Video {
 
     private boolean playlist;
 
-    private long viewCount;
+    private Long viewCount;
 
     private Timestamp publishedAt;
 
@@ -45,5 +45,7 @@ public class Video {
     private Timestamp updatedAt;
 
     private boolean complete;
+
+    private boolean usable;
 
 }

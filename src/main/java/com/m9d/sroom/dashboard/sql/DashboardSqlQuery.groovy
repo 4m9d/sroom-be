@@ -1,4 +1,4 @@
-package com.m9d.sroom.dashbord.sql;
+package com.m9d.sroom.dashboard.sql;
 
 class DashboardSqlQuery {
 

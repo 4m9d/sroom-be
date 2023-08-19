@@ -89,7 +89,7 @@ public class MemberService {
         Map<String, Object> refreshTokenDetail = jwtUtil.getDetailFromToken(refreshToken.getRefreshToken());
 
         if ((Long) refreshTokenDetail.get(EXPIRATION_TIME) <= System.currentTimeMillis() / MILLIS_TO_SECONDS) {
-            throw new TokenExpiredException("refresh");
+            throw new TokenExpiredException();
         }
         if (!memberId.equals(Long.valueOf((String) refreshTokenDetail.get(MEMBER_ID_FIELD)))) {
             throw new MemberNotMatchException();

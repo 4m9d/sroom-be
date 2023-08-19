@@ -1,9 +1,9 @@
 package com.m9d.sroom.course.repository;
 
-import com.m9d.sroom.course.domain.Course;
-import com.m9d.sroom.course.domain.Playlist;
+import com.m9d.sroom.global.model.Course;
+import com.m9d.sroom.global.model.Playlist;
 import com.m9d.sroom.course.dto.response.CourseInfo;
-import com.m9d.sroom.course.domain.Video;
+import com.m9d.sroom.global.model.Video;
 import com.m9d.sroom.course.exception.CourseNotFoundException;
 import com.m9d.sroom.course.exception.CourseVideoNotFoundException;
 import com.m9d.sroom.course.sql.CourseSqlQuery;

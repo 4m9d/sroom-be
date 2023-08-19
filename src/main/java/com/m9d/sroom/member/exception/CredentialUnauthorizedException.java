@@ -1,6 +1,6 @@
 package com.m9d.sroom.member.exception;
 
-import com.m9d.sroom.config.error.UnauthorizedException;
+import com.m9d.sroom.global.error.UnauthorizedException;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "유효하지 않은 구글 ID 토큰일 때 발생하는 exception입니다.")

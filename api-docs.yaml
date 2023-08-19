@@ -21,6 +21,12 @@ paths:
               $ref: '#/components/schemas/RefreshToken'
         required: true
       responses:
+        "400":
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         "404":
           description: Not Found
           content:
@@ -29,12 +35,6 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         "401":
           description: Unauthorized
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        "400":
-          description: Bad Request
           content:
             application/json;charset=UTF-8:
               schema:
@@ -60,6 +60,9 @@ paths:
               $ref: '#/components/schemas/GoogleIdKey'
         required: true
       responses:
+        "400":
+          description: 요청 본문이 유효하지 않습니다.
+          content: {}
         "404":
           description: Not Found
           content:
@@ -68,9 +71,6 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         "401":
           description: 인증에 실패하였습니다.
-          content: {}
-        "400":
-          description: 요청 본문이 유효하지 않습니다.
           content: {}
         "200":
           description: 성공적으로 사용자를 인증하였습니다.
@@ -87,6 +87,12 @@ paths:
       description: 멤버ID를 입력받아 멤버의 등록 코스 리스트와 관련 정보를 불러옵니다.
       operationId: getMyCourses
       responses:
+        "400":
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         "404":
           description: Not Found
           content:
@@ -95,12 +101,6 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         "401":
           description: Unauthorized
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        "400":
-          description: Bad Request
           content:
             application/json;charset=UTF-8:
               schema:
@@ -130,6 +130,12 @@ paths:
               $ref: '#/components/schemas/NewLecture'
         required: true
       responses:
+        "400":
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         "404":
           description: Not Found
           content:
@@ -142,12 +148,6 @@ paths:
             application/json;charset=UTF-8:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
-        "400":
-          description: Bad Request
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         "200":
           description: 성공적으로 강의 코스를 등록하였습니다.
           content:
@@ -155,6 +155,44 @@ paths:
               schema:
                 $ref: '#/components/schemas/EnrolledCourseInfo'
   /courses/{courseId}:
+    get:
+      tags:
+        - 강의 수강
+      summary: 수강페이지 코스정보
+      description: 코스 ID를 받아 해당 코스 정보와 수강할 영상 리스트를 반환합니다.
+      operationId: getCourseDetail
+      parameters:
+        - name: courseId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "400":
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "200":
+          description: 성공적으로 수강 정보를 반환하였습니다.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CourseDetail'
     post:
       tags:
         - 강의 등록
@@ -175,6 +213,12 @@ paths:
               $ref: '#/components/schemas/NewLecture'
         required: true
       responses:
+        "400":
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         "404":
           description: Not Found
           content:
@@ -183,12 +227,6 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         "401":
           description: Unauthorized
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        "400":
-          description: Bad Request
           content:
             application/json;charset=UTF-8:
               schema:
@@ -234,6 +272,12 @@ paths:
           description: 이전 페이지 토큰
           example: CAUQAA
       responses:
+        "400":
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         "404":
           description: Not Found
           content:
@@ -242,12 +286,6 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         "401":
           description: Unauthorized
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        "400":
-          description: Bad Request
           content:
             application/json;charset=UTF-8:
               schema:
@@ -299,6 +337,12 @@ paths:
           description: 목차 다음 페이지 토큰
           example: EAAaBlBUOkNESQ
       responses:
+        "400":
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         "404":
           description: Not Found
           content:
@@ -307,12 +351,6 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         "401":
           description: Unauthorized
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        "400":
-          description: Bad Request
           content:
             application/json;charset=UTF-8:
               schema:
@@ -334,6 +372,12 @@ paths:
       description: 유저 ID를 받아 적당한 강의를 추천한다.
       operationId: getRecommendations
       responses:
+        "400":
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         "404":
           description: Not Found
           content:
@@ -342,12 +386,6 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         "401":
           description: Unauthorized
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        "400":
-          description: Bad Request
           content:
             application/json;charset=UTF-8:
               schema:
@@ -366,6 +404,12 @@ paths:
       description: 유저 ID 바탕으로 대시보드 정보 불러오기
       operationId: getDashboard
       responses:
+        "400":
+          description: Bad Request
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         "404":
           description: Not Found
           content:
@@ -374,12 +418,6 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
         "401":
           description: Unauthorized
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        "400":
-          description: Bad Request
           content:
             application/json;charset=UTF-8:
               schema:
@@ -467,7 +505,7 @@ components:
             type: integer
             description: 강의 스케줄
             format: int32
-        expectedEndTime:
+        expectedEndDate:
           type: string
           description: 예상 종료 시간
           example: 2023-12-31
@@ -608,11 +646,11 @@ components:
           description: 코스 ID
           format: int64
           example: 44
-        title:
+        courseTitle:
           type: string
           description: 코스 제목
           example: 침착맨 vs 주호민 산다면 누구 인생으로?
-        videoCount:
+        totalVideoCount:
           type: integer
           description: 코스에 해당하는 영상 개수
           format: int32
@@ -695,6 +733,11 @@ components:
           description: 후기 개수
           format: int32
           example: 44
+        duration:
+          type: integer
+          description: 재생목록 재생시간
+          format: int32
+          example: 11111
         thumbnail:
           type: string
           description: 재생목록 썸네일
@@ -770,14 +813,6 @@ components:
           description: 강의 재생 길이
           format: int32
           example: 11424
-        enrolled:
-          type: boolean
-          description: 강의 등록 여부
-          example: false
-        playlist:
-          type: boolean
-          description: 플레이리스트 여부
-          example: false
         viewCount:
           type: integer
           description: 조회 수
@@ -811,6 +846,14 @@ components:
           description: 멤버의 코스 리스트
           items:
             $ref: '#/components/schemas/CourseBrief'
+        is_enrolled:
+          type: boolean
+          description: 강의 등록 여부
+          example: false
+        is_playlist:
+          type: boolean
+          description: 플레이리스트 여부
+          example: false
       description: 동영상 상세 정보
     RecommendLecture:
       type: object
@@ -952,3 +995,154 @@ components:
           items:
             $ref: '#/components/schemas/CourseInfo'
       description: 내 강의실 데이터
+    CourseDetail:
+      type: object
+      properties:
+        courseId:
+          type: integer
+          description: 강의의 고유 식별자
+          format: int64
+          example: 102
+        useSchedule:
+          type: boolean
+          description: 강의가 일정을 사용하는지 여부
+          example: true
+        thumbnail:
+          type: string
+          description: 코스 썸네일
+          example: https://i.ytimg.com/vi/c2cz_uF3NII/maxresdefault.jpg
+        courseTitle:
+          type: string
+          description: 강의의 제목
+          example: 자바 기초
+        channels:
+          type: string
+          description: 강의가 제공되는 채널
+          example: YouTube
+        courseDuration:
+          type: integer
+          description: 강의의 총 기간 (분 단위)
+          format: int32
+          example: 120
+        currentDuration:
+          type: integer
+          description: 현재 시청 완료된 강의 기간 (분 단위)
+          format: int32
+          example: 60
+        totalVideoCount:
+          type: integer
+          description: 강의의 총 비디오 개수
+          format: int32
+          example: 10
+        completedVideoCount:
+          type: integer
+          description: 강의에서 완료된 비디오 수
+          format: int32
+          example: 5
+        progress:
+          type: integer
+          description: 강의 진행률 퍼센트
+          format: int32
+          example: 50
+        lastViewVideo:
+          $ref: '#/components/schemas/LastVideoInfo'
+        sections:
+          type: array
+          description: 강의 일정의 주 리스트
+          items:
+            $ref: '#/components/schemas/Section'
+      description: 수강페이지에 쓰이는 강의에 대한 상세 정보
+    LastVideoInfo:
+      type: object
+      properties:
+        videoId:
+          type: integer
+          description: 비디오의 고유 식별자
+          format: int64
+          example: 2023
+        videoTitle:
+          type: string
+          description: 비디오의 제목
+          example: 자바 스프링 기초
+        videoCode:
+          type: string
+          description: 비디오의 코드
+          example: JAVA_SPRING_BASICS
+        channel:
+          type: string
+          description: 비디오가 제공되는 채널
+          example: 래퍼 손경식
+        lastViewDuration:
+          type: integer
+          description: 마지막으로 시청한 비디오의 기간 (초 단위)
+          format: int32
+          example: 30
+      description: 마지막으로 시청한 비디오에 대한 정보
+    Section:
+      type: object
+      properties:
+        section:
+          type: integer
+          description: 주차 번호
+          format: int32
+          example: 1
+        weekDuration:
+          type: integer
+          description: 해당 주차의 총 강의 기간 (초 단위)
+          format: int32
+          example: 120
+        currentWeekDuration:
+          type: integer
+          description: 해당 주차에서 현재 시청 완료한 강의 기간 (초 단위)
+          format: int32
+          example: 60
+        videos:
+          type: array
+          description: 해당 주차의 비디오 목록
+          items:
+            $ref: '#/components/schemas/VideoBrief'
+        is_completed:
+          type: boolean
+          description: 해당 주차의 강의가 완료되었는지 여부
+          example: false
+      description: 강의 일정의 주별 정보
+    VideoBrief:
+      type: object
+      properties:
+        videoId:
+          type: integer
+          description: 비디오 ID
+          format: int64
+          example: 1111
+        videoIndex:
+          type: integer
+          description: 비디오의 인덱스
+          format: int32
+          example: 1
+        channel:
+          type: string
+          description: 비디오가 제공되는 채널
+          example: 발라더 손경식
+        videoTitle:
+          type: string
+          description: 비디오의 제목
+          example: 자바 스프링 기초
+        videoCode:
+          type: string
+          description: 비디오의 코드
+          example: JAVA_SPRING_BASICS
+        lastViewDuration:
+          type: integer
+          description: 영상 시작시간
+          format: int32
+          example: 11
+        videoDuration:
+          type: integer
+          description: 영상 재생시간
+          format: int32
+          example: 1000
+        is_completed:
+          type: boolean
+          description: 해당 비디오가 완료되었는지 여부
+          example: false
+      description: 수강 페이지 사이드바에 쓰이는비디오의 요약 정보
