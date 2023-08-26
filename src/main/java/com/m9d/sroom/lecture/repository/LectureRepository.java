@@ -47,7 +47,7 @@ public class LectureRepository {
     }
 
     public Optional<Video> findVideo(String lectureCode) {
-        String query = "SELECT title, view_count, updated_at, description, thumbnail, duration FROM VIDEO WHERE video_code = ?";
+        String query = "SELECT title, view_count, updated_at, description, thumbnail, duration, is_available, membership FROM VIDEO WHERE video_code = ?";
 
         Video video = queryForObjectOrNull(query,
                 (rs, rowNum) -> Video.builder()
@@ -57,6 +57,8 @@ public class LectureRepository {
                         .description(rs.getString("description"))
                         .thumbnail(rs.getString("thumbnail"))
                         .duration(rs.getInt("duration"))
+                        .usable(rs.getBoolean("is_available"))
+                        .membership(rs.getBoolean("membership"))
                         .build(), lectureCode);
         return Optional.ofNullable(video);
     }

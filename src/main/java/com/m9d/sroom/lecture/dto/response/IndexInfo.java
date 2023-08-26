@@ -18,9 +18,9 @@ public class IndexInfo {
     @Schema(description = "목차 리스트")
     private List<Index> indexList;
 
-    @Schema(description = "다음 페이지 토큰", example = "EAAaBlBUOkNBbw")
-    private String nextPageToken;
-
     @Schema(description = "총 재생 시간", example = "245212")
-    private int totalDuration;
+    private int duration;
+
+    @Schema(description = "영상 총 개수", example = "112")
+    private int lectureCount;
 }
