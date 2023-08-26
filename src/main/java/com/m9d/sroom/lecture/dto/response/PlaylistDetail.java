@@ -39,9 +39,6 @@ public class PlaylistDetail {
     @Schema(description = "재생목록 게시 날짜", example = "2022-12-31T23:59:59Z")
     private String publishedAt;
 
-    @Schema(description = "강의 개수", example = "20")
-    private int lectureCount;
-
     @Schema(description = "강의 평점", example = "4.3")
     private double rating;
 
