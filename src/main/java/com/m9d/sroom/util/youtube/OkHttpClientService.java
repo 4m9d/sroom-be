@@ -1,7 +1,7 @@
 package com.m9d.sroom.util.youtube;
 
 import com.google.gson.Gson;
-import com.m9d.sroom.util.youtube.resource.YoutubeResource;
+import com.m9d.sroom.util.youtube.resource.YoutubeReq;
 import com.m9d.sroom.util.youtube.vo.playlist.PlaylistVo;
 import com.m9d.sroom.util.youtube.vo.playlistitem.PlaylistVideoVo;
 import com.m9d.sroom.util.youtube.vo.search.SearchVo;
@@ -11,7 +11,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
@@ -46,28 +45,28 @@ public class OkHttpClientService implements YoutubeApi {
     }
 
     @Override
-    public Mono<SearchVo> getSearchVo(YoutubeResource resource) {
+    public Mono<SearchVo> getSearchVo(YoutubeReq resource) {
         return getYoutubeVo(resource, SearchVo.class);
     }
 
     @Override
-    public Mono<VideoVo> getVideoVo(YoutubeResource resource) {
+    public Mono<VideoVo> getVideoVo(YoutubeReq resource) {
         return getYoutubeVo(resource, VideoVo.class);
     }
 
     @Override
-    public Mono<PlaylistVo> getPlaylistVo(YoutubeResource resource) {
+    public Mono<PlaylistVo> getPlaylistVo(YoutubeReq resource) {
         return getYoutubeVo(resource, PlaylistVo.class);
     }
 
     @Override
-    public Mono<PlaylistVideoVo> getPlaylistVideoVo(YoutubeResource resource) {
+    public Mono<PlaylistVideoVo> getPlaylistVideoVo(YoutubeReq resource) {
         return getYoutubeVo(resource, PlaylistVideoVo.class);
     }
 
-    public <T> Mono<T> getYoutubeVo(YoutubeResource resource, Class<T> resultClass) {
+    public <T> Mono<T> getYoutubeVo(YoutubeReq resource, Class<T> resultClass) {
         OkHttpClient client = new OkHttpClient();
-        String url = buildYoutubeApiRequest(resource.getEndpoint(), resource.getParameters());
+        String url = buildYoutubeApiRequest(resource.getEndPoint(), resource.getParameters());
 
         Request request = new Request.Builder()
                 .url(url)

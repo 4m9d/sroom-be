@@ -8,14 +8,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Builder
-@RequiredArgsConstructor
-public class PlaylistItemReq implements YoutubeResource {
+public class PlaylistItemReq extends YoutubeReq {
 
     private final String playlistCode;
     private final String nextPageToken;
     private final int limit;
 
-    private static final String ENDPOINT = "/playlistItems";
+    {
+        endPoint = "/playlistItems";
+    }
 
     @Override
     public Map<String, String> getParameters() {
@@ -26,10 +27,5 @@ public class PlaylistItemReq implements YoutubeResource {
             params.put("pageToken", nextPageToken);
         }
         return params;
-    }
-
-    @Override
-    public String getEndpoint() {
-        return ENDPOINT;
     }
 }

@@ -15,7 +15,7 @@ import com.m9d.sroom.lecture.repository.LectureRepository;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.util.youtube.YoutubeApi;
 import com.m9d.sroom.util.youtube.YoutubeUtil;
-import com.m9d.sroom.util.youtube.resource.LectureListReq;
+import com.m9d.sroom.util.youtube.resource.SearchReq;
 import com.m9d.sroom.util.youtube.resource.PlaylistReq;
 import com.m9d.sroom.util.youtube.resource.PlaylistItemReq;
 import com.m9d.sroom.util.youtube.resource.VideoReq;
@@ -35,7 +35,6 @@ import reactor.core.publisher.Mono;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -87,7 +86,7 @@ public class LectureService {
     private Mono<SearchVo> getSearchVoMono(KeywordSearchParam keywordSearchParam) {
         String encodedKeyword = URLEncoder.encode(keywordSearchParam.getKeyword(), StandardCharsets.UTF_8);
 
-        return youtubeApi.getSearchVo(LectureListReq.builder()
+        return youtubeApi.getSearchVo(SearchReq.builder()
                 .keyword(encodedKeyword)
                 .filter(keywordSearchParam.getFilter())
                 .limit(keywordSearchParam.getLimit())
