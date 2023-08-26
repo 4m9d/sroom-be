@@ -10,8 +10,6 @@ public class LectureDetailParam {
 
     private int index_limit = 50;
 
-    private String index_next_token;
-
     private boolean review_only = false;
 
     private int review_offset = 0;

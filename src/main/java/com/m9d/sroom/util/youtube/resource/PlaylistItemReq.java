@@ -2,7 +2,6 @@ package com.m9d.sroom.util.youtube.resource;
 
 import com.m9d.sroom.util.youtube.YoutubeUtil;
 import lombok.Builder;
-import lombok.RequiredArgsConstructor;
 
 import java.util.HashMap;
 import java.util.Map;
