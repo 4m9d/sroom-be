@@ -316,6 +316,10 @@ public class LectureService {
             viewCount = video.getViewCount();
         }
 
+        IndexInfo indexInfo = IndexInfo.builder()
+                .indexList(List.of(new Index(0, video.getThumbnail(), video.getTitle(), video.getDuration(), isMembership)))
+                .build();
+
         return VideoDetail.builder()
                 .lectureCode(videoCode)
                 .lectureTitle(unescapeHtml(video.getTitle()))
@@ -332,6 +336,7 @@ public class LectureService {
                 .rating(calculateAverageRating(reviewList))
                 .courses(courseBriefList)
                 .membership(isMembership)
+                .indexes(indexInfo)
                 .build();
     }
 
