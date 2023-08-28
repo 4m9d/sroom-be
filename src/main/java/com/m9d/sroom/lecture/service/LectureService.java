@@ -11,6 +11,7 @@ import com.m9d.sroom.lecture.dto.response.ReviewBrief;
 import com.m9d.sroom.lecture.dto.response.*;
 import com.m9d.sroom.lecture.exception.TwoOnlyParamTrueException;
 import com.m9d.sroom.lecture.exception.VideoIndexParamException;
+import com.m9d.sroom.lecture.exception.VideoNotFoundException;
 import com.m9d.sroom.lecture.repository.LectureRepository;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.util.youtube.YoutubeApi;
@@ -305,7 +306,13 @@ public class LectureService {
         List<ReviewBrief> reviewList = lectureRepository.getReviewBriefList(videoCode, DEFAULT_REVIEW_OFFSET, reviewLimit);
         List<CourseBrief> courseBriefList = courseRepository.getCourseBriefListByMember(memberId);
 
-        Video video = youtubeUtil.getVideoFromMono(videoVoMono);
+        Video video;
+        try {
+            video = youtubeUtil.getVideoFromMono(videoVoMono);
+        } catch (IndexOutOfBoundsException e) {
+            log.warn("존재하지 않는 영상입니다. video code = {}", videoCode);
+            throw new VideoNotFoundException();
+        }
 
         boolean isMembership = false;
         long viewCount = -1;

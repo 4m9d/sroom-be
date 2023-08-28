@@ -1,6 +1,7 @@
 package com.m9d.sroom.util;
 
 import com.m9d.sroom.course.dto.request.NewLecture;
+import com.m9d.sroom.course.dto.response.CourseDetail;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.lecture.dto.response.KeywordSearch;
 import com.m9d.sroom.lecture.dto.response.PlaylistDetail;
@@ -19,10 +20,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class ControllerTest extends SroomTest {
 
-    public Login getNewLogin() {
+    protected Login getNewLogin() {
         Member member = getNewMember();
-        Login login = memberService.generateLogin(member);
-        return login;
+        return memberService.generateLogin(member);
+    }
+
+    protected Login getNewLogin(Member member) {
+        return memberService.generateLogin(member);
     }
 
     protected Member getNewMember() {
@@ -89,5 +93,22 @@ public class ControllerTest extends SroomTest {
                 .build();
         EnrolledCourseInfo courseInfo = courseService.enrollCourse(memberId, newLecture, false);
         return courseInfo.getCourseId();
+    }
+
+    protected CourseDetail registerNewVideo(Long memberId, String videoCode) {
+        EnrolledCourseInfo courseInfo = courseService.enrollCourse(memberId, getNewLectureWithoutSchedule(videoCode), false);
+
+        CourseDetail courseDetail = courseService.getCourseDetail(memberId, courseInfo.getCourseId());
+
+        return courseDetail;
+    }
+
+    protected NewLecture getNewLectureWithoutSchedule(String lectureCode) {
+        return NewLecture.builder()
+                .lectureCode(lectureCode)
+                .build();
+    }
+
+    protected void insertSummaryAndQuizzes(Long courseId, Long videoId) {
     }
 }

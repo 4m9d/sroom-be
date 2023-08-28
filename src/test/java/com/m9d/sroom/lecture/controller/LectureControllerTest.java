@@ -1,15 +1,12 @@
 package com.m9d.sroom.lecture.controller;
 
 import com.m9d.sroom.lecture.dto.response.KeywordSearch;
-import com.m9d.sroom.lecture.dto.response.PlaylistDetail;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.util.ControllerTest;
-import lombok.extern.java.Log;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
-import static com.m9d.sroom.util.youtube.YoutubeUtil.DEFAULT_INDEX_COUNT;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -179,21 +176,17 @@ public class LectureControllerTest extends ControllerTest {
     void indexOnlyResponse200() throws Exception {
         //given
         Login login = getNewLogin();
-        String lectureCode = "PLif_jr7pPZACDdM6sB6Yr_0L0VGXEjF1b";
-        PlaylistDetail playlistDetail = getPlaylistDetail(login, lectureCode);
         String isPlaylist = "true";
         String indexOnly = "true";
-        String indexNextToken = playlistDetail.getIndexes().getNextPageToken();
 
         //expected
-        mockMvc.perform(get("/lectures/{lectureCode}", lectureCode)
+        mockMvc.perform(get("/lectures/{lectureCode}", PLAYLIST_CODE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", login.getAccessToken())
                         .queryParam("is_playlist", isPlaylist)
-                        .queryParam("index_only", indexOnly)
-                        .queryParam("index_next_token", indexNextToken))
+                        .queryParam("index_only", indexOnly))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.index_list[0].index", is(DEFAULT_INDEX_COUNT)));
+                .andExpect(jsonPath("$.index_list.length()", is(PLAYLIST_VIDEO_COUNT)));
     }
 
     @Test
