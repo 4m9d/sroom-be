@@ -11,7 +11,7 @@ public class Material {
 
     private int status;
 
-    private int quizNum;
+    private int totalQuizCount;
 
     private List<Quiz> quizzes;
 

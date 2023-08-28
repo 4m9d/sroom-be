@@ -31,12 +31,12 @@ public class MaterialControllerTest extends ControllerTest {
                         .header("Authrization", getNewLogin(member).getAccessToken()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.status", is(1)))
-                .andExpect(jsonPath("$.quizNum", is(3)))
-                .andExpect(jsonPath("$.quizzes[0].quiz_type", is(1)))
-                .andExpect(jsonPath("$.quizzes[1].quiz_type", is(2)))
-                .andExpect(jsonPath("$.quizzes[2].quiz_type", is(3)))
-                .andExpect(jsonPath("$.quizzes[0].quiz_select_option_5").isNotEmpty())
-                .andExpect(jsonPath("$.summary.modified", is(false)))
+                .andExpect(jsonPath("$.total_quiz_count", is(3)))
+                .andExpect(jsonPath("$.quizzes[0].type", is(1)))
+                .andExpect(jsonPath("$.quizzes[1].type", is(2)))
+                .andExpect(jsonPath("$.quizzes[2].type", is(3)))
+                .andExpect(jsonPath("$.quizzes[0].select_option_5").isNotEmpty())
+                .andExpect(jsonPath("$.summary.is_modified", is(false)))
                 .andExpect(jsonPath("$.summary.content").isNotEmpty());
     }
 

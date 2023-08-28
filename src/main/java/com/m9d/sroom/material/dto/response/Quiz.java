@@ -8,21 +8,21 @@ import lombok.Data;
 @Builder
 public class Quiz {
 
-    private Long quizId;
+    private Long id;
 
-    private int quizType;
+    private int type;
 
-    private String quizQuestion;
+    private String question;
 
-    private String quizSelectOption1;
+    private String selectOption1;
 
-    private String quizSelectOption2;
+    private String selectOption2;
 
-    private String quizSelectOption3;
+    private String selectOption3;
 
-    private String quizSelectOption4;
+    private String selectOption4;
 
-    private String quizSelectOption5;
+    private String selectOption5;
 
     @JsonProperty("is_submitted")
     private boolean submitted;
