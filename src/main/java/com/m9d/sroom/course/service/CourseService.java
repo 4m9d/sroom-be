@@ -144,7 +144,7 @@ public class CourseService {
         int section = 0;
         int week = 0;
 
-        List<Video> videoData = courseRepository.getVideoIdAndIndex(playlistId);
+        List<Video> videoData = courseRepository.getVideoInfoFromPlaylistVideo(playlistId);
         for (Video videoInfo : videoData) {
             if (useSchedule) {
                 if (videoCount > newLecture.getScheduling().get(week)) {
@@ -311,10 +311,13 @@ public class CourseService {
         List<Video> enrolledVideoList = courseRepository.getVideoListByCourseId(course.getCourseId());
         int lastVideoIndex = enrolledVideoList.get(enrolledVideoList.size() - 1).getIndex();
 
-        List<Video> videoList = courseRepository.getVideoIdAndIndex(playlist.getPlaylistId());
+        List<Video> videoList = courseRepository.getVideoInfoFromPlaylistVideo(playlist.getPlaylistId());
         int videoIndex = lastVideoIndex + 1;
 
         for (Video video : videoList) {
+            if (!video.isUsable()) {
+                continue;
+            }
             courseRepository.saveCourseVideo(course.getMemberId(), course.getCourseId(), video.getVideoId(), ENROLL_DEFAULT_SECTION, videoIndex, lectureIndex);
             videoIndex++;
         }

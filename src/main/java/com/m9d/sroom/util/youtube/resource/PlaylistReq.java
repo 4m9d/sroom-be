@@ -8,22 +8,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Builder
-@RequiredArgsConstructor
-public class PlaylistReq implements YoutubeResource {
+public class PlaylistReq extends YoutubeReq {
 
     private final String playlistCode;
 
-    private static final String ENDPOINT = "/playlists";
+    {
+        endPoint = "/playlists";
+    }
 
     @Override
     public Map<String, String> getParameters() {
         Map<String, String> params = new HashMap<>(YoutubeUtil.PLAYLIST_PARAMETERS);
         params.put("id", playlistCode);
         return params;
-    }
-
-    @Override
-    public String getEndpoint() {
-        return ENDPOINT;
     }
 }

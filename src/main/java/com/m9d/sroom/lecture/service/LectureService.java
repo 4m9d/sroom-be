@@ -15,9 +15,8 @@ import com.m9d.sroom.lecture.repository.LectureRepository;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.util.youtube.YoutubeApi;
 import com.m9d.sroom.util.youtube.YoutubeUtil;
-import com.m9d.sroom.util.youtube.resource.LectureListReq;
+import com.m9d.sroom.util.youtube.resource.SearchReq;
 import com.m9d.sroom.util.youtube.resource.PlaylistReq;
-import com.m9d.sroom.util.youtube.resource.PlaylistItemReq;
 import com.m9d.sroom.util.youtube.resource.VideoReq;
 import com.m9d.sroom.util.youtube.vo.playlist.PlaylistVo;
 import com.m9d.sroom.util.youtube.vo.playlistitem.PlaylistVideoItemVo;
@@ -35,7 +34,6 @@ import reactor.core.publisher.Mono;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -71,7 +69,7 @@ public class LectureService {
         Mono<SearchVo> searchVoMono = getSearchVoMono(keywordSearchParam);
         Set<String> enrolledLectureSet = getEnrolledLectures(memberId);
 
-        SearchVo searchVo = blockFromMono(searchVoMono);
+        SearchVo searchVo = youtubeUtil.safeGetVo(searchVoMono);
         String nextPageToken = Optional.of(searchVo)
                 .map(SearchVo::getNextPageToken)
                 .orElse(null);
@@ -87,7 +85,7 @@ public class LectureService {
     private Mono<SearchVo> getSearchVoMono(KeywordSearchParam keywordSearchParam) {
         String encodedKeyword = URLEncoder.encode(keywordSearchParam.getKeyword(), StandardCharsets.UTF_8);
 
-        return youtubeApi.getSearchVo(LectureListReq.builder()
+        return youtubeApi.getSearchVo(SearchReq.builder()
                 .keyword(encodedKeyword)
                 .filter(keywordSearchParam.getFilter())
                 .limit(keywordSearchParam.getLimit())
@@ -170,11 +168,11 @@ public class LectureService {
 
         Object response;
         if (lectureDetailParam.isIndex_only()) {
-            response = getPlaylistItemList(lectureCode, lectureDetailParam.getIndex_next_token(), lectureDetailParam.getIndex_limit());
+            response = getPlaylistItemList(lectureCode);
         } else if (lectureDetailParam.isReview_only()) {
             response = getReviewBriefList(lectureCode, lectureDetailParam.getReview_offset(), lectureDetailParam.getReview_limit());
         } else if (isPlaylist) {
-            response = getPlaylistDetail(memberId, lectureCode, lectureDetailParam.getIndex_next_token(), lectureDetailParam.getReview_limit());
+            response = getPlaylistDetail(memberId, lectureCode, lectureDetailParam.getReview_limit());
         } else {
             response = getVideoDetail(memberId, lectureCode, lectureDetailParam.getReview_limit());
         }
@@ -191,35 +189,53 @@ public class LectureService {
         }
     }
 
-    private IndexInfo getPlaylistItemList(String playlistCode, String nextPageToken, int indexLimit) {
-        Mono<PlaylistVideoVo> playlistVideoVoMono = youtubeApi.getPlaylistVideoVo(PlaylistItemReq.builder()
-                .playlistCode(playlistCode)
-                .nextPageToken(nextPageToken)
-                .limit(indexLimit)
-                .build());
+    private IndexInfo getPlaylistItemList(String playlistCode) {
+        AtomicInteger totalDurationSeconds = new AtomicInteger(0);
+        List<Index> indexList = new ArrayList<>();
 
-        return getIndexInfo(playlistVideoVoMono);
+        String nextPageToken = null;
+        PlaylistVideoVo playlistVideoVo;
+        int pageCount = MAX_PLAYLIST_ITEM / DEFAULT_INDEX_COUNT;
+
+
+        for (int i = 0; i < pageCount; i++) {
+            playlistVideoVo = youtubeUtil.getPlaylistItemWithBlocking(playlistCode, nextPageToken, DEFAULT_INDEX_COUNT);
+            pageCount = playlistVideoVo.getPageInfo().getTotalResults() / DEFAULT_INDEX_COUNT + 1;
+            nextPageToken = Optional.of(playlistVideoVo)
+                    .map(PlaylistVideoVo::getNextPageToken)
+                    .orElse(null);
+            indexList.addAll(getIndexList(playlistVideoVo));
+
+            if (nextPageToken == null) {
+                break;
+            }
+        }
+
+
+        for (Index index : indexList) {
+            totalDurationSeconds.addAndGet(index.getDuration());
+        }
+
+        return IndexInfo.builder()
+                .indexList(indexList)
+                .duration(totalDurationSeconds.get())
+                .lectureCount(indexList.size())
+                .build();
     }
 
     private List<ReviewBrief> getReviewBriefList(String lectureCode, int reviewOffset, int reviewLimit) {
         return lectureRepository.getReviewBriefList(lectureCode, reviewOffset, reviewLimit);
     }
 
-    public PlaylistDetail getPlaylistDetail(Long memberId, String playlistCode, String nextPageToken, int reviewLimit) {
+    public PlaylistDetail getPlaylistDetail(Long memberId, String playlistCode, int reviewLimit) {
         Mono<PlaylistVo> playlistVoMono = youtubeApi.getPlaylistVo(PlaylistReq.builder()
                 .playlistCode(playlistCode)
                 .build());
-        Mono<PlaylistVideoVo> playlistVideoVoMono = youtubeApi.getPlaylistVideoVo(PlaylistItemReq.builder()
-                .playlistCode(playlistCode)
-                .nextPageToken(nextPageToken)
-                .limit(DEFAULT_INDEX_COUNT)
-                .build());
 
         Set<String> enrolledPlaylistSet = lectureRepository.getPlaylistByMemberId(memberId);
-        Playlist playlist = youtubeUtil.getPlaylistFromMono(playlistVoMono);
         List<CourseBrief> courseBriefList = courseRepository.getCourseBriefListByMember(memberId);
-        IndexInfo indexInfo = getIndexInfo(playlistVideoVoMono);
         List<ReviewBrief> reviewList = lectureRepository.getReviewBriefList(playlistCode, DEFAULT_REVIEW_OFFSET, reviewLimit);
+        Playlist playlist = youtubeUtil.getPlaylistFromMono(playlistVoMono);
 
         return PlaylistDetail.builder()
                 .lectureCode(playlistCode)
@@ -229,10 +245,7 @@ public class LectureService {
                 .playlist(true)
                 .publishedAt(playlist.getPublishedAt().toLocalDateTime().toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE))
                 .enrolled(enrolledPlaylistSet.contains(playlistCode))
-                .lectureCount(playlist.getLectureCount())
                 .thumbnail(playlist.getThumbnail())
-                .indexes(indexInfo)
-                .duration(indexInfo.getTotalDuration())
                 .reviews(reviewList)
                 .reviewCount(reviewList.size())
                 .rating(calculateAverageRating(reviewList))
@@ -240,29 +253,9 @@ public class LectureService {
                 .build();
     }
 
-    private IndexInfo getIndexInfo(Mono<PlaylistVideoVo> playlistVideoVoMono) {
-        AtomicInteger totalDurationSeconds = new AtomicInteger(0);
+    private List<Index> getIndexList(PlaylistVideoVo playlistVideoVo) {
         List<CompletableFuture<Index>> futureList = new ArrayList<>();
-        PlaylistVideoVo playlistVideoVo = blockFromMono(playlistVideoVoMono);
 
-        List<Index> indexList = getIndexList(futureList, playlistVideoVo);
-
-        for (Index index : indexList) {
-            totalDurationSeconds.addAndGet(index.getDuration());
-        }
-
-        String nextPageToken = Optional.of(playlistVideoVo)
-                .map(PlaylistVideoVo::getNextPageToken)
-                .orElse(null);
-
-        return IndexInfo.builder()
-                .indexList(indexList)
-                .totalDuration(totalDurationSeconds.get())
-                .nextPageToken(nextPageToken)
-                .build();
-    }
-
-    private List<Index> getIndexList(List<CompletableFuture<Index>> futureList, PlaylistVideoVo playlistVideoVo) {
         for (PlaylistVideoItemVo itemVo : playlistVideoVo.getItems()) {
             if (youtubeUtil.isPrivacyStatusUnusable(itemVo)) {
                 continue;
@@ -282,15 +275,12 @@ public class LectureService {
     private Index getIndex(int index, String videoCode) {
         Video video = getSearchedVideoLast(videoCode);
 
-        if (!video.isUsable()) {
-            return null;
-        }
-
         return Index.builder()
                 .index(index)
                 .lectureTitle(unescapeHtml(video.getTitle()))
                 .thumbnail(video.getThumbnail())
                 .duration(video.getDuration())
+                .membership(video.isMembership())
                 .build();
     }
 
@@ -317,6 +307,19 @@ public class LectureService {
 
         Video video = youtubeUtil.getVideoFromMono(videoVoMono);
 
+        boolean isMembership = false;
+        long viewCount = -1;
+
+        if (video.getViewCount() == null) {
+            isMembership = true;
+        } else {
+            viewCount = video.getViewCount();
+        }
+
+        IndexInfo indexInfo = IndexInfo.builder()
+                .indexList(List.of(new Index(0, video.getThumbnail(), video.getTitle(), video.getDuration(), isMembership)))
+                .build();
+
         return VideoDetail.builder()
                 .lectureCode(videoCode)
                 .lectureTitle(unescapeHtml(video.getTitle()))
@@ -325,13 +328,15 @@ public class LectureService {
                 .duration(video.getDuration())
                 .playlist(false)
                 .enrolled(enrolledVideoSet.contains(videoCode))
-                .viewCount(video.getViewCount())
+                .viewCount(viewCount)
                 .publishedAt(video.getPublishedAt().toLocalDateTime().toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE))
                 .thumbnail(video.getThumbnail())
                 .reviews(reviewList)
                 .reviewCount(reviewList.size())
                 .rating(calculateAverageRating(reviewList))
                 .courses(courseBriefList)
+                .membership(isMembership)
+                .indexes(indexInfo)
                 .build();
     }
 
@@ -344,15 +349,6 @@ public class LectureService {
                 .mapToInt(ReviewBrief::getSubmittedRating)
                 .average()
                 .orElse(0.0);
-    }
-
-    public <T> T blockFromMono(Mono<T> vo) {
-        if (vo == null) {
-            log.warn("youtube data api 실행에 실패하였습니다.");
-            throw new RuntimeException();
-        } else {
-            return vo.block();
-        }
     }
 
     public String unescapeHtml(String input) {

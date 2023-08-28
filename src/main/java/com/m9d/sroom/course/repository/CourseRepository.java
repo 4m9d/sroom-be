@@ -153,7 +153,7 @@ public class CourseRepository {
         }
     }
 
-    public List<Video> getVideoIdAndIndex(Long playlistId) {
+    public List<Video> getVideoInfoFromPlaylistVideo(Long playlistId) {
         return jdbcTemplate.query(GET_VIDEO_ID_AND_INDEX_QUERY, ((rs, rowNum) -> Video.builder()
                 .videoId(rs.getLong("video_id"))
                 .index(rs.getInt("video_index"))

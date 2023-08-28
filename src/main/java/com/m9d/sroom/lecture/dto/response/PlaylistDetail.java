@@ -39,23 +39,14 @@ public class PlaylistDetail {
     @Schema(description = "재생목록 게시 날짜", example = "2022-12-31T23:59:59Z")
     private String publishedAt;
 
-    @Schema(description = "강의 개수", example = "20")
-    private int lectureCount;
-
     @Schema(description = "강의 평점", example = "4.3")
     private double rating;
 
     @Schema(description = "후기 개수", example = "44")
     private int reviewCount;
 
-    @Schema(description = "재생목록 재생시간", example = "11111")
-    private int duration;
-
     @Schema(description = "재생목록 썸네일", example = "https://i.ytimg.com/vi/Av9UFzl_wis/hqdefault.jpg")
     private String thumbnail;
-
-    @Schema(description = "강의 목차 정보")
-    private IndexInfo indexes;
 
     @Schema(description = "강의 후기 요약 정보")
     private List<ReviewBrief> reviews;

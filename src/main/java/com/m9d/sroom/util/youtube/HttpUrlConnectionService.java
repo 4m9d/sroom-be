@@ -2,7 +2,7 @@ package com.m9d.sroom.util.youtube;
 
 import com.google.gson.Gson;
 import com.m9d.sroom.lecture.exception.LectureNotFoundException;
-import com.m9d.sroom.util.youtube.resource.YoutubeResource;
+import com.m9d.sroom.util.youtube.resource.YoutubeReq;
 import com.m9d.sroom.util.youtube.vo.playlist.PlaylistVo;
 import com.m9d.sroom.util.youtube.vo.playlistitem.PlaylistVideoVo;
 import com.m9d.sroom.util.youtube.vo.search.SearchVo;
@@ -41,28 +41,28 @@ public class HttpUrlConnectionService implements YoutubeApi {
     }
 
     @Override
-    public Mono<SearchVo> getSearchVo(YoutubeResource resource) {
+    public Mono<SearchVo> getSearchVo(YoutubeReq resource) {
         return getYoutubeVo(resource, SearchVo.class);
     }
 
     @Override
-    public Mono<VideoVo> getVideoVo(YoutubeResource resource) {
+    public Mono<VideoVo> getVideoVo(YoutubeReq resource) {
         return getYoutubeVo(resource, VideoVo.class);
     }
 
     @Override
-    public Mono<PlaylistVo> getPlaylistVo(YoutubeResource resource) {
+    public Mono<PlaylistVo> getPlaylistVo(YoutubeReq resource) {
         return getYoutubeVo(resource, PlaylistVo.class);
     }
 
     @Override
-    public Mono<PlaylistVideoVo> getPlaylistVideoVo(YoutubeResource resource) {
+    public Mono<PlaylistVideoVo> getPlaylistVideoVo(YoutubeReq resource) {
         return getYoutubeVo(resource, PlaylistVideoVo.class);
     }
 
     @Override
-    public <T> Mono<T> getYoutubeVo(YoutubeResource resource, Class<T> resultClass) {
-        String url = buildYoutubeApiRequest(resource.getEndpoint(), resource.getParameters());
+    public <T> Mono<T> getYoutubeVo(YoutubeReq resource, Class<T> resultClass) {
+        String url = buildYoutubeApiRequest(resource.getEndPoint(), resource.getParameters());
 
         HttpURLConnection connection = establishConnection(url);
 

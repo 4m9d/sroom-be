@@ -36,7 +36,6 @@ public class AuthInterceptor implements HandlerInterceptor {
         if (auth == null) {
             return true;
         }
-        String token = request.getHeader("Authorization");
 
         if (StringUtils.equals(request.getMethod(), "OPTIONS")) {
             log.debug("if request options method is options, return true");
@@ -44,6 +43,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             return true;
         }
 
+        String token = request.getHeader("Authorization");
         if (token == null) {
             log.debug("No authorization token found");
             throw new NoAuthorizationTokenException();

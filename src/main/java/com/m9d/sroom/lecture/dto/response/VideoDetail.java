@@ -59,4 +59,11 @@ public class VideoDetail {
 
     @Schema(description = "멤버의 코스 리스트")
     private List<CourseBrief> courses;
+
+    @Schema(description = "회원 전용 강의 표시", example = "false")
+    @JsonProperty("is_members_only")
+    private boolean membership;
+
+    @Schema(description = "목차 정보")
+    private IndexInfo indexes;
 }

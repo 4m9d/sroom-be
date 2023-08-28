@@ -3,12 +3,14 @@ package com.m9d.sroom.util.youtube;
 import com.m9d.sroom.global.model.Playlist;
 import com.m9d.sroom.global.model.Video;
 import com.m9d.sroom.util.DateUtil;
+import com.m9d.sroom.util.youtube.resource.PlaylistItemReq;
 import com.m9d.sroom.util.youtube.resource.PlaylistReq;
 import com.m9d.sroom.util.youtube.resource.VideoReq;
 import com.m9d.sroom.util.youtube.vo.global.ThumbnailVo;
 import com.m9d.sroom.util.youtube.vo.playlist.PlaylistItemVo;
 import com.m9d.sroom.util.youtube.vo.playlist.PlaylistVo;
 import com.m9d.sroom.util.youtube.vo.playlistitem.PlaylistVideoItemVo;
+import com.m9d.sroom.util.youtube.vo.playlistitem.PlaylistVideoVo;
 import com.m9d.sroom.util.youtube.vo.video.VideoItemVo;
 import com.m9d.sroom.util.youtube.vo.video.VideoVo;
 import lombok.extern.slf4j.Slf4j;
@@ -55,6 +57,7 @@ public class YoutubeUtil {
     public static final String REQUEST_METHOD_GET = HttpMethod.GET.name();
     public static final String YOUTUBE_REQUEST_CONTENT_TYPE = "application/json";
     public static final int DEFAULT_INDEX_COUNT = 50;
+    public static final int MAX_PLAYLIST_ITEM = 5000;
 
     public static final String UNKNOWN_LANGUAGE = "unknown";
 
@@ -82,6 +85,15 @@ public class YoutubeUtil {
         return getVideoFromMono(videoVoMono);
     }
 
+    public PlaylistVideoVo getPlaylistItemWithBlocking(String playlistCode, String nextToken, int limit) {
+        Mono<PlaylistVideoVo> playlistVideoVoMono = youtubeApi.getPlaylistVideoVo(PlaylistItemReq.builder()
+                .playlistCode(playlistCode)
+                .nextPageToken(nextToken)
+                .limit(limit)
+                .build());
+        return safeGetVo(playlistVideoVoMono);
+    }
+
     public Playlist getPlaylistFromMono(Mono<PlaylistVo> playlistVoMono) {
         PlaylistItemVo itemVo = safeGetVo(playlistVoMono).getItems().get(FIRST_INDEX);
 
@@ -105,10 +117,10 @@ public class YoutubeUtil {
         } else {
             language = UNKNOWN_LANGUAGE;
         }
-        boolean videoUsable = true;
+        boolean membership = false;
         Long viewCount = itemVo.getStatistics().getViewCount();
-        if(viewCount == null){
-            videoUsable = false;
+        if (viewCount == null) {
+            membership = true;
         }
 
         return Video.builder()
@@ -123,7 +135,7 @@ public class YoutubeUtil {
                 .thumbnail(selectThumbnailInVo(itemVo.getSnippet().getThumbnails()))
                 .language(language)
                 .license(itemVo.getStatus().getLicense())
-                .usable(videoUsable)
+                .membership(membership)
                 .build();
     }
 

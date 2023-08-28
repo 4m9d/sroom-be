@@ -2,7 +2,7 @@ package com.m9d.sroom.global;
 
 import com.google.gson.Gson;
 import com.m9d.sroom.util.SroomTest;
-import com.m9d.sroom.util.youtube.resource.LectureListReq;
+import com.m9d.sroom.util.youtube.resource.SearchReq;
 import com.m9d.sroom.util.youtube.vo.search.SearchVo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -351,7 +351,7 @@ public class UtilTest extends SroomTest {
     @Test
     @DisplayName("web client non-block을 테스트합니다.")
     void testNonBlocking() throws Exception {
-        LectureListReq lectureListReq = LectureListReq.builder()
+        SearchReq lectureListReq = SearchReq.builder()
                 .keyword("네트워크")
                 .filter("all")
                 .limit(10)

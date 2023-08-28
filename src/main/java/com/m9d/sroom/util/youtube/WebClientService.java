@@ -8,7 +8,6 @@ import com.m9d.sroom.util.youtube.vo.video.VideoVo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
@@ -27,34 +26,34 @@ public class WebClientService implements YoutubeApi {
     private final WebClient webClient;
 
     @Override
-    public Mono<SearchVo> getSearchVo(YoutubeResource resource) {
+    public Mono<SearchVo> getSearchVo(YoutubeReq resource) {
         return getYoutubeVo(resource, SearchVo.class);
     }
 
     @Override
-    public Mono<VideoVo> getVideoVo(YoutubeResource resource) {
+    public Mono<VideoVo> getVideoVo(YoutubeReq resource) {
         return getYoutubeVo(resource, VideoVo.class);
     }
 
     @Override
-    public Mono<PlaylistVo> getPlaylistVo(YoutubeResource resource) {
+    public Mono<PlaylistVo> getPlaylistVo(YoutubeReq resource) {
         return getYoutubeVo(resource, PlaylistVo.class);
     }
 
     @Override
-    public Mono<PlaylistVideoVo> getPlaylistVideoVo(YoutubeResource resource) {
+    public Mono<PlaylistVideoVo> getPlaylistVideoVo(YoutubeReq resource) {
         return getYoutubeVo(resource, PlaylistVideoVo.class);
     }
 
-    public <T> Mono<T> getYoutubeVo(YoutubeResource resource, Class<T> resultClass) {
+    public <T> Mono<T> getYoutubeVo(YoutubeReq req, Class<T> resultClass) {
         return this.webClient
                 .get()
                 .uri(uriBuilder -> {
                     UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder.fromHttpUrl(baseUrl)
-                            .path(resource.getEndpoint())
+                            .path(req.getEndPoint())
                             .queryParam("key", googleCloudApiKey);
 
-                    resource.getParameters().forEach(uriComponentsBuilder::queryParam);
+                    req.getParameters().forEach(uriComponentsBuilder::queryParam);
 
                     return uriComponentsBuilder.build().toUri();
                 })

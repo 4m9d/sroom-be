@@ -1,5 +1,6 @@
 package com.m9d.sroom.lecture.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,4 +25,8 @@ public class Index {
 
     @Schema(description = "영상 길이", example = "44:23")
     private int duration;
+
+    @Schema(description = "회원 전용 강의 표시", example = "false")
+    @JsonProperty("is_members_only")
+    private boolean membership;
 }

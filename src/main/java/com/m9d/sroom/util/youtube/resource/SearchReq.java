@@ -8,8 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Builder
-@RequiredArgsConstructor
-public class LectureListReq implements YoutubeResource {
+public class SearchReq extends YoutubeReq {
 
     private final String keyword;
     private final int limit;
@@ -17,7 +16,9 @@ public class LectureListReq implements YoutubeResource {
     private final String pageToken;
     private final String type;
 
-    private static final String ENDPOINT = "/search";
+    {
+        endPoint = "/search";
+    }
 
     @Override
     public Map<String, String> getParameters() {
@@ -35,10 +36,5 @@ public class LectureListReq implements YoutubeResource {
         }
 
         return params;
-    }
-
-    @Override
-    public String getEndpoint() {
-        return ENDPOINT;
     }
 }

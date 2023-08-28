@@ -48,4 +48,6 @@ public class Video {
 
     private boolean usable;
 
+    private boolean membership;
+
 }

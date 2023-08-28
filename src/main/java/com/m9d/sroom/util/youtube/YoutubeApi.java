@@ -9,10 +9,10 @@ import reactor.core.publisher.Mono;
 
 public interface YoutubeApi {
 
-    Mono<SearchVo> getSearchVo(YoutubeResource resource);
-    Mono<VideoVo> getVideoVo(YoutubeResource resource);
-    Mono<PlaylistVo> getPlaylistVo(YoutubeResource resource);
-    Mono<PlaylistVideoVo> getPlaylistVideoVo(YoutubeResource resource);
+    Mono<SearchVo> getSearchVo(YoutubeReq resource);
+    Mono<VideoVo> getVideoVo(YoutubeReq resource);
+    Mono<PlaylistVo> getPlaylistVo(YoutubeReq resource);
+    Mono<PlaylistVideoVo> getPlaylistVideoVo(YoutubeReq resource);
 
-    <T> Mono<T> getYoutubeVo(YoutubeResource resource, Class<T> resultClass);
+    <T> Mono<T> getYoutubeVo(YoutubeReq resource, Class<T> resultClass);
 }
