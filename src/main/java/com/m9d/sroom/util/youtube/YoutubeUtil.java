@@ -108,7 +108,7 @@ public class YoutubeUtil {
                 .build();
     }
 
-    public Video getVideoFromMono(Mono<VideoVo> videoVoMono) {
+    public Video getVideoFromMono(Mono<VideoVo> videoVoMono) throws IndexOutOfBoundsException {
         VideoItemVo itemVo = safeGetVo(videoVoMono).getItems().get(FIRST_INDEX);
 
         String language;
