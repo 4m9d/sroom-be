@@ -9,6 +9,7 @@ import com.m9d.sroom.material.dto.response.Quiz;
 import com.m9d.sroom.material.dto.response.Summary;
 import com.m9d.sroom.material.exception.CourseIdInvalidParamException;
 import com.m9d.sroom.material.model.CourseQuiz;
+import com.m9d.sroom.material.model.QuizType;
 import com.m9d.sroom.material.repository.MaterialRepository;
 import com.m9d.sroom.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -92,10 +93,10 @@ public class MaterialService {
                 quiz.setCorrect(courseQuiz.isCorrect());
                 quiz.setSubmittedAt(DateUtil.dateFormat.format(courseQuiz.getSubmittedTime()));
 
-                translateNumToTF(quiz, courseQuiz);
             } else {
                 quiz.setSubmitted(false);
             }
+            translateNumToTF(quiz, courseQuizOpt);
         }
 
         return quizzes;
@@ -109,10 +110,17 @@ public class MaterialService {
         if (options.size() > 4) quiz.setSelectOption5(options.get(4));
     }
 
-    private void translateNumToTF(Quiz quiz, CourseQuiz courseQuiz) {
-        if(quiz.getType() == 3){
-            String answer = courseQuiz.getSubmittedAnswer().equals("0") ? "false" : "true";
-            quiz.setSubmittedAnswer(answer);
+    private void translateNumToTF(Quiz quiz, Optional<CourseQuiz> courseQuizOpt) {
+        if (quiz.getType() != QuizType.TRUE_FALSE.getValue()) {
+            return;
         }
+
+        if (courseQuizOpt.isPresent()) {
+            String submittedAnswer = courseQuizOpt.get().getSubmittedAnswer().equals("0") ? "false" : "true";
+            quiz.setSubmittedAnswer(submittedAnswer);
+        }
+
+        String answer = quiz.getAnswer().equals("0") ? "false" : "true";
+        quiz.setAnswer(answer);
     }
 }
