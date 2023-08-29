@@ -33,12 +33,28 @@ public class MaterialRepository {
 
     public List<Quiz> getQuizListByVideoId(Long videoId) {
         return jdbcTemplate.query(GET_QUIZZES_BY_VIDEO_ID,
-                (rs, rowNum) -> Quiz.builder()
-                        .id(rs.getLong("quiz_id"))
-                        .type(rs.getInt("type"))
-                        .question(rs.getString("question"))
-                        .answer(rs.getString("answer"))
-                        .build(), videoId);
+                (rs, rowNum) -> {
+                    int type = rs.getInt("type");
+                    String answer;
+
+                    switch (type) {
+                        case 1:
+                        case 3:
+                            answer = String.valueOf(rs.getInt("choice_answer"));
+                            break;
+                        case 2:
+                            answer = rs.getString("subjective_answer");
+                            break;
+                        default:
+                            answer = "";
+                    }
+                    return Quiz.builder()
+                            .id(rs.getLong("quiz_id"))
+                            .type(rs.getInt("type"))
+                            .question(rs.getString("question"))
+                            .answer(answer)
+                            .build();
+                }, videoId);
     }
 
     public List<String> getQuizOptionListByQuizId(Long quizId) {

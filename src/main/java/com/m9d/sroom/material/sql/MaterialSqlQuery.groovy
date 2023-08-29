@@ -10,7 +10,7 @@ class MaterialSqlQuery {
     """
 
     public static final String GET_QUIZZES_BY_VIDEO_ID = """
-        SELECT quiz_id, type, question, answer
+        SELECT quiz_id, type, question, subjective_answer, choice_answer
         FROM QUIZ 
         WHERE video_id = ?
     """
