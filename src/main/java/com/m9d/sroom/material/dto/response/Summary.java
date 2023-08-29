@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+
 @Data
-@Builder
 public class Summary {
 
     private String content;
@@ -14,4 +16,12 @@ public class Summary {
     private boolean modified;
 
     private String modifiedAt;
+
+    @Builder
+    public Summary(String content, boolean original, Timestamp timestamp) {
+        SimpleDateFormat simpleDateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        this.content = content;
+        this.modified = !original;
+        this.modifiedAt = simpleDateFormatter.format(timestamp);
+    }
 }

@@ -12,6 +12,7 @@ import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
 import com.m9d.sroom.lecture.dto.response.VideoBrief;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -262,5 +263,13 @@ public class CourseRepository {
                 .lastViewDuration(rs.getInt("start_time"))
                 .videoDuration(rs.getInt("duration"))
                 .build(), courseId, section);
+    }
+
+    public Long getCourseVideoId(Long courseId, Long videoId) {
+        try {
+            return jdbcTemplate.queryForObject(FIND_COURSE_VIDEO_ID, Long.class, courseId, videoId);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return null;
+        }
     }
 }
