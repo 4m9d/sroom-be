@@ -18,10 +18,10 @@ public class Summary {
     private String modifiedAt;
 
     @Builder
-    public Summary(String content, boolean original, Timestamp timestamp) {
+    public Summary(String content, boolean modified, Timestamp timestamp) {
         SimpleDateFormat simpleDateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         this.content = content;
-        this.modified = !original;
+        this.modified = modified;
         this.modifiedAt = simpleDateFormatter.format(timestamp);
     }
 }

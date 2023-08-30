@@ -28,7 +28,7 @@ class MaterialSqlQuery {
     """
 
     public static final String GET_SUMMARY_BY_ID = """
-        SELECT content, updated_time, is_original
+        SELECT content, updated_time, is_modified
         FROM SUMMARY 
         WHERE summary_id = ?
     """

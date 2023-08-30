@@ -80,7 +80,7 @@ public class MaterialRepository {
         return jdbcTemplate.queryForObject(GET_SUMMARY_BY_ID,
                 (rs, rowNum) -> new Summary(
                         rs.getString("content"),
-                        rs.getBoolean("is_original"),
+                        rs.getBoolean("is_modified"),
                         rs.getTimestamp("updated_time")
                 ), summaryId);
     }
