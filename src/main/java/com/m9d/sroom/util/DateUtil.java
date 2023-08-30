@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -17,8 +18,9 @@ public class DateUtil {
     public static final int SECONDS_IN_MINUTE = 60;
     public static final int DAYS_IN_WEEK = 7;
 
-    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneId.of("Asia/Seoul"));
-    public static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Seoul"));
+    public static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneId.of("Asia/Seoul"));
+    public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Seoul"));
+    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     public Long convertTimeToSeconds(String time) {
         String[] parts = time.split(":");
@@ -42,7 +44,7 @@ public class DateUtil {
 
     public  Date convertStringToDate(String strDate) {
         try {
-            java.time.LocalDate localDate = LocalDate.parse(strDate, DATE_FORMATTER);
+            java.time.LocalDate localDate = LocalDate.parse(strDate, dateFormatter);
             return java.sql.Date.valueOf(localDate);
         } catch (DateTimeParseException e) {
             throw new IllegalArgumentException("The date format you entered is invalid.", e);
@@ -69,6 +71,6 @@ public class DateUtil {
     }
 
     public String convertISOToString(String publishTime) {
-        return ZonedDateTime.parse(publishTime).format(DATE_TIME_FORMATTER);
+        return ZonedDateTime.parse(publishTime).format(dateTimeFormatter);
     }
 }

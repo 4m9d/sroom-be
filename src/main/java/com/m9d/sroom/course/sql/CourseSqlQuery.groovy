@@ -6,7 +6,7 @@ class CourseSqlQuery {
     SELECT l.channel
     FROM LECTURE l
     WHERE l.course_id = ?
-    """;
+    """
 
     public static final String GET_TOTAL_LECTURE_COUNT_BY_COURSE_ID_QUERY = """
     SELECT COUNT(1) as lecture_count
@@ -200,5 +200,12 @@ class CourseSqlQuery {
 
     public static final String GET_LAST_INSERT_ID_QUERY = """
     SELECT LAST_INSERT_ID()
+    """
+
+    public static final String FIND_COURSE_VIDEO_ID = """
+    SELECT course_video_id
+    FROM COURSEVIDEO
+    WHERE course_id = ?
+    AND video_id = ?
     """
 }
