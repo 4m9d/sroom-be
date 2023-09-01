@@ -41,7 +41,7 @@ public class MaterialService {
 
         validateCourseAndVideoForMember(memberId, courseId, videoId);
 
-        Long summaryId = materialRepository.findSummaryIdFromCourseVideo(courseId, videoId);
+        Long summaryId = materialRepository.findSummaryIdByCourseAndVideoId(courseId, videoId);
 
         if (summaryId == null) {
             material = Material.builder()
@@ -127,7 +127,7 @@ public class MaterialService {
             materialRepository.updateSummary(summaryId, newContent);
         } else {
             summaryId = materialRepository.saveSummaryModified(videoId, newContent);
-            materialRepository.updateSummaryIdInCourseVideo(videoId, courseId, summaryId);
+            materialRepository.updateSummaryIdByCourseVideo(videoId, courseId, summaryId);
         }
 
         return SummaryId.builder()

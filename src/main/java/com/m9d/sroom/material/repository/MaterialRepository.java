@@ -25,7 +25,7 @@ public class MaterialRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long findSummaryIdFromCourseVideo(Long courseId, Long videoId) {
+    public Long findSummaryIdByCourseAndVideoId(Long courseId, Long videoId) {
         try {
             return jdbcTemplate.queryForObject(FIND_SUMMARY_ID_FROM_COURSE_VIDEO_QUERY, Long.class, courseId, videoId);
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -113,7 +113,7 @@ public class MaterialRepository {
         return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
     }
 
-    public void updateSummaryIdInCourseVideo(Long videoId, long courseId, long summaryId) {
+    public void updateSummaryIdByCourseVideo(Long videoId, long courseId, long summaryId) {
         jdbcTemplate.update(UPDATE_SUMMARY_ID_QUERY, summaryId, courseId, videoId);
     }
 }
