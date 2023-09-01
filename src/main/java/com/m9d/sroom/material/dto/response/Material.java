@@ -15,5 +15,5 @@ public class Material {
 
     private List<Quiz> quizzes;
 
-    private Summary summary;
+    private SummaryBrief summaryBrief;
 }

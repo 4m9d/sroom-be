@@ -267,7 +267,7 @@ public class CourseRepository {
 
     public Long getCourseVideoId(Long courseId, Long videoId) {
         try {
-            return jdbcTemplate.queryForObject(FIND_COURSE_VIDEO_ID, Long.class, courseId, videoId);
+            return jdbcTemplate.queryForObject(FIND_COURSE_VIDEO_ID_QUERY, Long.class, courseId, videoId);
         } catch (IncorrectResultSizeDataAccessException e) {
             return null;
         }

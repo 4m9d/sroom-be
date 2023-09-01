@@ -202,7 +202,7 @@ class CourseSqlQuery {
     SELECT LAST_INSERT_ID()
     """
 
-    public static final String FIND_COURSE_VIDEO_ID = """
+    public static final String FIND_COURSE_VIDEO_ID_QUERY = """
     SELECT course_video_id
     FROM COURSEVIDEO
     WHERE course_id = ?

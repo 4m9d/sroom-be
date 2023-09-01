@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
 @Data
-public class Summary {
+public class SummaryBrief {
 
     private String content;
 
@@ -18,7 +18,7 @@ public class Summary {
     private String modifiedAt;
 
     @Builder
-    public Summary(String content, boolean modified, Timestamp timestamp) {
+    public SummaryBrief(String content, boolean modified, Timestamp timestamp) {
         SimpleDateFormat simpleDateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         this.content = content;
         this.modified = modified;
