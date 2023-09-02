@@ -8,7 +8,5 @@ import lombok.Setter;
 @Setter
 public class SummaryEdit {
 
-    private Long course_id;
-
     private String content;
 }

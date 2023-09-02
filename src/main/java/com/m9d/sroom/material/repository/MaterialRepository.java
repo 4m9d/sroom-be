@@ -93,16 +93,16 @@ public class MaterialRepository {
                 ), summaryId);
     }
 
-    public Optional<Summary> findSummaryByCourseVideo(long courseId, Long videoId) {
+    public Optional<Summary> findSummaryByCourseVideoId(Long courseVideoId) {
         try {
             Summary summary = jdbcTemplate.queryForObject(FIND_SUMMARY_BY_COURSE_VIDEO_QUERY,
                     (rs, rowNum) -> Summary.builder()
                             .id(rs.getLong("summary_id"))
                             .modified(rs.getBoolean("is_modified"))
-                            .videoId(videoId)
-                            .courseId(courseId)
+                            .videoId(rs.getLong("video_id"))
+                            .courseId(rs.getLong("course_id"))
                             .updatedAt(rs.getTimestamp("updated_time"))
-                            .build(), courseId, videoId);
+                            .build(), courseVideoId);
             return Optional.ofNullable(summary);
         } catch (IncorrectResultSizeDataAccessException e) {
             return Optional.empty();
@@ -119,7 +119,7 @@ public class MaterialRepository {
         return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
     }
 
-    public void updateSummaryIdByCourseVideo(Long videoId, long courseId, long summaryId) {
-        jdbcTemplate.update(UPDATE_SUMMARY_ID_QUERY, summaryId, courseId, videoId);
+    public void updateSummaryIdByCourseVideoId(Long courseVideoId, long summaryId) {
+        jdbcTemplate.update(UPDATE_SUMMARY_ID_QUERY, summaryId, courseVideoId);
     }
 }

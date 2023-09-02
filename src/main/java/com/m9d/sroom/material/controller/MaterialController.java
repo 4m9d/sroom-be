@@ -35,12 +35,12 @@ public class MaterialController {
     }
 
     @Auth
-    @PutMapping("/summaries/lectures/{videoId}")
+    @PutMapping("/materials/lectures/{courseVideoId}")
     @Tag(name = "강의 수강")
     @Operation(summary = "강의 노트 수정하기", description = "영상 ID를 사용해 저장된 강의노트를 수정합니다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 강의 노트를 업데이트 했습니다.")
-    public SummaryId updateSummaries(@PathVariable("videoId") Long videoId, @RequestBody SummaryEdit summaryEdit) {
+    public SummaryId updateSummaries(@PathVariable("courseVideoId") Long courseVideoId, @RequestBody SummaryEdit summaryEdit) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
-        return materialService.updateSummary(memberId, videoId, summaryEdit);
+        return materialService.updateSummary(memberId, courseVideoId, summaryEdit.getContent());
     }
 }

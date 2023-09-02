@@ -1,19 +1,16 @@
 package com.m9d.sroom.material.service;
 
-import com.m9d.sroom.course.exception.CourseNotFoundException;
 import com.m9d.sroom.course.exception.CourseNotMatchException;
 import com.m9d.sroom.course.exception.CourseVideoNotFoundException;
 import com.m9d.sroom.course.repository.CourseRepository;
 import com.m9d.sroom.global.model.CourseVideo;
 import com.m9d.sroom.global.model.QuizOption;
-import com.m9d.sroom.material.dto.request.SummaryEdit;
 import com.m9d.sroom.material.dto.response.SummaryId;
 import com.m9d.sroom.material.exception.SummaryNotFoundException;
 import com.m9d.sroom.material.model.MaterialStatus;
 import com.m9d.sroom.material.dto.response.Material;
 import com.m9d.sroom.material.dto.response.Quiz;
 import com.m9d.sroom.material.dto.response.SummaryBrief;
-import com.m9d.sroom.material.exception.CourseIdInvalidParamException;
 import com.m9d.sroom.material.model.CourseQuiz;
 import com.m9d.sroom.material.model.QuizType;
 import com.m9d.sroom.global.model.Summary;
@@ -128,26 +125,18 @@ public class MaterialService {
         quiz.setAnswer(answer);
     }
 
-    public SummaryId updateSummary(Long memberId, Long videoId, SummaryEdit summaryEdit) {
-        long courseId = summaryEdit.getCourse_id();
-        String newContent = summaryEdit.getContent();
+    public SummaryId updateSummary(Long memberId, Long courseVideoId, String content) {
+        validateCourseVideoForMember(memberId, courseVideoId);
 
-        validateCourseAndVideoForMember(memberId, courseId, videoId);
-
-        Optional<Summary> originalSummaryOpt = materialRepository.findSummaryByCourseVideo(courseId, videoId);
-        if (originalSummaryOpt.isEmpty()) {
-            throw new SummaryNotFoundException();
-        }
-
-        Summary originalSummary = originalSummaryOpt.get();
+        Summary originalSummary = getSummary(courseVideoId);
         long summaryId;
 
         if (originalSummary.isModified()) {
             summaryId = originalSummary.getId();
-            materialRepository.updateSummary(summaryId, newContent);
+            materialRepository.updateSummary(summaryId, content);
         } else {
-            summaryId = materialRepository.saveSummaryModified(videoId, newContent);
-            materialRepository.updateSummaryIdByCourseVideo(videoId, courseId, summaryId);
+            summaryId = materialRepository.saveSummaryModified(originalSummary.getVideoId(), content);
+            materialRepository.updateSummaryIdByCourseVideoId(courseVideoId, summaryId);
         }
 
         return SummaryId.builder()
@@ -155,23 +144,25 @@ public class MaterialService {
                 .build();
     }
 
-    private void validateCourseAndVideoForMember(Long memberId, Long courseId, Long videoId) {
-        validateCourseIdNull(courseId);
-
-        Long originMemberId = courseRepository.getMemberIdByCourseId(courseId);
-        if (!originMemberId.equals(memberId)) {
-            throw new CourseNotFoundException();
+    private void validateCourseVideoForMember(Long memberId, Long courseVideoId) {
+        Optional<CourseVideo> courseVideoOptional = courseRepository.findCourseVideoById(courseVideoId);
+        if (courseVideoOptional.isEmpty()) {
+            throw new CourseVideoNotFoundException();
         }
 
-        Long courseVideoId = courseRepository.findCourseVideoId(courseId, videoId);
-        if (courseVideoId == null) {
-            throw new CourseVideoNotFoundException();
+        CourseVideo courseVideo = courseVideoOptional.get();
+        if (!courseVideo.getMemberId().equals(memberId)) {
+            throw new CourseNotMatchException();
         }
     }
 
-    private void validateCourseIdNull(Long courseId) {
-        if (courseId == null) {
-            throw new CourseIdInvalidParamException();
+    private Summary getSummary(Long courseVideoId) {
+        Optional<Summary> originalSummaryOpt = materialRepository.findSummaryByCourseVideoId(courseVideoId);
+        if (originalSummaryOpt.isEmpty()) {
+            throw new SummaryNotFoundException();
         }
+
+        Summary originalSummary = originalSummaryOpt.get();
+        return originalSummary;
     }
 }
