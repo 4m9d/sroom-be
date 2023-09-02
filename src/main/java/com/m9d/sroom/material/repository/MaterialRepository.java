@@ -1,9 +1,10 @@
 package com.m9d.sroom.material.repository;
 
+import com.m9d.sroom.global.model.QuizOption;
 import com.m9d.sroom.material.dto.response.Quiz;
 import com.m9d.sroom.material.dto.response.SummaryBrief;
 import com.m9d.sroom.material.model.CourseQuiz;
-import com.m9d.sroom.material.model.Summary;
+import com.m9d.sroom.global.model.Summary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -25,9 +26,9 @@ public class MaterialRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long findSummaryIdByCourseAndVideoId(Long courseId, Long videoId) {
+    public Long findSummaryIdByCourseVideoId(Long courseVideoId) {
         try {
-            return jdbcTemplate.queryForObject(FIND_SUMMARY_ID_FROM_COURSE_VIDEO_QUERY, Long.class, courseId, videoId);
+            return jdbcTemplate.queryForObject(FIND_SUMMARY_ID_FROM_COURSE_VIDEO_QUERY, Long.class, courseVideoId);
         } catch (IncorrectResultSizeDataAccessException e) {
             return null;
         }

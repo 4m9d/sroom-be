@@ -1,8 +1,11 @@
 package com.m9d.sroom.material.service;
 
 import com.m9d.sroom.course.exception.CourseNotFoundException;
+import com.m9d.sroom.course.exception.CourseNotMatchException;
 import com.m9d.sroom.course.exception.CourseVideoNotFoundException;
 import com.m9d.sroom.course.repository.CourseRepository;
+import com.m9d.sroom.global.model.CourseVideo;
+import com.m9d.sroom.global.model.QuizOption;
 import com.m9d.sroom.material.dto.request.SummaryEdit;
 import com.m9d.sroom.material.dto.response.SummaryId;
 import com.m9d.sroom.material.exception.SummaryNotFoundException;
@@ -13,12 +16,13 @@ import com.m9d.sroom.material.dto.response.SummaryBrief;
 import com.m9d.sroom.material.exception.CourseIdInvalidParamException;
 import com.m9d.sroom.material.model.CourseQuiz;
 import com.m9d.sroom.material.model.QuizType;
-import com.m9d.sroom.material.model.Summary;
+import com.m9d.sroom.global.model.Summary;
 import com.m9d.sroom.material.repository.MaterialRepository;
 import com.m9d.sroom.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,22 +38,22 @@ public class MaterialService {
         this.courseRepository = courseRepository;
     }
 
-    public Material getMaterials(Long memberId, Long courseId, Long videoId) {
+    public Material getMaterials(Long memberId, Long courseVideoId) {
         Material material;
         List<Quiz> quizList;
         SummaryBrief summaryBrief;
 
-        validateCourseAndVideoForMember(memberId, courseId, videoId);
+        CourseVideo courseVideo = getCourseVideo(courseVideoId);
 
-        Long summaryId = materialRepository.findSummaryIdByCourseAndVideoId(courseId, videoId);
+        validateCourseVideoIdForMember(memberId, courseVideo);
 
-        if (summaryId == null) {
+        if (courseVideo.getSummaryId() == null) {
             material = Material.builder()
                     .status(MaterialStatus.CREATING.getValue())
                     .build();
         } else {
-            quizList = getQuizList(courseId, videoId);
-            summaryBrief = materialRepository.getSummaryById(summaryId);
+            quizList = getQuizList(courseVideo.getCourseId(), courseVideo.getVideoId());
+            summaryBrief = materialRepository.getSummaryById(courseVideo.getSummaryId());
 
             material = Material.builder()
                     .status(MaterialStatus.CREATED.getValue())
@@ -60,6 +64,22 @@ public class MaterialService {
         }
 
         return material;
+    }
+
+    private CourseVideo getCourseVideo(Long courseVideoId) {
+        Optional<CourseVideo> courseVideoOpt = courseRepository.findCourseVideoById(courseVideoId);
+
+        if (courseVideoOpt.isEmpty()) {
+            throw new CourseVideoNotFoundException();
+        }
+
+        return courseVideoOpt.get();
+    }
+
+    private void validateCourseVideoIdForMember(Long memberId, CourseVideo courseVideo) {
+        if (!courseVideo.getMemberId().equals(memberId)) {
+            throw new CourseNotMatchException();
+        }
     }
 
     private List<Quiz> getQuizList(Long courseId, Long videoId) {
@@ -143,7 +163,7 @@ public class MaterialService {
             throw new CourseNotFoundException();
         }
 
-        Long courseVideoId = courseRepository.getCourseVideoId(courseId, videoId);
+        Long courseVideoId = courseRepository.findCourseVideoId(courseId, videoId);
         if (courseVideoId == null) {
             throw new CourseVideoNotFoundException();
         }

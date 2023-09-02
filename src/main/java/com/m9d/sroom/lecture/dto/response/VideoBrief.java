@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 
-@Schema(description = "수강 페이지 사이드바에 쓰이는비디오의 요약 정보")
+@Schema(description = "수강 페이지 사이드바에 쓰이는 비디오의 요약 정보")
 @Data
 @Builder
 public class VideoBrief {
@@ -15,6 +15,9 @@ public class VideoBrief {
 
     @Schema(description = "비디오의 인덱스", example = "1")
     private int videoIndex;
+
+    @Schema(description = "비디오의 COURSEVIDEO 테이블 PK", example = "123")
+    private Long courseVideoId;
 
     @Schema(description = "비디오가 제공되는 채널", example = "발라더 손경식")
     private String channel;

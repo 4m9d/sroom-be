@@ -9,8 +9,11 @@ import lombok.Data;
 @Builder
 public class LastVideoInfo {
 
-    @Schema(description = "비디오의 고유 식별자", example = "2023")
+    @Schema(description = "비디오의 고유 식별자", example = "20")
     private Long videoId;
+
+    @Schema(description = "비디오의 COURSEVIDEO 테이블 PK", example = "11")
+    private Long courseVideoId;
 
     @Schema(description = "비디오의 제목", example = "자바 스프링 기초")
     private String videoTitle;
