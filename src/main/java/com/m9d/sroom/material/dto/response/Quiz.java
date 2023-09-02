@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Builder
 public class Quiz {
@@ -14,15 +16,7 @@ public class Quiz {
 
     private String question;
 
-    private String selectOption1;
-
-    private String selectOption2;
-
-    private String selectOption3;
-
-    private String selectOption4;
-
-    private String selectOption5;
+    private List<String> options;
 
     @JsonProperty("is_submitted")
     private boolean submitted;

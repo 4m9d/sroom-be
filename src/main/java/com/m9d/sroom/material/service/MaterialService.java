@@ -66,8 +66,8 @@ public class MaterialService {
         List<Quiz> quizzes = materialRepository.getQuizListByVideoId(videoId);
 
         for (Quiz quiz : quizzes) {
-            List<String> options = materialRepository.getQuizOptionListByQuizId(quiz.getId());
-            setOptionsToQuiz(quiz, options);
+            List<QuizOption> options = materialRepository.getQuizOptionListByQuizId(quiz.getId());
+            setQuizOptions(quiz, options);
 
             Optional<CourseQuiz> courseQuizOpt = materialRepository.findCourseQuizInfo(quiz.getId(), videoId, courseId);
             if (courseQuizOpt.isPresent()) {
@@ -86,12 +86,12 @@ public class MaterialService {
         return quizzes;
     }
 
-    private void setOptionsToQuiz(Quiz quiz, List<String> options) {
-        if (options.size() > 0) quiz.setSelectOption1(options.get(0));
-        if (options.size() > 1) quiz.setSelectOption2(options.get(1));
-        if (options.size() > 2) quiz.setSelectOption3(options.get(2));
-        if (options.size() > 3) quiz.setSelectOption4(options.get(3));
-        if (options.size() > 4) quiz.setSelectOption5(options.get(4));
+    private void setQuizOptions(Quiz quiz, List<QuizOption> options) {
+        List<String> optionList = new ArrayList<>(5);
+        for (QuizOption option : options) {
+            optionList.add(option.getIndex(), option.getOptionText());
+        }
+        quiz.setOptions(optionList);
     }
 
     private void translateNumToTF(Quiz quiz, Optional<CourseQuiz> courseQuizOpt) {

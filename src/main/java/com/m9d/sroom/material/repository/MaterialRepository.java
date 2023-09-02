@@ -59,8 +59,13 @@ public class MaterialRepository {
                 }, videoId);
     }
 
-    public List<String> getQuizOptionListByQuizId(Long quizId) {
-        return jdbcTemplate.queryForList(GET_OPTIONS_BY_QUIZ_ID_QUERY, String.class, quizId);
+    public List<QuizOption> getQuizOptionListByQuizId(Long quizId) {
+        return jdbcTemplate.query(GET_OPTIONS_BY_QUIZ_ID_QUERY, (rs, rowNum) -> QuizOption.builder()
+                .quizOptionId(rs.getLong("quiz_option_id"))
+                .quizId(quizId)
+                .optionText(rs.getString("option_text"))
+                .index(rs.getInt("option_index"))
+                .build(), quizId);
     }
 
     public Optional<CourseQuiz> findCourseQuizInfo(Long quizId, Long videoId, Long courseId) {
