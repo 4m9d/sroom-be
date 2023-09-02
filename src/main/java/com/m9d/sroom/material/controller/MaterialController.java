@@ -1,7 +1,9 @@
 package com.m9d.sroom.material.controller;
 
 import com.m9d.sroom.material.dto.request.CourseId;
+import com.m9d.sroom.material.dto.request.SummaryEdit;
 import com.m9d.sroom.material.dto.response.Material;
+import com.m9d.sroom.material.dto.response.SummaryId;
 import com.m9d.sroom.material.service.MaterialService;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
@@ -12,10 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,5 +32,15 @@ public class MaterialController {
     public Material getMaterials(@PathVariable("videoId") Long videoId, @RequestBody CourseId courseId) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
         return materialService.getMaterials(memberId, courseId.getCourse_id(), videoId);
+    }
+
+    @Auth
+    @PutMapping("/summaries/lectures/{videoId}")
+    @Tag(name = "강의 수강")
+    @Operation(summary = "강의 노트 수정하기", description = "영상 ID를 사용해 저장된 강의노트를 수정합니다.")
+    @ApiResponse(responseCode = "200", description = "성공적으로 강의 노트를 업데이트 했습니다.")
+    public SummaryId updateSummaries(@PathVariable("videoId") Long videoId, @RequestBody SummaryEdit summaryEdit) {
+        Long memberId = jwtUtil.getMemberIdFromRequest();
+        return materialService.updateSummary(memberId, videoId, summaryEdit);
     }
 }
