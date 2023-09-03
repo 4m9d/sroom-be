@@ -1,4 +1,4 @@
-package com.m9d.sroom.material.model;
+package com.m9d.sroom.global.model;
 
 
 import lombok.Builder;

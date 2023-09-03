@@ -25,22 +25,22 @@ public class MaterialController {
     private final MaterialService materialService;
 
     @Auth
-    @GetMapping("/materials/lectures/{videoId}")
+    @GetMapping("/materials/lectures/{courseVideoId}")
     @Tag(name = "강의 수강")
     @Operation(summary = "강의자료 불러오기", description = "영상 ID를 사용해 저장된 강의노트, 퀴즈를 불러옵니다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 강의 자료를 불러왔습니다.", content = @Content(schema = @Schema(implementation = Material.class)))
-    public Material getMaterials(@PathVariable("videoId") Long videoId, @RequestBody CourseId courseId) {
+    public Material getMaterials(@PathVariable("courseVideoId") Long courseVideoId) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
-        return materialService.getMaterials(memberId, courseId.getCourse_id(), videoId);
+        return materialService.getMaterials(memberId, courseVideoId);
     }
 
     @Auth
-    @PutMapping("/summaries/lectures/{videoId}")
+    @PutMapping("/materials/lectures/{courseVideoId}")
     @Tag(name = "강의 수강")
     @Operation(summary = "강의 노트 수정하기", description = "영상 ID를 사용해 저장된 강의노트를 수정합니다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 강의 노트를 업데이트 했습니다.")
-    public SummaryId updateSummaries(@PathVariable("videoId") Long videoId, @RequestBody SummaryEdit summaryEdit) {
+    public SummaryId updateSummaries(@PathVariable("courseVideoId") Long courseVideoId, @RequestBody SummaryEdit summaryEdit) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
-        return materialService.updateSummary(memberId, videoId, summaryEdit);
+        return materialService.updateSummary(memberId, courseVideoId, summaryEdit.getContent());
     }
 }

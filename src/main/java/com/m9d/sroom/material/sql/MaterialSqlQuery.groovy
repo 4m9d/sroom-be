@@ -5,8 +5,7 @@ class MaterialSqlQuery {
     public static final String FIND_SUMMARY_ID_FROM_COURSE_VIDEO_QUERY = """
         SELECT summary_id 
         FROM COURSEVIDEO 
-        WHERE course_id = ? 
-        AND video_id = ?
+        WHERE course_video_id = ?
     """
 
     public static final String GET_QUIZZES_BY_VIDEO_ID_QUERY = """
@@ -16,9 +15,10 @@ class MaterialSqlQuery {
     """
 
     public static final String GET_OPTIONS_BY_QUIZ_ID_QUERY = """
-        SELECT option_text
+        SELECT quiz_option_id, option_text, option_index
         FROM QUIZ_OPTION
         WHERE quiz_id = ?
+        ORDER BY option_index
     """
 
     public static final String GET_COURSE_QUIZ_INFO_QUERY = """
@@ -34,12 +34,11 @@ class MaterialSqlQuery {
     """
 
     public static final String FIND_SUMMARY_BY_COURSE_VIDEO_QUERY = """
-        SELECT cv.summary_id, s.is_modified, s.updated_time
+        SELECT cv.summary_id, s.is_modified, s.updated_time, cv.course_id, cv.video_id
         FROM COURSEVIDEO cv
         INNER JOIN SUMMARY s
         ON s.summary_id = cv.summary_id
-        WHERE cv.course_id = ?
-        AND cv.video_id = ?
+        WHERE cv.course_video_id = ?
     """
 
     public static final String UPDATE_SUMMARY_QUERY = """
@@ -56,7 +55,6 @@ class MaterialSqlQuery {
     public static final String UPDATE_SUMMARY_ID_QUERY = """
         UPDATE COURSEVIDEO
         SET summary_id = ?
-        WHERE course_id = ?
-        AND video_id = ?
+        WHERE course_video_id = ?
     """
 }
