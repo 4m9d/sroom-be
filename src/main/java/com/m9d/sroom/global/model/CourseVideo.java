@@ -32,4 +32,6 @@ public class CourseVideo {
     private Long memberId;
 
     private Timestamp lastViewTime;
+
+    private int maxDuration;
 }

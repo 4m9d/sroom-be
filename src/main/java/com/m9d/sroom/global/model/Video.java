@@ -50,4 +50,10 @@ public class Video {
 
     private boolean membership;
 
+    private Long summaryId;
+
+    private boolean available;
+
+    private boolean chapterUse;
+
 }

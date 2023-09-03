@@ -1,9 +1,7 @@
 package com.m9d.sroom.course.repository;
 
-import com.m9d.sroom.global.model.Course;
-import com.m9d.sroom.global.model.Playlist;
+import com.m9d.sroom.global.model.*;
 import com.m9d.sroom.course.dto.response.CourseInfo;
-import com.m9d.sroom.global.model.Video;
 import com.m9d.sroom.course.exception.CourseNotFoundException;
 import com.m9d.sroom.course.exception.CourseVideoNotFoundException;
 import com.m9d.sroom.course.sql.CourseSqlQuery;
@@ -17,10 +15,13 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.m9d.sroom.course.sql.CourseSqlQuery.*;
+import static com.m9d.sroom.lecture.sql.LectureSqlQuery.*;
 
 import java.util.HashSet;
 import java.util.List;
@@ -116,34 +117,42 @@ public class CourseRepository {
     }
 
     public Optional<Playlist> findPlaylist(String lectureCode) {
-        Playlist playlist = queryForObjectOrNull(FIND_PLAYLIST_QUERY, (rs, rowNum) -> Playlist.builder()
-                .playlistId(rs.getLong("playlist_id"))
-                .title(rs.getString("title"))
-                .channel(rs.getString("channel"))
-                .description(rs.getString("description"))
-                .duration(rs.getInt("duration"))
-                .thumbnail(rs.getString("thumbnail"))
-                .updatedAt(rs.getTimestamp("updated_at"))
-                .build(), lectureCode);
-        return Optional.ofNullable(playlist);
+        try {
+            Playlist playlist = queryForObjectOrNull(FIND_PLAYLIST_QUERY, (rs, rowNum) -> Playlist.builder()
+                    .playlistId(rs.getLong("playlist_id"))
+                    .title(rs.getString("title"))
+                    .channel(rs.getString("channel"))
+                    .description(rs.getString("description"))
+                    .duration(rs.getInt("duration"))
+                    .thumbnail(rs.getString("thumbnail"))
+                    .updatedAt(rs.getTimestamp("updated_at"))
+                    .build(), lectureCode);
+            return Optional.ofNullable(playlist);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     public Optional<Video> findVideo(String lectureCode) {
-        Video video = queryForObjectOrNull(FIND_VIDEO_QUERY, (rs, rowNum) -> Video.builder()
-                .videoId(rs.getLong("video_id"))
-                .videoCode(rs.getString("video_code"))
-                .channel(rs.getString("channel"))
-                .thumbnail(rs.getString("thumbnail"))
-                .language(rs.getString("language"))
-                .license(rs.getString("license"))
-                .description(rs.getString("description"))
-                .duration(rs.getInt("duration"))
-                .viewCount(rs.getLong("view_count"))
-                .title(rs.getString("title"))
-                .updatedAt(rs.getTimestamp("updated_at"))
-                .publishedAt(rs.getTimestamp("published_at"))
-                .build(), lectureCode);
-        return Optional.ofNullable(video);
+        try {
+            Video video = queryForObjectOrNull(FIND_VIDEO_QUERY, (rs, rowNum) -> Video.builder()
+                    .videoId(rs.getLong("video_id"))
+                    .videoCode(rs.getString("video_code"))
+                    .channel(rs.getString("channel"))
+                    .thumbnail(rs.getString("thumbnail"))
+                    .language(rs.getString("language"))
+                    .license(rs.getString("license"))
+                    .description(rs.getString("description"))
+                    .duration(rs.getInt("duration"))
+                    .viewCount(rs.getLong("view_count"))
+                    .title(rs.getString("title"))
+                    .updatedAt(rs.getTimestamp("updated_at"))
+                    .publishedAt(rs.getTimestamp("published_at"))
+                    .build(), lectureCode);
+            return Optional.ofNullable(video);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     private <T> T queryForObjectOrNull(String sql, RowMapper<T> rowMapper, Object... args) {
@@ -246,6 +255,7 @@ public class CourseRepository {
                     .videoCode(rs.getString("video_code"))
                     .channel(rs.getString("channel"))
                     .lastViewDuration(rs.getInt("start_time"))
+                    .courseVideoId(rs.getLong("course_video_id"))
                     .build(), courseId);
         } catch (EmptyResultDataAccessException e) {
             throw new CourseVideoNotFoundException();
@@ -262,14 +272,82 @@ public class CourseRepository {
                 .completed(rs.getBoolean("is_complete"))
                 .lastViewDuration(rs.getInt("start_time"))
                 .videoDuration(rs.getInt("duration"))
+                .courseVideoId(rs.getLong("course_video_id"))
                 .build(), courseId, section);
     }
 
-    public Long getCourseVideoId(Long courseId, Long videoId) {
+    public Long findCourseVideoId(Long courseId, Long videoId) {
         try {
             return jdbcTemplate.queryForObject(FIND_COURSE_VIDEO_ID_QUERY, Long.class, courseId, videoId);
         } catch (IncorrectResultSizeDataAccessException e) {
             return null;
         }
+    }
+
+    public Long findCourseIdByCourseVideoId(Long courseVideoId) {
+        try {
+            return jdbcTemplate.queryForObject(FIND_COURSE_ID_BY_COURSE_VIDEO_ID, Long.class, courseVideoId);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return null;
+        }
+    }
+
+    public Optional<CourseVideo> findCourseVideoById(Long courseVideoId) {
+        try {
+            CourseVideo courseVideo = jdbcTemplate.queryForObject(FIND_COURSE_VIDEO_BY_ID, (rs, rowNum) -> CourseVideo.builder()
+                    .courseVideoId(rs.getLong("course_video_id"))
+                    .courseId(rs.getLong("course_id"))
+                    .videoId(rs.getLong("video_id"))
+                    .memberId(rs.getLong("member_id"))
+                    .section(rs.getInt("section"))
+                    .videoIndex(rs.getInt("video_index"))
+                    .startTime(rs.getInt("start_time"))
+                    .complete(rs.getBoolean("is_complete"))
+                    .summaryId(rs.getLong("summary_id"))
+                    .lectureIndex(rs.getInt("lecture_index"))
+                    .lastViewTime(rs.getTimestamp("last_view_time"))
+                    .maxDuration(rs.getInt("max_duration"))
+                    .build(), courseVideoId);
+            return Optional.ofNullable(courseVideo);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public void updateCourseProgress(Long courseId, double courseProgress) {
+        jdbcTemplate.update(UPDATE_COURSE_PROGRESS_QUERY, courseProgress, courseId);
+    }
+
+    public Integer getVideoCountByCourseId(Long courseId) {
+        return jdbcTemplate.queryForObject(GET_VIDEO_COUNT_BY_COURSE_ID, Integer.class, courseId);
+    }
+
+    public void updateCourseVideo(CourseVideo courseVideo) {
+        jdbcTemplate.update(UPDATE_COURSE_VIDEO, courseVideo.getSection(), courseVideo.getVideoIndex(), courseVideo.getStartTime(), courseVideo.isComplete(), courseVideo.getSummaryId(), courseVideo.getLectureIndex(), Timestamp.valueOf(LocalDateTime.now()), courseVideo.getMaxDuration(), courseVideo.getCourseVideoId());
+    }
+
+    public Optional<CourseDailyLog> findCourseDailyLogByDate(Long courseId, java.sql.Date date) {
+        try {
+            CourseDailyLog dailyLog = jdbcTemplate.queryForObject(FIND_COURSE_DAILY_LOG_QUERY, (rs, rowNum) -> CourseDailyLog.builder()
+                    .courseDailyLogId(rs.getLong("course_daily_log_id"))
+                    .memberId(rs.getLong("member_id"))
+                    .courseId(courseId)
+                    .dailyLogDate(date)
+                    .learningTime(rs.getInt("learning_time"))
+                    .quizCount(rs.getInt("quiz_count"))
+                    .lectureCount(rs.getInt("lecture_count"))
+                    .build(), courseId, date);
+            return Optional.ofNullable(dailyLog);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public void saveCourseDailyLog(CourseDailyLog dailyLog) {
+        jdbcTemplate.update(SAVE_COURSE_DAILY_LOG_QUERY, dailyLog.getMemberId(), dailyLog.getCourseId(), dailyLog.getDailyLogDate(), dailyLog.getLearningTime(), dailyLog.getQuizCount(), dailyLog.getLectureCount());
+    }
+
+    public void updateCourseDailyLog(CourseDailyLog dailyLog) {
+        jdbcTemplate.update(UPDATE_COURSE_DAILY_LOG_QUERY, dailyLog.getDailyLogDate(), dailyLog.getLearningTime(), dailyLog.getQuizCount(), dailyLog.getLectureCount(), dailyLog.getCourseDailyLogId());
     }
 }
