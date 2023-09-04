@@ -24,7 +24,11 @@ class CourseSqlQuery {
     SELECT c.course_id, c.thumbnail, c.course_duration, c.last_view_time, c.course_title, c.progress
     FROM COURSE c
     WHERE c.member_id = ?
-    ORDER BY c.last_view_time DESC
+    ORDER BY 
+    CASE
+        WHEN c.progress = 100 THEN 1
+        ELSE 0
+    END, c.last_view_time DESC
     """
 
     public static final String SAVE_COURSE_QUERY = """
