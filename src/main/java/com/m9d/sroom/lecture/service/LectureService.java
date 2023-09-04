@@ -1,10 +1,15 @@
 package com.m9d.sroom.lecture.service;
 
+import com.m9d.sroom.course.exception.CourseNotMatchException;
+import com.m9d.sroom.course.exception.CourseVideoNotFoundException;
+import com.m9d.sroom.global.model.CourseDailyLog;
+import com.m9d.sroom.global.model.CourseVideo;
 import com.m9d.sroom.global.model.Playlist;
 import com.m9d.sroom.global.model.Video;
 import com.m9d.sroom.course.repository.CourseRepository;
 import com.m9d.sroom.lecture.dto.request.KeywordSearchParam;
 import com.m9d.sroom.lecture.dto.request.LectureDetailParam;
+import com.m9d.sroom.lecture.dto.request.LectureTimeRecord;
 import com.m9d.sroom.lecture.dto.response.Index;
 import com.m9d.sroom.lecture.dto.response.Lecture;
 import com.m9d.sroom.lecture.dto.response.ReviewBrief;
@@ -12,6 +17,7 @@ import com.m9d.sroom.lecture.dto.response.*;
 import com.m9d.sroom.lecture.exception.TwoOnlyParamTrueException;
 import com.m9d.sroom.lecture.exception.VideoIndexParamException;
 import com.m9d.sroom.lecture.exception.VideoNotFoundException;
+import com.m9d.sroom.lecture.model.VideoCompletionStatus;
 import com.m9d.sroom.lecture.repository.LectureRepository;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.util.youtube.YoutubeApi;
@@ -35,15 +41,18 @@ import reactor.core.publisher.Mono;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static com.m9d.sroom.course.constant.CourseConstant.PLAYLIST_UPDATE_THRESHOLD_HOURS;
-import static com.m9d.sroom.course.constant.CourseConstant.VIDEO_UPDATE_THRESHOLD_HOURS;
+import static com.m9d.sroom.course.constant.CourseConstant.*;
 import static com.m9d.sroom.lecture.constant.LectureConstant.*;
+import static com.m9d.sroom.lecture.model.VideoCompletionStatus.*;
 import static com.m9d.sroom.util.youtube.YoutubeUtil.*;
 
 @Service
@@ -435,5 +444,109 @@ public class LectureService {
 
     public List<String> getMostEnrolledChannels(Long memberId) {
         return lectureRepository.getMostEnrolledChannels(memberId);
+    }
+
+    public LectureStatus updateLectureTime(Long memberId, Long courseVideoId, LectureTimeRecord record, boolean isMarkedAsCompleted) {
+        CourseVideo courseVideo = getCourseVideo(memberId, courseVideoId);
+        int timeGap = record.getView_duration() - courseVideo.getMaxDuration();
+
+        VideoCompletionStatus status = getVideoCompletionStatus(record.getView_duration(), timeGap, courseVideo, isMarkedAsCompleted);
+
+        if (!status.equals(REWOUND_FROM_COMPLETE) && !status.equals(REWOUND_FROM_INCOMPLETE)) {
+            updateCourseDailyLog(memberId, courseVideo.getCourseId(), timeGap, status);
+        }
+
+        if (status.equals(COMPLETED_NOW)) {
+            updateCourseProgress(courseVideo.getCourseId(), 1);
+        }
+
+        courseVideo.setMaxDuration(Math.max(record.getView_duration(), courseVideo.getMaxDuration()));
+        courseVideo.setStartTime(record.getView_duration());
+        courseVideo.setComplete(status.getValue());
+        courseVideo.setLastViewTime(new Timestamp(System.currentTimeMillis()));
+        courseRepository.updateVideoViewStatus(courseVideo);
+
+        return LectureStatus.builder()
+                .courseVideoId(courseVideoId)
+                .viewDuration(record.getView_duration())
+                .complete(status.getValue())
+                .build();
+    }
+
+    private CourseVideo getCourseVideo(Long memberId, Long courseVideoId) {
+        Optional<CourseVideo> courseVideoOptional = courseRepository.findCourseVideoById(courseVideoId);
+
+        if (courseVideoOptional.isEmpty()) {
+            throw new CourseVideoNotFoundException();
+        }
+
+        CourseVideo courseVideo = courseVideoOptional.get();
+
+        if (!courseVideo.getMemberId().equals(memberId)) {
+            throw new CourseNotMatchException();
+        }
+
+        return courseVideo;
+    }
+
+    private VideoCompletionStatus getVideoCompletionStatus(int newDuration, int timeGap, CourseVideo courseVideo, boolean isMarkedAsCompleted) {
+        VideoCompletionStatus status;
+        if (timeGap > 0) {
+            status = courseVideo.isComplete() ? COMPLETED_PREVIOUSLY : INCOMPLETE;
+        } else {
+            status = courseVideo.isComplete() ? REWOUND_FROM_COMPLETE : REWOUND_FROM_INCOMPLETE;
+        }
+
+        if (status.equals(INCOMPLETE)) {
+            Video video = getVideo(courseVideo.getVideoId());
+            boolean currVideoComplete = (newDuration / (double) video.getDuration()) > MINIMUM_VIEW_PERCENT_FOR_COMPLETION;
+            status = currVideoComplete ? COMPLETED_NOW : INCOMPLETE;
+        }
+
+        if (isMarkedAsCompleted && !courseVideo.isComplete()) {
+            status = COMPLETED_NOW;
+        }
+        return status;
+    }
+
+    private Video getVideo(Long videoId) {
+        Optional<Video> videoOptional = lectureRepository.findVideoById(videoId);
+
+        if (videoOptional.isEmpty()) {
+            throw new VideoNotFoundException();
+        }
+        return videoOptional.get();
+    }
+
+    private void updateCourseProgress(Long courseId, int newCompletedVideoCount) {
+        int courseVideoCount = courseRepository.getVideoCountByCourseId(courseId);
+        int completedVideoCount = courseRepository.getCompletedLectureCountByCourseId(courseId) + newCompletedVideoCount;
+
+        double courseProgress = (double) completedVideoCount / courseVideoCount;
+
+        courseRepository.updateCourseProgress(courseId, courseProgress);
+    }
+
+    private void updateCourseDailyLog(Long memberId, Long courseId, int timeGap, VideoCompletionStatus videoStatus) {
+        Optional<CourseDailyLog> dailyLogOptional = courseRepository.findCourseDailyLogByDate(courseId, Date.valueOf(LocalDate.now()));
+        int learningTimeToAdd = Math.max(timeGap, 0);
+        int lectureCountToAdd = videoStatus.equals(COMPLETED_NOW) ? 1 : 0;
+
+        if (dailyLogOptional.isEmpty()) {
+            CourseDailyLog initialDailyLog = CourseDailyLog.builder()
+                    .memberId(memberId)
+                    .courseId(courseId)
+                    .dailyLogDate(Date.valueOf(LocalDate.now()))
+                    .learningTime(learningTimeToAdd)
+                    .quizCount(0)
+                    .lectureCount(lectureCountToAdd)
+                    .build();
+            courseRepository.saveCourseDailyLog(initialDailyLog);
+        } else {
+            CourseDailyLog dailyLog = dailyLogOptional.get();
+            dailyLog.setLearningTime(dailyLog.getLearningTime() + learningTimeToAdd);
+            dailyLog.setLectureCount(dailyLog.getLectureCount() + lectureCountToAdd);
+            courseRepository.updateCourseDailyLog(dailyLog);
+        }
     }
 }

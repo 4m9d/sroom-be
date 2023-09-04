@@ -4,7 +4,7 @@ import com.m9d.sroom.global.error.NotFoundException;
 
 public class CourseNotFoundException extends NotFoundException {
 
-    private static final String MESSAGE = "입력받은 courseId가 존재하지 않습니다";
+    private static final String MESSAGE = "해당하는 course 정보가 없습니다.";
 
     public CourseNotFoundException() {
         super(MESSAGE);

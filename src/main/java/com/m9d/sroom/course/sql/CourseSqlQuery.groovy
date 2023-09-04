@@ -182,7 +182,7 @@ class CourseSqlQuery {
     """
 
     public static final String GET_LAST_COURSE_VIDEO = """
-    SELECT v.video_id, v.title, v.video_code, v.channel, cv.start_time
+    SELECT v.video_id, v.title, v.video_code, v.channel, cv.start_time, cv.course_video_id
     FROM COURSEVIDEO cv
     JOIN video v ON cv.video_id = v.video_id
     WHERE cv.course_id = ?
@@ -191,7 +191,7 @@ class CourseSqlQuery {
     """
 
     public static final String GET_VIDEO_BRIEF_QUERY = """
-    SELECT v.video_id, v.video_code, v.channel, v.title, cv.video_index, cv.is_complete, cv.start_time, v.duration
+    SELECT v.video_id, v.video_code, v.channel, v.title, cv.video_index, cv.is_complete, cv.start_time, v.duration, cv.course_video_id
     FROM COURSEVIDEO cv
     JOIN video v ON cv.video_id = v.video_id
     WHERE cv.course_id = ? AND cv.section = ?
@@ -207,5 +207,47 @@ class CourseSqlQuery {
     FROM COURSEVIDEO
     WHERE course_id = ?
     AND video_id = ?
+    """
+
+    public static final String FIND_COURSE_ID_BY_COURSE_VIDEO_ID = """
+       SELECT course_id
+       FROM COURSEVIDEO
+       WHERE course_video_id = ?
+    """
+
+    public static final String FIND_COURSE_VIDEO_BY_ID = """
+        SELECT course_video_id, course_id, video_id, section, video_index, start_time, is_complete, summary_id, lecture_index, member_id, last_view_time, max_duration
+        FROM COURSEVIDEO
+        WHERE course_video_id = ?
+    """
+
+    public static final String UPDATE_COURSE_VIDEO = """
+        UPDATE COURSEVIDEO
+        SET section = ?, video_index = ?, start_time = ?, is_complete = ?, summary_id = ?, lecture_index = ?, last_view_time = ?, max_duration = ?
+        WHERE course_video_id = ?
+    """
+
+    public static final String FIND_COURSE_DAILY_LOG_QUERY = """
+        SELECT course_daily_log_id, member_id, daily_log_date, learning_time, quiz_count, lecture_count
+        FROM COURSE_DAILY_LOG
+        where course_id = ?
+        AND daily_log_date = ?
+    """
+
+    public static final String SAVE_COURSE_DAILY_LOG_QUERY = """
+        INSERT INTO COURSE_DAILY_LOG (member_id, course_id, daily_log_date, learning_time, quiz_count, lecture_count)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """
+
+    public static final String UPDATE_COURSE_DAILY_LOG_QUERY = """
+        UPDATE COURSE_DAILY_LOG
+        SET learning_time = ?, quiz_count = ?, lecture_count = ?
+        WHERE course_daily_log_id = ?
+    """
+
+    public static final String UPDATE_VIDEO_VIEW_STATUS_QUERY = """
+        UPDATE COURSEVIDEO
+        SET max_duration = ?, start_time = ?, is_complete = ?, last_view_time = ?
+        WHERE course_video_id = ?
     """
 }

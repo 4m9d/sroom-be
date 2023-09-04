@@ -14,6 +14,8 @@ import org.springframework.stereotype.Repository;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.m9d.sroom.lecture.sql.LectureSqlQuery.FIND_VIDEO_BY_ID;
+
 @Repository
 public class LectureRepository {
     private final JdbcTemplate jdbcTemplate;
@@ -77,7 +79,7 @@ public class LectureRepository {
 
 
     public List<RecommendLecture> getVideosSortedByRating() {
-        return jdbcTemplate.query(LectureSqlQuery.GET_VIDEOS_SORTED_RATING, recommenVideoRowMapper(),5);
+        return jdbcTemplate.query(LectureSqlQuery.GET_VIDEOS_SORTED_RATING, recommenVideoRowMapper(), 5);
     }
 
     public List<RecommendLecture> getPlaylistsSortedByRating() {
@@ -143,6 +145,34 @@ public class LectureRepository {
             return jdbcTemplate.queryForObject(sql, rowMapper, args);
         } catch (EmptyResultDataAccessException e) {
             return null;
+        }
+    }
+
+    public Optional<Video> findVideoById(Long videoId) {
+        try {
+            Video video = jdbcTemplate.queryForObject(FIND_VIDEO_BY_ID, (rs, rowNum) -> Video.builder()
+                    .videoId(videoId)
+                    .videoCode(rs.getString("video_code"))
+                    .duration(rs.getInt("duration"))
+                    .channel(rs.getString("channel"))
+                    .thumbnail(rs.getString("thumbnail"))
+                    .rating(rs.getDouble("accumulated_rating") / rs.getInt("review_count"))
+                    .reviewCount(rs.getInt("review_count"))
+                    .summaryId(rs.getLong("summary_id"))
+                    .available(rs.getBoolean("is_available"))
+                    .description(rs.getString("description"))
+                    .chapterUse(rs.getBoolean("chapter_usage"))
+                    .title(rs.getString("title"))
+                    .language(rs.getString("language"))
+                    .license(rs.getString("license"))
+                    .updatedAt(rs.getTimestamp("updated_at"))
+                    .viewCount(rs.getLong("view_count"))
+                    .publishedAt(rs.getTimestamp("published_at"))
+                    .membership(rs.getBoolean("membership"))
+                    .build(), videoId);
+            return Optional.ofNullable(video);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
         }
     }
 }

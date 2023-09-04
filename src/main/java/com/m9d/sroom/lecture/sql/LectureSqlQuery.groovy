@@ -125,4 +125,22 @@ class LectureSqlQuery {
     ORDER BY published_at DESC
     LIMIT ?
     """
+
+    public static final String FIND_VIDEO_BY_ID = """
+        SELECT video_code, duration, channel, thumbnail, accumulated_rating, review_count, summary_id, is_available, description, chapter_usage, title, language, license, updated_at, view_count, published_at, membership
+        FROM VIDEO
+        WHERE video_id = ?
+    """
+
+    public static final String UPDATE_COURSE_PROGRESS_QUERY = """
+        UPDATE COURSE
+        SET PROGRESS = ?
+        WHERE course_id = ?
+    """
+
+    public static final String GET_VIDEO_COUNT_BY_COURSE_ID = """
+        SELECT COUNT(1)
+        FROM COURSEVIDEO
+        WHERE course_id = ?
+    """
 }
