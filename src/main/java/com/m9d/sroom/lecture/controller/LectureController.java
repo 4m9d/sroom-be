@@ -90,9 +90,9 @@ public class LectureController {
     @Tag(name = "강의 수강")
     @Operation(summary = "시청중인 강의 학습시간 저장하기", description = "duration을 입력받아 업데이트하고, 70%가 넘었다면 수강완료 처리한다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 학습시간을 저장 하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = LectureStatus.class))})
-    public LectureStatus updateLectureTime(@PathVariable(name = "courseVideoId") Long courseVideoId, @Valid @RequestBody LectureTimeRecord record, @RequestParam(name = "isCompleted", required = false, defaultValue = "false") boolean isComplete) {
+    public LectureStatus updateLectureTime(@PathVariable(name = "courseVideoId") Long courseVideoId, @Valid @RequestBody LectureTimeRecord record, @RequestParam(name = "isCompletedManually", required = false, defaultValue = "false") boolean isCompletedManually) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
-        return lectureService.updateLectureTime(memberId, courseVideoId, record, isComplete);
+        return lectureService.updateLectureTime(memberId, courseVideoId, record, isCompletedManually);
     }
 
 }
