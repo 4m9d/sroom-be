@@ -42,6 +42,7 @@ import reactor.core.publisher.Mono;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.sql.Date;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -460,9 +461,10 @@ public class LectureService {
             updateCourseProgress(courseVideo.getCourseId(), 1);
         }
 
+        courseVideo.setLastViewTime(new Timestamp(System.currentTimeMillis()));
         courseVideo.setStartTime(record.getView_duration());
         courseVideo.setComplete(status.getValue());
-        courseRepository.updateCourseVideo(courseVideo);
+        courseRepository.updateVideoViewStatus(courseVideo);
 
         return LectureStatus.builder()
                 .courseVideoId(courseVideoId)

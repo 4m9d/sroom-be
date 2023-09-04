@@ -241,7 +241,13 @@ class CourseSqlQuery {
 
     public static final String UPDATE_COURSE_DAILY_LOG_QUERY = """
         UPDATE COURSE_DAILY_LOG
-        SET daily_log_date = ?, learning_time = ?, quiz_count = ?, lecture_count = ?
+        SET learning_time = ?, quiz_count = ?, lecture_count = ?
         WHERE course_daily_log_id = ?
+    """
+
+    public static final String UPDATE_VIDEO_VIEW_STATUS_QUERY = """
+        UPDATE COURSEVIDEO
+        SET max_duration = ?, start_time = ?, is_complete = ?, last_view_time = ?
+        WHERE course_video_id = ?
     """
 }

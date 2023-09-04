@@ -348,6 +348,10 @@ public class CourseRepository {
     }
 
     public void updateCourseDailyLog(CourseDailyLog dailyLog) {
-        jdbcTemplate.update(UPDATE_COURSE_DAILY_LOG_QUERY, dailyLog.getDailyLogDate(), dailyLog.getLearningTime(), dailyLog.getQuizCount(), dailyLog.getLectureCount(), dailyLog.getCourseDailyLogId());
+        jdbcTemplate.update(UPDATE_COURSE_DAILY_LOG_QUERY, dailyLog.getLearningTime(), dailyLog.getQuizCount(), dailyLog.getLectureCount(), dailyLog.getCourseDailyLogId());
+    }
+
+    public void updateVideoViewStatus(CourseVideo courseVideo) {
+        jdbcTemplate.update(UPDATE_VIDEO_VIEW_STATUS_QUERY, courseVideo.getMaxDuration(), courseVideo.getStartTime(), courseVideo.isComplete(), courseVideo.getLastViewTime(), courseVideo.getCourseVideoId());
     }
 }
