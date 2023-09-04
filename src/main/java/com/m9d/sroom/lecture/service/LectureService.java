@@ -446,24 +446,24 @@ public class LectureService {
         return lectureRepository.getMostEnrolledChannels(memberId);
     }
 
-    public LectureStatus updateLectureTime(Long memberId, Long courseVideoId, LectureTimeRecord record) {
+    public LectureStatus updateLectureTime(Long memberId, Long courseVideoId, LectureTimeRecord record, boolean isMarkedAsCompleted) {
         CourseVideo courseVideo = getCourseVideo(memberId, courseVideoId);
         int timeGap = record.getView_duration() - courseVideo.getMaxDuration();
 
-        VideoCompletionStatus status = getVideoCompletionStatus(record.getView_duration(), timeGap, courseVideo);
+        VideoCompletionStatus status = getVideoCompletionStatus(record.getView_duration(), timeGap, courseVideo, isMarkedAsCompleted);
 
         if (!status.equals(REWOUND_FROM_COMPLETE) && !status.equals(REWOUND_FROM_INCOMPLETE)) {
             updateCourseDailyLog(memberId, courseVideo.getCourseId(), timeGap, status);
-            courseVideo.setMaxDuration(record.getView_duration());
         }
 
         if (status.equals(COMPLETED_NOW)) {
             updateCourseProgress(courseVideo.getCourseId(), 1);
         }
 
-        courseVideo.setLastViewTime(new Timestamp(System.currentTimeMillis()));
+        courseVideo.setMaxDuration(Math.max(record.getView_duration(), courseVideo.getMaxDuration()));
         courseVideo.setStartTime(record.getView_duration());
         courseVideo.setComplete(status.getValue());
+        courseVideo.setLastViewTime(new Timestamp(System.currentTimeMillis()));
         courseRepository.updateVideoViewStatus(courseVideo);
 
         return LectureStatus.builder()
@@ -489,7 +489,7 @@ public class LectureService {
         return courseVideo;
     }
 
-    private VideoCompletionStatus getVideoCompletionStatus(int newDuration, int timeGap, CourseVideo courseVideo) {
+    private VideoCompletionStatus getVideoCompletionStatus(int newDuration, int timeGap, CourseVideo courseVideo, boolean isMarkedAsCompleted) {
         VideoCompletionStatus status;
         if (timeGap > 0) {
             status = courseVideo.isComplete() ? COMPLETED_PREVIOUSLY : INCOMPLETE;
@@ -501,6 +501,10 @@ public class LectureService {
             Video video = getVideo(courseVideo.getVideoId());
             boolean currVideoComplete = (newDuration / (double) video.getDuration()) > MINIMUM_VIEW_PERCENT_FOR_COMPLETION;
             status = currVideoComplete ? COMPLETED_NOW : INCOMPLETE;
+        }
+
+        if (isMarkedAsCompleted && !courseVideo.isComplete()) {
+            status = COMPLETED_NOW;
         }
         return status;
     }
@@ -523,24 +527,25 @@ public class LectureService {
         courseRepository.updateCourseProgress(courseId, courseProgress);
     }
 
-    private void updateCourseDailyLog(Long memberId, Long courseId, int timeGap, VideoCompletionStatus status) {
+    private void updateCourseDailyLog(Long memberId, Long courseId, int timeGap, VideoCompletionStatus videoStatus) {
         Optional<CourseDailyLog> dailyLogOptional = courseRepository.findCourseDailyLogByDate(courseId, Date.valueOf(LocalDate.now()));
+        int learningTimeToAdd = Math.max(timeGap, 0);
+        int lectureCountToAdd = videoStatus.equals(COMPLETED_NOW) ? 1 : 0;
 
         if (dailyLogOptional.isEmpty()) {
             CourseDailyLog initialDailyLog = CourseDailyLog.builder()
                     .memberId(memberId)
                     .courseId(courseId)
                     .dailyLogDate(Date.valueOf(LocalDate.now()))
-                    .learningTime(timeGap)
+                    .learningTime(learningTimeToAdd)
                     .quizCount(0)
-                    .lectureCount(0)
+                    .lectureCount(lectureCountToAdd)
                     .build();
             courseRepository.saveCourseDailyLog(initialDailyLog);
         } else {
             CourseDailyLog dailyLog = dailyLogOptional.get();
-            dailyLog.setLearningTime(dailyLog.getLearningTime() + timeGap);
-            int newLectureCount = status.equals(COMPLETED_NOW) ? dailyLog.getLectureCount() + 1 : dailyLog.getLectureCount();
-            dailyLog.setLectureCount(newLectureCount);
+            dailyLog.setLearningTime(dailyLog.getLearningTime() + learningTimeToAdd);
+            dailyLog.setLectureCount(dailyLog.getLectureCount() + lectureCountToAdd);
             courseRepository.updateCourseDailyLog(dailyLog);
         }
     }
