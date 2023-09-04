@@ -48,6 +48,7 @@ public class WebAppConfig implements WebMvcConfigurer {
                 .allowedOrigins("http://localhost:3000")
                 .allowCredentials(true)
                 .allowedHeaders("authorization", "content-type", "accept")
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
                 .exposedHeaders("authorization");
     }
 }
