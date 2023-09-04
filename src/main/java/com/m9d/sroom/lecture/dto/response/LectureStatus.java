@@ -14,6 +14,6 @@ public class LectureStatus {
 
     private int viewDuration;
 
-    @JsonProperty("is_complete")
+    @JsonProperty("is_completed")
     private boolean complete;
 }
