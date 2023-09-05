@@ -254,7 +254,7 @@ public class MaterialService {
 
         return ScrapResult.builder()
                 .courseQuizId(courseQuizId)
-                .scrapped(true)
+                .scrapped(isScrap)
                 .build();
     }
 

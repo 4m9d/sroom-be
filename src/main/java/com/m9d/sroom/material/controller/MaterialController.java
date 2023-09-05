@@ -67,4 +67,14 @@ public class MaterialController {
         Long memberId = jwtUtil.getMemberIdFromRequest();
         return materialService.scrapQuiz(memberId, courseQuizId, true);
     }
+
+    @Auth
+    @DeleteMapping("/quizzes/{courseQuizId}")
+    @Tag(name = "강의 수강")
+    @Operation(summary = "퀴즈 오답노트 취소", description = "courseQuizId 를 받아 해당 퀴즈를 오답노트 취소합니다.")
+    @ApiResponse(responseCode = "200", description = "성공적으로 오답노트에 등록 취소하였습니다.", content = @Content(schema = @Schema(implementation = ScrapResult.class)))
+    public ScrapResult cancelScrapQuiz(@PathVariable("courseQuizId") Long courseQuizId) {
+        Long memberId = jwtUtil.getMemberIdFromRequest();
+        return materialService.scrapQuiz(memberId, courseQuizId, false);
+    }
 }
