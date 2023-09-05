@@ -8,6 +8,7 @@ import com.m9d.sroom.course.sql.CourseSqlQuery;
 import com.m9d.sroom.lecture.dto.response.CourseBrief;
 import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
 import com.m9d.sroom.lecture.dto.response.VideoBrief;
+import com.m9d.sroom.material.model.CourseAndVideoId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -353,5 +354,28 @@ public class CourseRepository {
 
     public void updateVideoViewStatus(CourseVideo courseVideo) {
         jdbcTemplate.update(UPDATE_VIDEO_VIEW_STATUS_QUERY, courseVideo.getMaxDuration(), courseVideo.getStartTime(), courseVideo.isComplete(), courseVideo.getLastViewTime(), courseVideo.getCourseVideoId());
+    }
+
+    public void updateCourseDailyLogQuizCount(Long courseId, java.sql.Date date, int quizCount) {
+        jdbcTemplate.update(UPDATE_QUIZ_COUNT_LOG_QUERY, quizCount, courseId, date);
+    }
+
+    public CourseAndVideoId getCourseAndVideoId(Long courseVideoId) {
+        try {
+            return jdbcTemplate.queryForObject(GET_COURSE_AND_VIDEO_ID_QUERY, (rs, rowNum) -> CourseAndVideoId.builder()
+                    .videoId(rs.getLong("video_id"))
+                    .courseId(rs.getLong("course_id"))
+                    .build(), courseVideoId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new CourseVideoNotFoundException();
+        }
+    }
+
+    public Integer findQuizCountByDailyLog(Long courseId, java.sql.Date date) {
+        try {
+            return jdbcTemplate.queryForObject(GET_QUIZ_COUNT_BY_DAILY_LOG, Integer.class, courseId, date);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 }

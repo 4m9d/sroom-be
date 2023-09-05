@@ -1,7 +1,9 @@
 package com.m9d.sroom.material.controller;
 
 import com.m9d.sroom.material.dto.request.CourseId;
+import com.m9d.sroom.material.dto.request.SubmittedQuiz;
 import com.m9d.sroom.material.dto.request.SummaryEdit;
+import com.m9d.sroom.material.dto.response.CourseQuizIdList;
 import com.m9d.sroom.material.dto.response.Material;
 import com.m9d.sroom.material.dto.response.SummaryId;
 import com.m9d.sroom.material.service.MaterialService;
@@ -15,6 +17,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,5 +46,15 @@ public class MaterialController {
     public SummaryId updateSummaries(@PathVariable("courseVideoId") Long courseVideoId, @RequestBody SummaryEdit summaryEdit) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
         return materialService.updateSummary(memberId, courseVideoId, summaryEdit.getContent());
+    }
+
+    @Auth
+    @PostMapping("/quizzes/{courseVideoId}")
+    @Tag(name = "강의 수강")
+    @Operation(summary = "퀴즈 채점 결과 저장", description = "courseVideoId 를 받아 채점 결과를 courseQuiz 테이블에 저장합니다.")
+    @ApiResponse(responseCode = "200", description = "성공적을 채점 결과를 저장했습니다.")
+    public CourseQuizIdList submitQuizResults(@PathVariable("courseVideoId") Long courseVideoId, @RequestBody List<SubmittedQuiz> submittedQuizList) {
+        Long memberId = jwtUtil.getMemberIdFromRequest();
+        return materialService.submitQuizResults(memberId, courseVideoId, submittedQuizList);
     }
 }

@@ -16,5 +16,18 @@ class MemberSqlQuery {
 
     public static final String GET_MEMBER_NAME_BY_ID_QUERY = "SELECT member_name FROM MEMBER WHERE member_id = ?"
 
+    public static final String UPDATE_QUIZ_COUNT_QUERY = """
+        UPDATE MEMBER
+        SET total_solved_count = ?, total_correct_count = ?
+        WHERE member_id = ?
+    """
+
+    public static final String GET_QUIZ_INFO_QUERY = """
+        SELECT
+        total_solved_count, total_correct_count
+        FROM MEMBER
+        WHERE member_id = ?
+    """
+
 }
 

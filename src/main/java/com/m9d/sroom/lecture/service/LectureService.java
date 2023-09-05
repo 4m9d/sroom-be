@@ -371,6 +371,7 @@ public class LectureService {
         return HtmlUtils.htmlUnescape(input);
     }
 
+    @Transactional
     public Recommendations getRecommendations(Long memberId) {
         HashSet<RecommendLecture> recommendLectureHashSet = new HashSet<>();
         List<RecommendLecture> recommendLectureList = new ArrayList<>();
@@ -446,6 +447,7 @@ public class LectureService {
         return lectureRepository.getMostEnrolledChannels(memberId);
     }
 
+    @Transactional
     public LectureStatus updateLectureTime(Long memberId, Long courseVideoId, LectureTimeRecord record, boolean isMarkedAsCompleted) {
         CourseVideo courseVideo = getCourseVideo(memberId, courseVideoId);
         int timeGap = record.getView_duration() - courseVideo.getMaxDuration();
