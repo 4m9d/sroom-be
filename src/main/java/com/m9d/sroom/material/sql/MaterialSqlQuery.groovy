@@ -22,7 +22,7 @@ class MaterialSqlQuery {
     """
 
     public static final String GET_COURSE_QUIZ_INFO_QUERY = """
-        SELECT submitted_answer, is_correct, submitted_time
+        SELECT submitted_answer, is_correct, submitted_time, is_scrapped
         FROM COURSEQUIZ
         WHERE quiz_id = ? AND course_video_id = ?
     """

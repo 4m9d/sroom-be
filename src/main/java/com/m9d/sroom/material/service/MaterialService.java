@@ -100,8 +100,8 @@ public class MaterialService {
                 quiz.setSubmitted(true);
                 quiz.setSubmittedAnswer(submittedQuizInfo.getSubmittedAnswer());
                 quiz.setCorrect(submittedQuizInfo.isCorrect());
+                quiz.setScrapped(submittedQuizInfo.isScrapped());
                 quiz.setSubmittedAt(DateUtil.dateFormat.format(submittedQuizInfo.getSubmittedTime()));
-
             } else {
                 quiz.setSubmitted(false);
             }
@@ -114,7 +114,7 @@ public class MaterialService {
     private void setQuizOptions(Quiz quiz, List<QuizOption> options) {
         List<String> optionList = new ArrayList<>(5);
         for (QuizOption option : options) {
-            optionList.add(option.getIndex(), option.getOptionText());
+            optionList.add(option.getIndex() - 1, option.getOptionText());
         }
         quiz.setOptions(optionList);
     }
