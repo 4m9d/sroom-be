@@ -2,6 +2,7 @@ package com.m9d.sroom.material.controller;
 
 import com.m9d.sroom.material.dto.request.SubmittedQuiz;
 import com.m9d.sroom.material.dto.request.SummaryEdit;
+import com.m9d.sroom.material.dto.response.ScrapResult;
 import com.m9d.sroom.material.dto.response.SubmittedQuizInfo;
 import com.m9d.sroom.material.dto.response.Material;
 import com.m9d.sroom.material.dto.response.SummaryId;
@@ -55,5 +56,15 @@ public class MaterialController {
     public List<SubmittedQuizInfo> submitQuizResults(@PathVariable("courseVideoId") Long courseVideoId, @RequestBody List<SubmittedQuiz> submittedQuizList) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
         return materialService.submitQuizResults(memberId, courseVideoId, submittedQuizList);
+    }
+
+    @Auth
+    @PostMapping("/quizzes/{courseQuizId}")
+    @Tag(name = "강의 수강")
+    @Operation(summary = "퀴즈 오답노트 등록", description = "courseQuizId 를 받아 해당 퀴즈를 오답노트에 등록합니다.")
+    @ApiResponse(responseCode = "200", description = "성공적으로 오답노트에 등록하였습니다.", content = @Content(schema = @Schema(implementation = ScrapResult.class)))
+    public ScrapResult scrapQuiz(@PathVariable("courseQuizId") Long courseQuizId) {
+        Long memberId = jwtUtil.getMemberIdFromRequest();
+        return materialService.scrapQuiz(memberId, courseQuizId, true);
     }
 }
