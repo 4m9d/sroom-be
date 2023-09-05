@@ -14,4 +14,6 @@ public class SubmittedQuizInfo {
     private boolean correct;
 
     private Timestamp submittedTime;
+
+    private boolean scrapped;
 }

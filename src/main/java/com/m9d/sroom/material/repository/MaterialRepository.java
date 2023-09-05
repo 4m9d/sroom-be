@@ -80,6 +80,7 @@ public class MaterialRepository {
                             .submittedAnswer(rs.getString("submitted_answer"))
                             .correct(rs.getBoolean("is_correct"))
                             .submittedTime(rs.getTimestamp("submitted_time"))
+                            .scrapped(rs.getBoolean("is_scrapped"))
                             .build(),
                     quizId, courseVideoId);
             return Optional.ofNullable(submittedQuizInfo);
