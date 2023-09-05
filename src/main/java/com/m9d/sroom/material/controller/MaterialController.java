@@ -1,9 +1,8 @@
 package com.m9d.sroom.material.controller;
 
-import com.m9d.sroom.material.dto.request.CourseId;
 import com.m9d.sroom.material.dto.request.SubmittedQuiz;
 import com.m9d.sroom.material.dto.request.SummaryEdit;
-import com.m9d.sroom.material.dto.response.CourseQuizIdList;
+import com.m9d.sroom.material.dto.response.SubmittedQuizInfo;
 import com.m9d.sroom.material.dto.response.Material;
 import com.m9d.sroom.material.dto.response.SummaryId;
 import com.m9d.sroom.material.service.MaterialService;
@@ -42,7 +41,7 @@ public class MaterialController {
     @PutMapping("/materials/lectures/{courseVideoId}")
     @Tag(name = "강의 수강")
     @Operation(summary = "강의 노트 수정하기", description = "영상 ID를 사용해 저장된 강의노트를 수정합니다.")
-    @ApiResponse(responseCode = "200", description = "성공적으로 강의 노트를 업데이트 했습니다.")
+    @ApiResponse(responseCode = "200", description = "성공적으로 강의 노트를 업데이트 했습니다.", content = @Content(schema = @Schema(implementation = SummaryId.class)))
     public SummaryId updateSummaries(@PathVariable("courseVideoId") Long courseVideoId, @RequestBody SummaryEdit summaryEdit) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
         return materialService.updateSummary(memberId, courseVideoId, summaryEdit.getContent());
@@ -52,8 +51,8 @@ public class MaterialController {
     @PostMapping("/quizzes/{courseVideoId}")
     @Tag(name = "강의 수강")
     @Operation(summary = "퀴즈 채점 결과 저장", description = "courseVideoId 를 받아 채점 결과를 courseQuiz 테이블에 저장합니다.")
-    @ApiResponse(responseCode = "200", description = "성공적을 채점 결과를 저장했습니다.")
-    public CourseQuizIdList submitQuizResults(@PathVariable("courseVideoId") Long courseVideoId, @RequestBody List<SubmittedQuiz> submittedQuizList) {
+    @ApiResponse(responseCode = "200", description = "성공적으로 채점 결과를 저장했습니다.", content = @Content(schema = @Schema(implementation = SubmittedQuizInfo.class)))
+    public List<SubmittedQuizInfo> submitQuizResults(@PathVariable("courseVideoId") Long courseVideoId, @RequestBody List<SubmittedQuiz> submittedQuizList) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
         return materialService.submitQuizResults(memberId, courseVideoId, submittedQuizList);
     }

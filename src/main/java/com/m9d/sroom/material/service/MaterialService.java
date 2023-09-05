@@ -174,7 +174,7 @@ public class MaterialService {
     }
 
     @Transactional
-    public CourseQuizIdList submitQuizResults(Long memberId, Long courseVideoId, List<SubmittedQuiz> submittedQuizList) {
+    public List<SubmittedQuizInfo> submitQuizResults(Long memberId, Long courseVideoId, List<SubmittedQuiz> submittedQuizList) {
         CourseAndVideoId courseAndVideoId = courseRepository.getCourseAndVideoId(courseVideoId);
         Long courseId = courseAndVideoId.getCourseId();
         Long videoId = courseAndVideoId.getVideoId();
@@ -184,17 +184,16 @@ public class MaterialService {
         updateDailyLogQuizCount(memberId, courseId, submittedQuizList);
         updateMemberQuizCount(memberId, submittedQuizList);
 
-        List<Long> quizIdList = new ArrayList<>();
+        List<SubmittedQuizInfo> quizInfoList = new ArrayList<>();
 
         for (SubmittedQuiz submittedQuiz : submittedQuizList) {
 
-            Long quizId = materialRepository.saveCourseQuiz(courseId, videoId, courseVideoId, submittedQuiz);
-            quizIdList.add(quizId);
+            Long quizId = submittedQuiz.getQuizId();
+            Long courseQuizId = materialRepository.saveCourseQuiz(courseId, videoId, courseVideoId, submittedQuiz);
+            quizInfoList.add(new SubmittedQuizInfo(quizId, courseQuizId));
         }
 
-        return CourseQuizIdList.builder()
-                .courseQuizIdList(quizIdList)
-                .build();
+        return quizInfoList;
     }
 
     private void validateQuizzesForMemberAndVideo(Long memberId, Long courseId, Long videoId, Long courseVideoId, List<SubmittedQuiz> submittedQuizList) {
