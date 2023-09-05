@@ -66,7 +66,7 @@ public class MemberRepository {
         }
     }
 
-    public void updateQuizCount(Long memberId, int quizCount, int correctCount) {
+    public void addQuizCount(Long memberId, int quizCount, int correctCount) {
         jdbcTemplate.update(MemberSqlQuery.UPDATE_QUIZ_COUNT_QUERY, quizCount, correctCount, memberId);
     }
 
@@ -75,5 +75,13 @@ public class MemberRepository {
                 .TotalSolvedCount(rs.getInt("total_solved_count"))
                 .totalCorrectCount(rs.getInt("total_correct_count"))
                 .build(), memberId);
+    }
+
+    public void addTotalLearningTime(Long memberId, int timeToAdd) {
+        jdbcTemplate.update(MemberSqlQuery.ADD_TOTAL_LEARNING_TIME_QUERY, timeToAdd, memberId);
+    }
+
+    public void updateCompletionRate(Long memberId, double completionRate) {
+        jdbcTemplate.update(MemberSqlQuery.UPDATE_COMPLETION_RATE_QUERY, completionRate, memberId);
     }
 }

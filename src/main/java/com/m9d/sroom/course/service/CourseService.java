@@ -68,7 +68,7 @@ public class CourseService {
             Long courseId = courseInfoList.get(i).getCourseId();
             HashSet<String> channels = courseRepository.getChannelSetByCourseId(courseId);
             int lectureCount = courseRepository.getTotalLectureCountByCourseId(courseId);
-            int completedLectureCount = courseRepository.getCompletedLectureCountByCourseId(courseId);
+            int completedLectureCount = courseRepository.getCompletedVideoCountByCourseId(courseId);
 
             courseInfoList.get(i).setChannels(String.join(", ", channels));
             courseInfoList.get(i).setTotalVideoCount(lectureCount);

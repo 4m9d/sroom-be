@@ -61,7 +61,7 @@ public class CourseRepository {
         return jdbcTemplate.queryForObject(CourseSqlQuery.GET_TOTAL_LECTURE_COUNT_BY_COURSE_ID_QUERY, (rs, rowNum) -> rs.getInt("lecture_count"), courseId);
     }
 
-    public int getCompletedLectureCountByCourseId(Long courseId) {
+    public int getCompletedVideoCountByCourseId(Long courseId) {
         return jdbcTemplate.queryForObject(CourseSqlQuery.GET_COMPLETED_LECTURE_COUNT_BY_COURSE_ID_QUERY, (rs, rowNum) -> rs.getInt("completed_lecture_count"), courseId);
     }
 
@@ -373,9 +373,17 @@ public class CourseRepository {
 
     public Integer findQuizCountByDailyLog(Long courseId, java.sql.Date date) {
         try {
-            return jdbcTemplate.queryForObject(GET_QUIZ_COUNT_BY_DAILY_LOG, Integer.class, courseId, date);
+            return jdbcTemplate.queryForObject(GET_QUIZ_COUNT_BY_DAILY_LOG_QUERY, Integer.class, courseId, date);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    public Integer getCourseCountByMemberId(Long memberId) {
+        return jdbcTemplate.queryForObject(GET_COURSE_COUNT_BY_MEMBER_ID_QUERY, Integer.class, memberId);
+    }
+
+    public Integer getCompletedCourseCountByMemberId(Long memberId) {
+        return jdbcTemplate.queryForObject(GET_COMPLETED_COURSE_COUNT_BY_MEMBER_Id_QUERY, Integer.class, memberId);
     }
 }
