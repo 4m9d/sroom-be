@@ -59,7 +59,7 @@ public class MaterialController {
     }
 
     @Auth
-    @PostMapping("/quizzes/{courseQuizId}")
+    @PostMapping("/quizzes/{courseQuizId}/scrap")
     @Tag(name = "강의 수강")
     @Operation(summary = "퀴즈 오답노트 등록", description = "courseQuizId 를 받아 해당 퀴즈를 오답노트에 등록합니다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 오답노트에 등록하였습니다.", content = @Content(schema = @Schema(implementation = ScrapResult.class)))
@@ -69,7 +69,7 @@ public class MaterialController {
     }
 
     @Auth
-    @DeleteMapping("/quizzes/{courseQuizId}")
+    @DeleteMapping("/quizzes/{courseQuizId}/scrap")
     @Tag(name = "강의 수강")
     @Operation(summary = "퀴즈 오답노트 취소", description = "courseQuizId 를 받아 해당 퀴즈를 오답노트 취소합니다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 오답노트에 등록 취소하였습니다.", content = @Content(schema = @Schema(implementation = ScrapResult.class)))

@@ -73,7 +73,7 @@ class MaterialSqlQuery {
 
     public static final String GET_COURSE_QUIZ_BY_ID_QUERY = """
         SELECT course_id, quiz_id, video_id, course_video_id
-        FROM COURSE_QUIZ
+        FROM COURSEQUIZ
         WHERE course_quiz_id = ?
     """
 
