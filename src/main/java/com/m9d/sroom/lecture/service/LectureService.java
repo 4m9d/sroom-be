@@ -19,6 +19,7 @@ import com.m9d.sroom.lecture.exception.VideoIndexParamException;
 import com.m9d.sroom.lecture.exception.VideoNotFoundException;
 import com.m9d.sroom.lecture.model.VideoCompletionStatus;
 import com.m9d.sroom.lecture.repository.LectureRepository;
+import com.m9d.sroom.member.repository.MemberRepository;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.util.youtube.YoutubeApi;
 import com.m9d.sroom.util.youtube.YoutubeUtil;
@@ -61,13 +62,15 @@ public class LectureService {
 
     private final LectureRepository lectureRepository;
     private final CourseRepository courseRepository;
+    private final MemberRepository memberRepository;
     private final YoutubeUtil youtubeUtil;
     private final YoutubeApi youtubeApi;
     private final DateUtil dateUtil;
 
-    public LectureService(LectureRepository lectureRepository, CourseRepository courseRepository, YoutubeUtil youtubeUtil, YoutubeApi youtubeApi, DateUtil dateUtil) {
+    public LectureService(LectureRepository lectureRepository, CourseRepository courseRepository, MemberRepository memberRepository, YoutubeUtil youtubeUtil, YoutubeApi youtubeApi, DateUtil dateUtil) {
         this.lectureRepository = lectureRepository;
         this.courseRepository = courseRepository;
+        this.memberRepository = memberRepository;
         this.youtubeUtil = youtubeUtil;
         this.youtubeApi = youtubeApi;
         this.dateUtil = dateUtil;
@@ -371,6 +374,7 @@ public class LectureService {
         return HtmlUtils.htmlUnescape(input);
     }
 
+    @Transactional
     public Recommendations getRecommendations(Long memberId) {
         HashSet<RecommendLecture> recommendLectureHashSet = new HashSet<>();
         List<RecommendLecture> recommendLectureList = new ArrayList<>();
@@ -446,6 +450,7 @@ public class LectureService {
         return lectureRepository.getMostEnrolledChannels(memberId);
     }
 
+    @Transactional
     public LectureStatus updateLectureTime(Long memberId, Long courseVideoId, LectureTimeRecord record, boolean isMarkedAsCompleted) {
         CourseVideo courseVideo = getCourseVideo(memberId, courseVideoId);
         int timeGap = record.getView_duration() - courseVideo.getMaxDuration();
@@ -454,10 +459,11 @@ public class LectureService {
 
         if (!status.equals(REWOUND_FROM_COMPLETE) && !status.equals(REWOUND_FROM_INCOMPLETE)) {
             updateCourseDailyLog(memberId, courseVideo.getCourseId(), timeGap, status);
+            memberRepository.addTotalLearningTime(memberId, Math.max(timeGap, 0));
         }
 
         if (status.equals(COMPLETED_NOW)) {
-            updateCourseProgress(courseVideo.getCourseId(), 1);
+            updateCourseProgress(memberId, courseVideo.getCourseId(), 1);
         }
 
         courseVideo.setMaxDuration(Math.max(record.getView_duration(), courseVideo.getMaxDuration()));
@@ -518,13 +524,22 @@ public class LectureService {
         return videoOptional.get();
     }
 
-    private void updateCourseProgress(Long courseId, int newCompletedVideoCount) {
+    private void updateCourseProgress(Long memberId, Long courseId, int newCompletedVideoCount) {
         int courseVideoCount = courseRepository.getVideoCountByCourseId(courseId);
-        int completedVideoCount = courseRepository.getCompletedLectureCountByCourseId(courseId) + newCompletedVideoCount;
+        int completedVideoCount = courseRepository.getCompletedVideoCountByCourseId(courseId) + newCompletedVideoCount;
 
         double courseProgress = (double) completedVideoCount / courseVideoCount;
 
         courseRepository.updateCourseProgress(courseId, courseProgress);
+
+        if (courseVideoCount == completedVideoCount) {
+            int courseCount = courseRepository.getCourseCountByMemberId(memberId);
+            int completedCourseCount = courseRepository.getCompletedCourseCountByMemberId(memberId);
+
+            double completionRate = completedCourseCount / (double) courseCount;
+
+            memberRepository.updateCompletionRate(memberId, completionRate);
+        }
     }
 
     private void updateCourseDailyLog(Long memberId, Long courseId, int timeGap, VideoCompletionStatus videoStatus) {

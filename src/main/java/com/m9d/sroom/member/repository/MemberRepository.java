@@ -1,7 +1,7 @@
 package com.m9d.sroom.member.repository;
 
+import com.m9d.sroom.material.model.MemberQuizInfo;
 import com.m9d.sroom.member.domain.Member;
-import com.m9d.sroom.member.exception.MemberNotFoundException;
 import com.m9d.sroom.member.sql.MemberSqlQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -64,5 +64,24 @@ public class MemberRepository {
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    public void addQuizCount(Long memberId, int quizCount, int correctCount) {
+        jdbcTemplate.update(MemberSqlQuery.UPDATE_QUIZ_COUNT_QUERY, quizCount, correctCount, memberId);
+    }
+
+    public MemberQuizInfo getQuizInfoById(Long memberId) {
+        return jdbcTemplate.queryForObject(MemberSqlQuery.GET_QUIZ_INFO_QUERY, (rs, rowNum) -> MemberQuizInfo.builder()
+                .TotalSolvedCount(rs.getInt("total_solved_count"))
+                .totalCorrectCount(rs.getInt("total_correct_count"))
+                .build(), memberId);
+    }
+
+    public void addTotalLearningTime(Long memberId, int timeToAdd) {
+        jdbcTemplate.update(MemberSqlQuery.ADD_TOTAL_LEARNING_TIME_QUERY, timeToAdd, memberId);
+    }
+
+    public void updateCompletionRate(Long memberId, double completionRate) {
+        jdbcTemplate.update(MemberSqlQuery.UPDATE_COMPLETION_RATE_QUERY, completionRate, memberId);
     }
 }

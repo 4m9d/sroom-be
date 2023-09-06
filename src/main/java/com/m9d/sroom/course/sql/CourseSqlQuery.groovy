@@ -254,4 +254,36 @@ class CourseSqlQuery {
         SET max_duration = ?, start_time = ?, is_complete = ?, last_view_time = ?
         WHERE course_video_id = ?
     """
+
+    public static final String UPDATE_QUIZ_COUNT_LOG_QUERY = """
+        UPDATE COURSE_DAILY_LOG
+        SET quiz_count = ?
+        WHERE course_id = ?
+        AND daily_log_date = ?
+    """
+
+    public static final String GET_COURSE_AND_VIDEO_ID_QUERY = """
+        SELECT course_id, video_id
+        FROM COURSEVIDEO
+        WHERE course_video_id = ?
+    """
+
+    public static final String GET_QUIZ_COUNT_BY_DAILY_LOG_QUERY = """
+        SELECT quiz_count
+        FROM COURSE_DAILY_LOG
+        WHERE course_id = ?
+        AND daily_log_date = ?
+    """
+
+    public static final String GET_COURSE_COUNT_BY_MEMBER_ID_QUERY = """
+        SELECT COUNT(1)
+        FROM COURSE
+        WHERE member_id = ?
+    """
+
+    public static final String GET_COMPLETED_COURSE_COUNT_BY_MEMBER_Id_QUERY = """
+        SELECT COUNT(1)
+        FROM COURSE
+        WHERE member_id = ? AND progress = 1
+    """
 }

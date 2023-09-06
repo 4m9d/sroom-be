@@ -24,7 +24,7 @@ class MaterialSqlQuery {
     public static final String GET_COURSE_QUIZ_INFO_QUERY = """
         SELECT submitted_answer, is_correct, submitted_time
         FROM COURSEQUIZ
-        WHERE quiz_id = ? AND video_id = ? AND course_id = ?
+        WHERE quiz_id = ? AND course_video_id = ?
     """
 
     public static final String GET_SUMMARY_BY_ID_QUERY = """
@@ -56,5 +56,18 @@ class MaterialSqlQuery {
         UPDATE COURSEVIDEO
         SET summary_id = ?
         WHERE course_video_id = ?
+    """
+
+    public static final String SAVE_COURSE_QUIZ_QUERY = """
+        INSERT INTO COURSEQUIZ
+        (course_id, quiz_id, video_id, course_video_id, submitted_answer, is_correct)
+        VALUES (?, ?, ?, ?, ?, ?)
+    """
+
+    public static final String GET_VIDEO_ID_BY_QUIZ_ID = """
+        SELECT
+        video_id
+        FROM QUIZ
+        WHERE quiz_id = ?
     """
 }

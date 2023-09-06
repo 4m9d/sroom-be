@@ -1,11 +1,14 @@
 package com.m9d.sroom.material.repository;
 
 import com.m9d.sroom.global.model.QuizOption;
+import com.m9d.sroom.material.dto.request.SubmittedQuiz;
 import com.m9d.sroom.material.dto.response.Quiz;
 import com.m9d.sroom.material.dto.response.SummaryBrief;
+import com.m9d.sroom.material.exception.QuizNotFoundException;
 import com.m9d.sroom.material.model.CourseQuiz;
 import com.m9d.sroom.global.model.Summary;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -14,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.m9d.sroom.course.sql.CourseSqlQuery.GET_LAST_INSERT_ID_QUERY;
+import static com.m9d.sroom.course.sql.CourseSqlQuery.SAVE_COURSE_QUERY;
 import static com.m9d.sroom.material.sql.MaterialSqlQuery.*;
 
 @Repository
@@ -69,7 +73,7 @@ public class MaterialRepository {
                 .build(), quizId);
     }
 
-    public Optional<CourseQuiz> findCourseQuizInfo(Long quizId, Long videoId, Long courseId) {
+    public Optional<CourseQuiz> findCourseQuizInfo(Long quizId, Long courseVideoId) {
         try {
             CourseQuiz courseQuiz = jdbcTemplate.queryForObject(GET_COURSE_QUIZ_INFO_QUERY,
                     (rs, rowNum) -> CourseQuiz.builder()
@@ -77,7 +81,7 @@ public class MaterialRepository {
                             .correct(rs.getBoolean("is_correct"))
                             .submittedTime(rs.getTimestamp("submitted_time"))
                             .build(),
-                    quizId, videoId, courseId);
+                    quizId, courseVideoId);
             return Optional.ofNullable(courseQuiz);
         } catch (IncorrectResultSizeDataAccessException e) {
             return Optional.empty();
@@ -121,5 +125,19 @@ public class MaterialRepository {
 
     public void updateSummaryIdByCourseVideoId(Long courseVideoId, long summaryId) {
         jdbcTemplate.update(UPDATE_SUMMARY_ID_QUERY, summaryId, courseVideoId);
+    }
+
+    public Long saveCourseQuiz(Long courseId, Long videoId, Long courseVideoId, SubmittedQuiz submittedQuiz) {
+        jdbcTemplate.update(SAVE_COURSE_QUIZ_QUERY, courseId, submittedQuiz.getQuizId(), videoId, courseVideoId, submittedQuiz.getSubmittedAnswer(), submittedQuiz.getIsCorrect());
+
+        return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
+    }
+
+    public Long getVideoIdByQuizId(Long quizId) {
+        try {
+            return jdbcTemplate.queryForObject(GET_VIDEO_ID_BY_QUIZ_ID, Long.class, quizId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new QuizNotFoundException();
+        }
     }
 }

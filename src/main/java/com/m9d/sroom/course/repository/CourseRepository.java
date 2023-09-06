@@ -8,6 +8,7 @@ import com.m9d.sroom.course.sql.CourseSqlQuery;
 import com.m9d.sroom.lecture.dto.response.CourseBrief;
 import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
 import com.m9d.sroom.lecture.dto.response.VideoBrief;
+import com.m9d.sroom.material.model.CourseAndVideoId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -60,7 +61,7 @@ public class CourseRepository {
         return jdbcTemplate.queryForObject(CourseSqlQuery.GET_TOTAL_LECTURE_COUNT_BY_COURSE_ID_QUERY, (rs, rowNum) -> rs.getInt("lecture_count"), courseId);
     }
 
-    public int getCompletedLectureCountByCourseId(Long courseId) {
+    public int getCompletedVideoCountByCourseId(Long courseId) {
         return jdbcTemplate.queryForObject(CourseSqlQuery.GET_COMPLETED_LECTURE_COUNT_BY_COURSE_ID_QUERY, (rs, rowNum) -> rs.getInt("completed_lecture_count"), courseId);
     }
 
@@ -353,5 +354,36 @@ public class CourseRepository {
 
     public void updateVideoViewStatus(CourseVideo courseVideo) {
         jdbcTemplate.update(UPDATE_VIDEO_VIEW_STATUS_QUERY, courseVideo.getMaxDuration(), courseVideo.getStartTime(), courseVideo.isComplete(), courseVideo.getLastViewTime(), courseVideo.getCourseVideoId());
+    }
+
+    public void updateCourseDailyLogQuizCount(Long courseId, java.sql.Date date, int quizCount) {
+        jdbcTemplate.update(UPDATE_QUIZ_COUNT_LOG_QUERY, quizCount, courseId, date);
+    }
+
+    public CourseAndVideoId getCourseAndVideoId(Long courseVideoId) {
+        try {
+            return jdbcTemplate.queryForObject(GET_COURSE_AND_VIDEO_ID_QUERY, (rs, rowNum) -> CourseAndVideoId.builder()
+                    .videoId(rs.getLong("video_id"))
+                    .courseId(rs.getLong("course_id"))
+                    .build(), courseVideoId);
+        } catch (EmptyResultDataAccessException e) {
+            throw new CourseVideoNotFoundException();
+        }
+    }
+
+    public Integer findQuizCountByDailyLog(Long courseId, java.sql.Date date) {
+        try {
+            return jdbcTemplate.queryForObject(GET_QUIZ_COUNT_BY_DAILY_LOG_QUERY, Integer.class, courseId, date);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    public Integer getCourseCountByMemberId(Long memberId) {
+        return jdbcTemplate.queryForObject(GET_COURSE_COUNT_BY_MEMBER_ID_QUERY, Integer.class, memberId);
+    }
+
+    public Integer getCompletedCourseCountByMemberId(Long memberId) {
+        return jdbcTemplate.queryForObject(GET_COMPLETED_COURSE_COUNT_BY_MEMBER_Id_QUERY, Integer.class, memberId);
     }
 }

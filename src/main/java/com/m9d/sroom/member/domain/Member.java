@@ -11,11 +11,17 @@ public class Member {
 
     @Id
     private Long memberId;
+
     private String memberCode;
+
     private String memberName;
+
     private String bio;
+
     private String refreshToken;
+
     private LocalDateTime signUpTime;
+
     private int status;
 
     @Builder
