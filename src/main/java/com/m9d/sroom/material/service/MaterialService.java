@@ -247,14 +247,16 @@ public class MaterialService {
     }
 
     @Transactional
-    public ScrapResult scrapQuiz(Long memberId, Long courseQuizId, boolean isScrap) {
+    public ScrapResult switchScrapFlag(Long memberId, Long courseQuizId) {
         validateCourseQuizForMember(memberId, courseQuizId);
 
-        materialRepository.updateQuizScrap(courseQuizId, isScrap);
+        materialRepository.switchQuizScrapFlag(courseQuizId);
+
+        boolean scrapStatus = materialRepository.isScrappedById(courseQuizId);
 
         return ScrapResult.builder()
                 .courseQuizId(courseQuizId)
-                .scrapped(isScrap)
+                .scrapped(scrapStatus)
                 .build();
     }
 

@@ -156,7 +156,11 @@ public class MaterialRepository {
         }
     }
 
-    public void updateQuizScrap(Long courseQuizId, boolean isScrap) {
-        jdbcTemplate.update(UPDATE_COURSE_QUIZ_SCRAP_QUERY, isScrap, courseQuizId);
+    public void switchQuizScrapFlag(Long courseQuizId) {
+        jdbcTemplate.update(UPDATE_COURSE_QUIZ_SCRAP_QUERY, courseQuizId);
+    }
+
+    public Boolean isScrappedById(Long courseQuizId) {
+        return jdbcTemplate.queryForObject(GET_SCRAPPED_FLAG_QUERY, Boolean.class, courseQuizId);
     }
 }

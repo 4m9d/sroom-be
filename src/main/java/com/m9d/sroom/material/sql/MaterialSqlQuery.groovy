@@ -79,7 +79,13 @@ class MaterialSqlQuery {
 
     public static final String UPDATE_COURSE_QUIZ_SCRAP_QUERY = """
         UPDATE COURSEQUIZ
-        SET is_scrapped = ?
+        SET is_scrapped = NOT is_scrapped
         WHERE course_quiz_id = ?
     """
+
+    public static final String GET_SCRAPPED_FLAG_QUERY = """
+        SELECT is_scrapped
+        FROM COURSEQUIZ
+        WHERE course_quiz_id = ?
+    """;
 }
