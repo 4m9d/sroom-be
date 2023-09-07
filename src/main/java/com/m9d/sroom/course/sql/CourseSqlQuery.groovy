@@ -280,7 +280,7 @@ class CourseSqlQuery {
     public static final String GET_COMPLETED_COURSE_COUNT_BY_MEMBER_Id_QUERY = """
         SELECT COUNT(1)
         FROM COURSE
-        WHERE member_id = ? AND progress = 1
+        WHERE member_id = ? AND progress = 100
     """
 
     public static final String GET_COURSE_VIDEO_ID_BY_PREV_INDEX_QUERY = """

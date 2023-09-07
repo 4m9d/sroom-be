@@ -542,7 +542,7 @@ public class LectureService {
         int courseVideoCount = courseRepository.getVideoCountByCourseId(courseId);
         int completedVideoCount = courseRepository.getCompletedVideoCountByCourseId(courseId) + newCompletedVideoCount;
 
-        double courseProgress = (double) completedVideoCount / courseVideoCount;
+        int courseProgress = completedVideoCount * 100 / courseVideoCount;
 
         courseRepository.updateCourseProgress(courseId, courseProgress);
 
@@ -550,9 +550,9 @@ public class LectureService {
             int courseCount = courseRepository.getCourseCountByMemberId(memberId);
             int completedCourseCount = courseRepository.getCompletedCourseCountByMemberId(memberId);
 
-            double completionRate = completedCourseCount / (double) courseCount;
+            int memberCompletionRate = completedCourseCount * 100 / courseCount;
 
-            memberRepository.updateCompletionRate(memberId, completionRate);
+            memberRepository.updateCompletionRate(memberId, memberCompletionRate);
         }
     }
 

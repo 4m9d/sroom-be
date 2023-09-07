@@ -315,7 +315,7 @@ public class CourseRepository {
         }
     }
 
-    public void updateCourseProgress(Long courseId, double courseProgress) {
+    public void updateCourseProgress(Long courseId, int courseProgress) {
         jdbcTemplate.update(UPDATE_COURSE_PROGRESS_QUERY, courseProgress, courseId);
     }
 
