@@ -386,4 +386,16 @@ public class CourseRepository {
     public Integer getCompletedCourseCountByMemberId(Long memberId) {
         return jdbcTemplate.queryForObject(GET_COMPLETED_COURSE_COUNT_BY_MEMBER_Id_QUERY, Integer.class, memberId);
     }
+
+    public Long getCourseVideoByPrevIndex(Long courseId, int videoIndex) {
+        try {
+            return jdbcTemplate.queryForObject(GET_COURSE_VIDEO_ID_BY_PREV_INDEX_QUERY, Long.class, courseId, videoIndex);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    public void updateLastViewTimeById(Long courseVideoId, Timestamp time) {
+        jdbcTemplate.update(UPDATE_LAST_VIEW_TIME_BY_ID_QUERY, time, courseVideoId);
+    }
 }

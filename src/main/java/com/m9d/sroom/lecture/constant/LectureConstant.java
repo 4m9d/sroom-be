@@ -10,4 +10,6 @@ public class LectureConstant {
 
     public static final double MINIMUM_VIEW_PERCENT_FOR_COMPLETION = 0.7;
 
+    public static final int LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS = 3;
+
 }

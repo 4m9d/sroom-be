@@ -282,4 +282,19 @@ class CourseSqlQuery {
         FROM COURSE
         WHERE member_id = ? AND progress = 1
     """
+
+    public static final String GET_COURSE_VIDEO_ID_BY_PREV_INDEX_QUERY = """
+        SELECT course_video_id
+        FROM COURSEVIDEO
+        WHERE course_id = ?
+        AND video_index > ?
+        ORDER BY video_index
+        LIMIT 1
+    """
+
+    public static final String UPDATE_LAST_VIEW_TIME_BY_ID_QUERY = """
+        UPDATE COURSEVIDEO
+        SET last_view_time = ?
+        WHERE course_video_id = ?
+    """
 }
