@@ -5,7 +5,8 @@ import com.m9d.sroom.material.dto.request.SubmittedQuiz;
 import com.m9d.sroom.material.dto.response.Quiz;
 import com.m9d.sroom.material.dto.response.SummaryBrief;
 import com.m9d.sroom.material.exception.QuizNotFoundException;
-import com.m9d.sroom.material.model.CourseQuiz;
+import com.m9d.sroom.material.model.CourseQuizInfo;
+import com.m9d.sroom.material.model.SubmittedQuizInfo;
 import com.m9d.sroom.global.model.Summary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -17,7 +18,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.m9d.sroom.course.sql.CourseSqlQuery.GET_LAST_INSERT_ID_QUERY;
-import static com.m9d.sroom.course.sql.CourseSqlQuery.SAVE_COURSE_QUERY;
 import static com.m9d.sroom.material.sql.MaterialSqlQuery.*;
 
 @Repository
@@ -73,16 +73,17 @@ public class MaterialRepository {
                 .build(), quizId);
     }
 
-    public Optional<CourseQuiz> findCourseQuizInfo(Long quizId, Long courseVideoId) {
+    public Optional<SubmittedQuizInfo> findCourseQuizInfo(Long quizId, Long courseVideoId) {
         try {
-            CourseQuiz courseQuiz = jdbcTemplate.queryForObject(GET_COURSE_QUIZ_INFO_QUERY,
-                    (rs, rowNum) -> CourseQuiz.builder()
+            SubmittedQuizInfo submittedQuizInfo = jdbcTemplate.queryForObject(GET_COURSE_QUIZ_INFO_QUERY,
+                    (rs, rowNum) -> SubmittedQuizInfo.builder()
                             .submittedAnswer(rs.getString("submitted_answer"))
                             .correct(rs.getBoolean("is_correct"))
                             .submittedTime(rs.getTimestamp("submitted_time"))
+                            .scrapped(rs.getBoolean("is_scrapped"))
                             .build(),
                     quizId, courseVideoId);
-            return Optional.ofNullable(courseQuiz);
+            return Optional.ofNullable(submittedQuizInfo);
         } catch (IncorrectResultSizeDataAccessException e) {
             return Optional.empty();
         }
@@ -135,9 +136,31 @@ public class MaterialRepository {
 
     public Long getVideoIdByQuizId(Long quizId) {
         try {
-            return jdbcTemplate.queryForObject(GET_VIDEO_ID_BY_QUIZ_ID, Long.class, quizId);
+            return jdbcTemplate.queryForObject(GET_VIDEO_ID_BY_QUIZ_ID_QUERY, Long.class, quizId);
         } catch (EmptyResultDataAccessException e) {
             throw new QuizNotFoundException();
         }
+    }
+
+    public Optional<CourseQuizInfo> findCourseQuizInfoById(Long courseQuizId) {
+        try {
+            CourseQuizInfo courseQuizInfo = jdbcTemplate.queryForObject(GET_COURSE_QUIZ_BY_ID_QUERY, (rs, rowNum) -> CourseQuizInfo.builder()
+                    .courseId(rs.getLong("course_id"))
+                    .videoId(rs.getLong("video_id"))
+                    .quizId(rs.getLong("quiz_id"))
+                    .courseVideoId(rs.getLong("course_video_id"))
+                    .build(), courseQuizId);
+            return Optional.ofNullable(courseQuizInfo);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public void switchQuizScrapFlag(Long courseQuizId) {
+        jdbcTemplate.update(UPDATE_COURSE_QUIZ_SCRAP_QUERY, courseQuizId);
+    }
+
+    public Boolean isScrappedById(Long courseQuizId) {
+        return jdbcTemplate.queryForObject(GET_SCRAPPED_FLAG_QUERY, Boolean.class, courseQuizId);
     }
 }

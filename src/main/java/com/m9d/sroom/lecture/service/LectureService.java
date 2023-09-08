@@ -45,6 +45,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -453,28 +454,32 @@ public class LectureService {
     @Transactional
     public LectureStatus updateLectureTime(Long memberId, Long courseVideoId, LectureTimeRecord record, boolean isMarkedAsCompleted) {
         CourseVideo courseVideo = getCourseVideo(memberId, courseVideoId);
-        int timeGap = record.getView_duration() - courseVideo.getMaxDuration();
+        int timeGap = record.getViewDuration() - courseVideo.getMaxDuration();
 
-        VideoCompletionStatus status = getVideoCompletionStatus(record.getView_duration(), timeGap, courseVideo, isMarkedAsCompleted);
+        VideoCompletionStatus status = getVideoCompletionStatus(record.getViewDuration(), timeGap, courseVideo, isMarkedAsCompleted);
 
         if (!status.equals(REWOUND_FROM_COMPLETE) && !status.equals(REWOUND_FROM_INCOMPLETE)) {
             updateCourseDailyLog(memberId, courseVideo.getCourseId(), timeGap, status);
             memberRepository.addTotalLearningTime(memberId, Math.max(timeGap, 0));
         }
 
-        if (status.equals(COMPLETED_NOW)) {
+        if (status.equals(COMPLETED_NOW) || status.equals(FULLY_WATCHED_FROM_INCOMPLETE)) {
             updateCourseProgress(memberId, courseVideo.getCourseId(), 1);
         }
 
-        courseVideo.setMaxDuration(Math.max(record.getView_duration(), courseVideo.getMaxDuration()));
-        courseVideo.setStartTime(record.getView_duration());
+        if (status.equals(FULLY_WATCHED_FROM_COMPLETE) || status.equals(FULLY_WATCHED_FROM_INCOMPLETE)) {
+            updateLastViewVideoToNext(courseVideo.getCourseId(), courseVideo.getVideoIndex());
+        }
+
+        courseVideo.setMaxDuration(Math.max(record.getViewDuration(), courseVideo.getMaxDuration()));
+        courseVideo.setStartTime(record.getViewDuration());
         courseVideo.setComplete(status.getValue());
         courseVideo.setLastViewTime(new Timestamp(System.currentTimeMillis()));
         courseRepository.updateVideoViewStatus(courseVideo);
 
         return LectureStatus.builder()
                 .courseVideoId(courseVideoId)
-                .viewDuration(record.getView_duration())
+                .viewDuration(record.getViewDuration())
                 .complete(status.getValue())
                 .build();
     }
@@ -497,21 +502,30 @@ public class LectureService {
 
     private VideoCompletionStatus getVideoCompletionStatus(int newDuration, int timeGap, CourseVideo courseVideo, boolean isMarkedAsCompleted) {
         VideoCompletionStatus status;
+
         if (timeGap > 0) {
             status = courseVideo.isComplete() ? COMPLETED_PREVIOUSLY : INCOMPLETE;
         } else {
             status = courseVideo.isComplete() ? REWOUND_FROM_COMPLETE : REWOUND_FROM_INCOMPLETE;
         }
 
+        Video video = getVideo(courseVideo.getVideoId());
+
         if (status.equals(INCOMPLETE)) {
-            Video video = getVideo(courseVideo.getVideoId());
+
             boolean currVideoComplete = (newDuration / (double) video.getDuration()) > MINIMUM_VIEW_PERCENT_FOR_COMPLETION;
             status = currVideoComplete ? COMPLETED_NOW : INCOMPLETE;
+
         }
 
         if (isMarkedAsCompleted && !courseVideo.isComplete()) {
             status = COMPLETED_NOW;
         }
+
+        if (newDuration >= video.getDuration() - LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS) {
+            status = status.equals(COMPLETED_NOW) ? FULLY_WATCHED_FROM_INCOMPLETE : FULLY_WATCHED_FROM_COMPLETE;
+        }
+
         return status;
     }
 
@@ -528,7 +542,7 @@ public class LectureService {
         int courseVideoCount = courseRepository.getVideoCountByCourseId(courseId);
         int completedVideoCount = courseRepository.getCompletedVideoCountByCourseId(courseId) + newCompletedVideoCount;
 
-        double courseProgress = (double) completedVideoCount / courseVideoCount;
+        int courseProgress = completedVideoCount * 100 / courseVideoCount;
 
         courseRepository.updateCourseProgress(courseId, courseProgress);
 
@@ -536,9 +550,9 @@ public class LectureService {
             int courseCount = courseRepository.getCourseCountByMemberId(memberId);
             int completedCourseCount = courseRepository.getCompletedCourseCountByMemberId(memberId);
 
-            double completionRate = completedCourseCount / (double) courseCount;
+            int memberCompletionRate = completedCourseCount * 100 / courseCount;
 
-            memberRepository.updateCompletionRate(memberId, completionRate);
+            memberRepository.updateCompletionRate(memberId, memberCompletionRate);
         }
     }
 
@@ -562,6 +576,15 @@ public class LectureService {
             dailyLog.setLearningTime(dailyLog.getLearningTime() + learningTimeToAdd);
             dailyLog.setLectureCount(dailyLog.getLectureCount() + lectureCountToAdd);
             courseRepository.updateCourseDailyLog(dailyLog);
+        }
+    }
+
+    private void updateLastViewVideoToNext(Long courseId, int videoIndex) {
+        Long courseVideoId = courseRepository.getCourseVideoByPrevIndex(courseId, videoIndex);
+
+        if (courseVideoId != null) {
+            Timestamp timeToRecord = Timestamp.valueOf(LocalDateTime.now().plusSeconds(LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS));
+            courseRepository.updateLastViewTimeById(courseVideoId, timeToRecord);
         }
     }
 }

@@ -29,4 +29,7 @@ public class Quiz {
 
     @JsonProperty("is_correct")
     private boolean correct;
+
+    @JsonProperty("is_scrapped")
+    private boolean scrapped;
 }

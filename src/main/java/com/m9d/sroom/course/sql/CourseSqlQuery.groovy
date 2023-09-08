@@ -284,6 +284,21 @@ class CourseSqlQuery {
     public static final String GET_COMPLETED_COURSE_COUNT_BY_MEMBER_Id_QUERY = """
         SELECT COUNT(1)
         FROM COURSE
-        WHERE member_id = ? AND progress = 1
+        WHERE member_id = ? AND progress = 100
+    """
+
+    public static final String GET_COURSE_VIDEO_ID_BY_PREV_INDEX_QUERY = """
+        SELECT course_video_id
+        FROM COURSEVIDEO
+        WHERE course_id = ?
+        AND video_index > ?
+        ORDER BY video_index
+        LIMIT 1
+    """
+
+    public static final String UPDATE_LAST_VIEW_TIME_BY_ID_QUERY = """
+        UPDATE COURSEVIDEO
+        SET last_view_time = ?
+        WHERE course_video_id = ?
     """
 }

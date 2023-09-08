@@ -6,11 +6,16 @@ public enum VideoCompletionStatus {
 
     COMPLETED_NOW(true),
 
+
     INCOMPLETE(false),
 
     REWOUND_FROM_COMPLETE(true),
 
-    REWOUND_FROM_INCOMPLETE(false);
+    REWOUND_FROM_INCOMPLETE(false),
+
+    FULLY_WATCHED_FROM_COMPLETE(true),
+
+    FULLY_WATCHED_FROM_INCOMPLETE(true);
 
     private final boolean value;
 

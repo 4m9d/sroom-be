@@ -5,10 +5,13 @@ import lombok.Setter;
 
 import javax.validation.constraints.NotNull;
 
-@Getter
 @Setter
 public class LectureTimeRecord {
 
     @NotNull
     private int view_duration;
+
+    public int getViewDuration() {
+        return view_duration;
+    }
 }

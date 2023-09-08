@@ -22,7 +22,7 @@ class MaterialSqlQuery {
     """
 
     public static final String GET_COURSE_QUIZ_INFO_QUERY = """
-        SELECT submitted_answer, is_correct, submitted_time
+        SELECT submitted_answer, is_correct, submitted_time, is_scrapped
         FROM COURSEQUIZ
         WHERE quiz_id = ? AND course_video_id = ?
     """
@@ -64,10 +64,28 @@ class MaterialSqlQuery {
         VALUES (?, ?, ?, ?, ?, ?)
     """
 
-    public static final String GET_VIDEO_ID_BY_QUIZ_ID = """
+    public static final String GET_VIDEO_ID_BY_QUIZ_ID_QUERY = """
         SELECT
         video_id
         FROM QUIZ
         WHERE quiz_id = ?
     """
+
+    public static final String GET_COURSE_QUIZ_BY_ID_QUERY = """
+        SELECT course_id, quiz_id, video_id, course_video_id
+        FROM COURSEQUIZ
+        WHERE course_quiz_id = ?
+    """
+
+    public static final String UPDATE_COURSE_QUIZ_SCRAP_QUERY = """
+        UPDATE COURSEQUIZ
+        SET is_scrapped = NOT is_scrapped
+        WHERE course_quiz_id = ?
+    """
+
+    public static final String GET_SCRAPPED_FLAG_QUERY = """
+        SELECT is_scrapped
+        FROM COURSEQUIZ
+        WHERE course_quiz_id = ?
+    """;
 }

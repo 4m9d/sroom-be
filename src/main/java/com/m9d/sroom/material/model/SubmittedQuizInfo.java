@@ -7,11 +7,13 @@ import java.sql.Timestamp;
 
 @Data
 @Builder
-public class CourseQuiz {
+public class SubmittedQuizInfo {
 
     private String submittedAnswer;
 
     private boolean correct;
 
     private Timestamp submittedTime;
+
+    private boolean scrapped;
 }

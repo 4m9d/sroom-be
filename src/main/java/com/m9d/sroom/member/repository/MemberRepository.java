@@ -81,7 +81,7 @@ public class MemberRepository {
         jdbcTemplate.update(MemberSqlQuery.ADD_TOTAL_LEARNING_TIME_QUERY, timeToAdd, memberId);
     }
 
-    public void updateCompletionRate(Long memberId, double completionRate) {
+    public void updateCompletionRate(Long memberId, int completionRate) {
         jdbcTemplate.update(MemberSqlQuery.UPDATE_COMPLETION_RATE_QUERY, completionRate, memberId);
     }
 }
