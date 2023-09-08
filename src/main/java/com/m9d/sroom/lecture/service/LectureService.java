@@ -522,7 +522,7 @@ public class LectureService {
             status = COMPLETED_NOW;
         }
 
-        if (newDuration >= video.getDuration()) {
+        if (newDuration >= video.getDuration() - LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS) {
             status = status.equals(COMPLETED_NOW) ? FULLY_WATCHED_FROM_INCOMPLETE : FULLY_WATCHED_FROM_COMPLETE;
         }
 
