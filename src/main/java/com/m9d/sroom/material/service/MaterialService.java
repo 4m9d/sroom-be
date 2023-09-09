@@ -57,10 +57,17 @@ public class MaterialService {
         CourseVideo courseVideo = getCourseVideo(courseVideoId);
 
         validateCourseVideoIdForMember(memberId, courseVideo);
+        log.debug("courseVideo.summaryId = {}", courseVideo.getSummaryId());
 
-        if (courseVideo.getSummaryId() == null) {
+        Long summaryId = (courseVideo.getSummaryId() == 0) ? null : courseVideo.getSummaryId();
+
+        if (summaryId == null) {
             material = Material.builder()
                     .status(MaterialStatus.CREATING.getValue())
+                    .build();
+        } else if (summaryId == MaterialStatus.CREATION_FAILED.getValue()) {
+            material = Material.builder()
+                    .status(MaterialStatus.CREATION_FAILED.getValue())
                     .build();
         } else {
             quizList = getQuizList(courseVideo.getVideoId(), courseVideoId);
@@ -286,11 +293,6 @@ public class MaterialService {
     public void saveMaterials(MaterialResultsVo materialVo) throws Exception {
         String videoCode = materialVo.getVideoId();
 
-        if (materialVo.getIsValid() == MaterialVaildStatus.IN_VALID.getValue()) {
-            log.debug("no valid materials. videoCode = {}", videoCode);
-            materialRepository.updateMaterialStatusByCode(videoCode, MaterialStatus.CREATION_FAILED.getValue());
-            return;
-        }
 
         Long videoId = courseRepository.findVideoIdByCode(videoCode);
 
@@ -299,6 +301,12 @@ public class MaterialService {
             throw new VideoNotFoundFromDBException();
         }
 
+        if (materialVo.getIsValid() == MaterialVaildStatus.IN_VALID.getValue()) {
+            log.debug("no valid materials. videoCode = {}", videoCode);
+            materialRepository.updateMaterialStatusByCode(videoCode, MaterialStatus.CREATION_FAILED.getValue());
+            courseRepository.updateSummaryId(videoId, (long) MaterialStatus.CREATION_FAILED.getValue());
+            return;
+        }
 
         materialRepository.saveSummary(videoId, materialVo.getSummary(), false);
         Long summaryId = materialRepository.getSummaryIdByVideoId(videoId, false);
