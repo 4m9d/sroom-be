@@ -6,12 +6,14 @@ import com.m9d.sroom.course.repository.CourseRepository;
 import com.m9d.sroom.global.model.CourseDailyLog;
 import com.m9d.sroom.global.model.CourseVideo;
 import com.m9d.sroom.global.model.QuizOption;
+import com.m9d.sroom.gpt.exception.QuizTypeNotMatchException;
+import com.m9d.sroom.gpt.model.MaterialVaildStatus;
+import com.m9d.sroom.gpt.vo.MaterialResultsVo;
+import com.m9d.sroom.gpt.vo.QuizVo;
+import com.m9d.sroom.lecture.repository.LectureRepository;
 import com.m9d.sroom.material.dto.request.SubmittedQuiz;
 import com.m9d.sroom.material.dto.response.*;
-import com.m9d.sroom.material.exception.CourseQuizDuplicationException;
-import com.m9d.sroom.material.exception.CourseQuizNotFoundException;
-import com.m9d.sroom.material.exception.QuizIdNotMatchException;
-import com.m9d.sroom.material.exception.SummaryNotFoundException;
+import com.m9d.sroom.material.exception.*;
 import com.m9d.sroom.material.model.*;
 import com.m9d.sroom.global.model.Summary;
 import com.m9d.sroom.material.model.SubmittedQuizInfo;
@@ -28,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.m9d.sroom.material.constant.MaterialConstant.*;
+
 @Service
 @Slf4j
 public class MaterialService {
@@ -35,11 +39,13 @@ public class MaterialService {
     private final MaterialRepository materialRepository;
     private final CourseRepository courseRepository;
     private final MemberRepository memberRepository;
+    private final LectureRepository lectureRepository;
 
-    public MaterialService(MaterialRepository materialRepository, CourseRepository courseRepository, MemberRepository memberRepository) {
+    public MaterialService(MaterialRepository materialRepository, CourseRepository courseRepository, MemberRepository memberRepository, LectureRepository lectureRepository) {
         this.materialRepository = materialRepository;
         this.courseRepository = courseRepository;
         this.memberRepository = memberRepository;
+        this.lectureRepository = lectureRepository;
     }
 
     @Transactional
@@ -144,7 +150,8 @@ public class MaterialService {
             summaryId = originalSummary.getId();
             materialRepository.updateSummary(summaryId, content);
         } else {
-            summaryId = materialRepository.saveSummaryModified(originalSummary.getVideoId(), content);
+            materialRepository.saveSummary(originalSummary.getVideoId(), content, true);
+            summaryId = materialRepository.getSummaryIdByVideoId(originalSummary.getVideoId(), false);
             materialRepository.updateSummaryIdByCourseVideoId(courseVideoId, summaryId);
         }
 
@@ -272,6 +279,56 @@ public class MaterialService {
 
         if (!memberId.equals(memberIdByCourse)) {
             throw new CourseNotMatchException();
+        }
+    }
+
+    @Transactional
+    public void saveMaterials(MaterialResultsVo materialVo) throws Exception {
+        String videoCode = materialVo.getVideoId();
+
+        if (materialVo.getIsValid() == MaterialVaildStatus.IN_VALID.getValue()) {
+            log.debug("no valid materials. videoCode = {}", videoCode);
+            materialRepository.updateMaterialStatusByCode(videoCode, MaterialStatus.CREATION_FAILED.getValue());
+            return;
+        }
+
+        Long videoId = courseRepository.findVideoIdByCode(videoCode);
+
+        if (videoId == null) {
+            log.warn("can't find video information from db. video code = {}", videoCode);
+            throw new VideoNotFoundFromDBException();
+        }
+
+
+        materialRepository.saveSummary(videoId, materialVo.getSummary(), false);
+        Long summaryId = materialRepository.getSummaryIdByVideoId(videoId, false);
+        courseRepository.updateSummaryId(videoId, summaryId);
+        materialRepository.updateMaterialStatusByCode(videoCode, MaterialStatus.CREATED.getValue());
+        log.info("videoCode = {}, videoId = {}, summaryId = {}, ", videoCode, videoId, summaryId);
+
+        for (QuizVo quizVo : materialVo.getQuizzes()) {
+            saveQuiz(videoId, quizVo);
+        }
+    }
+
+    private void saveQuiz(Long videoId, QuizVo quizVo) throws NumberFormatException, QuizTypeNotMatchException {
+        if (quizVo.getQuizType() == QuizType.SUBJECTIVE.getValue()) {
+            materialRepository.saveSubjectiveQuiz(videoId, quizVo.getQuizType(), quizVo.getQuizQuestion(), quizVo.getAnswer());
+        } else if (quizVo.getQuizType() == QuizType.MULTIPLE_CHOICE.getValue()) {
+            Long quizId = materialRepository.saveMultipleChoiceQuiz(videoId, quizVo.getQuizType(), quizVo.getQuizQuestion(), Integer.parseInt(quizVo.getAnswer()));
+            saveQuizOptions(quizId, quizVo);
+        } else if (quizVo.getQuizType() == QuizType.TRUE_FALSE.getValue()) {
+            materialRepository.saveMultipleChoiceQuiz(videoId, quizVo.getQuizType(), quizVo.getQuizQuestion(), Integer.parseInt(quizVo.getAnswer()));
+        } else {
+            throw new QuizTypeNotMatchException(quizVo.getQuizType());
+        }
+    }
+
+    private void saveQuizOptions(Long quizId, QuizVo quizVo) throws IndexOutOfBoundsException {
+        int optionCount = Math.min(DEFAULT_QUIZ_OPTION_COUNT, quizVo.getOptions().size());
+
+        for (int optionIndex = 0; optionIndex < optionCount; optionIndex++) {
+            materialRepository.saveQuizOption(quizId, quizVo.getOptions().get(optionIndex), optionIndex + 1);
         }
     }
 }

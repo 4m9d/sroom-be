@@ -301,4 +301,23 @@ class CourseSqlQuery {
         SET last_view_time = ?
         WHERE course_video_id = ?
     """
+
+    public static final String GET_VIDEO_ID_BY_CODE_QUERY = """
+        SELECT video_id
+        FROM VIDEO
+        WHERE video_code = ?
+    """
+
+    public static final String GET_MATERIAL_STATUS_BY_CODE_QUERY = """
+        SELECT material_status
+        FROM VIDEO
+        WHERE video_code = ?
+    """
+
+    public static final String UPDATE_SUMMARY_ID_QUERY = """
+        UPDATE COURSEVIDEO
+        SET summary_id = ?
+        WHERE video_id = ?
+        AND (summary_id = 0 OR summary_id IS NULL)
+    """
 }

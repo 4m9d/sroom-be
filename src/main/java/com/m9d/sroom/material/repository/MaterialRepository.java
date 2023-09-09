@@ -118,10 +118,8 @@ public class MaterialRepository {
         jdbcTemplate.update(UPDATE_SUMMARY_QUERY, newContent, summaryId);
     }
 
-    public Long saveSummaryModified(Long videoId, String newContent) {
-        jdbcTemplate.update(SAVE_SUMMARY_QUERY, videoId, newContent, true);
-
-        return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
+    public void saveSummary(Long videoId, String newContent, boolean modified) {
+        jdbcTemplate.update(SAVE_SUMMARY_QUERY, videoId, newContent, modified);
     }
 
     public void updateSummaryIdByCourseVideoId(Long courseVideoId, long summaryId) {
@@ -162,5 +160,27 @@ public class MaterialRepository {
 
     public Boolean isScrappedById(Long courseQuizId) {
         return jdbcTemplate.queryForObject(GET_SCRAPPED_FLAG_QUERY, Boolean.class, courseQuizId);
+    }
+
+    public void saveSubjectiveQuiz(Long videoId, int quizType, String question, String answer) {
+        jdbcTemplate.update(SAVE_SUBJECTIVE_QUIZ_QUERY, videoId, quizType, question, answer);
+    }
+
+    public Long saveMultipleChoiceQuiz(Long videoId, int quizType, String quizQuestion, int answer) {
+        jdbcTemplate.update(SAVE_MULTIPLE_CHOICE_QUIZ_QUIERY, videoId, quizType, quizQuestion, answer);
+
+        return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
+    }
+
+    public void saveQuizOption(Long quizId, String optionText, int index) {
+        jdbcTemplate.update(SAVE_QUIZ_OPTION_QUERY, quizId, optionText, index);
+    }
+
+    public void updateMaterialStatusByCode(String videoCode, int statusValue) {
+        jdbcTemplate.update(UPDATE_MATERIAL_STATUS_CREATING_QUERY, statusValue, videoCode);
+    }
+
+    public Long getSummaryIdByVideoId(Long videoId, boolean modified) {
+        return jdbcTemplate.queryForObject(GET_SUMMARY_ID_BY_VIDEO_ID_QUERY, Long.class, videoId, modified);
     }
 }
