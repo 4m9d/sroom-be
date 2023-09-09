@@ -118,8 +118,10 @@ public class MaterialRepository {
         jdbcTemplate.update(UPDATE_SUMMARY_QUERY, newContent, summaryId);
     }
 
-    public void saveSummary(Long videoId, String newContent, boolean modified) {
+    public Long saveSummary(Long videoId, String newContent, boolean modified) {
         jdbcTemplate.update(SAVE_SUMMARY_QUERY, videoId, newContent, modified);
+
+        return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
     }
 
     public void updateSummaryIdByCourseVideoId(Long courseVideoId, long summaryId) {

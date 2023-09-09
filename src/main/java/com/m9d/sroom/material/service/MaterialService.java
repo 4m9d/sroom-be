@@ -157,8 +157,7 @@ public class MaterialService {
             summaryId = originalSummary.getId();
             materialRepository.updateSummary(summaryId, content);
         } else {
-            materialRepository.saveSummary(originalSummary.getVideoId(), content, true);
-            summaryId = materialRepository.getSummaryIdByVideoId(originalSummary.getVideoId(), false);
+            summaryId = materialRepository.saveSummary(originalSummary.getVideoId(), content, true);
             materialRepository.updateSummaryIdByCourseVideoId(courseVideoId, summaryId);
         }
 
@@ -308,8 +307,7 @@ public class MaterialService {
             return;
         }
 
-        materialRepository.saveSummary(videoId, materialVo.getSummary(), false);
-        Long summaryId = materialRepository.getSummaryIdByVideoId(videoId, false);
+        Long summaryId = materialRepository.saveSummary(videoId, materialVo.getSummary(), false);
         courseRepository.updateSummaryId(videoId, summaryId);
         materialRepository.updateMaterialStatusByCode(videoCode, MaterialStatus.CREATED.getValue());
         log.info("videoCode = {}, videoId = {}, summaryId = {}, ", videoCode, videoId, summaryId);
