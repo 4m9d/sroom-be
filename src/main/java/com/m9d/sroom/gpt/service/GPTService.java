@@ -36,8 +36,14 @@ public class GPTService {
     public void saveResultFromFastApi() {
         log.info("scheduling for request fastAPI to get summary and quizzes.");
 
-        String resultStr = getResultStr(gptResultUrl);
-        log.info("response body from gpt server = {}", resultStr);
+        String resultStr;
+        try {
+            resultStr = getResultStr(gptResultUrl);
+            log.info("response body from gpt server = {}", resultStr);
+        } catch (WebClientRequestException e) {
+            log.error("Error occurred while making a request to fastAPI server. message = {}", e.getMessage());
+            return;
+        }
 
         MaterialVo resultVo = getMaterialVo(resultStr);
 
@@ -46,7 +52,7 @@ public class GPTService {
         }
     }
 
-    private String getResultStr(String requestUrl) {
+    private String getResultStr(String requestUrl) throws WebClientRequestException {
         String responseBody = null;
         try {
             responseBody = webClient.get()
@@ -57,23 +63,20 @@ public class GPTService {
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
-        } catch (WebClientResponseException e){
+        } catch (WebClientResponseException e) {
             log.error("fastAPI server not available. error code = {}, message = {}", e.getStatusCode(), e.getMessage());
-        }
-        catch (WebClientRequestException e) {
-            log.error("Error occurred while making a request to fastAPI server. message = {}", e.getMessage());
         }
         return responseBody;
     }
 
-    private MaterialVo getMaterialVo(String resultStr) {
+    private MaterialVo getMaterialVo(String resultStr) throws NullPointerException {
         MaterialVo resultVo = null;
         try {
             resultVo = gson.fromJson(resultStr, MaterialVo.class);
+            log.info("received video material count is = {}", resultVo.getResults().size());
         } catch (JsonSyntaxException e) {
             log.error("Failed to parse JSON to MaterialVo. Input JSON: {}", resultStr, e);
         }
-        log.info("received video material count is = {}", resultVo.getResults().size());
         return resultVo;
     }
 
