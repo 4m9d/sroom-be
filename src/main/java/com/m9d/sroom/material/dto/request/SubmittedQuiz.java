@@ -5,14 +5,14 @@ import lombok.Setter;
 @Setter
 public class SubmittedQuiz {
 
-    private Long quiz_id;
+    private Long id;
 
     private Integer submitted_answer;
 
     private Boolean is_correct;
 
     public Long getQuizId() {
-        return quiz_id;
+        return id;
     }
 
     public Integer getSubmittedAnswer() {
