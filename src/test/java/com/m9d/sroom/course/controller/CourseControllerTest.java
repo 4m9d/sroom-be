@@ -211,4 +211,26 @@ public class CourseControllerTest extends ControllerTest {
                 .andExpect(jsonPath("$.sections[0].videos", hasSize(PLAYLIST_VIDEO_COUNT)))
                 .andDo(print());
     }
+
+    @Test
+    @DisplayName("강의 코스 삭제를 완료하고, 업데이트 된 강의 코스 리스트를 불러옵니다")
+    void deleteCourse200() throws Exception {
+        //given
+        Login login = getNewLogin();
+
+        Long courseId1 = enrollNewCourseWithPlaylist(login);
+        Long courseId2 = enrollNewCourseWithPlaylist(login);
+
+        System.out.println(courseId1);
+        System.out.println(courseId2);
+
+        //expected
+        mockMvc.perform(delete("/courses/{courseId}", courseId1)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", login.getAccessToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.courses", hasSize(1)))
+                .andExpect(jsonPath("$.courses[0]").isNotEmpty())
+                .andDo(print());
+    }
 }

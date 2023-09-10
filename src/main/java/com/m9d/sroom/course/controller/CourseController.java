@@ -70,4 +70,16 @@ public class CourseController {
         Long memberId = jwtUtil.getMemberIdFromRequest();
         return courseService.getCourseDetail(memberId, courseId);
     }
+
+    @Auth
+    @DeleteMapping("/{courseId}")
+    @Tag(name = "내 강의실")
+    @Operation(summary = "강의 코스 삭제", description = "지정한 강의 코스를 삭제하고, 업데이트된 강의 리스트를 반환합니다.")
+    @ApiResponse(responseCode = "200", description = "강의코스 삭제가 성공했으며, 정상적으로 결과를 반환했습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = MyCourses.class))})
+    public MyCourses deleteCourse(@PathVariable(name = "courseId") Long courseId) {
+        Long memberId = jwtUtil.getMemberIdFromRequest();
+        courseService.deleteCourse(memberId, courseId);
+        MyCourses myCourses = courseService.getMyCourses(memberId);
+        return myCourses;
+    }
 }

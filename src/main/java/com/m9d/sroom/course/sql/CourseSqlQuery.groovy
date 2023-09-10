@@ -320,4 +320,24 @@ class CourseSqlQuery {
         WHERE video_id = ?
         AND (summary_id = 0 OR summary_id IS NULL)
     """
+
+    public static final String DELETE_COURSE_QUERY = """
+        DELETE FROM COURSE
+        WHERE course_id = ?
+    """
+
+    public static final String DELETE_COURSEVIDEO_BY_COURSE_ID_QUERY = """
+        DELETE FROM COURSEVIDEO
+        WHERE course_id = ?
+    """
+
+    public static final String DELETE_LECTURE_BY_COURSE_ID_QUERY = """
+        DELETE FROM LECTURE
+        WHERE course_id = ?
+    """
+
+    public static final String DELETE_COURSEQUIZ_BY_COURSE_ID_QUERY = """
+        DELETE FROM COURSEQUIZ
+        WHERE course_id = ?
+    """
 }
