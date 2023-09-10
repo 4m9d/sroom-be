@@ -213,7 +213,7 @@ public class CourseControllerTest extends ControllerTest {
     }
 
     @Test
-    @DisplayName("강의 코스 삭제를 완료하고, 업데이트된 강의 코스리스틒를 불러옵니다")
+    @DisplayName("강의 코스 삭제를 완료하고, 업데이트 된 강의 코스 리스트를 불러옵니다")
     void deleteCourse200() throws Exception {
         //given
         Login login = getNewLogin();
