@@ -475,6 +475,15 @@ public class CourseService {
                 .build();
     }
 
+    public void deleteCourse(Long memberId, Long courseId) {
+        validateCourseId(memberId, courseId);
+
+        courseRepository.deleteCourseById(courseId);
+        courseRepository.deleteCourseVideoByCourseId(courseId);
+        courseRepository.deleteLectureByCourseId(courseId);
+        courseRepository.deleteCourseQuizByCourseId(courseId);
+    }
+
     private void validateCourseId(Long memberId, Long courseId) {
         Long actualMemberId = courseRepository.getMemberIdByCourseId(courseId);
         if (!memberId.equals(actualMemberId)) {

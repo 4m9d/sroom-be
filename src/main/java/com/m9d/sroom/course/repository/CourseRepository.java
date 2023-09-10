@@ -418,4 +418,20 @@ public class CourseRepository {
     public void updateSummaryId(Long videoId, Long summaryId) {
         jdbcTemplate.update(UPDATE_SUMMARY_ID_QUERY, summaryId, videoId);
     }
+
+    public void deleteCourseById(Long courseId) {
+        jdbcTemplate.update(DELETE_COURSE_QUERY, courseId);
+    }
+
+    public void deleteCourseVideoByCourseId(Long courseId) {
+        jdbcTemplate.update(DELETE_COURSEVIDEO_BY_COURSE_ID_QUERY, courseId);
+    }
+
+    public void deleteLectureByCourseId(Long courseId) {
+        jdbcTemplate.update(DELETE_LECTURE_BY_COURSE_ID_QUERY, courseId);
+    }
+
+    public void deleteCourseQuizByCourseId(Long courseId) {
+        jdbcTemplate.update(DELETE_COURSEQUIZ_BY_COURSE_ID_QUERY, courseId);
+    }
 }
