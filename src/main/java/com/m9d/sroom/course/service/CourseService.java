@@ -475,6 +475,7 @@ public class CourseService {
                 .build();
     }
 
+    @Transactional
     public void deleteCourse(Long memberId, Long courseId) {
         validateCourseId(memberId, courseId);
 
