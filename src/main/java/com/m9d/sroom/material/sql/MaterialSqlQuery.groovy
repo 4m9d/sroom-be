@@ -87,5 +87,36 @@ class MaterialSqlQuery {
         SELECT is_scrapped
         FROM COURSEQUIZ
         WHERE course_quiz_id = ?
-    """;
+    """
+
+    public static final String SAVE_SUBJECTIVE_QUIZ_QUERY = """
+        INSERT INTO QUIZ
+        (video_id, type, question, subjective_answer)
+        VALUES (?, ?, ?, ?)
+    """
+
+    public static final String SAVE_MULTIPLE_CHOICE_QUIZ_QUIERY = """
+        INSERT INTO QUIZ
+        (video_id, type, question, choice_answer)
+        VALUES (?, ?, ?, ?)
+    """
+
+    public static final String SAVE_QUIZ_OPTION_QUERY = """
+        INSERT INTO QUIZ_OPTION
+        (quiz_id, option_text, option_index)
+        VALUES (?, ?, ?)
+    """
+
+    public static final String UPDATE_MATERIAL_STATUS_CREATING_QUERY = """
+        UPDATE VIDEO
+        SET material_status = ?
+        WHERE video_code = ?
+    """
+
+    public static final String GET_SUMMARY_ID_BY_VIDEO_ID_QUERY = """
+        SELECT summary_id
+        FROM SUMMARY
+        WHERE video_id = ?
+        AND is_modified = ?
+    """
 }

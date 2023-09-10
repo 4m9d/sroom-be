@@ -398,4 +398,24 @@ public class CourseRepository {
     public void updateLastViewTimeById(Long courseVideoId, Timestamp time) {
         jdbcTemplate.update(UPDATE_LAST_VIEW_TIME_BY_ID_QUERY, time, courseVideoId);
     }
+
+    public Long findVideoIdByCode(String videoCode) {
+        try {
+            return jdbcTemplate.queryForObject(GET_VIDEO_ID_BY_CODE_QUERY, Long.class, videoCode);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    public Integer findMaterialStatusByCode(String videoCode) {
+        try {
+            return jdbcTemplate.queryForObject(GET_MATERIAL_STATUS_BY_CODE_QUERY, Integer.class, videoCode);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+
+    public void updateSummaryId(Long videoId, Long summaryId) {
+        jdbcTemplate.update(UPDATE_SUMMARY_ID_QUERY, summaryId, videoId);
+    }
 }

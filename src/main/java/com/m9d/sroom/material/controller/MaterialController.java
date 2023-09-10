@@ -22,6 +22,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/materials")
 @Slf4j
 public class MaterialController {
 
@@ -29,7 +30,7 @@ public class MaterialController {
     private final MaterialService materialService;
 
     @Auth
-    @GetMapping("/materials/lectures/{courseVideoId}")
+    @GetMapping("/{courseVideoId}")
     @Tag(name = "강의 수강")
     @Operation(summary = "강의자료 불러오기", description = "영상 ID를 사용해 저장된 강의노트, 퀴즈를 불러옵니다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 강의 자료를 불러왔습니다.", content = @Content(schema = @Schema(implementation = Material.class)))
@@ -39,7 +40,7 @@ public class MaterialController {
     }
 
     @Auth
-    @PutMapping("/materials/lectures/{courseVideoId}")
+    @PutMapping("/summaries/{courseVideoId}")
     @Tag(name = "강의 수강")
     @Operation(summary = "강의 노트 수정하기", description = "영상 ID를 사용해 저장된 강의노트를 수정합니다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 강의 노트를 업데이트 했습니다.", content = @Content(schema = @Schema(implementation = SummaryId.class)))

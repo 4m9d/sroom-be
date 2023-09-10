@@ -11,9 +11,12 @@ import com.m9d.sroom.course.exception.CourseNotMatchException;
 import com.m9d.sroom.course.model.PlaylistPageResult;
 import com.m9d.sroom.course.repository.CourseRepository;
 import com.m9d.sroom.course.dto.response.CourseDetail;
+import com.m9d.sroom.gpt.service.GPTService;
 import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
 import com.m9d.sroom.lecture.dto.response.Section;
 import com.m9d.sroom.lecture.dto.response.VideoBrief;
+import com.m9d.sroom.material.model.MaterialStatus;
+import com.m9d.sroom.material.repository.MaterialRepository;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.util.youtube.YoutubeApi;
 import com.m9d.sroom.util.youtube.YoutubeUtil;
@@ -42,15 +45,20 @@ import static com.m9d.sroom.util.youtube.YoutubeUtil.*;
 public class CourseService {
 
     private final CourseRepository courseRepository;
+    private final MaterialRepository materialRepository;
     private final DateUtil dateUtil;
     private final YoutubeApi youtubeApi;
     private final YoutubeUtil youtubeUtil;
 
-    public CourseService(CourseRepository courseRepository, DateUtil dateUtil, YoutubeApi youtubeApi, YoutubeUtil youtubeUtil) {
+    private final GPTService gptService;
+
+    public CourseService(CourseRepository courseRepository, MaterialRepository materialRepository, DateUtil dateUtil, YoutubeApi youtubeApi, YoutubeUtil youtubeUtil, GPTService gptService) {
         this.courseRepository = courseRepository;
+        this.materialRepository = materialRepository;
         this.dateUtil = dateUtil;
         this.youtubeApi = youtubeApi;
         this.youtubeUtil = youtubeUtil;
+        this.gptService = gptService;
     }
 
 
@@ -97,8 +105,14 @@ public class CourseService {
         return unfinishedCourseCount;
     }
 
-    public void requestToFastApi(String videoCode, String defaultLanguage) {
-        log.info("request to AI server. videoCode = {}, language = {}", videoCode, defaultLanguage);
+    public void requestToFastApi(String videoCode) {
+        log.info("request to AI server successfully. videoCode = {}", videoCode);
+        Integer videoMaterialStatus = courseRepository.findMaterialStatusByCode(videoCode);
+
+        if (videoMaterialStatus == null || videoMaterialStatus == MaterialStatus.NO_REQUEST.getValue()) {
+            gptService.requestToFastApi(videoCode);
+            materialRepository.updateMaterialStatusByCode(videoCode, MaterialStatus.CREATING.getValue());
+        }
     }
 
     @Transactional
@@ -278,7 +292,14 @@ public class CourseService {
                 futureVideos.stream()
                         .map(CompletableFuture::join)
                         .collect(Collectors.toList()));
-        return allVideoFuture.join();
+
+        List<Video> videoList = allVideoFuture.join();
+
+        for (Video video : videoList) {
+            requestToFastApi(video.getVideoCode());
+        }
+
+        return videoList;
     }
 
     public void savePlaylistVideoList(Long playlistId, List<Video> videos, List<PlaylistVideoItemVo> items) {
@@ -327,6 +348,7 @@ public class CourseService {
         Video video;
         try {
             video = getVideoWithUpdateAsync(videoCode).get();
+            requestToFastApi(videoCode);
         } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
