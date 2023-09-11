@@ -21,6 +21,8 @@ public interface CourseRepository {
 
     List<CourseInfo> getCourseInfoByMemberId(Long memberId);
 
+    List<CourseInfo> getLatestCourseInfoListByMemberId(Long memberId);
+
     List<CourseBrief> getCourseBriefByMemberId(Long memberId);
 
     Long getMemberIdById(Long courseId);
