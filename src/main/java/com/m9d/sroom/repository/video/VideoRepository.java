@@ -21,5 +21,5 @@ public interface VideoRepository {
 
     Integer getMaterialStatusByCode(String videoCode);
 
-
+    void updateMaterialStatusByCode(String videoCode);
 }

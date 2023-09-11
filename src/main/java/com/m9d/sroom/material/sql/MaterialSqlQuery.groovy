@@ -2,12 +2,6 @@ package com.m9d.sroom.material.sql
 
 class MaterialSqlQuery {
 
-    public static final String FIND_SUMMARY_ID_FROM_COURSE_VIDEO_QUERY = """
-        SELECT summary_id 
-        FROM COURSEVIDEO 
-        WHERE course_video_id = ?
-    """
-
     public static final String GET_QUIZZES_BY_VIDEO_ID_QUERY = """
         SELECT quiz_id, type, question, subjective_answer, choice_answer
         FROM QUIZ 
@@ -111,12 +105,5 @@ class MaterialSqlQuery {
         UPDATE VIDEO
         SET material_status = ?
         WHERE video_code = ?
-    """
-
-    public static final String GET_SUMMARY_ID_BY_VIDEO_ID_QUERY = """
-        SELECT summary_id
-        FROM SUMMARY
-        WHERE video_id = ?
-        AND is_modified = ?
     """
 }

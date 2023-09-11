@@ -38,6 +38,8 @@ public interface CourseVideoRepository {
 
     void updateSummaryIdByVideoId(Long videoId, Long summaryId);
 
+    void updateSummaryIdById(Long courseVideoId, Long summaryId);
+
 
 
 }

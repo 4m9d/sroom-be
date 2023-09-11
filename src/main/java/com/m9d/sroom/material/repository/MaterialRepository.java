@@ -30,14 +30,6 @@ public class MaterialRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public Long findSummaryIdByCourseVideoId(Long courseVideoId) {
-        try {
-            return jdbcTemplate.queryForObject(FIND_SUMMARY_ID_FROM_COURSE_VIDEO_QUERY, Long.class, courseVideoId);
-        } catch (IncorrectResultSizeDataAccessException e) {
-            return null;
-        }
-    }
-
     public List<Quiz> getQuizListByVideoId(Long videoId) {
         return jdbcTemplate.query(GET_QUIZZES_BY_VIDEO_ID_QUERY,
                 (rs, rowNum) -> {
@@ -180,9 +172,5 @@ public class MaterialRepository {
 
     public void updateMaterialStatusByCode(String videoCode, int statusValue) {
         jdbcTemplate.update(UPDATE_MATERIAL_STATUS_CREATING_QUERY, statusValue, videoCode);
-    }
-
-    public Long getSummaryIdByVideoId(Long videoId, boolean modified) {
-        return jdbcTemplate.queryForObject(GET_SUMMARY_ID_BY_VIDEO_ID_QUERY, Long.class, videoId, modified);
     }
 }
