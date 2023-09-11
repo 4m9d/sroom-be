@@ -336,9 +336,6 @@ public class CourseService {
         int videoIndex = lastVideoIndex + 1;
 
         for (Video video : videoList) {
-            if (!video.isUsable()) {
-                continue;
-            }
             courseRepository.saveCourseVideo(course.getMemberId(), course.getCourseId(), video.getVideoId(), ENROLL_DEFAULT_SECTION, videoIndex, lectureIndex);
             videoIndex++;
         }
