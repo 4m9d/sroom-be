@@ -34,6 +34,4 @@ public class Course {
     private boolean scheduled;
 
     private Date startDate;
-
-
 }

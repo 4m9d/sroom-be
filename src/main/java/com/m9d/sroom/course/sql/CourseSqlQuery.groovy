@@ -84,7 +84,7 @@ class CourseSqlQuery {
     """
 
     public static final String GET_VIDEO_ID_AND_INDEX_QUERY = """
-    SELECT video_id, video_index 
+    SELECT video_id, video_index
     FROM PLAYLISTVIDEO 
     WHERE playlist_id = ? 
     ORDER BY video_index

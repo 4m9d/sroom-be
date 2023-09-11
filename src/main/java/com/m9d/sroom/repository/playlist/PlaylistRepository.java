@@ -1,8 +1,12 @@
 package com.m9d.sroom.repository.playlist;
 
 import com.m9d.sroom.global.model.Playlist;
+import com.m9d.sroom.lecture.dto.PlaylistInfoInSearch;
+import com.m9d.sroom.lecture.dto.response.RecommendLecture;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface PlaylistRepository {
 
@@ -14,5 +18,15 @@ public interface PlaylistRepository {
 
     void updateDurationById(Long playlistId, int duration);
 
+    Set<String> getCodeListByMemberId(Long memberId);
 
+    Optional<PlaylistInfoInSearch> findPlaylistInfoSearch(String playlistCode);
+
+    List<RecommendLecture> getPlaylistsSortedByRating();
+
+    List<RecommendLecture> getRandomListByChannel(String channel, int limit);
+
+    List<RecommendLecture> getMostViewedListByChannel(String channel, int limit);
+
+    List<RecommendLecture> getLatestListByChannel(String channel, int limit)
 }

@@ -1,7 +1,7 @@
 package com.m9d.sroom.lecture.repository;
 
-import com.m9d.sroom.global.model.Playlist;
 import com.m9d.sroom.global.model.Video;
+import com.m9d.sroom.lecture.dto.PlaylistInfoInSearch;
 import com.m9d.sroom.lecture.dto.response.RecommendLecture;
 import com.m9d.sroom.lecture.dto.response.ReviewBrief;
 import com.m9d.sroom.lecture.sql.LectureSqlQuery;
@@ -59,22 +59,23 @@ public class LectureRepository {
                         .description(rs.getString("description"))
                         .thumbnail(rs.getString("thumbnail"))
                         .duration(rs.getInt("duration"))
-                        .usable(rs.getBoolean("is_available"))
+                        .available(rs.getBoolean("is_available"))
                         .membership(rs.getBoolean("membership"))
                         .build(), lectureCode);
         return Optional.ofNullable(video);
     }
 
-    public Optional<Playlist> findVideoCountAndDescription(String lectureCode) {
+    public Optional<PlaylistInfoInSearch> findVideoCountAndDescription(String lectureCode) {
         String query = "SELECT video_count, updated_at, description FROM PLAYLIST WHERE playlist_code = ?";
 
-        Playlist playlist = queryForObjectOrNull(query,
-                (rs, rowNum) -> Playlist.builder()
-                        .lectureCount(rs.getInt("video_count"))
+        PlaylistInfoInSearch playlistInfoInSearch = queryForObjectOrNull(query,
+                (rs, rowNum) -> PlaylistInfoInSearch.builder()
+                        .playlistCode(lectureCode)
+                        .videoCount(rs.getInt("video_count"))
                         .updatedAt(rs.getTimestamp("updated_at"))
                         .description(rs.getString("description"))
                         .build(), lectureCode);
-        return Optional.ofNullable(playlist);
+        return Optional.ofNullable(playlistInfoInSearch);
     }
 
 

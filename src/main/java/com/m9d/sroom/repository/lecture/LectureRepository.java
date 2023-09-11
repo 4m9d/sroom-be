@@ -17,6 +17,8 @@ public interface LectureRepository {
 
     List<Integer> getIndexListByCourseId(Long courseId);
 
+    List<String> getChannelListOrderByCount(Long member_id);
+
 
 
 }

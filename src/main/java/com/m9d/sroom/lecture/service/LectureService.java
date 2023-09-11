@@ -7,6 +7,7 @@ import com.m9d.sroom.global.model.CourseVideo;
 import com.m9d.sroom.global.model.Playlist;
 import com.m9d.sroom.global.model.Video;
 import com.m9d.sroom.course.repository.CourseRepository;
+import com.m9d.sroom.lecture.dto.PlaylistInfoInSearch;
 import com.m9d.sroom.lecture.dto.request.KeywordSearchParam;
 import com.m9d.sroom.lecture.dto.request.LectureDetailParam;
 import com.m9d.sroom.lecture.dto.request.LectureTimeRecord;
@@ -129,9 +130,9 @@ public class LectureService {
         boolean isPlaylist = item.getId().getKind().equals(JSONNODE_TYPE_PLAYLIST);
         if (isPlaylist) {
             lectureCode = item.getId().getPlaylistId();
-            Playlist playlist = getSearchedPlaylistLast(lectureCode);
-            videoCount = playlist.getLectureCount();
-            description = playlist.getDescription();
+            PlaylistInfoInSearch playlistInfoInSearch = getSearchedPlaylistLast(lectureCode);
+            videoCount = playlistInfoInSearch.getVideoCount();
+            description = playlistInfoInSearch.getDescription();
         } else {
             lectureCode = item.getId().getVideoId();
             Video video = getSearchedVideoLast(lectureCode);
@@ -153,26 +154,22 @@ public class LectureService {
                 .build();
     }
 
-    private Playlist getSearchedPlaylistLast(String lectureCode) {
-        Optional<Playlist> playlistOptional = lectureRepository.findVideoCountAndDescription(lectureCode);
+    private PlaylistInfoInSearch getSearchedPlaylistLast(String lectureCode) {
+        Optional<PlaylistInfoInSearch> playlistInfoInSearchOptional = lectureRepository.findVideoCountAndDescription(lectureCode);
 
-        Playlist playlist;
-        if (playlistOptional.isPresent() && dateUtil.validateExpiration(playlistOptional.get().getUpdatedAt(), PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
-            playlist = playlistOptional.get();
+        PlaylistInfoInSearch playlistInfoInSearch;
+        if (playlistInfoInSearchOptional.isPresent() && dateUtil.validateExpiration(playlistInfoInSearchOptional.get().getUpdatedAt(), PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
+            playlistInfoInSearch = playlistInfoInSearchOptional.get();
         } else {
-            Mono<PlaylistVo> playlistVoMono = youtubeApi.getPlaylistVo(PlaylistReq.builder()
+            Playlist playlist = youtubeUtil.getPlaylistWithBlocking(lectureCode);
+            playlistInfoInSearch = PlaylistInfoInSearch.builder()
                     .playlistCode(lectureCode)
-                    .build());
-
-            PlaylistVo playlistVo = youtubeUtil.safeGetVo(playlistVoMono);
-            playlist = Playlist.builder()
-                    .playlistCode(lectureCode)
-                    .description(playlistVo.getItems().get(FIRST_INDEX).getSnippet().getDescription())
-                    .lectureCount(playlistVo.getItems().get(FIRST_INDEX).getContentDetails().getItemCount())
+                    .description(playlist.getDescription())
+                    .videoCount(playlist.getLectureCount())
                     .build();
         }
 
-        return playlist;
+        return playlistInfoInSearch;
     }
 
     @Transactional

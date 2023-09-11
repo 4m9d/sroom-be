@@ -46,8 +46,6 @@ public class Video {
 
     private boolean complete;
 
-    private boolean usable;
-
     private boolean membership;
 
     private Long summaryId;
