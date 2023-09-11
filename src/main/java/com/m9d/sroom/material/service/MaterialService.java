@@ -190,9 +190,9 @@ public class MaterialService {
 
     @Transactional
     public List<com.m9d.sroom.material.dto.response.SubmittedQuizInfo> submitQuizResults(Long memberId, Long courseVideoId, List<SubmittedQuiz> submittedQuizList) {
-        CourseAndVideoId courseAndVideoId = courseRepository.getCourseAndVideoId(courseVideoId);
-        Long courseId = courseAndVideoId.getCourseId();
-        Long videoId = courseAndVideoId.getVideoId();
+        CourseVideoKey courseVideoKey = courseRepository.getCourseAndVideoId(courseVideoId);
+        Long courseId = courseVideoKey.getCourseId();
+        Long videoId = courseVideoKey.getVideoId();
 
         validateQuizzesForMemberAndVideo(memberId, courseId, videoId, courseVideoId, submittedQuizList);
 

@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class CourseAndVideoId {
+public class CourseVideoKey {
 
     private Long courseId;
 

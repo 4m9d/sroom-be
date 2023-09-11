@@ -8,17 +8,15 @@ import com.m9d.sroom.course.sql.CourseSqlQuery;
 import com.m9d.sroom.lecture.dto.response.CourseBrief;
 import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
 import com.m9d.sroom.lecture.dto.response.VideoBrief;
-import com.m9d.sroom.material.model.CourseAndVideoId;
+import com.m9d.sroom.material.model.CourseVideoKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.*;
 
 import static com.m9d.sroom.course.sql.CourseSqlQuery.*;
@@ -171,10 +169,6 @@ public class CourseRepository {
                 .build()), playlistId);
     }
 
-    public List<Integer> getVideoDurationsByPlaylistId(Long playlistId) {
-        return jdbcTemplate.query(GET_DURATION_BY_PLAYLIST_ID_QUERY, (rs, rowNum) -> rs.getInt("duration"), playlistId);
-    }
-
     public Long getMemberIdByCourseId(Long courseId) {
         try {
             return jdbcTemplate.queryForObject(GET_MEMBER_ID_BY_COURSE_ID_QUERY, Long.class, courseId);
@@ -277,26 +271,10 @@ public class CourseRepository {
                 .build(), courseId, section);
     }
 
-    public Long findCourseVideoId(Long courseId, Long videoId) {
-        try {
-            return jdbcTemplate.queryForObject(FIND_COURSE_VIDEO_ID_QUERY, Long.class, courseId, videoId);
-        } catch (IncorrectResultSizeDataAccessException e) {
-            return null;
-        }
-    }
-
-    public Long findCourseIdByCourseVideoId(Long courseVideoId) {
-        try {
-            return jdbcTemplate.queryForObject(FIND_COURSE_ID_BY_COURSE_VIDEO_ID, Long.class, courseVideoId);
-        } catch (IncorrectResultSizeDataAccessException e) {
-            return null;
-        }
-    }
-
     public Optional<CourseVideo> findCourseVideoById(Long courseVideoId) {
         try {
             CourseVideo courseVideo = jdbcTemplate.queryForObject(FIND_COURSE_VIDEO_BY_ID, (rs, rowNum) -> CourseVideo.builder()
-                    .courseVideoId(rs.getLong("course_video_id"))
+                    .id(rs.getLong("course_video_id"))
                     .courseId(rs.getLong("course_id"))
                     .videoId(rs.getLong("video_id"))
                     .memberId(rs.getLong("member_id"))
@@ -321,10 +299,6 @@ public class CourseRepository {
 
     public Integer getVideoCountByCourseId(Long courseId) {
         return jdbcTemplate.queryForObject(GET_VIDEO_COUNT_BY_COURSE_ID, Integer.class, courseId);
-    }
-
-    public void updateCourseVideo(CourseVideo courseVideo) {
-        jdbcTemplate.update(UPDATE_COURSE_VIDEO, courseVideo.getSection(), courseVideo.getVideoIndex(), courseVideo.getStartTime(), courseVideo.isComplete(), courseVideo.getSummaryId(), courseVideo.getLectureIndex(), Timestamp.valueOf(LocalDateTime.now()), courseVideo.getMaxDuration(), courseVideo.getCourseVideoId());
     }
 
     public Optional<CourseDailyLog> findCourseDailyLogByDate(Long courseId, java.sql.Date date) {
@@ -353,16 +327,16 @@ public class CourseRepository {
     }
 
     public void updateVideoViewStatus(CourseVideo courseVideo) {
-        jdbcTemplate.update(UPDATE_VIDEO_VIEW_STATUS_QUERY, courseVideo.getMaxDuration(), courseVideo.getStartTime(), courseVideo.isComplete(), courseVideo.getLastViewTime(), courseVideo.getCourseVideoId());
+        jdbcTemplate.update(UPDATE_VIDEO_VIEW_STATUS_QUERY, courseVideo.getMaxDuration(), courseVideo.getStartTime(), courseVideo.isComplete(), courseVideo.getLastViewTime(), courseVideo.getId());
     }
 
     public void updateCourseDailyLogQuizCount(Long courseId, java.sql.Date date, int quizCount) {
         jdbcTemplate.update(UPDATE_QUIZ_COUNT_LOG_QUERY, quizCount, courseId, date);
     }
 
-    public CourseAndVideoId getCourseAndVideoId(Long courseVideoId) {
+    public CourseVideoKey getCourseAndVideoId(Long courseVideoId) {
         try {
-            return jdbcTemplate.queryForObject(GET_COURSE_AND_VIDEO_ID_QUERY, (rs, rowNum) -> CourseAndVideoId.builder()
+            return jdbcTemplate.queryForObject(GET_COURSE_AND_VIDEO_ID_QUERY, (rs, rowNum) -> CourseVideoKey.builder()
                     .videoId(rs.getLong("video_id"))
                     .courseId(rs.getLong("course_id"))
                     .build(), courseVideoId);

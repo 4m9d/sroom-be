@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 @Builder
 public class CourseVideo {
 
-    private Long courseVideoId;
+    private Long id;
 
     private Long courseId;
 
