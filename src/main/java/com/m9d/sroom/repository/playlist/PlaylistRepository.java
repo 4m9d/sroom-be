@@ -28,5 +28,5 @@ public interface PlaylistRepository {
 
     List<RecommendLecture> getMostViewedListByChannel(String channel, int limit);
 
-    List<RecommendLecture> getLatestListByChannel(String channel, int limit)
+    List<RecommendLecture> getLatestListByChannel(String channel, int limit);
 }
