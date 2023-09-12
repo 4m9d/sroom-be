@@ -12,7 +12,7 @@ public class SummaryBrief {
 
     private String content;
 
-    @JsonProperty("is_modifed")
+    @JsonProperty("is_modified")
     private boolean modified;
 
     private String modifiedAt;
