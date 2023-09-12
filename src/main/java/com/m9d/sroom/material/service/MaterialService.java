@@ -202,9 +202,11 @@ public class MaterialService {
         List<com.m9d.sroom.material.dto.response.SubmittedQuizInfo> quizInfoList = new ArrayList<>();
 
         for (SubmittedQuiz submittedQuiz : submittedQuizList) {
-
             Long quizId = submittedQuiz.getQuizId();
-            Long courseQuizId = materialRepository.saveCourseQuiz(courseId, videoId, courseVideoId, submittedQuiz);
+
+            int submittedAnswer = alterSubmittedAnswerToInt(submittedQuiz.getSubmittedAnswer());
+
+            Long courseQuizId = materialRepository.saveCourseQuiz(courseId, videoId, courseVideoId, submittedQuiz, submittedAnswer);
             quizInfoList.add(new com.m9d.sroom.material.dto.response.SubmittedQuizInfo(quizId, courseQuizId));
         }
 
@@ -257,6 +259,22 @@ public class MaterialService {
                 .count();
 
         memberRepository.addQuizCount(memberId, quizList.size(), correctCount);
+    }
+
+    private int alterSubmittedAnswerToInt(String submittedAnswerStr) {
+        int submittedAnswer;
+        try {
+            if (submittedAnswerStr.equals("true")) {
+                submittedAnswer = 1;
+            } else if (submittedAnswerStr.equals("false")) {
+                submittedAnswer = 0;
+            } else {
+                submittedAnswer = Integer.parseInt(submittedAnswerStr);
+            }
+        } catch (NumberFormatException e) {
+            throw new QuizAnswerFormatNotValidException();
+        }
+        return submittedAnswer;
     }
 
     @Transactional

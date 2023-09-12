@@ -7,7 +7,7 @@ public class SubmittedQuiz {
 
     private Long id;
 
-    private Integer submitted_answer;
+    private String submitted_answer;
 
     private Boolean is_correct;
 
@@ -15,7 +15,7 @@ public class SubmittedQuiz {
         return id;
     }
 
-    public Integer getSubmittedAnswer() {
+    public String getSubmittedAnswer() {
         return submitted_answer;
     }
 

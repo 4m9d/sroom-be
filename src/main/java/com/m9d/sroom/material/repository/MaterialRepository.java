@@ -128,8 +128,8 @@ public class MaterialRepository {
         jdbcTemplate.update(UPDATE_SUMMARY_ID_QUERY, summaryId, courseVideoId);
     }
 
-    public Long saveCourseQuiz(Long courseId, Long videoId, Long courseVideoId, SubmittedQuiz submittedQuiz) {
-        jdbcTemplate.update(SAVE_COURSE_QUIZ_QUERY, courseId, submittedQuiz.getQuizId(), videoId, courseVideoId, submittedQuiz.getSubmittedAnswer(), submittedQuiz.getIsCorrect());
+    public Long saveCourseQuiz(Long courseId, Long videoId, Long courseVideoId, SubmittedQuiz submittedQuiz, int submittedAnswer) {
+        jdbcTemplate.update(SAVE_COURSE_QUIZ_QUERY, courseId, submittedQuiz.getQuizId(), videoId, courseVideoId, submittedAnswer, submittedQuiz.getIsCorrect());
 
         return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
     }
