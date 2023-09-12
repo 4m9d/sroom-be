@@ -18,18 +18,10 @@ public interface MemberRepository {
 
     void updateRefreshTokenById(Long memberId, String refreshToken);
 
-    String getNameById(Long memberId);
-
-    String getRefreshTokenById(Long memberId);
-
     void addQuizCountById(Long memberId, int quizCount, int correctCount);
-
-    MemberQuizInfo getMemberQuizInfoById(Long memberId);
 
     void addTotalLearningTimeById(Long memberId, int timeToAddInSecond);
 
     void updateCompletionRateById(Long memberId, int completionRate);
-
-    DashboardMemberData getDashboardMemberDataById(Long memberId);
 
 }

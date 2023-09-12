@@ -34,33 +34,13 @@ public class CourseVideoJdbcRepositoryImpl implements CourseVideoRepository{
     }
 
     @Override
-    public List<EnrolledCourseVideo> getEnrolledCourseVideoListByCourseId(Long courseId) {
-        return null;
-    }
-
-    @Override
-    public List<SchedulingVideo> getSchedulingVideoByCourseId(Long courseId) {
-        return null;
-    }
-
-    @Override
     public void updateSectionById(Long courseVideoId, int section) {
 
     }
 
     @Override
-    public LastVideoInfo getLastVideoInfoByCourseId(Long courseId) {
-        return null;
-    }
-
-    @Override
     public void updateViewingStatus(CourseVideo courseVideo) {
 
-    }
-
-    @Override
-    public CourseVideoKey getCourseVideoKeyById(Long courseVideoId) {
-        return null;
     }
 
     @Override

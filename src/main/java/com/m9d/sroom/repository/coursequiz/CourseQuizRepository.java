@@ -11,15 +11,9 @@ public interface CourseQuizRepository {
 
     Long save(CourseQuiz courseQuiz);
 
-    Optional<SubmittedQuizInfo> getSubmittedQuizInfoByQuizIdAndCourseVideoId(Long quizId, Long coursevideoId);
-
     void deleteByCourseId(Long courseId);
-
-    Optional<CourseQuizInfo> getInfoById(Long courseQuizId);
 
     void updateScrappedById(Long courseQuizId);
 
     Boolean isScrappedById(Long courseQuizId);
-
-
 }

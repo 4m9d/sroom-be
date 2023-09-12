@@ -36,26 +36,6 @@ public class CourseJdbcRepositoryImpl implements CourseRepository{
     }
 
     @Override
-    public List<CourseInfo> getCourseInfoByMemberId(Long memberId) {
-        return null;
-    }
-
-    @Override
-    public List<CourseInfo> getLatestCourseInfoListByMemberId(Long memberId) {
-        return null;
-    }
-
-    @Override
-    public List<CourseBrief> getCourseBriefByMemberId(Long memberId) {
-        return null;
-    }
-
-    @Override
-    public Long getMemberIdById(Long courseId) {
-        return null;
-    }
-
-    @Override
     public void updateScheduleById(Long courseId, int weeks, Date expectedEndDate) {
 
     }

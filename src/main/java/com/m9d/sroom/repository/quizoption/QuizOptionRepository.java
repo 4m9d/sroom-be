@@ -8,8 +8,5 @@ public interface QuizOptionRepository {
 
     void save(QuizOption quizOption);
 
-    List<QuizOption> getQuizOptionListByQuizId(Long quizId);
-
-
-
+    List<QuizOption> getListByQuizId(Long quizId);
 }

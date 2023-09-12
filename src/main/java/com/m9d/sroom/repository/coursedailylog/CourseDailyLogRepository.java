@@ -19,6 +19,4 @@ public interface CourseDailyLogRepository {
     void updateQuizCountByCourseIdAndDate(Long courseId, Date date, int quizCount);
 
     Integer countQuizByCourseIdAndDate(Long courseId, Date date);
-
-    List<LearningHistory> getLearningHistoryListByMemberId(Long memberId);
 }

@@ -19,14 +19,6 @@ public interface CourseRepository {
 
     Integer countCompletedByMemberId(Long memberId);
 
-    List<CourseInfo> getCourseInfoByMemberId(Long memberId);
-
-    List<CourseInfo> getLatestCourseInfoListByMemberId(Long memberId);
-
-    List<CourseBrief> getCourseBriefByMemberId(Long memberId);
-
-    Long getMemberIdById(Long courseId);
-
     void updateScheduleById(Long courseId, int weeks, Date expectedEndDate);
 
     void updateDurationById(Long courseId, int duration);

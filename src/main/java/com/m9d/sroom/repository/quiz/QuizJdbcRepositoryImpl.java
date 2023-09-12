@@ -13,12 +13,7 @@ public class QuizJdbcRepositoryImpl implements QuizRepository{
     }
 
     @Override
-    public List<Quiz> getQuizListByVideoId(Long videoId) {
-        return null;
-    }
-
-    @Override
-    public Long getVideoIdById(Long quizId) {
+    public List<Quiz> getListByVideoId(Long videoId) {
         return null;
     }
 }

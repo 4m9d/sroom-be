@@ -9,7 +9,5 @@ public interface QuizRepository {
 
     void save(Quiz quiz);
 
-    List<Quiz> getQuizListByVideoId(Long videoId);
-
-    Long getVideoIdById(Long quizId);
+    List<Quiz> getListByVideoId(Long videoId);
 }

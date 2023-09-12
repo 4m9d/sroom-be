@@ -13,7 +13,7 @@ public class QuizOptionJdbcRepositoryImpl implements QuizOptionRepository{
     }
 
     @Override
-    public List<QuizOption> getQuizOptionListByQuizId(Long quizId) {
+    public List<QuizOption> getListByQuizId(Long quizId) {
         return null;
     }
 }

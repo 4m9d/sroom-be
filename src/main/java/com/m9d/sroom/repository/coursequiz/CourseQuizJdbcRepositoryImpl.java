@@ -15,18 +15,8 @@ public class CourseQuizJdbcRepositoryImpl implements CourseQuizRepository {
     }
 
     @Override
-    public Optional<SubmittedQuizInfo> getSubmittedQuizInfoByQuizIdAndCourseVideoId(Long quizId, Long coursevideoId) {
-        return Optional.empty();
-    }
-
-    @Override
     public void deleteByCourseId(Long courseId) {
 
-    }
-
-    @Override
-    public Optional<CourseQuizInfo> getInfoById(Long courseQuizId) {
-        return Optional.empty();
     }
 
     @Override

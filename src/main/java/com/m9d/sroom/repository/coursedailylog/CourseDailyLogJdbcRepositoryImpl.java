@@ -34,9 +34,4 @@ public class CourseDailyLogJdbcRepositoryImpl implements CourseDailyLogRepositor
     public Integer countQuizByCourseIdAndDate(Long courseId, Date date) {
         return null;
     }
-
-    @Override
-    public List<LearningHistory> getLearningHistoryListByMemberId(Long memberId) {
-        return null;
-    }
 }

@@ -50,11 +50,6 @@ public class MemberJdbcRepositoryImpl implements MemberRepository{
     }
 
     @Override
-    public MemberQuizInfo getMemberQuizInfoById(Long memberId) {
-        return null;
-    }
-
-    @Override
     public void addTotalLearningTimeById(Long memberId, int timeToAddInSecond) {
 
     }
@@ -62,10 +57,5 @@ public class MemberJdbcRepositoryImpl implements MemberRepository{
     @Override
     public void updateCompletionRateById(Long memberId, int completionRate) {
 
-    }
-
-    @Override
-    public DashboardMemberData getDashboardMemberDataById(Long memberId) {
-        return null;
     }
 }

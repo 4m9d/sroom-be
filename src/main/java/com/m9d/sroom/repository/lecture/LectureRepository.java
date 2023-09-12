@@ -11,8 +11,6 @@ public interface LectureRepository {
 
     void deleteByCourseId(Long courseId);
 
-    Long getCourseIdById(Long lectureId);
-
     HashSet<String> getChannelSetByCourseId(Long courseId);
 
     List<Integer> getIndexListByCourseId(Long courseId);

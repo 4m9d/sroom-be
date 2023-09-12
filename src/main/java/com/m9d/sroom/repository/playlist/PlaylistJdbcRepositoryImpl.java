@@ -35,29 +35,4 @@ public class PlaylistJdbcRepositoryImpl implements PlaylistRepository{
     public Set<String> getCodeListByMemberId(Long memberId) {
         return null;
     }
-
-    @Override
-    public Optional<PlaylistInfoInSearch> findPlaylistInfoSearch(String playlistCode) {
-        return Optional.empty();
-    }
-
-    @Override
-    public List<RecommendLecture> getPlaylistsSortedByRating() {
-        return null;
-    }
-
-    @Override
-    public List<RecommendLecture> getRandomListByChannel(String channel, int limit) {
-        return null;
-    }
-
-    @Override
-    public List<RecommendLecture> getMostViewedListByChannel(String channel, int limit) {
-        return null;
-    }
-
-    @Override
-    public List<RecommendLecture> getLatestListByChannel(String channel, int limit) {
-        return null;
-    }
 }

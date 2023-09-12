@@ -1,5 +1,6 @@
 package com.m9d.sroom.repository.playlistvideo;
 
+import com.m9d.sroom.global.model.PlaylistVideo;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -13,7 +14,7 @@ public class PlaylistVideoJdbcRepositoryImpl implements PlaylistVideoRepository{
     }
 
     @Override
-    public List<Map<Long, Integer>> getIndexMapListById(Long playlistId) {
+    public List<PlaylistVideo> getListByPlaylistId(Long playlistId) {
         return null;
     }
 

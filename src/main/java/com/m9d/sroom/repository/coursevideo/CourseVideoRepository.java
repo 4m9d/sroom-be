@@ -20,17 +20,9 @@ public interface CourseVideoRepository {
 
     Integer countCompletedByCourseId(Long courseId);
 
-    List<EnrolledCourseVideo> getEnrolledCourseVideoListByCourseId(Long courseId);
-
-    List<SchedulingVideo> getSchedulingVideoByCourseId(Long courseId);
-
     void updateSectionById(Long courseVideoId, int section);
 
-    LastVideoInfo getLastVideoInfoByCourseId(Long courseId);
-
     void updateViewingStatus(CourseVideo courseVideo);
-
-    CourseVideoKey getCourseVideoKeyById(Long courseVideoId);
 
     Long getIdByCourseIdAndPrevIndex(Long courseId, int videoIndex);
 

@@ -19,14 +19,4 @@ public interface PlaylistRepository {
     void updateDurationById(Long playlistId, int duration);
 
     Set<String> getCodeListByMemberId(Long memberId);
-
-    Optional<PlaylistInfoInSearch> findPlaylistInfoSearch(String playlistCode);
-
-    List<RecommendLecture> getPlaylistsSortedByRating();
-
-    List<RecommendLecture> getRandomListByChannel(String channel, int limit);
-
-    List<RecommendLecture> getMostViewedListByChannel(String channel, int limit);
-
-    List<RecommendLecture> getLatestListByChannel(String channel, int limit);
 }

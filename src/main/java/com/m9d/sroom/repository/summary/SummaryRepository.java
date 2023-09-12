@@ -11,7 +11,5 @@ public interface SummaryRepository {
 
     Optional<Summary> findByCourseVideoId(Long courseVideoId);
 
-    SummaryBrief getSummaryBriefById(Long summaryId);
-
-    void update(Long summaryId, String content);
+    void update(Summary summary);
 }

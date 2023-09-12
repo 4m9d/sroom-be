@@ -19,12 +19,7 @@ public class SummaryJdbcRepositoryImpl implements SummaryRepository{
     }
 
     @Override
-    public SummaryBrief getSummaryBriefById(Long summaryId) {
-        return null;
-    }
-
-    @Override
-    public void update(Long summaryId, String content) {
+    public void update(Summary summary) {
 
     }
 }

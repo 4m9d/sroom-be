@@ -19,11 +19,6 @@ public class LectureJdbcRepositoryImpl implements LectureRepository{
     }
 
     @Override
-    public Long getCourseIdById(Long lectureId) {
-        return null;
-    }
-
-    @Override
     public HashSet<String> getChannelSetByCourseId(Long courseId) {
         return null;
     }
