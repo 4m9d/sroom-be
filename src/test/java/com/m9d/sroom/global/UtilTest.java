@@ -9,6 +9,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
+import java.sql.Timestamp;
+import java.util.Map;
+
 public class UtilTest extends SroomTest {
 
     @Test
@@ -364,5 +367,138 @@ public class UtilTest extends SroomTest {
         System.out.println(System.currentTimeMillis());
         System.out.println(searchVo.toString());
         System.out.println(System.currentTimeMillis());
+    }
+
+    @Test
+    @DisplayName("칼럼 개수에 따라 select 속도의 변화가 있는지 확인합니다.")
+    void testSpeedDifferenceByColumnCount() {
+
+        String insertVideoQuery = "INSERT INTO VIDEO " +
+                "(video_code, published_at, duration, channel, thumbnail, accumulated_rating, review_count, summary_id, is_available, description, chapter_usage, title, language, license, view_count, membership, material_status) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ? ,?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        jdbcTemplate.update(insertVideoQuery, "asdfasdf", new Timestamp(System.currentTimeMillis()), 100, "asdfasdfasdfasdf", "asdfasdfjasdlgahopgih2ghsd.jpg", 100, 122, 123, 1, "ow nglasdfjlasjlvnbaohtqprjagebkfdjnblkfqaspfdbiogjaonfejpowasklfdjbngaFPijaoghuejbsknfmksewpjihoutegrbitkrs fdajpihgrouetrbjnslefarwjpi43rghoeubjtskn flmerawkjpi3grhoeutbjnrsklmfekrawjpigrhoebjsfkg rijsotghuijbefnorwekjpRiwgosbfdiasdpjfiboujknlvkfejpoIwhougrabejsfnrijp3r4ogheubjsrkjp42oirgetohubdfjkndsfaip24t3gehuorbjfdbfrawih4wtgoruebjdsflbo",
+                0, "aslkdabajjowgrepijtosbgrndlfkejpihogreutbjsfdvnlpjawoeitqhgoruejtbsgdn", "ko", "youtube", 100000, 0, 1);
+
+        int lastId = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
+
+        String selectQuery = "SELECT * FROM VIDEO WHERE video_id = ?";
+        Map<String, Object> videoData = jdbcTemplate.queryForMap(selectQuery, lastId);
+        System.out.println(videoData);
+
+        long start = System.currentTimeMillis();
+        for (int i = 0; i < 1000000; i++) {
+            jdbcTemplate.queryForMap("SELECT * FROM VIDEO WHERE video_id = ?", lastId);
+        }
+        long end = System.currentTimeMillis();
+
+        System.out.println("Time taken to query all columns 1,000,000 times: " + (end - start) + "ms");
+        start = System.currentTimeMillis();
+        for (int i = 0; i < 1000000; i++) {
+            jdbcTemplate.queryForObject("SELECT description FROM VIDEO WHERE video_id = ?", String.class, lastId);
+        }
+        end = System.currentTimeMillis();
+        System.out.println("Time taken to query 'description' column 1,000,000 times: " + (end - start) + "ms");
+
+        start = System.currentTimeMillis();
+        for (int i = 0; i < 1000000; i++) {
+            jdbcTemplate.queryForObject("SELECT membership FROM VIDEO WHERE video_id = ?", String.class, lastId);
+        }
+        end = System.currentTimeMillis();
+        System.out.println("Time taken to query 'membership' column 1,000,000 times: " + (end - start) + "ms");
+
+        start = System.currentTimeMillis();
+        for (int i = 0; i < 1000000; i++) {
+            jdbcTemplate.queryForMap("SELECT * FROM VIDEO WHERE video_id = ?", lastId);
+        }
+        end = System.currentTimeMillis();
+        System.out.println("Time taken to query all columns 1,000,000 times: " + (end - start) + "ms");
+
+
+        lastId = jdbcTemplate.queryForObject("SELECT LAST_INSERT_ID()", Integer.class);
+
+        System.out.println();
+        System.out.println();
+
+        start = System.currentTimeMillis();
+        for (int i = 0; i < 1000000; i++) {
+            String updateDescriptionQuery = "UPDATE VIDEO SET description = ? WHERE video_id = ?";
+            jdbcTemplate.update(updateDescriptionQuery, "asldoufhibjkaweiofhugbjkdgnjipdwouhihjvfregjnjfgosfdhoudibwhakejfnlrgejisbgrfdhoubehrkwjrfweiragoebjskhvfdg njirhourfbwerhgkfs dgjnkeiarhuorbkfhrgebjstrgnkiearhowubrh3k gjwranebtjsgprihouerbjlrnk34wagriejpsobtugrkf jenrkpij23wo4huebjkgarfsdgfnkpiarohwuegibafhksd gnbiprgw3hrugiewgahrebksdf gpejrgw3r20uhoibhwagrejsnbgfjearhweuobihkr3jwegajris9g-fud08huorewbj42l3nr4piagjrestgrfhouxberjnew3ijwefargesbdfgfoxjnrwejfiㅁㄱㅎ듈ㄴ애혀ㅝㄹㄱㅈ댜럼ㅎㄱ도ㅕㅐㅠㅇㄹ너후개ㅕwhfaegreovfdj", lastId);
+        }
+        end = System.currentTimeMillis();
+        System.out.println("Time taken to update 'description' column 1,000,000 times: " + (end - start) + "ms");
+
+
+        String updateAllColumnsQuery = "UPDATE VIDEO SET " +
+                "video_code = ?, " +
+                "published_at = ?, " +
+                "duration = ?, " +
+                "channel = ?, " +
+                "accumulated_rating = ?, " +
+                "review_count = ?, " +
+                "summary_id = ?, " +
+                "is_available = ?, " +
+                "chapter_usage = ?, " +
+                "title = ?, " +
+                "language = ?, " +
+                "view_count = ?, " +
+                "membership = ?, " +
+                "material_status = ?, " +
+                "description = ?, " +
+                "thumbnail = ? " +
+                "WHERE video_id = ?";
+
+        start = System.currentTimeMillis();
+        for (int i = 0; i < 1000000; i++) {
+            jdbcTemplate.update(updateAllColumnsQuery, "newVideoCode", new Timestamp(System.currentTimeMillis()),
+                    1233,
+                    "asdjkfabsgasdga",
+                    i,
+                    111 + i,
+                    1,
+                    1,
+                    1,
+                    "titltlaskdflkajsblka",
+                    "ko",
+                    10000000 - i,
+                    1,
+                    1,
+                    "askdfbpiouheiwfrbgefkdgkfijowuheiwfbrdk vkdfiouhiebwfkrdjgijpouehIwkbdsankbjifohuibekqwfrgabdjsgkjidfohuwibKewfrgaefjbdgsfiobdhuikqejnwfrgaejifpsbdgohujkdwkeijpr3huo4wfragbehskfdg fbneiprjwhuorbhwgrkaejgsdnbipraewrhoubgwrkaebjgsnfkjiergwhoubhkwgraejbsgkfpjierowhuebjkrelgwranekpbsgjfhruwob3jrlnwgraejsgfihoubjwn3rkjwegraedbsg0ifhoubjner42wfjrgaiehodfgxjnlkerpj2ihfworagnbejsdlg fxkepri",
+                    "osakhbdoawpirgjehofbjslangwrlkvnblf", lastId);
+        }
+        end = System.currentTimeMillis();
+        System.out.println("Time taken to update all columns 1,000,000 times: " + (end - start) + "ms");
+
+        start = System.currentTimeMillis();
+        for (int i = 0; i < 1000000; i++) {
+            String updateTitleQuery = "UPDATE VIDEO SET view_count = ? WHERE video_id = ?";
+            jdbcTemplate.update(updateTitleQuery, 10000, lastId);
+        }
+        end = System.currentTimeMillis();
+        System.out.println("Time taken to update 'view_count' column same content 1,000,000 times: " + (end - start) + "ms");
+
+        start = System.currentTimeMillis();
+        for (int i = 0; i < 1000000; i++) {
+            String updateTitleQuery = "UPDATE VIDEO SET view_count = ? WHERE video_id = ?";
+            jdbcTemplate.update(updateTitleQuery, 10000 + i, lastId);
+        }
+        end = System.currentTimeMillis();
+        System.out.println("Time taken to update 'view_count' column differently 1,000,000 times: " + (end - start) + "ms");
+
+        start = System.currentTimeMillis();
+        for (int i = 0; i < 1000000; i++) {
+            String updateTitleQuery = "UPDATE VIDEO SET view_count = ? WHERE video_id = ?";
+            jdbcTemplate.update(updateTitleQuery, 10000, lastId);
+        }
+        end = System.currentTimeMillis();
+        System.out.println("Time taken to update 'view_count' column same content 1,000,000 times: " + (end - start) + "ms");
+
+        start = System.currentTimeMillis();
+        for (int i = 0; i < 1000000; i++) {
+            String updateDescriptionQuery = "UPDATE VIDEO SET description = ? WHERE video_id = ?";
+            jdbcTemplate.update(updateDescriptionQuery, "asldoufhibjkaweiofhugbjkdgnjipdwouhihjvfregjnjfgosfdhoudibwhakejfnlrgejisbgrfdhoubehrkwjrfweiragoebjskhvfdg njirhourfbwerhgkfs dgjnkeiarhuorbkfhrgebjstrgnkiearhowubrh3k gjwranebtjsgprihouerbjlrnk34wagriejpsobtugrkf jenrkpij23wo4huebjkgarfsdgfnkpiarohwuegibafhksd gnbiprgw3hrugiewgahrebksdf gpejrgw3r20uhoibhwagrejsnbgfjearhweuobihkr3jwegajris9g-fud08huorewbj42l3nr4piagjrestgrfhouxberjnew3ijwefargesbdfgfoxjnrwejfiㅁㄱㅎ듈ㄴ애혀ㅝㄹㄱㅈ댜럼ㅎㄱ도ㅕㅐㅠㅇㄹ너후개ㅕwhfaegreovfdj", lastId);
+        }
+        end = System.currentTimeMillis();
+        System.out.println("Time taken to update 'description' column 1,000,000 times: " + (end - start) + "ms");
     }
 }
