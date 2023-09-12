@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
+import java.io.Console;
 import java.util.*;
 import java.security.InvalidParameterException;
 import java.util.concurrent.CompletableFuture;
@@ -142,9 +143,9 @@ public class CourseService {
             courseId = courseRepository.saveCourse(memberId, playlist.getTitle(), playlist.getDuration(), playlist.getThumbnail());
         }
 
-        saveCourseVideoListFirst(memberId, courseId, newLecture, playlist.getPlaylistId(), useSchedule);
-
         Long lectureId = courseRepository.saveLecture(memberId, courseId, playlist.getPlaylistId(), playlist.getChannel(), true, ENROLL_LECTURE_INDEX);
+
+        saveCourseVideoListFirst(memberId, courseId, lectureId, newLecture, playlist.getPlaylistId(), useSchedule);
 
         return EnrolledCourseInfo.builder()
                 .title(playlist.getTitle())
@@ -153,7 +154,7 @@ public class CourseService {
                 .build();
     }
 
-    private void saveCourseVideoListFirst(Long memberId, Long courseId, NewLecture newLecture, Long playlistId, boolean useSchedule) {
+    private void saveCourseVideoListFirst(Long memberId, Long courseId, Long lectureId, NewLecture newLecture, Long playlistId, boolean useSchedule) {
         int videoCount = 1;
         int section = 0;
         int week = 0;
@@ -166,10 +167,10 @@ public class CourseService {
                     section++;
                     videoCount = 1;
                 }
-                courseRepository.saveCourseVideo(memberId, courseId, videoInfo.getVideoId(), section + 1, videoInfo.getIndex(), ENROLL_LECTURE_INDEX);
+                courseRepository.saveCourseVideo(memberId, courseId, lectureId, videoInfo.getVideoId(), section + 1, videoInfo.getIndex(), ENROLL_LECTURE_INDEX);
                 videoCount++;
             } else {
-                courseRepository.saveCourseVideo(memberId, courseId, videoInfo.getVideoId(), ENROLL_DEFAULT_SECTION, videoInfo.getIndex(), ENROLL_LECTURE_INDEX);
+                courseRepository.saveCourseVideo(memberId, courseId, lectureId, videoInfo.getVideoId(), ENROLL_DEFAULT_SECTION, videoInfo.getIndex(), ENROLL_LECTURE_INDEX);
             }
         }
     }
@@ -178,17 +179,20 @@ public class CourseService {
         Video video = safeGetVideo(newLecture.getLectureCode());
 
         Long courseId;
+        Long lectureId;
+
         if (useSchedule) {
             validateScheduleField(newLecture);
             Date expectedEndDate = dateUtil.convertStringToDate(newLecture.getExpectedEndDate());
             courseId = courseRepository.saveCourseWithSchedule(memberId, video.getTitle(), video.getDuration(), video.getThumbnail(), newLecture.getScheduling().size(), newLecture.getDailyTargetTime(), expectedEndDate);
-            courseRepository.saveCourseVideo(memberId, courseId, video.getVideoId(), ENROLL_DEFAULT_SECTION_SCHEDULE, ENROLL_VIDEO_INDEX, ENROLL_LECTURE_INDEX);
+            lectureId = courseRepository.saveLecture(memberId, courseId, video.getVideoId(), video.getChannel(), false, ENROLL_LECTURE_INDEX);
+            courseRepository.saveCourseVideo(memberId, courseId, lectureId, video.getVideoId(), ENROLL_DEFAULT_SECTION_SCHEDULE, ENROLL_VIDEO_INDEX, ENROLL_LECTURE_INDEX);
         } else {
             courseId = courseRepository.saveCourse(memberId, video.getTitle(), video.getDuration(), video.getThumbnail());
-            courseRepository.saveCourseVideo(memberId, courseId, video.getVideoId(), ENROLL_DEFAULT_SECTION, ENROLL_VIDEO_INDEX, ENROLL_LECTURE_INDEX);
+            lectureId = courseRepository.saveLecture(memberId, courseId, video.getVideoId(), video.getChannel(), false, ENROLL_LECTURE_INDEX);
+            courseRepository.saveCourseVideo(memberId, courseId, lectureId, video.getVideoId(), ENROLL_DEFAULT_SECTION, ENROLL_VIDEO_INDEX, ENROLL_LECTURE_INDEX);
         }
 
-        Long lectureId = courseRepository.saveLecture(memberId, courseId, video.getVideoId(), video.getChannel(), false, ENROLL_LECTURE_INDEX);
         return EnrolledCourseInfo.builder()
                 .title(video.getTitle())
                 .courseId(courseId)
@@ -315,7 +319,7 @@ public class CourseService {
 
         Long lectureId = courseRepository.saveLecture(course.getMemberId(), course.getCourseId(), playlist.getPlaylistId(), playlist.getChannel(), true, lastLectureIndex + 1);
 
-        saveCourseVideoList(course, playlist, lastLectureIndex + 1);
+        saveCourseVideoList(course, playlist, lectureId, lastLectureIndex + 1);
 
         if (course.isScheduled()) {
             scheduleVideos(course);
@@ -328,7 +332,7 @@ public class CourseService {
                 .build();
     }
 
-    private void saveCourseVideoList(Course course, Playlist playlist, int lectureIndex) {
+    private void saveCourseVideoList(Course course, Playlist playlist, Long lectureId, int lectureIndex) {
         List<Video> enrolledVideoList = courseRepository.getVideoListByCourseId(course.getCourseId());
         int lastVideoIndex = enrolledVideoList.get(enrolledVideoList.size() - 1).getIndex();
 
@@ -336,7 +340,7 @@ public class CourseService {
         int videoIndex = lastVideoIndex + 1;
 
         for (Video video : videoList) {
-            courseRepository.saveCourseVideo(course.getMemberId(), course.getCourseId(), video.getVideoId(), ENROLL_DEFAULT_SECTION, videoIndex, lectureIndex);
+            courseRepository.saveCourseVideo(course.getMemberId(), course.getCourseId(), lectureId, video.getVideoId(), ENROLL_DEFAULT_SECTION, videoIndex, lectureIndex);
             videoIndex++;
         }
     }
@@ -381,7 +385,7 @@ public class CourseService {
 
         Long lectureId = courseRepository.saveLecture(course.getMemberId(), course.getCourseId(), video.getVideoId(), video.getChannel(), false, lastLectureIndex + 1);
 
-        saveCourseVideo(course, video, lastLectureIndex + 1);
+        saveCourseVideo(course, video, lectureId, lastLectureIndex + 1);
 
         if (course.isScheduled()) {
             scheduleVideos(course);
@@ -395,11 +399,11 @@ public class CourseService {
                 .build();
     }
 
-    private void saveCourseVideo(Course course, Video video, int lectureIndex) {
+    private void saveCourseVideo(Course course, Video video, Long lectureId, int lectureIndex) {
         List<Video> enrolledVideoList = courseRepository.getVideoListByCourseId(course.getCourseId());
         int lastVideoIndex = enrolledVideoList.get(enrolledVideoList.size() - 1).getIndex();
 
-        courseRepository.saveCourseVideo(course.getMemberId(), course.getCourseId(), video.getVideoId(), ENROLL_DEFAULT_SECTION, lastVideoIndex + 1, lectureIndex);
+        courseRepository.saveCourseVideo(course.getMemberId(), course.getCourseId(), lectureId, video.getVideoId(), ENROLL_DEFAULT_SECTION, lastVideoIndex + 1, lectureIndex);
     }
 
     private void scheduleVideos(Course course) {

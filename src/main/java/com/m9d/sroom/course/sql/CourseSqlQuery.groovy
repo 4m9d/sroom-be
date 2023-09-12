@@ -62,8 +62,8 @@ class CourseSqlQuery {
     """
 
     public static final String SAVE_COURSE_VIDEO_QUERY = """
-    INSERT INTO COURSEVIDEO (member_id, course_id, video_id, section, video_index, lecture_index)
-    VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO COURSEVIDEO (member_id, course_id, lecture_id, video_id, section, video_index, lecture_index)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
     """
 
     public static final String GET_COURSE_ID_BY_LECTURE_ID_QUERY = """

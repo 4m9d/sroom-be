@@ -99,8 +99,8 @@ public class CourseRepository {
         return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
     }
 
-    public void saveCourseVideo(Long memberId, Long courseId, Long videoId, int section, int videoIndex, int lectureIndex) {
-        jdbcTemplate.update(SAVE_COURSE_VIDEO_QUERY, memberId, courseId, videoId, section, videoIndex, lectureIndex);
+    public void saveCourseVideo(Long memberId, Long courseId, Long lectureId, Long videoId, int section, int videoIndex, int lectureIndex) {
+        jdbcTemplate.update(SAVE_COURSE_VIDEO_QUERY, memberId, courseId, lectureId, videoId, section, videoIndex, lectureIndex);
     }
 
     public Long getCourseIdByLectureId(Long lectureId) {
