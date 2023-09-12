@@ -10,6 +10,8 @@ public interface MemberRepository {
 
     void save(Member member);
 
+    Member getById(Long memberId);
+
     Member getByCode(String memberCode);
 
     Optional<Member> findByCode(String memberCode);
@@ -23,5 +25,4 @@ public interface MemberRepository {
     void addTotalLearningTimeById(Long memberId, int timeToAddInSecond);
 
     void updateCompletionRateById(Long memberId, int completionRate);
-
 }

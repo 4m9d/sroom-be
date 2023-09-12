@@ -8,8 +8,9 @@ import java.util.Map;
 
 @Repository
 public class PlaylistVideoJdbcRepositoryImpl implements PlaylistVideoRepository{
+
     @Override
-    public void save(Long playlistId, Long videoId, int videoIndex) {
+    public void save(PlaylistVideo playlistVideo) {
 
     }
 

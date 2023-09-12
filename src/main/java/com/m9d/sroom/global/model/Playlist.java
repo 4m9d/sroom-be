@@ -27,7 +27,7 @@ public class Playlist {
 
     private Timestamp publishedAt;
 
-    private int lectureCount;
+    private Integer lectureCount;
 
     private double rating;
 

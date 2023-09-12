@@ -1,12 +1,9 @@
 package com.m9d.sroom.repository.coursevideo;
 
-import com.m9d.sroom.course.dto.EnrolledCourseVideo;
-import com.m9d.sroom.course.dto.SchedulingVideo;
+import com.m9d.sroom.course.dto.VideoInfoForSchedule;
 import com.m9d.sroom.global.model.CourseVideo;
 import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
-import com.m9d.sroom.material.model.CourseVideoKey;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,24 +11,20 @@ public interface CourseVideoRepository {
 
     void save(CourseVideo courseVideo);
 
-    Optional<CourseVideo> findCourseVideoById(Long courseVideoId);
+    void updateById(Long id, CourseVideo courseVideo);
 
+    CourseVideo getById(Long courseVideoId);
+
+    List<CourseVideo> getListByCourseId(Long courseId);
+
+    Optional<CourseVideo> findById(Long courseVideoId);
     Integer countByCourseId(Long courseId);
 
     Integer countCompletedByCourseId(Long courseId);
 
-    void updateSectionById(Long courseVideoId, int section);
-
-    void updateViewingStatus(CourseVideo courseVideo);
-
     Long getIdByCourseIdAndPrevIndex(Long courseId, int videoIndex);
 
-    void updateLastViewTimeById(Long courseVideoId, Timestamp time);
+    List<VideoInfoForSchedule> getVideoInfoForScheduleByCourseId(Long courseId);
 
-    void updateSummaryIdByVideoId(Long videoId, Long summaryId);
-
-    void updateSummaryIdById(Long courseVideoId, Long summaryId);
-
-
-
+    LastVideoInfo getLastByCourseId(Long courseId);
 }

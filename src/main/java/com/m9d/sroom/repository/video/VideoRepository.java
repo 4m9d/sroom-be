@@ -1,9 +1,6 @@
 package com.m9d.sroom.repository.video;
 
 import com.m9d.sroom.global.model.Video;
-import com.m9d.sroom.lecture.dto.PlaylistInfoInSearch;
-import com.m9d.sroom.lecture.dto.response.RecommendLecture;
-import com.m9d.sroom.lecture.dto.response.VideoBrief;
 
 import java.util.List;
 import java.util.Optional;
@@ -13,14 +10,17 @@ public interface VideoRepository {
 
     Long save(Video video);
 
+    Video getByCode(String videoCode);
+
     Optional<Video> findByCode(String videoCode);
 
     Optional<Video> findById(Long videoId);
 
-    void update(Video video);
+    Long update(Video video);
 
-    void updateMaterialStatusByCode(String videoCode);
+    void updateMaterialStatusByCode(String videoCode, int materialStatus);
 
     Set<String> getCodeListByMemberId(Long memberId);
 
+    List<Video> getListByPlaylistId(Long playlistId);
 }

@@ -7,7 +7,7 @@ import java.util.Map;
 
 public interface PlaylistVideoRepository {
 
-    void save(Long playlistId, Long videoId, int videoIndex);
+    void save(PlaylistVideo playlistVideo);
 
     List<PlaylistVideo> getListByPlaylistId(Long playlistId);
 

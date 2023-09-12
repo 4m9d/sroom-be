@@ -23,13 +23,13 @@ public class Course {
 
     private String thumbnail;
 
-    private int duration;
+    private Integer duration;
 
-    private Timestamp expectedEndTime;
+    private Date expectedEndTime;
 
-    private int dailyTargetTime;
+    private Integer dailyTargetTime;
 
-    private int weeks;
+    private Integer weeks;
 
     private boolean scheduled;
 

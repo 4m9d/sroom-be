@@ -13,7 +13,7 @@ public interface LectureRepository {
 
     HashSet<String> getChannelSetByCourseId(Long courseId);
 
-    List<Integer> getIndexListByCourseId(Long courseId);
+    List<Lecture> getListByCourseId(Long courseId);
 
     List<String> getChannelListOrderByCount(Long member_id);
 

@@ -2,6 +2,7 @@ package com.m9d.sroom.repository.coursevideo;
 
 import com.m9d.sroom.course.dto.EnrolledCourseVideo;
 import com.m9d.sroom.course.dto.SchedulingVideo;
+import com.m9d.sroom.course.dto.VideoInfoForSchedule;
 import com.m9d.sroom.global.model.CourseVideo;
 import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
 import com.m9d.sroom.material.model.CourseVideoKey;
@@ -19,7 +20,22 @@ public class CourseVideoJdbcRepositoryImpl implements CourseVideoRepository{
     }
 
     @Override
-    public Optional<CourseVideo> findCourseVideoById(Long courseVideoId) {
+    public void updateById(Long id, CourseVideo courseVideo) {
+
+    }
+
+    @Override
+    public CourseVideo getById(Long courseVideoId) {
+        return null;
+    }
+
+    @Override
+    public List<CourseVideo> getListByCourseId(Long courseId) {
+        return null;
+    }
+
+    @Override
+    public Optional<CourseVideo> findById(Long courseVideoId) {
         return Optional.empty();
     }
 
@@ -34,32 +50,12 @@ public class CourseVideoJdbcRepositoryImpl implements CourseVideoRepository{
     }
 
     @Override
-    public void updateSectionById(Long courseVideoId, int section) {
-
-    }
-
-    @Override
-    public void updateViewingStatus(CourseVideo courseVideo) {
-
-    }
-
-    @Override
     public Long getIdByCourseIdAndPrevIndex(Long courseId, int videoIndex) {
         return null;
     }
 
     @Override
-    public void updateLastViewTimeById(Long courseVideoId, Timestamp time) {
-
-    }
-
-    @Override
-    public void updateSummaryIdByVideoId(Long videoId, Long summaryId) {
-
-    }
-
-    @Override
-    public void updateSummaryIdById(Long courseVideoId, Long summaryId) {
-
+    public List<VideoInfoForSchedule> getVideoInfoForScheduleByCourseId(Long courseId) {
+        return null;
     }
 }

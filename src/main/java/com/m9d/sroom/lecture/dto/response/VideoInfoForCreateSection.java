@@ -8,7 +8,7 @@ import lombok.Data;
 @Schema(description = "수강 페이지 사이드바에 쓰이는 비디오의 요약 정보")
 @Data
 @Builder
-public class VideoBrief {
+public class VideoInfoForCreateSection {
 
     @Schema(description = "비디오 ID", example = "1111")
     private Long videoId;

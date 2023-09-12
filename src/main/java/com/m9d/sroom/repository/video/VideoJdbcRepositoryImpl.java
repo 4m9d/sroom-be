@@ -1,8 +1,6 @@
 package com.m9d.sroom.repository.video;
 
 import com.m9d.sroom.global.model.Video;
-import com.m9d.sroom.lecture.dto.response.RecommendLecture;
-import com.m9d.sroom.lecture.dto.response.VideoBrief;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,6 +15,11 @@ public class VideoJdbcRepositoryImpl implements VideoRepository{
     }
 
     @Override
+    public Video getByCode(String videoCode) {
+        return null;
+    }
+
+    @Override
     public Optional<Video> findByCode(String videoCode) {
         return Optional.empty();
     }
@@ -27,17 +30,22 @@ public class VideoJdbcRepositoryImpl implements VideoRepository{
     }
 
     @Override
-    public void update(Video video) {
-
+    public Long update(Video video) {
+        return null;
     }
 
     @Override
-    public void updateMaterialStatusByCode(String videoCode) {
+    public void updateMaterialStatusByCode(String videoCode, int materialStatus) {
 
     }
 
     @Override
     public Set<String> getCodeListByMemberId(Long memberId) {
+        return null;
+    }
+
+    @Override
+    public List<Video> getListByPlaylistId(Long playlistId) {
         return null;
     }
 }

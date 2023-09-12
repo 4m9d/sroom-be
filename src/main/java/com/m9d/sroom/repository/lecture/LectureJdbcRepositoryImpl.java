@@ -24,7 +24,7 @@ public class LectureJdbcRepositoryImpl implements LectureRepository{
     }
 
     @Override
-    public List<Integer> getIndexListByCourseId(Long courseId) {
+    public List<Lecture> getListByCourseId(Long courseId) {
         return null;
     }
 

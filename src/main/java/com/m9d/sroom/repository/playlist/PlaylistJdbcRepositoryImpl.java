@@ -22,8 +22,8 @@ public class PlaylistJdbcRepositoryImpl implements PlaylistRepository{
     }
 
     @Override
-    public void update(Playlist playlist) {
-
+    public Long updateById(Long playlistId, Playlist playlist) {
+        return null;
     }
 
     @Override

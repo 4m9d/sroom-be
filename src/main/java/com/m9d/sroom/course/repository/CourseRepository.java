@@ -7,7 +7,7 @@ import com.m9d.sroom.course.exception.CourseVideoNotFoundException;
 import com.m9d.sroom.course.sql.CourseSqlQuery;
 import com.m9d.sroom.lecture.dto.response.CourseBrief;
 import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
-import com.m9d.sroom.lecture.dto.response.VideoBrief;
+import com.m9d.sroom.lecture.dto.response.VideoInfoForCreateSection;
 import com.m9d.sroom.material.model.CourseVideoKey;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -257,8 +257,8 @@ public class CourseRepository {
         }
     }
 
-    public List<VideoBrief> getVideoBrief(Long courseId, int section) {
-        return jdbcTemplate.query(GET_VIDEO_BRIEF_QUERY, (rs, rowNum) -> VideoBrief.builder()
+    public List<VideoInfoForCreateSection> getVideoBrief(Long courseId, int section) {
+        return jdbcTemplate.query(GET_VIDEO_BRIEF_QUERY, (rs, rowNum) -> VideoInfoForCreateSection.builder()
                 .videoId(rs.getLong("video_id"))
                 .videoCode(rs.getString("video_code"))
                 .channel(rs.getString("channel"))
