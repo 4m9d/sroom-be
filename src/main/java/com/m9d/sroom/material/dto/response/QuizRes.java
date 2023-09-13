@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @Builder
-public class Quiz {
+public class QuizRes {
 
     private Long id;
 

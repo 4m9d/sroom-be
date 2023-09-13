@@ -3,9 +3,7 @@ package com.m9d.sroom.material.service;
 import com.m9d.sroom.course.exception.CourseNotMatchException;
 import com.m9d.sroom.course.exception.CourseVideoNotFoundException;
 import com.m9d.sroom.course.repository.CourseRepository;
-import com.m9d.sroom.global.model.CourseDailyLog;
-import com.m9d.sroom.global.model.CourseVideo;
-import com.m9d.sroom.global.model.QuizOption;
+import com.m9d.sroom.global.model.*;
 import com.m9d.sroom.gpt.exception.QuizTypeNotMatchException;
 import com.m9d.sroom.gpt.model.MaterialVaildStatus;
 import com.m9d.sroom.gpt.vo.MaterialResultsVo;
@@ -15,12 +13,12 @@ import com.m9d.sroom.material.dto.request.SubmittedQuiz;
 import com.m9d.sroom.material.dto.response.*;
 import com.m9d.sroom.material.exception.*;
 import com.m9d.sroom.material.model.*;
-import com.m9d.sroom.global.model.Summary;
-import com.m9d.sroom.material.model.SubmittedQuizInfo;
+import com.m9d.sroom.material.model.SubmittedQuizInfoRes;
 import com.m9d.sroom.material.repository.MaterialRepository;
 import com.m9d.sroom.member.repository.MemberRepository;
 import com.m9d.sroom.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,7 +49,7 @@ public class MaterialService {
     @Transactional
     public Material getMaterials(Long memberId, Long courseVideoId) {
         Material material;
-        List<Quiz> quizList;
+        List<QuizRes> quizResList;
         SummaryBrief summaryBrief;
 
         CourseVideo courseVideo = getCourseVideo(courseVideoId);
@@ -70,14 +68,14 @@ public class MaterialService {
                     .status(MaterialStatus.CREATION_FAILED.getValue())
                     .build();
         } else {
-            quizList = getQuizList(courseVideo.getVideoId(), courseVideoId);
+            quizResList = getQuizList(courseVideo.getVideoId(), courseVideoId);
             summaryBrief = materialRepository.getSummaryById(courseVideo.getSummaryId());
 
             material = Material.builder()
                     .status(MaterialStatus.CREATED.getValue())
                     .summaryBrief(summaryBrief)
-                    .quizzes(quizList)
-                    .totalQuizCount(quizList.size())
+                    .quizzes(quizResList)
+                    .totalQuizCount(quizResList.size())
                     .build();
         }
 
@@ -100,50 +98,50 @@ public class MaterialService {
         }
     }
 
-    private List<Quiz> getQuizList(Long videoId, Long courseVideoId) {
-        List<Quiz> quizzes = materialRepository.getQuizListByVideoId(videoId);
+    private List<QuizRes> getQuizList(Long videoId, Long courseVideoId) {
+        List<QuizRes> quizResList = materialRepository.getQuizListByVideoId(videoId);
 
-        for (Quiz quiz : quizzes) {
-            List<QuizOption> options = materialRepository.getQuizOptionListByQuizId(quiz.getId());
-            setQuizOptions(quiz, options);
+        for (QuizRes quizRes : quizResList) {
+            List<QuizOption> options = materialRepository.getQuizOptionListByQuizId(quizRes.getId());
+            setQuizOptions(quizRes, options);
 
-            Optional<SubmittedQuizInfo> courseQuizOpt = materialRepository.findCourseQuizInfo(quiz.getId(), courseVideoId);
+            Optional<SubmittedQuizInfoRes> courseQuizOpt = materialRepository.findCourseQuizInfo(quizRes.getId(), courseVideoId);
             if (courseQuizOpt.isPresent()) {
-                SubmittedQuizInfo submittedQuizInfo = courseQuizOpt.get();
-                quiz.setSubmitted(true);
-                quiz.setSubmittedAnswer(submittedQuizInfo.getSubmittedAnswer());
-                quiz.setCorrect(submittedQuizInfo.isCorrect());
-                quiz.setScrapped(submittedQuizInfo.isScrapped());
-                quiz.setSubmittedAt(DateUtil.dateFormat.format(submittedQuizInfo.getSubmittedTime()));
+                SubmittedQuizInfoRes submittedQuizInfoRes = courseQuizOpt.get();
+                quizRes.setSubmitted(true);
+                quizRes.setSubmittedAnswer(submittedQuizInfoRes.getSubmittedAnswer());
+                quizRes.setCorrect(submittedQuizInfoRes.isCorrect());
+                quizRes.setScrapped(submittedQuizInfoRes.isScrapped());
+                quizRes.setSubmittedAt(DateUtil.dateFormat.format(submittedQuizInfoRes.getSubmittedTime()));
             } else {
-                quiz.setSubmitted(false);
+                quizRes.setSubmitted(false);
             }
-            translateNumToTF(quiz, courseQuizOpt);
+            translateNumToTF(quizRes, courseQuizOpt);
         }
 
-        return quizzes;
+        return quizResList;
     }
 
-    private void setQuizOptions(Quiz quiz, List<QuizOption> options) {
+    private void setQuizOptions(QuizRes quizRes, List<QuizOption> options) {
         List<String> optionList = new ArrayList<>(5);
         for (QuizOption option : options) {
             optionList.add(option.getIndex() - 1, option.getOptionText());
         }
-        quiz.setOptions(optionList);
+        quizRes.setOptions(optionList);
     }
 
-    private void translateNumToTF(Quiz quiz, Optional<SubmittedQuizInfo> courseQuizOpt) {
-        if (quiz.getType() != QuizType.TRUE_FALSE.getValue()) {
+    private void translateNumToTF(QuizRes quizRes, Optional<SubmittedQuizInfoRes> courseQuizOpt) {
+        if (quizRes.getType() != QuizType.TRUE_FALSE.getValue()) {
             return;
         }
 
         if (courseQuizOpt.isPresent()) {
             String submittedAnswer = courseQuizOpt.get().getSubmittedAnswer().equals("0") ? "false" : "true";
-            quiz.setSubmittedAnswer(submittedAnswer);
+            quizRes.setSubmittedAnswer(submittedAnswer);
         }
 
-        String answer = quiz.getAnswer().equals("0") ? "false" : "true";
-        quiz.setAnswer(answer);
+        String answer = quizRes.getAnswer().equals("0") ? "false" : "true";
+        quizRes.setAnswer(answer);
     }
 
     @Transactional
@@ -189,25 +187,25 @@ public class MaterialService {
     }
 
     @Transactional
-    public List<com.m9d.sroom.material.dto.response.SubmittedQuizInfo> submitQuizResults(Long memberId, Long courseVideoId, List<SubmittedQuiz> submittedQuizList) {
+    public List<SubmittedQuizInfo> submitQuizResults(Long memberId, Long courseVideoId, List<SubmittedQuiz> submittedQuizList) {
         CourseAndVideoId courseAndVideoId = courseRepository.getCourseAndVideoId(courseVideoId);
         Long courseId = courseAndVideoId.getCourseId();
         Long videoId = courseAndVideoId.getVideoId();
 
         validateQuizzesForMemberAndVideo(memberId, courseId, videoId, courseVideoId, submittedQuizList);
 
-        updateDailyLogQuizCount(memberId, courseId, submittedQuizList);
+        updateDailyLogQuizCount(memberId, courseId, submittedQuizList.size());
         updateMemberQuizCount(memberId, submittedQuizList);
 
-        List<com.m9d.sroom.material.dto.response.SubmittedQuizInfo> quizInfoList = new ArrayList<>();
+        List<SubmittedQuizInfo> quizInfoList = new ArrayList<>();
 
         for (SubmittedQuiz submittedQuiz : submittedQuizList) {
-            Long quizId = submittedQuiz.getQuizId();
+            Quiz quiz = materialRepository.getQuizById(submittedQuiz.getQuizId());
 
-            int submittedAnswer = alterSubmittedAnswerToInt(submittedQuiz.getSubmittedAnswer());
+            String submittedAnswer = alterSubmittedAnswer(quiz.getType(), submittedQuiz.getSubmittedAnswer());
 
-            Long courseQuizId = materialRepository.saveCourseQuiz(courseId, videoId, courseVideoId, submittedQuiz, submittedAnswer);
-            quizInfoList.add(new com.m9d.sroom.material.dto.response.SubmittedQuizInfo(quizId, courseQuizId));
+            Long courseQuizId = materialRepository.saveCourseQuiz(courseId, quiz.getId(), videoId, courseVideoId, submittedQuiz.getIsCorrect(), submittedAnswer);
+            quizInfoList.add(new SubmittedQuizInfo(quiz.getId(), courseQuizId));
         }
 
         return quizInfoList;
@@ -221,7 +219,7 @@ public class MaterialService {
         }
 
         for (SubmittedQuiz quiz : submittedQuizList) {
-            Optional<SubmittedQuizInfo> courseQuizOptional = materialRepository.findCourseQuizInfo(quiz.getQuizId(), courseVideoId);
+            Optional<SubmittedQuizInfoRes> courseQuizOptional = materialRepository.findCourseQuizInfo(quiz.getQuizId(), courseVideoId);
 
             if (courseQuizOptional.isPresent()) {
                 throw new CourseQuizDuplicationException();
@@ -232,10 +230,14 @@ public class MaterialService {
             if (!videoIdByQuizId.equals(videoId)) {
                 throw new QuizIdNotMatchException();
             }
+
+            if (quiz.getIsCorrect() == null) {
+                throw new QuizAnswerFormatNotValidException();
+            }
         }
     }
 
-    private void updateDailyLogQuizCount(Long memberId, Long courseId, List<SubmittedQuiz> quizList) {
+    private void updateDailyLogQuizCount(Long memberId, Long courseId, int submittedQuizCount) {
         Integer quizCountByDailyLog = courseRepository.findQuizCountByDailyLog(courseId, Date.valueOf(LocalDate.now()));
 
         if (quizCountByDailyLog == null) {
@@ -244,12 +246,12 @@ public class MaterialService {
                     .courseId(courseId)
                     .dailyLogDate(Date.valueOf(LocalDate.now()))
                     .learningTime(0)
-                    .quizCount(quizList.size())
+                    .quizCount(submittedQuizCount)
                     .lectureCount(0)
                     .build();
             courseRepository.saveCourseDailyLog(dailyLog);
         } else {
-            courseRepository.updateCourseDailyLogQuizCount(courseId, Date.valueOf(LocalDate.now()), quizCountByDailyLog + quizList.size());
+            courseRepository.updateCourseDailyLogQuizCount(courseId, Date.valueOf(LocalDate.now()), quizCountByDailyLog + submittedQuizCount);
         }
     }
 
@@ -261,17 +263,40 @@ public class MaterialService {
         memberRepository.addQuizCount(memberId, quizList.size(), correctCount);
     }
 
-    private int alterSubmittedAnswerToInt(String submittedAnswerStr) {
-        int submittedAnswer;
+    private String alterSubmittedAnswer(int quizType, String submittedAnswerReq) {
+        String submittedAnswer;
+
+        if (quizType == QuizType.MULTIPLE_CHOICE.getValue()) {
+            validateSubmittedAnswerTypeOne(submittedAnswerReq);
+            submittedAnswer = submittedAnswerReq;
+        } else if (quizType == QuizType.SUBJECTIVE.getValue()) {
+            submittedAnswer = submittedAnswerReq;
+        } else if (quizType == QuizType.TRUE_FALSE.getValue()) {
+            submittedAnswer = alterTrueOrFalseToInt(submittedAnswerReq);
+        } else {
+            throw new QuizTypeNotMatchException(quizType);
+        }
+        return submittedAnswer;
+    }
+
+    private void validateSubmittedAnswerTypeOne(String submittedAnswerReq) {
         try {
-            if (submittedAnswerStr.equals("true")) {
-                submittedAnswer = 1;
-            } else if (submittedAnswerStr.equals("false")) {
-                submittedAnswer = 0;
-            } else {
-                submittedAnswer = Integer.parseInt(submittedAnswerStr);
+            int submittedAnswerInt = Integer.parseInt(submittedAnswerReq);
+            if (submittedAnswerInt <= 0 || submittedAnswerInt > DEFAULT_QUIZ_OPTION_COUNT) {
+                throw new QuizAnswerFormatNotValidException();
             }
         } catch (NumberFormatException e) {
+            throw new QuizAnswerFormatNotValidException();
+        }
+    }
+
+    private String alterTrueOrFalseToInt(String submittedAnswerReq) {
+        String submittedAnswer;
+        if (submittedAnswerReq.equals("true")) {
+            submittedAnswer = String.valueOf(1);
+        } else if (submittedAnswerReq.equals("false")) {
+            submittedAnswer = String.valueOf(0);
+        } else {
             throw new QuizAnswerFormatNotValidException();
         }
         return submittedAnswer;
