@@ -119,4 +119,10 @@ class MaterialSqlQuery {
         WHERE video_id = ?
         AND is_modified = ?
     """
+
+    public static final String GET_QUIZ_BY_ID_QUERY = """
+        SELECT video_id, type, question, subjective_answer, choice_answer
+        FROM QUIZ
+        WHERE quiz_id = ?
+    """
 }

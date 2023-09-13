@@ -13,7 +13,7 @@ public class Material {
 
     private int totalQuizCount;
 
-    private List<Quiz> quizzes;
+    private List<QuizRes> quizzes;
 
     private SummaryBrief summaryBrief;
 }
