@@ -1,6 +1,8 @@
 package com.m9d.sroom.review.controller;
 
 import com.m9d.sroom.review.dto.LectureBriefList4Review;
+import com.m9d.sroom.review.dto.ReviewSubmitRequest;
+import com.m9d.sroom.review.dto.ReviewSubmitResponse;
 import com.m9d.sroom.review.service.ReviewService;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
@@ -11,10 +13,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,5 +34,16 @@ public class ReviewController {
         Long memberId = jwtUtil.getMemberIdFromRequest();
         LectureBriefList4Review lectureList4Review = reviewService.getLectureList(memberId, courseId);
         return lectureList4Review;
+    }
+
+    @Auth
+    @PostMapping("/lectures/{lectureId}")
+    @Tag(name = "리뷰 평점")
+    @Operation(summary = "리뷰 평점 작성", description = "리뷰 평점 작성 및 제출")
+    @ApiResponse(responseCode = "200", description = "성공적으로 작성 완료되었습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ReviewSubmitResponse.class))})
+    public ReviewSubmitResponse postReview(@PathVariable(name = "lectureId") Long lectureId, @Valid @RequestBody ReviewSubmitRequest reviewSubmitRequest) {
+        Long memberId = jwtUtil.getMemberIdFromRequest();
+        ReviewSubmitResponse reviewSubmitResponse = reviewService.reviewSubmit(memberId, lectureId, reviewSubmitRequest);
+        return reviewSubmitResponse;
     }
 }

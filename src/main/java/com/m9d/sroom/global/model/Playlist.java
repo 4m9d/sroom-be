@@ -29,6 +29,8 @@ public class Playlist {
 
     private int lectureCount;
 
+    private int accumulatedRating;
+
     private double rating;
 
     private int reviewCount;

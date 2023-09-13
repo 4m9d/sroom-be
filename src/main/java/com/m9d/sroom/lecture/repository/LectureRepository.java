@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.m9d.sroom.lecture.sql.LectureSqlQuery.FIND_VIDEO_BY_ID;
+import static com.m9d.sroom.lecture.sql.LectureSqlQuery.*;
 
 @Repository
 public class LectureRepository {
@@ -156,6 +156,7 @@ public class LectureRepository {
                     .duration(rs.getInt("duration"))
                     .channel(rs.getString("channel"))
                     .thumbnail(rs.getString("thumbnail"))
+                    .accumulatedRating(rs.getInt("accumulated_rating"))
                     .rating(rs.getDouble("accumulated_rating") / rs.getInt("review_count"))
                     .reviewCount(rs.getInt("review_count"))
                     .summaryId(rs.getLong("summary_id"))
@@ -174,5 +175,58 @@ public class LectureRepository {
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    public Optional<Playlist> findPlaylistById(Long playlistId) {
+        try {
+            Playlist playlist = jdbcTemplate.queryForObject(FIND_PLAYLIST_BY_ID, (rs, rowNum) -> Playlist.builder()
+                    .playlistId(playlistId)
+                    .playlistCode(rs.getString("playlist_code"))
+                    .channel(rs.getString("channel"))
+                    .thumbnail(rs.getString("thumbnail"))
+                    .accumulatedRating(rs.getInt("accumulated_rating"))
+                    .rating(rs.getDouble("accumulated_rating") / rs.getInt("review_count"))
+                    .reviewCount(rs.getInt("review_count"))
+                    .description(rs.getString("description"))
+                    .duration(rs.getInt("duration"))
+                    .updatedAt(rs.getTimestamp("updated_at"))
+                    .title(rs.getString("title"))
+                    .publishedAt(rs.getTimestamp("published_at"))
+                    .build(), playlistId);
+            return Optional.ofNullable(playlist);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    public void updateVideo(Video video) {
+        jdbcTemplate.update(UPDATE_VIDEO,
+                video.getDuration(),
+                video.getChannel(),
+                video.getThumbnail(),
+                video.getAccumulatedRating(),
+                video.getReviewCount(),
+                video.getDescription(),
+                video.isChapterUse(),
+                video.getTitle(),
+                video.getLanguage(),
+                video.getLicense(),
+                video.getUpdatedAt(),
+                video.getViewCount(),
+                video.isMembership(),
+                video.getVideoId());
+    }
+
+    public void updatePlaylist(Playlist playlist) {
+        jdbcTemplate.update(UPDATE_PLAYLIST,
+                playlist.getDuration(),
+                playlist.getChannel(),
+                playlist.getThumbnail(),
+                playlist.getAccumulatedRating(),
+                playlist.getReviewCount(),
+                playlist.getDescription(),
+                playlist.getTitle(),
+                playlist.getUpdatedAt(),
+                playlist.getPlaylistId());
     }
 }
