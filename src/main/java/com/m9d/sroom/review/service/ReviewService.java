@@ -8,7 +8,6 @@ import com.m9d.sroom.review.repository.ReviewRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.io.Console;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,7 +68,7 @@ public class ReviewService {
                 .progress(progress)
                 .content(review.getContent())
                 .rating(review.getSubmittedRating())
-                .submittedDate(review.getSubmittedDate())
+                .submittedAt(review.getSubmittedDate())
                 .isReviewAllowed(isReviewAllowed(progress, lectureData.getIsReviewed()))
                 .build();
     }
@@ -101,7 +100,7 @@ public class ReviewService {
                 .progress(progress)
                 .content(review.getContent())
                 .rating(review.getSubmittedRating())
-                .submittedDate(review.getSubmittedDate())
+                .submittedAt(review.getSubmittedDate())
                 .isReviewAllowed(isReviewAllowed(progress, lectureData.getIsReviewed()))
                 .build();
 

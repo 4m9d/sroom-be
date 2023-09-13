@@ -45,7 +45,7 @@ public class LectureBrief4Review {
     private int progress;
 
     @Schema(description = "리뷰 작성 날짜")
-    private String submittedDate;
+    private String submittedAt;
 
     @Schema(description = "리뷰 내용")
     private String content;
