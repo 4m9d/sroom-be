@@ -4,7 +4,6 @@ import com.m9d.sroom.review.dto.LectureBrief4Review;
 import com.m9d.sroom.review.dto.LectureBriefList4Review;
 import com.m9d.sroom.review.dto.LectureData;
 import com.m9d.sroom.review.dto.Review;
-import com.m9d.sroom.review.dto.ReviewData;
 import com.m9d.sroom.review.repository.ReviewRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
