@@ -1,6 +1,6 @@
 package com.m9d.sroom.repository.playlist;
 
-import com.m9d.sroom.global.model.Playlist;
+import com.m9d.sroom.global.mapper.Playlist;
 
 import java.util.Optional;
 import java.util.Set;

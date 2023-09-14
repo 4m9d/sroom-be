@@ -1,11 +1,9 @@
 package com.m9d.sroom.repository.playlist;
 
-import com.m9d.sroom.global.model.Playlist;
+import com.m9d.sroom.global.mapper.Playlist;
 import com.m9d.sroom.lecture.dto.PlaylistInfoInSearch;
-import com.m9d.sroom.lecture.dto.response.RecommendLecture;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 

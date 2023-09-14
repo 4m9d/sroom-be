@@ -1,6 +1,6 @@
 package com.m9d.sroom.repository.video;
 
-import com.m9d.sroom.global.model.Video;
+import com.m9d.sroom.global.mapper.Video;
 
 import java.util.List;
 import java.util.Optional;

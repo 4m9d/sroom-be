@@ -1,8 +1,8 @@
 package com.m9d.sroom.course.service;
 
-import com.m9d.sroom.global.model.Course;
-import com.m9d.sroom.global.model.Playlist;
-import com.m9d.sroom.global.model.Video;
+import com.m9d.sroom.global.mapper.Course;
+import com.m9d.sroom.global.mapper.Playlist;
+import com.m9d.sroom.global.mapper.Video;
 import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
-import java.io.Console;
 import java.util.*;
 import java.security.InvalidParameterException;
 import java.util.concurrent.CompletableFuture;

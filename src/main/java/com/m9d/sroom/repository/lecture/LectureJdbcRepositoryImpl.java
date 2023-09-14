@@ -1,6 +1,6 @@
 package com.m9d.sroom.repository.lecture;
 
-import com.m9d.sroom.global.model.Lecture;
+import com.m9d.sroom.global.mapper.Lecture;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashSet;

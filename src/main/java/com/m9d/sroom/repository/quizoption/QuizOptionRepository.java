@@ -1,6 +1,6 @@
 package com.m9d.sroom.repository.quizoption;
 
-import com.m9d.sroom.global.model.QuizOption;
+import com.m9d.sroom.global.mapper.QuizOption;
 
 import java.util.List;
 

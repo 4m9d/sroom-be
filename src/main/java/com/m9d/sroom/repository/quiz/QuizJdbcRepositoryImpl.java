@@ -1,6 +1,6 @@
 package com.m9d.sroom.repository.quiz;
 
-import com.m9d.sroom.global.model.Quiz;
+import com.m9d.sroom.global.mapper.Quiz;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

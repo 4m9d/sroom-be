@@ -3,12 +3,10 @@ package com.m9d.sroom.repository.coursevideo;
 import com.m9d.sroom.course.dto.EnrolledCourseVideo;
 import com.m9d.sroom.course.dto.SchedulingVideo;
 import com.m9d.sroom.course.dto.VideoInfoForSchedule;
-import com.m9d.sroom.global.model.CourseVideo;
-import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
+import com.m9d.sroom.global.mapper.CourseVideo;
 import com.m9d.sroom.material.model.CourseVideoKey;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 

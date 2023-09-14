@@ -1,6 +1,6 @@
 package com.m9d.sroom.repository.lecture;
 
-import com.m9d.sroom.global.model.Lecture;
+import com.m9d.sroom.global.mapper.Lecture;
 
 import java.util.HashSet;
 import java.util.List;

@@ -1,7 +1,6 @@
 package com.m9d.sroom.repository.summary;
 
-import com.m9d.sroom.global.model.Summary;
-import com.m9d.sroom.material.dto.response.SummaryBrief;
+import com.m9d.sroom.global.mapper.Summary;
 
 import java.util.Optional;
 

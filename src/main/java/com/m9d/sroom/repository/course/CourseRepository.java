@@ -1,12 +1,8 @@
 package com.m9d.sroom.repository.course;
 
-import com.m9d.sroom.course.dto.response.CourseInfo;
-import com.m9d.sroom.global.model.Course;
-import com.m9d.sroom.global.model.Playlist;
-import com.m9d.sroom.lecture.dto.response.CourseBrief;
+import com.m9d.sroom.global.mapper.Course;
 import com.m9d.sroom.lecture.dto.response.VideoInfoForCreateSection;
 
-import java.util.Date;
 import java.util.List;
 
 public interface CourseRepository {

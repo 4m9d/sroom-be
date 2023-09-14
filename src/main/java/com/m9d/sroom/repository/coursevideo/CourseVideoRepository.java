@@ -1,7 +1,7 @@
 package com.m9d.sroom.repository.coursevideo;
 
 import com.m9d.sroom.course.dto.VideoInfoForSchedule;
-import com.m9d.sroom.global.model.CourseVideo;
+import com.m9d.sroom.global.mapper.CourseVideo;
 import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
 
 import java.util.List;

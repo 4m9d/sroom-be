@@ -3,7 +3,7 @@ package com.m9d.sroom.material.service;
 import com.m9d.sroom.course.exception.CourseNotMatchException;
 import com.m9d.sroom.course.exception.CourseVideoNotFoundException;
 import com.m9d.sroom.course.repository.CourseRepository;
-import com.m9d.sroom.global.model.*;
+import com.m9d.sroom.global.mapper.*;
 import com.m9d.sroom.gpt.exception.QuizTypeNotMatchException;
 import com.m9d.sroom.gpt.model.MaterialVaildStatus;
 import com.m9d.sroom.gpt.vo.MaterialResultsVo;
@@ -17,7 +17,6 @@ import com.m9d.sroom.material.repository.MaterialRepository;
 import com.m9d.sroom.member.repository.MemberRepository;
 import com.m9d.sroom.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;

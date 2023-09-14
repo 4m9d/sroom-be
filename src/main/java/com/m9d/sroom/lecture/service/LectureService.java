@@ -2,10 +2,10 @@ package com.m9d.sroom.lecture.service;
 
 import com.m9d.sroom.course.exception.CourseNotMatchException;
 import com.m9d.sroom.course.exception.CourseVideoNotFoundException;
-import com.m9d.sroom.global.model.CourseDailyLog;
-import com.m9d.sroom.global.model.CourseVideo;
-import com.m9d.sroom.global.model.Playlist;
-import com.m9d.sroom.global.model.Video;
+import com.m9d.sroom.global.mapper.CourseDailyLog;
+import com.m9d.sroom.global.mapper.CourseVideo;
+import com.m9d.sroom.global.mapper.Playlist;
+import com.m9d.sroom.global.mapper.Video;
 import com.m9d.sroom.course.repository.CourseRepository;
 import com.m9d.sroom.lecture.dto.request.KeywordSearchParam;
 import com.m9d.sroom.lecture.dto.request.LectureDetailParam;

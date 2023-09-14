@@ -1,11 +1,9 @@
 package com.m9d.sroom.repository.coursedailylog;
 
-import com.m9d.sroom.dashboard.dto.response.LearningHistory;
-import com.m9d.sroom.global.model.CourseDailyLog;
+import com.m9d.sroom.global.mapper.CourseDailyLog;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
-import java.util.List;
 import java.util.Optional;
 
 @Repository

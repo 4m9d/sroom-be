@@ -1,4 +1,4 @@
-package com.m9d.sroom.global.model;
+package com.m9d.sroom.global.mapper;
 
 import lombok.Builder;
 import lombok.Getter;
