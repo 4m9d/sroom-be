@@ -2,17 +2,14 @@ package com.m9d.sroom.lecture.service;
 
 import com.m9d.sroom.course.exception.CourseNotMatchException;
 import com.m9d.sroom.course.exception.CourseVideoNotFoundException;
+import com.m9d.sroom.course.repository.CourseRepository;
 import com.m9d.sroom.global.mapper.CourseDailyLog;
 import com.m9d.sroom.global.mapper.CourseVideo;
 import com.m9d.sroom.global.mapper.Playlist;
 import com.m9d.sroom.global.mapper.Video;
-import com.m9d.sroom.course.repository.CourseRepository;
 import com.m9d.sroom.lecture.dto.request.KeywordSearchParam;
 import com.m9d.sroom.lecture.dto.request.LectureDetailParam;
 import com.m9d.sroom.lecture.dto.request.LectureTimeRecord;
-import com.m9d.sroom.lecture.dto.response.Index;
-import com.m9d.sroom.lecture.dto.response.Lecture;
-import com.m9d.sroom.lecture.dto.response.ReviewBrief;
 import com.m9d.sroom.lecture.dto.response.*;
 import com.m9d.sroom.lecture.exception.TwoOnlyParamTrueException;
 import com.m9d.sroom.lecture.exception.VideoIndexParamException;
@@ -23,8 +20,8 @@ import com.m9d.sroom.member.repository.MemberRepository;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.util.youtube.YoutubeApi;
 import com.m9d.sroom.util.youtube.YoutubeUtil;
-import com.m9d.sroom.util.youtube.resource.SearchReq;
 import com.m9d.sroom.util.youtube.resource.PlaylistReq;
+import com.m9d.sroom.util.youtube.resource.SearchReq;
 import com.m9d.sroom.util.youtube.resource.VideoReq;
 import com.m9d.sroom.util.youtube.vo.playlist.PlaylistVo;
 import com.m9d.sroom.util.youtube.vo.playlistitem.PlaylistVideoItemVo;
@@ -35,7 +32,6 @@ import com.m9d.sroom.util.youtube.vo.search.SearchVo;
 import com.m9d.sroom.util.youtube.vo.video.VideoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 import reactor.core.publisher.Mono;
@@ -52,14 +48,14 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import static com.m9d.sroom.course.constant.CourseConstant.*;
+import static com.m9d.sroom.course.constant.CourseConstant.PLAYLIST_UPDATE_THRESHOLD_HOURS;
+import static com.m9d.sroom.course.constant.CourseConstant.VIDEO_UPDATE_THRESHOLD_HOURS;
 import static com.m9d.sroom.lecture.constant.LectureConstant.*;
 import static com.m9d.sroom.lecture.model.VideoCompletionStatus.*;
 import static com.m9d.sroom.util.youtube.YoutubeUtil.*;
 
-@Service
 @Slf4j
-public class LectureService {
+public class LectureServiceV2 {
 
     private final LectureRepository lectureRepository;
     private final CourseRepository courseRepository;
@@ -68,7 +64,7 @@ public class LectureService {
     private final YoutubeApi youtubeApi;
     private final DateUtil dateUtil;
 
-    public LectureService(LectureRepository lectureRepository, CourseRepository courseRepository, MemberRepository memberRepository, YoutubeUtil youtubeUtil, YoutubeApi youtubeApi, DateUtil dateUtil) {
+    public LectureServiceV2(LectureRepository lectureRepository, CourseRepository courseRepository, MemberRepository memberRepository, YoutubeUtil youtubeUtil, YoutubeApi youtubeApi, DateUtil dateUtil) {
         this.lectureRepository = lectureRepository;
         this.courseRepository = courseRepository;
         this.memberRepository = memberRepository;

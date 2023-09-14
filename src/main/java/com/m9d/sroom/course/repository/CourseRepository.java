@@ -1,6 +1,6 @@
 package com.m9d.sroom.course.repository;
 
-import com.m9d.sroom.global.model.*;
+import com.m9d.sroom.global.mapper.*;
 import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.exception.CourseNotFoundException;
 import com.m9d.sroom.course.exception.CourseVideoNotFoundException;

@@ -6,19 +6,17 @@ import com.m9d.sroom.review.dto.LectureData;
 import com.m9d.sroom.global.mapper.Review;
 import com.m9d.sroom.review.repository.ReviewRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
 @Slf4j
-public class ReviewService {
+public class ReviewServiceV2 {
 
     private final ReviewRepository reviewRepository;
 
 
-    public ReviewService(ReviewRepository reviewRepository) {
+    public ReviewServiceV2(ReviewRepository reviewRepository) {
         this.reviewRepository = reviewRepository;
     }
 

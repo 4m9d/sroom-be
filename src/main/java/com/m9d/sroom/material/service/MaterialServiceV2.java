@@ -13,12 +13,10 @@ import com.m9d.sroom.material.dto.request.SubmittedQuiz;
 import com.m9d.sroom.material.dto.response.*;
 import com.m9d.sroom.material.exception.*;
 import com.m9d.sroom.material.model.*;
-import com.m9d.sroom.material.model.SubmittedQuizInfoRes;
 import com.m9d.sroom.material.repository.MaterialRepository;
 import com.m9d.sroom.member.repository.MemberRepository;
 import com.m9d.sroom.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
@@ -27,18 +25,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.m9d.sroom.material.constant.MaterialConstant.*;
+import static com.m9d.sroom.material.constant.MaterialConstant.DEFAULT_QUIZ_OPTION_COUNT;
 
-@Service
 @Slf4j
-public class MaterialService {
+public class MaterialServiceV2 {
 
     private final MaterialRepository materialRepository;
     private final CourseRepository courseRepository;
     private final MemberRepository memberRepository;
     private final LectureRepository lectureRepository;
 
-    public MaterialService(MaterialRepository materialRepository, CourseRepository courseRepository, MemberRepository memberRepository, LectureRepository lectureRepository) {
+    public MaterialServiceV2(MaterialRepository materialRepository, CourseRepository courseRepository, MemberRepository memberRepository, LectureRepository lectureRepository) {
         this.materialRepository = materialRepository;
         this.courseRepository = courseRepository;
         this.memberRepository = memberRepository;

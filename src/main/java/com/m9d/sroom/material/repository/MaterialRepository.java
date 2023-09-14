@@ -1,14 +1,13 @@
 package com.m9d.sroom.material.repository;
 
-import com.m9d.sroom.global.model.Quiz;
-import com.m9d.sroom.global.model.QuizOption;
-import com.m9d.sroom.material.dto.request.SubmittedQuiz;
+import com.m9d.sroom.global.mapper.Quiz;
+import com.m9d.sroom.global.mapper.QuizOption;
 import com.m9d.sroom.material.dto.response.QuizRes;
 import com.m9d.sroom.material.dto.response.SummaryBrief;
 import com.m9d.sroom.material.exception.QuizNotFoundException;
 import com.m9d.sroom.material.model.CourseQuizInfo;
 import com.m9d.sroom.material.model.SubmittedQuizInfoRes;
-import com.m9d.sroom.global.model.Summary;
+import com.m9d.sroom.global.mapper.Summary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
