@@ -1,6 +1,5 @@
 package com.m9d.sroom.repository.coursevideo;
 
-import com.m9d.sroom.course.dto.VideoInfoForSchedule;
 import com.m9d.sroom.global.mapper.CourseVideo;
 import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
 
@@ -23,8 +22,6 @@ public interface CourseVideoRepository {
     Integer countCompletedByCourseId(Long courseId);
 
     Long getIdByCourseIdAndPrevIndex(Long courseId, int videoIndex);
-
-    List<VideoInfoForSchedule> getVideoInfoForScheduleByCourseId(Long courseId);
 
     LastVideoInfo getLastByCourseId(Long courseId);
 }

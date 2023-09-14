@@ -1,9 +1,6 @@
 package com.m9d.sroom.repository.course;
 
 import com.m9d.sroom.global.mapper.Course;
-import com.m9d.sroom.lecture.dto.response.VideoInfoForCreateSection;
-
-import java.util.List;
 
 public interface CourseRepository {
 
@@ -18,6 +15,4 @@ public interface CourseRepository {
     Integer countByMemberId(Long memberId);
 
     Integer countCompletedByMemberId(Long memberId);
-
-    List<VideoInfoForCreateSection> getVideoInfoForCreateSectionByCourseIdAndSection(Long courseId, int section);
 }

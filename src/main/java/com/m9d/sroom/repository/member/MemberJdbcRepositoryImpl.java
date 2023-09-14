@@ -15,6 +15,11 @@ public class MemberJdbcRepositoryImpl implements MemberRepository{
     }
 
     @Override
+    public Member getById(Long memberId) {
+        return null;
+    }
+
+    @Override
     public Member getByCode(String memberCode) {
         return null;
     }
@@ -32,16 +37,6 @@ public class MemberJdbcRepositoryImpl implements MemberRepository{
     @Override
     public void updateRefreshTokenById(Long memberId, String refreshToken) {
 
-    }
-
-    @Override
-    public String getNameById(Long memberId) {
-        return null;
-    }
-
-    @Override
-    public String getRefreshTokenById(Long memberId) {
-        return null;
     }
 
     @Override

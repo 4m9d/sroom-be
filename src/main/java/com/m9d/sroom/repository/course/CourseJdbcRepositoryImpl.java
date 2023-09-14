@@ -18,6 +18,11 @@ public class CourseJdbcRepositoryImpl implements CourseRepository{
     }
 
     @Override
+    public void updateById(Long courseId, Course course) {
+
+    }
+
+    @Override
     public void deleteById(Long courseId) {
 
     }
@@ -30,20 +35,5 @@ public class CourseJdbcRepositoryImpl implements CourseRepository{
     @Override
     public Integer countCompletedByMemberId(Long memberId) {
         return null;
-    }
-
-    @Override
-    public void updateScheduleById(Long courseId, int weeks, Date expectedEndDate) {
-
-    }
-
-    @Override
-    public void updateDurationById(Long courseId, int duration) {
-
-    }
-
-    @Override
-    public void updateProgressById(Long courseId, int progress) {
-
     }
 }

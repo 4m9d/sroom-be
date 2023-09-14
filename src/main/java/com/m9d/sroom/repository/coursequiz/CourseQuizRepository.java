@@ -2,7 +2,6 @@ package com.m9d.sroom.repository.coursequiz;
 
 
 import com.m9d.sroom.global.mapper.CourseQuiz;
-import com.m9d.sroom.material.model.SubmittedQuizInfo;
 
 public interface CourseQuizRepository {
 

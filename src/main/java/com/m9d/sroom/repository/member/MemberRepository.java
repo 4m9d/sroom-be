@@ -1,7 +1,5 @@
 package com.m9d.sroom.repository.member;
 
-import com.m9d.sroom.dashboard.dto.response.DashboardMemberData;
-import com.m9d.sroom.material.model.MemberQuizInfo;
 import com.m9d.sroom.member.domain.Member;
 
 import java.util.Optional;
