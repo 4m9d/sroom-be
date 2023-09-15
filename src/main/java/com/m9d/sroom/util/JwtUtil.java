@@ -1,6 +1,5 @@
 package com.m9d.sroom.util;
 
-import com.m9d.sroom.member.domain.Member;
 import com.m9d.sroom.member.exception.TokenExpiredException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;

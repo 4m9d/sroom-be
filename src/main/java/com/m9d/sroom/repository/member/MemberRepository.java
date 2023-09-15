@@ -1,6 +1,6 @@
 package com.m9d.sroom.repository.member;
 
-import com.m9d.sroom.member.domain.Member;
+import com.m9d.sroom.global.mapper.Member;
 
 import java.util.Optional;
 

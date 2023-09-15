@@ -5,9 +5,10 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
-import com.m9d.sroom.member.domain.Member;
+import com.m9d.sroom.global.mapper.Member;
 import com.m9d.sroom.member.dto.request.RefreshToken;
 import com.m9d.sroom.member.dto.response.Login;
+import com.m9d.sroom.member.dto.response.NameUpdateResponse;
 import com.m9d.sroom.member.exception.*;
 import com.m9d.sroom.member.repository.MemberRepository;
 import com.m9d.sroom.util.JwtUtil;
@@ -117,6 +118,22 @@ public class MemberService {
                 .name(member.getMemberName())
                 .profile(picture)
                 .bio(member.getBio())
+                .build();
+    }
+
+    public NameUpdateResponse updateMemberName(Long memberId, String name) {
+        Optional<Member> memberOptional = memberRepository.findByMemberId(memberId);
+        if (memberOptional.isEmpty()) {
+            throw new MemberNotFoundException();
+        }
+
+        Member member = memberOptional.get();
+        member.setMemberName(name);
+        memberRepository.updateById(memberId, member);
+
+        return NameUpdateResponse.builder()
+                .memberId(memberId)
+                .name(name)
                 .build();
     }
 }

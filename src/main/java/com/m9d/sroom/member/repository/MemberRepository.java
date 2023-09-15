@@ -1,7 +1,7 @@
 package com.m9d.sroom.member.repository;
 
 import com.m9d.sroom.material.model.MemberQuizInfo;
-import com.m9d.sroom.member.domain.Member;
+import com.m9d.sroom.global.mapper.Member;
 import com.m9d.sroom.member.sql.MemberSqlQuery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class MemberRepository {
     }
 
     public Optional<Member> findByMemberCode(String memberCode) {
-        Member member = queryForObjectOrNull(MemberSqlQuery.FIND_BY_MEMBER_CODE_QUERY, memberRowMapper, memberCode);
+        Member member = queryForObjectOrNull(MemberSqlQuery.GET_BY_MEMBER_CODE_QUERY, memberRowMapper, memberCode);
         return Optional.ofNullable(member);
     }
 
@@ -55,9 +55,16 @@ public class MemberRepository {
     }
 
     private final RowMapper<Member> memberRowMapper = (rs, rowNum) -> Member.builder()
+            .memberId(rs.getLong("member_id"))
             .memberCode(rs.getString("member_code"))
             .memberName(rs.getString("member_name"))
-            .memberId(rs.getLong("member_id"))
+            .refreshToken(rs.getString("refresh_token"))
+            .totalSolvedCount(rs.getInt("total_solved_count"))
+            .totalCorrectCount(rs.getInt("total_correct_count"))
+            .completionRate(rs.getInt("completion_rate"))
+            .totalLearningTime(rs.getInt("total_learning_time"))
+            .signUpTime(rs.getTimestamp("sign_up_time"))
+            .status(rs.getInt("status"))
             .bio(rs.getString("bio"))
             .build();
 
@@ -86,5 +93,9 @@ public class MemberRepository {
 
     public void updateCompletionRate(Long memberId, int completionRate) {
         jdbcTemplate.update(MemberSqlQuery.UPDATE_COMPLETION_RATE_QUERY, completionRate, memberId);
+    }
+
+    public void updateById(Long memberId, Member member) {
+        jdbcTemplate.update(MemberSqlQuery.UPDATE_BY_ID, member.getMemberCode(), member.getMemberName(), member.getRefreshToken(), member.getTotalSolvedCount(), member.getTotalCorrectCount(), member.getCompletionRate(), member.getTotalLearningTime(), member.getSignUpTime(), member.getStatus(), member.getBio(), memberId);
     }
 }
