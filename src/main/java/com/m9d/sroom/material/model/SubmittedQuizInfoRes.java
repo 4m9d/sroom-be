@@ -7,7 +7,7 @@ import java.sql.Timestamp;
 
 @Data
 @Builder
-public class SubmittedQuizInfo {
+public class SubmittedQuizInfoRes {
 
     private String submittedAnswer;
 

@@ -1,7 +1,7 @@
 package com.m9d.sroom.util.youtube;
 
-import com.m9d.sroom.global.model.Playlist;
-import com.m9d.sroom.global.model.Video;
+import com.m9d.sroom.global.mapper.Playlist;
+import com.m9d.sroom.global.mapper.Video;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.util.youtube.resource.PlaylistItemReq;
 import com.m9d.sroom.util.youtube.resource.PlaylistReq;

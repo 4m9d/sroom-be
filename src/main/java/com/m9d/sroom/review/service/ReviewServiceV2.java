@@ -1,32 +1,23 @@
 package com.m9d.sroom.review.service;
 
-import com.m9d.sroom.global.mapper.Playlist;
-import com.m9d.sroom.global.mapper.Video;
-import com.m9d.sroom.lecture.repository.LectureRepository;
-import com.m9d.sroom.review.dto.*;
 import com.m9d.sroom.review.dto.LectureBrief4Review;
 import com.m9d.sroom.review.dto.LectureBriefList4Review;
 import com.m9d.sroom.review.dto.LectureData;
 import com.m9d.sroom.global.mapper.Review;
 import com.m9d.sroom.review.repository.ReviewRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
 @Slf4j
-public class ReviewService {
+public class ReviewServiceV2 {
 
     private final ReviewRepository reviewRepository;
-    private final LectureRepository lectureRepository;
 
 
-    public ReviewService(ReviewRepository reviewRepository, LectureRepository lectureRepository) {
+    public ReviewServiceV2(ReviewRepository reviewRepository) {
         this.reviewRepository = reviewRepository;
-        this.lectureRepository = lectureRepository;
     }
 
     public LectureBriefList4Review getLectureList(Long memberId, Long courseId) {
@@ -45,32 +36,6 @@ public class ReviewService {
 
         return LectureBriefList4Review.builder()
                 .lectures(lectures)
-                .build();
-    }
-
-    @Transactional
-    public ReviewSubmitResponse submitReview(Long memberId, Long lectureId, ReviewSubmitRequest reviewSubmitRequest) {
-
-        LectureData lectureData = reviewRepository.getLectureDataById(lectureId);
-        String lectureCode = "";
-
-        lectureCode = applyReview(lectureData, reviewSubmitRequest);
-
-        Review review = Review.builder()
-                .lectureId(lectureId)
-                .sourceCode(lectureCode)
-                .memberId(memberId)
-                .content(reviewSubmitRequest.getReviewContent())
-                .submittedRating(reviewSubmitRequest.getSubmittedRating())
-                .build();
-
-        Long reviewId = reviewRepository.insertReview(review);
-
-        return ReviewSubmitResponse.builder()
-                .reviewId(reviewId)
-                .lectureId(lectureId)
-                .submittedRating(reviewSubmitRequest.getSubmittedRating())
-                .reviewContent(reviewSubmitRequest.getReviewContent())
                 .build();
     }
 
@@ -137,40 +102,6 @@ public class ReviewService {
                 .isReviewAllowed(isReviewAllowed(progress, lectureData.getIsReviewed()))
                 .build();
 
-    }
-
-    public String applyReview(LectureData lectureData, ReviewSubmitRequest reviewSubmitRequest) {
-
-        String lectureCode = "";
-
-        if (lectureData.isPlaylist()) {
-            Playlist playlist = lectureRepository.getPlaylistById(lectureData.getSourceId());
-            lectureCode = playlist.getPlaylistCode();
-            applyReviewToPlaylist(reviewSubmitRequest, playlist);
-        }
-        else {
-            Video video = lectureRepository.getVideoById(lectureData.getSourceId());
-            lectureCode = video.getVideoCode();
-            applyReviewToVideo(reviewSubmitRequest, video);
-        }
-
-        return lectureCode;
-    }
-
-    public void applyReviewToPlaylist(ReviewSubmitRequest reviewSubmitRequest, Playlist playlist) {
-
-        playlist.setReviewCount(playlist.getReviewCount() + 1);
-        playlist.setAccumulatedRating(playlist.getAccumulatedRating() + reviewSubmitRequest.getSubmittedRating());
-
-        lectureRepository.updatePlaylist(playlist);
-    }
-
-    public void applyReviewToVideo(ReviewSubmitRequest reviewSubmitRequest, Video video) {
-
-        video.setReviewCount(video.getReviewCount() + 1);
-        video.setAccumulatedRating(video.getAccumulatedRating() + reviewSubmitRequest.getSubmittedRating());
-
-        lectureRepository.updateVideo(video);
     }
 
     public boolean isReviewAllowed(int progress, boolean isReviewed) {

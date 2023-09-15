@@ -1,4 +1,4 @@
-package com.m9d.sroom.review.dto;
+package com.m9d.sroom.global.mapper;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

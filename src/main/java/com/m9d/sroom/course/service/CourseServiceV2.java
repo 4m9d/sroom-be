@@ -1,16 +1,16 @@
 package com.m9d.sroom.course.service;
 
-import com.m9d.sroom.global.mapper.Course;
-import com.m9d.sroom.global.mapper.Playlist;
-import com.m9d.sroom.global.mapper.Video;
 import com.m9d.sroom.course.dto.request.NewLecture;
+import com.m9d.sroom.course.dto.response.CourseDetail;
 import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.course.dto.response.MyCourses;
 import com.m9d.sroom.course.exception.CourseNotMatchException;
 import com.m9d.sroom.course.model.PlaylistPageResult;
 import com.m9d.sroom.course.repository.CourseRepository;
-import com.m9d.sroom.course.dto.response.CourseDetail;
+import com.m9d.sroom.global.mapper.Course;
+import com.m9d.sroom.global.mapper.Playlist;
+import com.m9d.sroom.global.mapper.Video;
 import com.m9d.sroom.gpt.service.GPTService;
 import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
 import com.m9d.sroom.lecture.dto.response.Section;
@@ -25,12 +25,11 @@ import com.m9d.sroom.util.youtube.vo.playlistitem.PlaylistVideoItemVo;
 import com.m9d.sroom.util.youtube.vo.playlistitem.PlaylistVideoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
-import java.util.*;
 import java.security.InvalidParameterException;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
@@ -38,11 +37,10 @@ import java.util.stream.Collectors;
 import static com.m9d.sroom.course.constant.CourseConstant.*;
 import static com.m9d.sroom.util.DateUtil.DAYS_IN_WEEK;
 import static com.m9d.sroom.util.DateUtil.SECONDS_IN_MINUTE;
-import static com.m9d.sroom.util.youtube.YoutubeUtil.*;
+import static com.m9d.sroom.util.youtube.YoutubeUtil.DEFAULT_INDEX_COUNT;
 
-@Service
 @Slf4j
-public class CourseService {
+public class CourseServiceV2 {
 
     private final CourseRepository courseRepository;
     private final MaterialRepository materialRepository;
@@ -52,7 +50,7 @@ public class CourseService {
 
     private final GPTService gptService;
 
-    public CourseService(CourseRepository courseRepository, MaterialRepository materialRepository, DateUtil dateUtil, YoutubeApi youtubeApi, YoutubeUtil youtubeUtil, GPTService gptService) {
+    public CourseServiceV2(CourseRepository courseRepository, MaterialRepository materialRepository, DateUtil dateUtil, YoutubeApi youtubeApi, YoutubeUtil youtubeUtil, GPTService gptService) {
         this.courseRepository = courseRepository;
         this.materialRepository = materialRepository;
         this.dateUtil = dateUtil;

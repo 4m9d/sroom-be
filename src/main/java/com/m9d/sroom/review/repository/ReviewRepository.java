@@ -2,7 +2,7 @@ package com.m9d.sroom.review.repository;
 
 import com.m9d.sroom.review.dto.LectureBrief4Review;
 import com.m9d.sroom.review.dto.LectureData;
-import com.m9d.sroom.review.dto.Review;
+import com.m9d.sroom.global.mapper.Review;
 import com.m9d.sroom.review.sql.ReviewSqlQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;

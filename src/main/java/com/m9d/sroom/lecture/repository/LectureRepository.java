@@ -1,7 +1,7 @@
 package com.m9d.sroom.lecture.repository;
 
-import com.m9d.sroom.global.model.Playlist;
-import com.m9d.sroom.global.model.Video;
+import com.m9d.sroom.global.mapper.Playlist;
+import com.m9d.sroom.global.mapper.Video;
 import com.m9d.sroom.lecture.dto.response.RecommendLecture;
 import com.m9d.sroom.lecture.dto.response.ReviewBrief;
 import com.m9d.sroom.lecture.sql.LectureSqlQuery;

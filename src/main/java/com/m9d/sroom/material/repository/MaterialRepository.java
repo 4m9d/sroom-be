@@ -1,13 +1,13 @@
 package com.m9d.sroom.material.repository;
 
-import com.m9d.sroom.global.model.QuizOption;
-import com.m9d.sroom.material.dto.request.SubmittedQuiz;
-import com.m9d.sroom.material.dto.response.Quiz;
+import com.m9d.sroom.global.mapper.Quiz;
+import com.m9d.sroom.global.mapper.QuizOption;
+import com.m9d.sroom.material.dto.response.QuizRes;
 import com.m9d.sroom.material.dto.response.SummaryBrief;
 import com.m9d.sroom.material.exception.QuizNotFoundException;
 import com.m9d.sroom.material.model.CourseQuizInfo;
-import com.m9d.sroom.material.model.SubmittedQuizInfo;
-import com.m9d.sroom.global.model.Summary;
+import com.m9d.sroom.material.model.SubmittedQuizInfoRes;
+import com.m9d.sroom.global.mapper.Summary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -38,7 +38,7 @@ public class MaterialRepository {
         }
     }
 
-    public List<Quiz> getQuizListByVideoId(Long videoId) {
+    public List<QuizRes> getQuizListByVideoId(Long videoId) {
         return jdbcTemplate.query(GET_QUIZZES_BY_VIDEO_ID_QUERY,
                 (rs, rowNum) -> {
                     int type = rs.getInt("type");
@@ -55,7 +55,7 @@ public class MaterialRepository {
                         default:
                             answer = "";
                     }
-                    return Quiz.builder()
+                    return QuizRes.builder()
                             .id(rs.getLong("quiz_id"))
                             .type(rs.getInt("type"))
                             .question(rs.getString("question"))
@@ -73,17 +73,17 @@ public class MaterialRepository {
                 .build(), quizId);
     }
 
-    public Optional<SubmittedQuizInfo> findCourseQuizInfo(Long quizId, Long courseVideoId) {
+    public Optional<SubmittedQuizInfoRes> findCourseQuizInfo(Long quizId, Long courseVideoId) {
         try {
-            SubmittedQuizInfo submittedQuizInfo = jdbcTemplate.queryForObject(GET_COURSE_QUIZ_INFO_QUERY,
-                    (rs, rowNum) -> SubmittedQuizInfo.builder()
+            SubmittedQuizInfoRes submittedQuizInfoRes = jdbcTemplate.queryForObject(GET_COURSE_QUIZ_INFO_QUERY,
+                    (rs, rowNum) -> SubmittedQuizInfoRes.builder()
                             .submittedAnswer(rs.getString("submitted_answer"))
                             .correct(rs.getBoolean("is_correct"))
                             .submittedTime(rs.getTimestamp("submitted_time"))
                             .scrapped(rs.getBoolean("is_scrapped"))
                             .build(),
                     quizId, courseVideoId);
-            return Optional.ofNullable(submittedQuizInfo);
+            return Optional.ofNullable(submittedQuizInfoRes);
         } catch (IncorrectResultSizeDataAccessException e) {
             return Optional.empty();
         }
@@ -128,8 +128,8 @@ public class MaterialRepository {
         jdbcTemplate.update(UPDATE_SUMMARY_ID_QUERY, summaryId, courseVideoId);
     }
 
-    public Long saveCourseQuiz(Long courseId, Long videoId, Long courseVideoId, SubmittedQuiz submittedQuiz, int submittedAnswer) {
-        jdbcTemplate.update(SAVE_COURSE_QUIZ_QUERY, courseId, submittedQuiz.getQuizId(), videoId, courseVideoId, submittedAnswer, submittedQuiz.getIsCorrect());
+    public Long saveCourseQuiz(Long courseId, Long quizId, Long videoId, Long courseVideoId, Boolean isCorrect, String submittedAnswer) {
+        jdbcTemplate.update(SAVE_COURSE_QUIZ_QUERY, courseId, quizId, videoId, courseVideoId, submittedAnswer, isCorrect);
 
         return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
     }
@@ -184,5 +184,16 @@ public class MaterialRepository {
 
     public Long getSummaryIdByVideoId(Long videoId, boolean modified) {
         return jdbcTemplate.queryForObject(GET_SUMMARY_ID_BY_VIDEO_ID_QUERY, Long.class, videoId, modified);
+    }
+
+    public Quiz getQuizById(Long quizId) {
+        return jdbcTemplate.queryForObject(GET_QUIZ_BY_ID_QUERY, (rs, rowNum) -> Quiz.builder()
+                .id(quizId)
+                .videoId(rs.getLong("video_id"))
+                .type(rs.getInt("type"))
+                .question(rs.getString("question"))
+                .subjectiveAnswer(rs.getString("subjective_answer"))
+                .choiceAnswer(rs.getInt("choice_answer"))
+                .build(), quizId);
     }
 }
