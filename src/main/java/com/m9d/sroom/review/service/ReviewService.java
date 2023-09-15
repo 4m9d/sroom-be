@@ -153,8 +153,7 @@ public class ReviewService {
     }
 
     public void applyReviewToPlaylist(Long sourceId, ReviewSubmitRequest reviewSubmitRequest) {
-        Optional<Playlist> playlistOptional = lectureRepository.findPlaylistById(sourceId);
-        Playlist playlist = playlistOptional.get();
+        Playlist playlist = lectureRepository.getPlaylistById(sourceId);
 
         int accumulatedRating = playlist.getAccumulatedRating();
         int reviewCount = playlist.getReviewCount();
@@ -166,8 +165,7 @@ public class ReviewService {
     }
 
     public void applyReviewToVideo(Long sourceId, ReviewSubmitRequest reviewSubmitRequest) {
-        Optional<Video> videoOptional = lectureRepository.findVideoById(sourceId);
-        Video video = videoOptional.get();
+        Video video = lectureRepository.getVideoById(sourceId);
 
         int accumulatedRating = video.getAccumulatedRating();
         int reviewCount = video.getReviewCount();
