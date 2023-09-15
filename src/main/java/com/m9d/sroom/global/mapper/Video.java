@@ -30,6 +30,8 @@ public class Video {
 
     private Timestamp publishedAt;
 
+    private int accumulatedRating;
+
     private double rating;
 
     private int reviewCount;

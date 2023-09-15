@@ -132,6 +132,24 @@ class LectureSqlQuery {
         WHERE video_id = ?
     """
 
+    public static final String FIND_PLAYLIST_BY_ID = """
+        SELECT playlist_code, channel, thumbnail, accumulated_rating, review_count, is_available, description, duration, updated_at, title, published_at
+        FROM PLAYLIST
+        WHERE playlist_id = ?
+    """
+
+    public static final String UPDATE_VIDEO = """
+        UPDATE VIDEO
+        SET duration = ?, channel = ?, thumbnail = ?, accumulated_rating = ?, review_count = ?, description = ?, chapter_usage = ?, title = ?, language = ?, license = ?, updated_at = ?, view_count = ?, membership = ?
+        WHERE video_id = ?
+    """
+
+    public static final String UPDATE_PLAYLIST = """
+        UPDATE PLAYLIST
+        SET duration = ?, channel = ?, thumbnail = ?, accumulated_rating = ?, review_count = ?, description = ?, title = ?, updated_at = ?
+        WHERE playlist_id = ?
+    """
+
     public static final String UPDATE_COURSE_PROGRESS_QUERY = """
         UPDATE COURSE
         SET PROGRESS = ?
