@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -46,7 +45,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewSubmitResponse reviewSubmit(Long memberId, Long lectureId, ReviewSubmitRequest reviewSubmitRequest) {
+    public ReviewSubmitResponse submitReview(Long memberId, Long lectureId, ReviewSubmitRequest reviewSubmitRequest) {
 
         LectureData lectureData = reviewRepository.getLectureDataById(lectureId);
         String lectureCode = "";

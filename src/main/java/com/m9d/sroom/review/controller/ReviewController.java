@@ -43,7 +43,7 @@ public class ReviewController {
     @ApiResponse(responseCode = "200", description = "성공적으로 작성 완료되었습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = ReviewSubmitResponse.class))})
     public ReviewSubmitResponse postReview(@PathVariable(name = "lectureId") Long lectureId, @Valid @RequestBody ReviewSubmitRequest reviewSubmitRequest) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
-        ReviewSubmitResponse reviewSubmitResponse = reviewService.reviewSubmit(memberId, lectureId, reviewSubmitRequest);
+        ReviewSubmitResponse reviewSubmitResponse = reviewService.submitReview(memberId, lectureId, reviewSubmitRequest);
         return reviewSubmitResponse;
     }
 }
