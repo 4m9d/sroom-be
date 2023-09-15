@@ -22,11 +22,11 @@ public class ControllerTest extends SroomTest {
 
     protected Login getNewLogin() {
         Member member = getNewMember();
-        return memberService.generateLogin(member);
+        return memberService.generateLogin(member, (String) idToken.getPayload().get("picture"));
     }
 
     protected Login getNewLogin(Member member) {
-        return memberService.generateLogin(member);
+        return memberService.generateLogin(member, (String) idToken.getPayload().get("picture"));
     }
 
     protected Member getNewMember() {

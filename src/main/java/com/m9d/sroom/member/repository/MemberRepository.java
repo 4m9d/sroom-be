@@ -3,6 +3,7 @@ package com.m9d.sroom.member.repository;
 import com.m9d.sroom.material.model.MemberQuizInfo;
 import com.m9d.sroom.member.domain.Member;
 import com.m9d.sroom.member.sql.MemberSqlQuery;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
+@Slf4j
 public class MemberRepository {
 
     private final JdbcTemplate jdbcTemplate;
@@ -35,6 +37,7 @@ public class MemberRepository {
     }
 
     public void saveRefreshToken(Long memberId, String refreshToken) {
+        log.debug("refreshToken = {}", refreshToken);
         jdbcTemplate.update(MemberSqlQuery.SAVE_REFRESH_TOKEN_QUERY, refreshToken, memberId);
     }
 

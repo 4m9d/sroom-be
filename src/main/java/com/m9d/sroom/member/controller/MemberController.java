@@ -36,8 +36,7 @@ public class MemberController {
             @ApiResponse(responseCode = "401", description = "인증에 실패하였습니다.", content = @Content)
     })
     public Login login(@RequestBody GoogleIdKey googleIdKey) throws Exception {
-        Login login = memberService.authenticateMember(googleIdKey.getCredential());
-        return login;
+        return memberService.authenticateMember(googleIdKey.getCredential());
     }
 
     @Auth
@@ -47,7 +46,6 @@ public class MemberController {
     @ApiResponse(responseCode = "200", description = "토큰 갱신에 성공하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(allOf = Login.class))})
     public Login refresh(@RequestBody RefreshToken refreshToken) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
-        Login login = memberService.verifyRefreshTokenAndReturnLogin(memberId, refreshToken);
-        return login;
+        return memberService.verifyRefreshTokenAndReturnLogin(memberId, refreshToken);
     }
 }

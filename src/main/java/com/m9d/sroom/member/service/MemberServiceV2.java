@@ -40,10 +40,10 @@ public class MemberServiceV2 {
 
     @Transactional
     public Login authenticateMember(String credential) throws Exception {
-        GoogleIdToken payload = verifyCredential(credential);
-        String memberCode = getMemberCodeFromIdToken(payload);
-        Member member = findOrCreateMemberByMemberCode(memberCode);
-        return generateLogin(member);
+        GoogleIdToken idToken = verifyCredential(credential);
+
+        Member member = findOrCreateMemberByMemberCode(idToken.getPayload().getSubject());
+        return generateLogin(member, (String) idToken.getPayload().get("picture"));
     }
 
     public GoogleIdToken verifyCredential(String credential) throws Exception {
@@ -61,10 +61,6 @@ public class MemberServiceV2 {
         }
 
         return idToken;
-    }
-
-    public String getMemberCodeFromIdToken(GoogleIdToken idToken) {
-        return idToken.getPayload().getSubject();
     }
 
     public Member findOrCreateMemberByMemberCode(String memberCode) {
@@ -101,19 +97,18 @@ public class MemberServiceV2 {
             throw new RefreshRenewedException();
         }
 
-        Login login = renewTokens(memberId);
-        return login;
+        return renewTokens(memberId, (String) refreshTokenDetail.get("profile"));
     }
 
-    public Login renewTokens(Long memberId) {
+    public Login renewTokens(Long memberId, String pictureUrl) {
         Member member = memberRepository.findByMemberId(memberId)
                 .orElseThrow(MemberNotFoundException::new);
-        return generateLogin(member);
+        return generateLogin(member, pictureUrl);
     }
 
-    public Login generateLogin(Member member) {
-        String accessToken = jwtUtil.generateAccessToken(member);
-        String refreshToken = jwtUtil.generateRefreshToken(member);
+    public Login generateLogin(Member member, String picture) {
+        String accessToken = jwtUtil.generateAccessToken(member.getMemberId(), picture);
+        String refreshToken = jwtUtil.generateRefreshToken(member.getMemberId(), picture);
         memberRepository.saveRefreshToken(member.getMemberId(), refreshToken);
 
         return Login.builder()
