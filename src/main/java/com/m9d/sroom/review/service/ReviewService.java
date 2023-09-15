@@ -80,14 +80,7 @@ public class ReviewService {
         LectureBrief4Review playlistData = reviewRepository.getPlaylistDataBySourceId(lectureData.getSourceId());
         int progress = (videoCountData.getCompletedVideoCount() * 100) / videoCountData.getTotalVideoCount();
 
-        Review review = Review.builder().build();
-
-        review.setSubmittedRating(null);
-        review.setContent(null);
-        review.setSubmittedDate(null);
-
-        if(lectureData.getIsReviewed())
-            review = reviewRepository.getReviewByLectureId(lectureData.getLectureId());
+        Review review = getReview(lectureData);
 
         return LectureBrief4Review.builder()
                 .index(lectureData.getLectureIndex())
@@ -112,14 +105,7 @@ public class ReviewService {
         LectureBrief4Review videoData = reviewRepository.getVideoDataBySourceId(lectureData.getSourceId());
         int progress = (viewDuration * 100) / videoData.getLectureDuration();
 
-        Review review = Review.builder().build();
-
-        review.setSubmittedRating(null);
-        review.setContent(null);
-        review.setSubmittedDate(null);
-
-        if(lectureData.getIsReviewed())
-            review = reviewRepository.getReviewByLectureId(lectureData.getLectureId());
+        Review review = getReview(lectureData);
 
         return LectureBrief4Review.builder()
                 .index(lectureData.getLectureIndex())
@@ -171,6 +157,19 @@ public class ReviewService {
         video.setAccumulatedRating(video.getAccumulatedRating() + reviewSubmitRequest.getSubmittedRating());
 
         lectureRepository.updateVideo(video);
+    }
+
+    public Review getReview(LectureData lectureData) {
+        Review review = Review.builder().build();
+
+        review.setSubmittedRating(null);
+        review.setContent(null);
+        review.setSubmittedDate(null);
+
+        if(lectureData.getIsReviewed())
+            review = reviewRepository.getReviewByLectureId(lectureData.getLectureId());
+
+        return review;
     }
 
     public boolean isReviewAllowed(int progress, boolean isReviewed) {
