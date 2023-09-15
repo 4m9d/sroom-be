@@ -49,4 +49,10 @@ class ReviewSqlQuery {
     INSERT INTO REVIEW (source_code, member_id, lecture_id, submitted_rating, content)
     VALUES (?, ?, ?, ?, ?)
     """
+
+    public static final String UPDATE_IS_REVIEWED = """
+    UPDATE LECTURE
+    SET is_reviewed = true
+    WHERE lecture_id = ?
+    """
 }

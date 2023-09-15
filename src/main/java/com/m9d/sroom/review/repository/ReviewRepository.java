@@ -1,5 +1,6 @@
 package com.m9d.sroom.review.repository;
 
+import com.m9d.sroom.global.mapper.Lecture;
 import com.m9d.sroom.review.dto.LectureBrief4Review;
 import com.m9d.sroom.review.dto.LectureData;
 import com.m9d.sroom.global.mapper.Review;
@@ -116,5 +117,9 @@ public class ReviewRepository {
         Long reviewId = jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
 
         return reviewId;
+    }
+
+    public void updateIsReviewed(Long lectureId) {
+        jdbcTemplate.update(UPDATE_IS_REVIEWED, lectureId);
     }
 }

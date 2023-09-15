@@ -140,6 +140,8 @@ public class ReviewService {
             applyReviewToVideo(reviewSubmitRequest, video);
         }
 
+        reviewRepository.updateIsReviewed(lectureData.getLectureId());
+
         return lectureCode;
     }
 
