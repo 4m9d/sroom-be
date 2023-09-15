@@ -140,19 +140,20 @@ public class ReviewService {
         String lectureCode = "";
 
         if (lectureData.isPlaylist()) {
-            lectureCode = reviewRepository.getPlaylistCodeByLectureId(lectureData.getLectureId());
-            applyReviewToPlaylist(lectureData.getSourceId(), reviewSubmitRequest);
+            Playlist playlist = lectureRepository.getPlaylistById(lectureData.getSourceId());
+            lectureCode = playlist.getPlaylistCode();
+            applyReviewToPlaylist(reviewSubmitRequest, playlist);
         }
         else {
-            lectureCode = reviewRepository.getVideoCodeByLectureId(lectureData.getLectureId());
-            applyReviewToVideo(lectureData.getSourceId(), reviewSubmitRequest);
+            Video video = lectureRepository.getVideoById(lectureData.getSourceId());
+            lectureCode = video.getVideoCode();
+            applyReviewToVideo(reviewSubmitRequest, video);
         }
 
         return lectureCode;
     }
 
-    public void applyReviewToPlaylist(Long sourceId, ReviewSubmitRequest reviewSubmitRequest) {
-        Playlist playlist = lectureRepository.getPlaylistById(sourceId);
+    public void applyReviewToPlaylist(ReviewSubmitRequest reviewSubmitRequest, Playlist playlist) {
 
         playlist.setReviewCount(playlist.getReviewCount() + 1);
         playlist.setAccumulatedRating(playlist.getAccumulatedRating() + reviewSubmitRequest.getSubmittedRating());
@@ -160,8 +161,7 @@ public class ReviewService {
         lectureRepository.updatePlaylist(playlist);
     }
 
-    public void applyReviewToVideo(Long sourceId, ReviewSubmitRequest reviewSubmitRequest) {
-        Video video = lectureRepository.getVideoById(sourceId);
+    public void applyReviewToVideo(ReviewSubmitRequest reviewSubmitRequest, Video video) {
 
         video.setReviewCount(video.getReviewCount() + 1);
         video.setAccumulatedRating(video.getAccumulatedRating() + reviewSubmitRequest.getSubmittedRating());

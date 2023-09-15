@@ -49,16 +49,4 @@ class ReviewSqlQuery {
     INSERT INTO REVIEW (source_code, member_id, lecture_id, submitted_rating, content)
     VALUES (?, ?, ?, ?, ?)
     """
-
-    public static final String GET_PLAYLIST_CODE_BY_LECTURE_ID = """
-    SELECT p.playlist_code AS code
-    FROM PLAYLIST p JOIN LECTURE l ON p.playlist_id = l.source_id 
-    WHERE l.lecture_id = ?
-    """
-
-    public static final String GET_VIDEO_CODE_BY_LECTURE_ID = """
-    SELECT v.video_code AS code
-    FROM VIDEO v JOIN LECTURE l ON v.video_id = l.source_id 
-    WHERE l.lecture_id = ?
-    """
 }

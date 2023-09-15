@@ -104,14 +104,6 @@ public class ReviewRepository {
                 , lectureId);
     }
 
-    public String getPlaylistCodeByLectureId(Long lectureId) {
-        return jdbcTemplate.queryForObject(GET_PLAYLIST_CODE_BY_LECTURE_ID, (rs, rowNum) -> rs.getString("code"), lectureId);
-    }
-
-    public String getVideoCodeByLectureId(Long lectureId) {
-        return jdbcTemplate.queryForObject(GET_VIDEO_CODE_BY_LECTURE_ID, (rs, rowNum) -> rs.getString("code"), lectureId);
-    }
-
     public Long insertReview(Review review) {
 
         jdbcTemplate.update(INSERT_REVIEW,
