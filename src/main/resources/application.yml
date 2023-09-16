@@ -10,9 +10,9 @@ server:
       enabled: false
 spring:
   datasource:
-    url: '{cipher}AQICAHiJ3G9QsgoCm+bUcAPegP56f6tkFnNiijhZN1RaChF0LwFgKaFUhb2270ABK3DnbJmdAAAAgTB/BgkqhkiG9w0BBwagcjBwAgEAMGsGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQM63tWuWz+AGNzEt6CAgEQgD5h5ko0Btj+wakVyWki4moxiVNxCaVCO85TfjW4r8/r7w1oH3SGTLhpIUMA4vsMpHpbEHU86oTA51CwM8UZMQ=='
-    username: '{cipher}AQICAHiJ3G9QsgoCm+bUcAPegP56f6tkFnNiijhZN1RaChF0LwEQ6p1YRsmHhzcx/mDyocEGAAAAYjBgBgkqhkiG9w0BBwagUzBRAgEAMEwGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMuy+zBtDQjkRuQM1BAgEQgB/z78W4hPAeVK23Uc53bCNO4eLxubnJDFr7h2LqglLf'
-    password:
+    url: '{cipher}AQICAHiJ3G9QsgoCm+bUcAPegP56f6tkFnNiijhZN1RaChF0LwErwFo6A0OP8cCFOHFFdd1nAAAAujCBtwYJKoZIhvcNAQcGoIGpMIGmAgEAMIGgBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDNehnPznTZS0rGqhIQIBEIBz7kG6GSHyvrvUaz9gYT6lzY8ZhmGbv6Wfuq/8qJEmzaam3BG/5061Fy/KmLRd7iQT2rSLgV5rauQvlXKZVcQYn9GNDC4YvKXwEq4Eta294nuK4bODxMVydCtYvAnaaN4uKzoEdScgqB2BczEN6LaJb6ioGg=='
+    username: '{cipher}AQICAHiJ3G9QsgoCm+bUcAPegP56f6tkFnNiijhZN1RaChF0LwEzELYpV0RGum09fnpD8pCaAAAAZjBkBgkqhkiG9w0BBwagVzBVAgEAMFAGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQM12R4qE4FCC1MWVk7AgEQgCN3ZWQKzdG+QL9ngq96lBdiR/z8mfJ4Jx+ys62ke7zTdn9nOw=='
+    password: '{cipher}AQICAHiJ3G9QsgoCm+bUcAPegP56f6tkFnNiijhZN1RaChF0LwE3liqeSwLg6BMfyGzDrCr/AAAAbjBsBgkqhkiG9w0BBwagXzBdAgEAMFgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMIS1y4wCTJvMdSLtnAgEQgCsrms+914SigtDKLExFvVY6SkdtfgD3njzhV56D3uKTrdM7r7RyzgUIh4Fb'
 #    hikari:
 #      connection-timeout: 250
 #      max-lifetime: 500
