@@ -22,20 +22,9 @@ jobs:
       ## gradlew 의 권한을 줍니다.
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-
       ## gradle build
       - name: Build with Gradle
         run: ./gradlew clean build -x test
-      ## 이미지 태그에 시간 설정을 하기위해서 현재 시간을 가져옴
-      - name: Get current time
-        uses: 1466587594/get-current-time@v2
-        id: current-time
-        with:
-          format: YYYY-MM-DDTHH-mm-ss
-          utcOffset: "+09:00"
-
-      - name: Show Current Time
-        run: echo "CurrentTime=${{steps.current-time.outputs.formattedTime}}"
       ## AWS에 로그인
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -49,6 +38,6 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
       - name: Build, tag, and push image to Amazon ECR
         run: |
-          docker build -t sroom-repo:${{steps.current-time.outputs.formattedTime}} .
-          docker tag sroom-repo:${{steps.current-time.outputs.formattedTime}} 224066583965.dkr.ecr.ap-northeast-2.amazonaws.com/sroom-repo:${{steps.current-time.outputs.formattedTime}}
-          docker push 224066583965.dkr.ecr.ap-northeast-2.amazonaws.com/sroom-repo:${{steps.current-time.outputs.formattedTime}}
+          docker build -t be-repo .
+          docker tag sroom-repo 224066583965.dkr.ecr.ap-northeast-2.amazonaws.com/be-repo
+          docker push 224066583965.dkr.ecr.ap-northeast-2.amazonaws.com/be-repo
