@@ -19,12 +19,15 @@ jobs:
         with:
           java-version: '11'
           distribution: 'adopt'
+
       ## gradlew 의 권한을 줍니다.
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
+
       ## gradle build
       - name: Build with Gradle
         run: ./gradlew clean build -x test
+
       ## AWS에 로그인
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -32,23 +35,30 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
+
+      ## ECR에 로그인
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
       ## ECR에 이미지 업로드
       - name: Build, tag, and push image to Amazon ECR
-        id: build-and-push
-        uses: aws-actions/amazon-ecr-login@v1
-      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: be-repo
+          IMAGE_TAG: release
         run: |
-          docker build -t be-repo .
-          docker tag be-repo 224066583965.dkr.ecr.ap-northeast-2.amazonaws.com/be-repo
-          docker push 224066583965.dkr.ecr.ap-northeast-2.amazonaws.com/be-repo
-          echo "IMAGE=224066583965.dkr.ecr.ap-northeast-2.amazonaws.com/be-repo" >> $GITHUB_ENV
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "IMAGE=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_ENV
       ## ECS task 정의
       - name: Push the image ID in the ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
-          container-name: be-container
+          container-name: backend-container
           image: ${{ env.IMAGE }}
       ## ECS 실행
       - name: Deploy ECS task definition
