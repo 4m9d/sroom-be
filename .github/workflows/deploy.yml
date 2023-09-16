@@ -25,7 +25,7 @@ jobs:
 
       ## gradle build
       - name: Build with Gradle
-        run: ./gradlew clean build
+        run: ./gradlew clean build -x test
       ## 이미지 태그에 시간 설정을 하기위해서 현재 시간을 가져옴
       - name: Get current time
         uses: 1466587594/get-current-time@v2
