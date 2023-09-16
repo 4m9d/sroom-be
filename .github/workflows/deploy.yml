@@ -52,7 +52,7 @@ jobs:
           image: ${{ steps.build-image.outputs.image }}
       ## ECS 실행
       - name: Deploy ECS task definition
-        uses: aws-actions/amazon-ecr-render-task-definition@v1
+        uses: aws-actions/amazon-ecr-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: sroom-service
