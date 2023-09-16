@@ -29,7 +29,7 @@ public class MemberServiceV2 {
     private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
 
-    @Value("${client-id}")
+    @Value("${google.client-id}")
     private String clientId;
 
     public MemberServiceV2(MemberRepository memberRepository, JwtUtil jwtUtil) {
