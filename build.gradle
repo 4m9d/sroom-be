@@ -1,8 +1,12 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '2.7.13'
+    id 'org.springframework.boot' version '2.3.8.RELEASE'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
     id 'groovy'
+}
+
+ext {
+    set('springCloudVersion', "Hoxton.SR9")
 }
 
 group = 'com.4m9d'
@@ -64,6 +68,14 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.9'
 
     //implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.0'
+
+
+    implementation 'org.zalando:spring-cloud-config-aws-kms:5.1.2'
+    implementation 'com.amazonaws:aws-java-sdk-core:1.12.551'
+    implementation 'com.amazonaws:aws-java-sdk-kms:1.12.551'
+    implementation 'com.amazonaws:jmespath-java:1.12.551'
 }
 
 tasks.named('test') {

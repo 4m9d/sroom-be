@@ -17,7 +17,7 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
-    @Value("${jwt-secret}")
+    @Value("${jwt.secret}")
     private String jwtSecret;
 
     public static final long ACCESS_TOKEN_EXPIRATION_PERIOD = 1000L * 60 * 30; // 30분 유효

@@ -30,7 +30,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
 
-    @Value("${client-id}")
+    @Value("${google.client-id}")
     private String clientId;
 
     public MemberService(MemberRepository memberRepository, JwtUtil jwtUtil) {

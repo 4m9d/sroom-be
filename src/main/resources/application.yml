@@ -10,15 +10,33 @@ server:
       enabled: false
 spring:
   datasource:
-    url: jdbc:mariadb://localhost:3306/[접속할 DB명]?serverTimezone=UTC&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true&socketTimeout=10000&connectTimeout=10000
-    username: [DB 아이디]
-    password: [DB 비밀번호]
+    url: '{cipher}AQICAHiJ3G9QsgoCm+bUcAPegP56f6tkFnNiijhZN1RaChF0LwErwFo6A0OP8cCFOHFFdd1nAAAAujCBtwYJKoZIhvcNAQcGoIGpMIGmAgEAMIGgBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDNehnPznTZS0rGqhIQIBEIBz7kG6GSHyvrvUaz9gYT6lzY8ZhmGbv6Wfuq/8qJEmzaam3BG/5061Fy/KmLRd7iQT2rSLgV5rauQvlXKZVcQYn9GNDC4YvKXwEq4Eta294nuK4bODxMVydCtYvAnaaN4uKzoEdScgqB2BczEN6LaJb6ioGg=='
+    username: '{cipher}AQICAHiJ3G9QsgoCm+bUcAPegP56f6tkFnNiijhZN1RaChF0LwEzELYpV0RGum09fnpD8pCaAAAAZjBkBgkqhkiG9w0BBwagVzBVAgEAMFAGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQM12R4qE4FCC1MWVk7AgEQgCN3ZWQKzdG+QL9ngq96lBdiR/z8mfJ4Jx+ys62ke7zTdn9nOw=='
+    password: '{cipher}AQICAHiJ3G9QsgoCm+bUcAPegP56f6tkFnNiijhZN1RaChF0LwE3liqeSwLg6BMfyGzDrCr/AAAAbjBsBgkqhkiG9w0BBwagXzBdAgEAMFgGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMIS1y4wCTJvMdSLtnAgEQgCsrms+914SigtDKLExFvVY6SkdtfgD3njzhV56D3uKTrdM7r7RyzgUIh4Fb'
 #    hikari:
 #      connection-timeout: 250
 #      max-lifetime: 500
   mvc:
     view:
       suffix: .html
+
+youtube:
+  base-url: https://www.googleapis.com/youtube/v3
+gpt:
+  request-url : http://127.0.0.1:8000
+  result-url: http://127.0.0.1:8000/results
+
+aws:
+  kms:
+    keyId: 5e54b60b-abd3-45ff-8fed-53f147aac32c
+    encryptionAlgorithm: "SYMMETRIC_DEFAULT"
+
+jwt:
+  secret: '{cipher}AQICAHiJ3G9QsgoCm+bUcAPegP56f6tkFnNiijhZN1RaChF0LwGc2jCSXOKLpXH9AbE+sM7pAAAArTCBqgYJKoZIhvcNAQcGoIGcMIGZAgEAMIGTBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDLskTbG+H1v//rmDdwIBEIBmQd79gXGyiXRnQ5XfFQU5rvPjTjLsxKIXApPpMmpOuugMVuoLDNmdxyqSZiQDOCcGOd7lT9y2MbY+ofvu8Wu9oc+Wzy8tcY2/BFF7DkDTjU8D2N+WFVWKf0IYD2GCPEiKxLN47nIx'
+
+google:
+  cloud-api-key: '{cipher}AQICAHiJ3G9QsgoCm+bUcAPegP56f6tkFnNiijhZN1RaChF0LwEAjYRz25etWN2UnTG95sYGAAAAhjCBgwYJKoZIhvcNAQcGoHYwdAIBADBvBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDJjyusKBuxvcOM5RJgIBEIBC1e9xn/G2KwnuWV7ehHlaQ8aq0UH3sE+iUVy0x0MKZUgYhfiKYHnZZEc4brn0aGdMK1zaOPjVP8K+q+53TBJF978a'
+  client-id: '{cipher}AQICAHiJ3G9QsgoCm+bUcAPegP56f6tkFnNiijhZN1RaChF0LwG2yawOjNyeqfXayelhiJEDAAAAqzCBqAYJKoZIhvcNAQcGoIGaMIGXAgEAMIGRBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDM25bhVmkHjntleeNAIBEIBkEiutxJ+N7kpWa/wH1gziipOG6AXZ/PmRI1mnD6vF8zZvwZhsKXzjsm7G9INvVqjwk+jRY1cTdldXs7J0ZCDurx56d7JC47PfjCPAFwW5GFjZiaaebBu+md1ahNH4nwpySHs9uQ=='
 
 #Devtool
 devtools:
@@ -34,7 +52,7 @@ logging.level:
     boot: info
   com.hibernate:
     SQL: debug
-  com.m9d.sroom: debug
+  com.m9d.sroom: info
 
 # logging.level:
 #   root: warn

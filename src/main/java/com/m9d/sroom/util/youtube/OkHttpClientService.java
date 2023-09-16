@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class OkHttpClientService implements YoutubeApi {
 
-    @Value("${google-cloud-api-key}")
+    @Value("${google.cloud-api-key}")
     private String googleCloudApiKey;
 
     @Value("${youtube.base-url}")

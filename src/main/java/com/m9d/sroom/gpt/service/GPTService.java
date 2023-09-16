@@ -10,9 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -39,10 +37,15 @@ public class GPTService {
         String resultStr;
         try {
             resultStr = getResultStr(gptResultUrl);
-            log.info("response body from gpt server = {}", resultStr);
-        } catch (WebClientRequestException e) {
+        } catch (WebClientResponseException e) {
             log.error("Error occurred while making a request to fastAPI server. message = {}", e.getMessage());
             return;
+        }
+
+        if(resultStr == null){
+            return;
+        }else{
+            log.info("response body from gpt server = {}", resultStr);
         }
 
         MaterialVo resultVo = getMaterialVo(resultStr);
@@ -52,7 +55,7 @@ public class GPTService {
         }
     }
 
-    private String getResultStr(String requestUrl) throws WebClientRequestException {
+    private String getResultStr(String requestUrl) {
         String responseBody = null;
         try {
             responseBody = webClient.get()
@@ -63,8 +66,9 @@ public class GPTService {
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
-        } catch (WebClientResponseException e) {
-            log.error("fastAPI server not available. error code = {}, message = {}", e.getStatusCode(), e.getMessage());
+        } catch (Exception e) {
+            log.error("Error occurred while making a request to fastAPI server. message = {}", e.getMessage());
+            return null;
         }
         return responseBody;
     }

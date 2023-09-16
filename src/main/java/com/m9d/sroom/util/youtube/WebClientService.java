@@ -17,7 +17,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 public class WebClientService implements YoutubeApi {
 
-    @Value("${google-cloud-api-key}")
+    @Value("${google.cloud-api-key}")
     private String googleCloudApiKey;
 
     @Value("${youtube.base-url}")

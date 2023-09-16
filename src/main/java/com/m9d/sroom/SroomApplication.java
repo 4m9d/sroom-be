@@ -11,7 +11,6 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.util.concurrent.Executor;
 
 @SpringBootApplication
-@PropertySource("classpath:/secure.properties")
 @EnableAsync
 @EnableScheduling
 public class SroomApplication {

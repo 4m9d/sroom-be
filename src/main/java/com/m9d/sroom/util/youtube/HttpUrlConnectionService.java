@@ -28,7 +28,7 @@ import static com.m9d.sroom.util.youtube.YoutubeUtil.YOUTUBE_REQUEST_CONTENT_TYP
 @Slf4j
 public class HttpUrlConnectionService implements YoutubeApi {
 
-    @Value("${google-cloud-api-key}")
+    @Value("${google.cloud-api-key}")
     private String googleCloudApiKey;
 
     @Value("${youtube.base-url}")
