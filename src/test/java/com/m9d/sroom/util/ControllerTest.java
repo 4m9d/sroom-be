@@ -5,7 +5,7 @@ import com.m9d.sroom.course.dto.response.CourseDetail;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.lecture.dto.response.KeywordSearch;
 import com.m9d.sroom.lecture.dto.response.PlaylistDetail;
-import com.m9d.sroom.member.domain.Member;
+import com.m9d.sroom.global.mapper.Member;
 import com.m9d.sroom.member.dto.response.Login;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -22,11 +22,11 @@ public class ControllerTest extends SroomTest {
 
     protected Login getNewLogin() {
         Member member = getNewMember();
-        return memberService.generateLogin(member);
+        return memberService.generateLogin(member, (String) idToken.getPayload().get("picture"));
     }
 
     protected Login getNewLogin(Member member) {
-        return memberService.generateLogin(member);
+        return memberService.generateLogin(member, (String) idToken.getPayload().get("picture"));
     }
 
     protected Member getNewMember() {

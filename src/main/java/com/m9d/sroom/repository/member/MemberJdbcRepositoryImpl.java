@@ -1,8 +1,6 @@
 package com.m9d.sroom.repository.member;
 
-import com.m9d.sroom.dashboard.dto.response.DashboardMemberData;
-import com.m9d.sroom.material.model.MemberQuizInfo;
-import com.m9d.sroom.member.domain.Member;
+import com.m9d.sroom.global.mapper.Member;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;

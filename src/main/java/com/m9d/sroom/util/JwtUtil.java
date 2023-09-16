@@ -1,6 +1,5 @@
 package com.m9d.sroom.util;
 
-import com.m9d.sroom.member.domain.Member;
 import com.m9d.sroom.member.exception.TokenExpiredException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -21,23 +20,24 @@ public class JwtUtil {
     @Value("${jwt-secret}")
     private String jwtSecret;
 
-    public static final long ACCESS_TOKEN_EXPIRATION_PERIOD = 1000L * 60 * 60 * 10; // 10시간 유효
-    public static final long REFRESH_TOKEN_EXPIRATION_PERIOD = 1000L * 60 * 60 * 24 * 7; // 7일 유효
+    public static final long ACCESS_TOKEN_EXPIRATION_PERIOD = 1000L * 60 * 30; // 30분 유효
+    public static final long REFRESH_TOKEN_EXPIRATION_PERIOD = 1000L * 60 * 60 * 24 * 3; // 3일 유효
     public static final String EXPIRATION_TIME = "expirationTime";
 
-    public String generateAccessToken(Member member) {
-        return generateToken(member.getMemberId(), ACCESS_TOKEN_EXPIRATION_PERIOD);
+    public String generateAccessToken(Long memberId, String pictureUrl) {
+        return generateToken(memberId, pictureUrl, ACCESS_TOKEN_EXPIRATION_PERIOD);
     }
 
-    public String generateRefreshToken(Member member) {
-        return generateToken(member.getMemberId(), REFRESH_TOKEN_EXPIRATION_PERIOD);
+    public String generateRefreshToken(Long memberId, String pictureUrl) {
+        return generateToken(memberId, pictureUrl, REFRESH_TOKEN_EXPIRATION_PERIOD);
     }
 
-    private String generateToken(Object subject, long expirationPeriod) {
+    private String generateToken(Long memberId, String pictureUrl, long expirationPeriod) {
         return Jwts.builder()
-                .setSubject(String.valueOf(subject))
+                .setSubject(String.valueOf(memberId))
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expirationPeriod))
+                .claim("profile", pictureUrl)
                 .signWith(SignatureAlgorithm.HS256, jwtSecret)
                 .compact();
     }
@@ -56,6 +56,7 @@ public class JwtUtil {
         Map<String, Object> details = new HashMap<>();
         details.put("expirationTime", claims.getExpiration().getTime() / 1000);
         details.put("memberId", claims.getSubject());
+        details.put("profile", claims.get("profile"));
 
         return details;
     }

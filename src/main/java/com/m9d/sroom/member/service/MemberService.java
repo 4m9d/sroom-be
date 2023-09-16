@@ -5,9 +5,10 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
-import com.m9d.sroom.member.domain.Member;
+import com.m9d.sroom.global.mapper.Member;
 import com.m9d.sroom.member.dto.request.RefreshToken;
 import com.m9d.sroom.member.dto.response.Login;
+import com.m9d.sroom.member.dto.response.NameUpdateResponse;
 import com.m9d.sroom.member.exception.*;
 import com.m9d.sroom.member.repository.MemberRepository;
 import com.m9d.sroom.util.JwtUtil;
@@ -39,10 +40,10 @@ public class MemberService {
 
     @Transactional
     public Login authenticateMember(String credential) throws Exception {
-        GoogleIdToken payload = verifyCredential(credential);
-        String memberCode = getMemberCodeFromIdToken(payload);
-        Member member = findOrCreateMemberByMemberCode(memberCode);
-        return generateLogin(member);
+        GoogleIdToken idToken = verifyCredential(credential);
+
+        Member member = findOrCreateMemberByMemberCode(idToken.getPayload().getSubject());
+        return generateLogin(member, (String) idToken.getPayload().get("picture"));
     }
 
     public GoogleIdToken verifyCredential(String credential) throws Exception {
@@ -60,10 +61,6 @@ public class MemberService {
         }
 
         return idToken;
-    }
-
-    public String getMemberCodeFromIdToken(GoogleIdToken idToken) {
-        return idToken.getPayload().getSubject();
     }
 
     public Member findOrCreateMemberByMemberCode(String memberCode) {
@@ -100,19 +97,18 @@ public class MemberService {
             throw new RefreshRenewedException();
         }
 
-        Login login = renewTokens(memberId);
-        return login;
+        return renewTokens(memberId, (String) refreshTokenDetail.get("profile"));
     }
 
-    public Login renewTokens(Long memberId) {
+    public Login renewTokens(Long memberId, String pictureUrl) {
         Member member = memberRepository.findByMemberId(memberId)
                 .orElseThrow(MemberNotFoundException::new);
-        return generateLogin(member);
+        return generateLogin(member, pictureUrl);
     }
 
-    public Login generateLogin(Member member) {
-        String accessToken = jwtUtil.generateAccessToken(member);
-        String refreshToken = jwtUtil.generateRefreshToken(member);
+    public Login generateLogin(Member member, String picture) {
+        String accessToken = jwtUtil.generateAccessToken(member.getMemberId(), picture);
+        String refreshToken = jwtUtil.generateRefreshToken(member.getMemberId(), picture);
         memberRepository.saveRefreshToken(member.getMemberId(), refreshToken);
 
         return Login.builder()
@@ -120,7 +116,24 @@ public class MemberService {
                 .refreshToken(refreshToken)
                 .expiresAt((Long) jwtUtil.getDetailFromToken(accessToken).get(EXPIRATION_TIME))
                 .name(member.getMemberName())
+                .profile(picture)
                 .bio(member.getBio())
+                .build();
+    }
+
+    public NameUpdateResponse updateMemberName(Long memberId, String name) {
+        Optional<Member> memberOptional = memberRepository.findByMemberId(memberId);
+        if (memberOptional.isEmpty()) {
+            throw new MemberNotFoundException();
+        }
+
+        Member member = memberOptional.get();
+        member.setMemberName(name);
+        memberRepository.updateById(memberId, member);
+
+        return NameUpdateResponse.builder()
+                .memberId(memberId)
+                .name(name)
                 .build();
     }
 }

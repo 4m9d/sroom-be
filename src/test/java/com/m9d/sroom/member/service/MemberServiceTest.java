@@ -1,7 +1,6 @@
 package com.m9d.sroom.member.service;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.m9d.sroom.member.domain.Member;
+import com.m9d.sroom.global.mapper.Member;
 import com.m9d.sroom.member.dto.request.RefreshToken;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.member.exception.MemberNotMatchException;
@@ -50,7 +49,7 @@ public class MemberServiceTest extends ServiceTest {
         Member member = getNewMember();
 
         //when
-        Login login = memberService.generateLogin(member);
+        Login login = memberService.generateLogin(member, (String) idToken.getPayload().get("picture"));
         Long expectedExpirationTime = System.currentTimeMillis() / 1000 + jwtUtil.ACCESS_TOKEN_EXPIRATION_PERIOD / 1000;
         Long delta = Math.abs(expectedExpirationTime - login.getExpiresAt());
 
@@ -64,7 +63,7 @@ public class MemberServiceTest extends ServiceTest {
     void renewRefreshToken200() {
         //given
         Member member = getNewMember();
-        Login login = memberService.generateLogin(member);
+        Login login = memberService.generateLogin(member, (String) idToken.getPayload().get("picture"));
 
         //when
         Login reLogin = memberService.verifyRefreshTokenAndReturnLogin(
@@ -80,7 +79,7 @@ public class MemberServiceTest extends ServiceTest {
     void verifyRefreshToken200() throws InterruptedException {
         //given
         Member member = getNewMember();
-        Login login = memberService.generateLogin(member);
+        Login login = memberService.generateLogin(member, (String) idToken.getPayload().get("picture"));
         RefreshToken refreshToken = RefreshToken.builder()
                 .refreshToken(login.getRefreshToken())
                 .build();
@@ -100,7 +99,7 @@ public class MemberServiceTest extends ServiceTest {
         Member member1 = getNewMember();
 
         Member member2 = getNewMember();
-        Login login2 = memberService.generateLogin(member2);
+        Login login2 = memberService.generateLogin(member2, (String) idToken.getPayload().get("picture"));
 
         //when
         Throwable exception = null;
@@ -124,12 +123,12 @@ public class MemberServiceTest extends ServiceTest {
     void refreshRenew401() throws InterruptedException {
         //given
         Member member = getNewMember();
-        Login loginFirst = memberService.generateLogin(member);
+        Login loginFirst = memberService.generateLogin(member, (String) idToken.getPayload().get("picture"));
 
         //when
         Throwable exception = null;
         Thread.sleep(2000);
-        Login login = memberService.generateLogin(member); //2초 뒤 재로그인,refresh token이 갱신되어 새로 저장됩니다.
+        Login login = memberService.generateLogin(member, (String) idToken.getPayload().get("picture")); //2초 뒤 재로그인,refresh token이 갱신되어 새로 저장됩니다.
         try {
             memberService.verifyRefreshTokenAndReturnLogin(
                     member.getMemberId(),

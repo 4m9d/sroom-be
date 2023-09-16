@@ -2,7 +2,7 @@ package com.m9d.sroom.dashboard.service;
 
 
 import com.m9d.sroom.dashboard.dto.response.Dashboard;
-import com.m9d.sroom.member.domain.Member;
+import com.m9d.sroom.global.mapper.Member;
 import com.m9d.sroom.util.ServiceTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
