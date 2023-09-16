@@ -32,16 +32,16 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
-      ## ECR에 로그인
-      - name: Login to Amazon ECR
-        id: login-ecr
+      ## ECR에 이미지 업로드
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-and-push
         uses: aws-actions/amazon-ecr-login@v1
       - name: Build, tag, and push image to Amazon ECR
         run: |
           docker build -t be-repo .
           docker tag be-repo 224066583965.dkr.ecr.ap-northeast-2.amazonaws.com/be-repo
           docker push 224066583965.dkr.ecr.ap-northeast-2.amazonaws.com/be-repo
-          echo "::set-output name=image::224066583965.dkr.ecr.ap-northeast-2.amazonaws.com/be-repo"
+          echo "IMAGE=224066583965.dkr.ecr.ap-northeast-2.amazonaws.com/be-repo" >> $GITHUB_ENV
       ## ECS task 정의
       - name: Push the image ID in the ECS task definition
         id: task-def
@@ -49,7 +49,7 @@ jobs:
         with:
           task-definition: task-definition.json
           container-name: be-container
-          image: ${{ steps.login-ecr.outputs.image }}
+          image: ${{ env.IMAGE }}
       ## ECS 실행
       - name: Deploy ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
