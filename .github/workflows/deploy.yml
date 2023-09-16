@@ -39,5 +39,5 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         run: |
           docker build -t be-repo .
-          docker tag sroom-repo 224066583965.dkr.ecr.ap-northeast-2.amazonaws.com/be-repo
+          docker tag be-repo 224066583965.dkr.ecr.ap-northeast-2.amazonaws.com/be-repo
           docker push 224066583965.dkr.ecr.ap-northeast-2.amazonaws.com/be-repo
