@@ -132,8 +132,7 @@ public class CourseServiceV2 {
     public EnrolledCourseInfo enrollCourse(Long memberId, NewLecture newLecture, boolean useSchedule) {
         EnrolledCourseInfo enrolledCourseInfo;
 
-        boolean isPlaylist = youtubeUtil.checkIfPlaylist(newLecture.getLectureCode());
-        if (isPlaylist) {
+        if (youtubeUtil.checkIfPlaylist(newLecture.getLectureCode())) {
             enrolledCourseInfo = saveCourseWithPlaylist(memberId, newLecture, useSchedule);
         } else {
             enrolledCourseInfo = saveCourseWithVideo(memberId, newLecture, useSchedule);
@@ -148,7 +147,7 @@ public class CourseServiceV2 {
 
         Long courseId = saveCourse(memberId, newLecture, useSchedule, playlist);
 
-        saveCourseVideoListFirst(memberId, courseId, newLecture, playlist.getPlaylistId(), useSchedule);
+        storeScheduledVideosForCourse(memberId, courseId, newLecture, playlist.getPlaylistId(), useSchedule);
 
         Long lectureId = lectureRepository.save(Lecture.builder()
                 .memberId(memberId)
@@ -166,9 +165,9 @@ public class CourseServiceV2 {
                 .build();
     }
 
-    private void saveCourseVideoListFirst(Long memberId, Long courseId, NewLecture newLecture, Long playlistId, boolean useSchedule) {
+    private void storeScheduledVideosForCourse(Long memberId, Long courseId, NewLecture newLecture, Long playlistId, boolean useSchedule) {
         int videoCount = 1;
-        int section = useSchedule ? 1 : 0;
+        int section = useSchedule ? 1 : 0;  // 삼항연산 굳이?
         int week = 0;
 
         List<Video> videoList = videoRepository.getListByPlaylistId(playlistId);
@@ -197,7 +196,7 @@ public class CourseServiceV2 {
 
         if (useSchedule) {
             validateScheduleField(newLecture);
-            expectedEndDate = dateUtil.convertStringToDate(newLecture.getExpectedEndDate());
+            expectedEndDate = dateUtil.convertStringToDate(newLecture.getExpectedEndDate()); // g1gc 공부
             weeks = newLecture.getScheduling().size();
             dailyTargetTime = newLecture.getDailyTargetTime();
         }
@@ -219,7 +218,7 @@ public class CourseServiceV2 {
         Date expectedEndDate = null;
         Integer dailyTargetTime = null;
         Integer weeks = null;
-        int section = ENROLL_DEFAULT_SECTION;
+        int section = ENROLL_DEFAULT_SECTION_NO_SCHEDULE;
 
         if (useSchedule) {
             validateScheduleField(newLecture);
@@ -247,7 +246,7 @@ public class CourseServiceV2 {
                 .section(section)
                 .videoIndex(ENROLL_VIDEO_INDEX)
                 .lectureIndex(ENROLL_LECTURE_INDEX)
-                .build());
+                .build()); // 똑같은 코드가 자주보이면 메서드로
 
         Long lectureId = lectureRepository.save(Lecture.builder()
                 .memberId(memberId)
@@ -257,6 +256,7 @@ public class CourseServiceV2 {
                 .playlist(false)
                 .index(ENROLL_LECTURE_INDEX)
                 .build());
+
         return EnrolledCourseInfo.builder()
                 .title(video.getTitle())
                 .courseId(courseId)
@@ -265,7 +265,7 @@ public class CourseServiceV2 {
     }
 
     private void validateScheduleField(NewLecture newLecture) {
-        if (newLecture.getDailyTargetTime() == 0 ||
+        if (newLecture.getDailyTargetTime() == 0 ||  // 밸리데이터 다는게 좋음
                 newLecture.getExpectedEndDate() == null) {
             throw new InvalidParameterException("스케줄 필드를 적절히 입력해주세요");
         }
@@ -273,29 +273,25 @@ public class CourseServiceV2 {
 
     @Transactional
     public EnrolledCourseInfo addLectureInCourse(Long memberId, Long courseId, NewLecture newLecture) {
-        validateCourseId(memberId, courseId);
-        boolean isPlaylist = youtubeUtil.checkIfPlaylist(newLecture.getLectureCode());
-        Course course = courseRepository.getById(courseId);
+        validateCourseId(memberId, courseId);  // 리턴값을 받는 것이 좋다.
 
-        EnrolledCourseInfo enrolledCourseInfo;
-        if (isPlaylist) {
+        if (youtubeUtil.checkIfPlaylist(newLecture.getLectureCode())) {
             Playlist playlist = getPlaylistWithUpdate(newLecture.getLectureCode());
-            enrolledCourseInfo = addPlaylistInCourse(course, playlist);
+            return addPlaylistInCourse(courseRepository.getById(courseId), playlist);
         } else {
             Video video = safeGetVideo(newLecture.getLectureCode());
-            enrolledCourseInfo = addVideoInCourse(course, video);
+            return addVideoInCourse(courseRepository.getById(courseId), video);
         }
-        return enrolledCourseInfo;
     }
 
     private Playlist getPlaylistWithUpdate(String playlistCode) {
         Optional<Playlist> playlistOptional = playlistRepository.findByCode(playlistCode);
-        Playlist playlist;
 
-        if (playlistOptional.isPresent() && dateUtil.validateExpiration(playlistOptional.get().getUpdatedAt(), PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
-            playlist = playlistOptional.get();
+        if (playlistOptional.isPresent() &&
+                dateUtil.validateExpiration(playlistOptional.get().getUpdatedAt(), PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
+            return playlistOptional.get();
         } else {
-            playlist = youtubeUtil.getPlaylistWithBlocking(playlistCode);
+            Playlist playlist = youtubeUtil.getPlaylistWithBlocking(playlistCode);
             if (playlistOptional.isEmpty()) {
                 Long playlistId = playlistRepository.save(playlist);
                 playlist.setPlaylistId(playlistId);
@@ -303,17 +299,18 @@ public class CourseServiceV2 {
                 playlistRepository.updateById(playlist.getPlaylistId(), playlist);
             }
             playlistVideoRepository.deleteByPlaylistId(playlist.getPlaylistId());
-            playlist.setDuration(putPlaylistItemAndGetPlaylistDuration(playlistCode, playlist.getPlaylistId(), playlist.getLectureCount()));
+            playlist.setDuration(putPlaylistItemAndGetPlaylistDuration(playlistCode,
+                    playlist.getPlaylistId(),   // get 들어간 곳에서는 get 마다 개행 npe 날 수 있는 곳에서
+                    playlist.getLectureCount()));
             playlistRepository.updateById(playlist.getPlaylistId(), playlist);
+            return playlist;
         }
-
-        return playlist;
     }
 
     public int putPlaylistItemAndGetPlaylistDuration(String playlistCode, Long playlistId, int lectureCount) {
         String nextPageToken = null;
         int playlistDuration = 0;
-        int pageCount = (lectureCount / DEFAULT_INDEX_COUNT) + 1;
+        int pageCount = (int) Math.ceil((double) lectureCount / DEFAULT_INDEX_COUNT);  // 헛돌때가 있을거다. 고려한거는 이 코드 내에. 올림 처리
         for (int i = 0; i < pageCount; i++) {
             PlaylistPageResult result = putPlaylistItemPerPage(playlistCode, playlistId, nextPageToken);
             nextPageToken = result.getNextPageToken();
@@ -334,13 +331,7 @@ public class CourseServiceV2 {
         int totalDurationPerPage = videoList.stream().mapToInt(Video::getDuration).sum();
         savePlaylistVideoList(playlistId, videoList, playlistVideoVo.getItems());
 
-        try {
-            nextPageToken = playlistVideoVo.getNextPageToken();
-        } catch (NullPointerException e) {
-            nextPageToken = null;
-        }
-
-        return new PlaylistPageResult(nextPageToken, totalDurationPerPage);
+        return new PlaylistPageResult(playlistVideoVo.getNextPageToken(), totalDurationPerPage);  // 인자로 받은거 바꾸지마라
     }
 
     private List<Video> getVideoList(PlaylistVideoVo playlistVideoVo) {
@@ -361,7 +352,7 @@ public class CourseServiceV2 {
         List<Video> videoList = allVideoFuture.join();
 
         for (Video video : videoList) {
-            requestToAiServer(video.getVideoCode());
+            requestToAiServer(video.getVideoCode());  // 별로임. 앞에서 코드로 하던가 lazy 로 빼도됨
         }
 
         return videoList;
@@ -371,8 +362,13 @@ public class CourseServiceV2 {
         for (int i = 0; i < videos.size(); i++) {
             playlistVideoRepository.save(PlaylistVideo.builder()
                     .playlistId(playlistId)
-                    .videoId(videos.get(i).getVideoId())
-                    .videoIndex(items.get(i).getSnippet().getPosition() + 1)
+                    .videoId(videos
+                            .get(i)  // get에서 엔터치는건 소극적인 대응임. 예외처리를 다 하는게 적극적 대응
+                            .getVideoId())  // npe 나오지 않는지 확인 함?
+                    .videoIndex(items
+                            .get(i)
+                            .getSnippet()
+                            .getPosition() + 1)
                     .build());
         }
     }
@@ -414,22 +410,21 @@ public class CourseServiceV2 {
                 .orElse(0) + 1;
 
         List<PlaylistVideo> playlistVideoList = playlistVideoRepository.getListByPlaylistId(playlist.getPlaylistId());
-        playlistVideoList.sort(Comparator.comparingInt(PlaylistVideo::getVideoIndex));
+        playlistVideoList.sort(Comparator.comparingInt(PlaylistVideo::getVideoIndex));  // 컴파운드 인덱스 + order by
 
         for (PlaylistVideo playlistVideo : playlistVideoList) {
             courseVideoRepository.save(CourseVideo.builder()
                     .memberId(course.getMemberId())
                     .courseId(course.getCourseId())
                     .videoId(playlistVideo.getVideoId())
-                    .section(ENROLL_DEFAULT_SECTION)
-                    .videoIndex(videoIndex)
+                    .section(ENROLL_DEFAULT_SECTION_NO_SCHEDULE)
+                    .videoIndex(videoIndex++)
                     .lectureIndex(lectureIndex)
                     .build());
-            videoIndex++;
         }
     }
 
-    private Video safeGetVideo(String videoCode) {
+    private Video safeGetVideo(String videoCode) {  // 이해할 수 없는 코드임. 생각해보길 우아한 방법을 찾길
         Video video;
         try {
             video = getVideoWithUpdateAsync(videoCode).get();
@@ -445,12 +440,14 @@ public class CourseServiceV2 {
         Optional<Video> videoOptional = videoRepository.findByCode(videoCode);
         CompletableFuture<Video> result;
 
-        if (videoOptional.isPresent() && dateUtil.validateExpiration(videoOptional.get().getUpdatedAt(), VIDEO_UPDATE_THRESHOLD_HOURS)) {
+        if (videoOptional.isPresent() &&
+                dateUtil.validateExpiration(videoOptional.get().getUpdatedAt(), VIDEO_UPDATE_THRESHOLD_HOURS)) {
             result = CompletableFuture.completedFuture(videoOptional.get());
         } else {
             result = CompletableFuture.supplyAsync(() -> {
                 Video video = youtubeUtil.getVideoWithBlocking(videoCode);
                 Long videoId = videoOptional.isPresent() ? videoRepository.update(video) : videoRepository.save(video);
+                // 굳이 코드
                 video.setVideoId(videoId);
                 return video;
             });
@@ -498,13 +495,13 @@ public class CourseServiceV2 {
                 .memberId(course.getMemberId())
                 .courseId(course.getCourseId())
                 .videoId(video.getVideoId())
-                .section(ENROLL_DEFAULT_SECTION)
+                .section(ENROLL_DEFAULT_SECTION_NO_SCHEDULE)
                 .videoIndex(lastVideoIndex + 1)
                 .lectureIndex(lectureIndex)
                 .build());
     }
 
-    private void scheduleVideos(Course course) {
+    private void scheduleVideos(Course course) {  // 실패할 일이 있을 때는 리턴값이 있어야 하지 않은가?
         Date startDate = course.getStartDate();
         int dailyTargetTimeForSecond = course.getDailyTargetTime() * SECONDS_IN_MINUTE;
         int weeklyTargetTimeForSecond = dailyTargetTimeForSecond * DAYS_IN_WEEK;
@@ -535,6 +532,7 @@ public class CourseServiceV2 {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(startDate);
         calendar.add(Calendar.DATE, (section - 1) * DAYS_IN_WEEK + lastSectionDays);
+        // 쓰레드 세이프? 여러 쓰레드에서 사용했을 때 괜찮은지
 
         course.setWeeks(section);
         course.setExpectedEndTime(calendar.getTime());
@@ -600,7 +598,8 @@ public class CourseServiceV2 {
                 .mapToInt(VideoInfoForCreateSection::getVideoDuration)
                 .sum();
         int currentWeekDuration = videoInfoForCreateSectionList.stream()
-                .mapToInt(vb -> vb.isCompleted() ? vb.getVideoDuration() : vb.getLastViewDuration())
+                .mapToInt(videoBrief -> videoBrief.isCompleted() ?
+                        videoBrief.getVideoDuration() : videoBrief.getLastViewDuration())
                 .sum();
         boolean completed = videoInfoForCreateSectionList.stream()
                 .allMatch(VideoInfoForCreateSection::isCompleted);
@@ -623,7 +622,7 @@ public class CourseServiceV2 {
         courseRepository.deleteCourseQuizByCourseId(courseId);
     }
 
-    private void validateCourseId(Long memberId, Long courseId) {
+    private void validateCourseId(Long memberId, Long courseId) {  //리턴을 받는게 좋다. 어디서 throw 되는지 확인 할 수 없음
         Long actualMemberId = memberRepository.getById(memberId).getMemberId();
 
         if (!memberId.equals(actualMemberId)) {

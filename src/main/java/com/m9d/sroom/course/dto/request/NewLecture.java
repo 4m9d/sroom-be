@@ -28,6 +28,4 @@ public class NewLecture {
 
     @Schema(description = "예상 종료 시간", example = "2023-12-31")
     private String expectedEndDate;
-
-
 }
