@@ -122,7 +122,7 @@ public class LectureService {
         String thumbnail = youtubeUtil.selectThumbnailInVo(snippetVo.getThumbnails());
 
         String lectureCode;
-        long viewCount = 0L;
+        long viewCount = -1L;
         int videoCount = 1;
         String description;
 
@@ -135,7 +135,9 @@ public class LectureService {
         } else {
             lectureCode = item.getId().getVideoId();
             Video video = getSearchedVideoLast(lectureCode);
-            viewCount = video.getViewCount();
+            if (video.getViewCount() != null){
+                viewCount = video.getViewCount();
+            }
             description = video.getDescription();
         }
 
