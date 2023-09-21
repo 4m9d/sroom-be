@@ -62,8 +62,8 @@ class CourseSqlQuery {
     """
 
     public static final String SAVE_COURSE_VIDEO_QUERY = """
-    INSERT INTO COURSEVIDEO (member_id, course_id, lecture_id, video_id, section, video_index, lecture_index)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO COURSEVIDEO (member_id, course_id, lecture_id, video_id, section, video_index, lecture_index, summary_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """
 
     public static final String GET_COURSE_ID_BY_LECTURE_ID_QUERY = """
@@ -78,13 +78,13 @@ class CourseSqlQuery {
     """
 
     public static final String FIND_VIDEO_QUERY = """
-    SELECT video_id, video_code, channel, thumbnail, language, license, duration, description, title, updated_at, published_at, view_count
+    SELECT video_id, video_code, channel, thumbnail, language, license, duration, description, title, updated_at, published_at, view_count, summary_id
     FROM VIDEO 
     WHERE video_code = ?
     """
 
     public static final String GET_VIDEO_ID_AND_INDEX_QUERY = """
-    SELECT video_id, video_index 
+    SELECT video_id, video_index
     FROM PLAYLISTVIDEO 
     WHERE playlist_id = ? 
     ORDER BY video_index
@@ -314,11 +314,17 @@ class CourseSqlQuery {
         WHERE video_code = ?
     """
 
-    public static final String UPDATE_SUMMARY_ID_QUERY = """
+    public static final String UPDATE_COURSEVIDEO_SUMMARY_ID_QUERY = """
         UPDATE COURSEVIDEO
         SET summary_id = ?
         WHERE video_id = ?
         AND (summary_id = 0 OR summary_id IS NULL)
+    """
+
+    public static final String UPDATE_VIDEO_SUMMARY_ID_QUERY = """
+        UPDATE VIDEO
+        SET summary_id = ?
+        WHERE video_id = ?
     """
 
     public static final String DELETE_COURSE_QUERY = """

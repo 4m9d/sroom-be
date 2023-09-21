@@ -15,6 +15,7 @@ import com.m9d.sroom.gpt.service.GPTService;
 import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
 import com.m9d.sroom.lecture.dto.response.Section;
 import com.m9d.sroom.lecture.dto.response.VideoWatchInfo;
+import com.m9d.sroom.lecture.repository.LectureRepository;
 import com.m9d.sroom.material.model.MaterialStatus;
 import com.m9d.sroom.material.repository.MaterialRepository;
 import com.m9d.sroom.util.DateUtil;
@@ -46,15 +47,17 @@ public class CourseService {
 
     private final CourseRepository courseRepository;
     private final MaterialRepository materialRepository;
+    private final LectureRepository lectureRepository;
     private final DateUtil dateUtil;
     private final YoutubeApi youtubeApi;
     private final YoutubeUtil youtubeUtil;
 
     private final GPTService gptService;
 
-    public CourseService(CourseRepository courseRepository, MaterialRepository materialRepository, DateUtil dateUtil, YoutubeApi youtubeApi, YoutubeUtil youtubeUtil, GPTService gptService) {
+    public CourseService(CourseRepository courseRepository, MaterialRepository materialRepository, LectureRepository lectureRepository, DateUtil dateUtil, YoutubeApi youtubeApi, YoutubeUtil youtubeUtil, GPTService gptService) {
         this.courseRepository = courseRepository;
         this.materialRepository = materialRepository;
+        this.lectureRepository = lectureRepository;
         this.dateUtil = dateUtil;
         this.youtubeApi = youtubeApi;
         this.youtubeUtil = youtubeUtil;
@@ -166,10 +169,10 @@ public class CourseService {
                     section++;
                     videoCount = 1;
                 }
-                courseRepository.saveCourseVideo(memberId, courseId, lectureId, videoInfo.getVideoId(), section + 1, videoInfo.getIndex(), ENROLL_LECTURE_INDEX);
+                courseRepository.saveCourseVideo(memberId, courseId, lectureId, videoInfo.getVideoId(), section + 1, videoInfo.getIndex(), ENROLL_LECTURE_INDEX, null);
                 videoCount++;
             } else {
-                courseRepository.saveCourseVideo(memberId, courseId, lectureId, videoInfo.getVideoId(), ENROLL_DEFAULT_SECTION_NO_SCHEDULE, videoInfo.getIndex(), ENROLL_LECTURE_INDEX);
+                courseRepository.saveCourseVideo(memberId, courseId, lectureId, videoInfo.getVideoId(), ENROLL_DEFAULT_SECTION_NO_SCHEDULE, videoInfo.getIndex(), ENROLL_LECTURE_INDEX, null);
             }
         }
     }
@@ -185,11 +188,11 @@ public class CourseService {
             Date expectedEndDate = dateUtil.convertStringToDate(newLecture.getExpectedEndDate());
             courseId = courseRepository.saveCourseWithSchedule(memberId, video.getTitle(), video.getDuration(), video.getThumbnail(), newLecture.getScheduling().size(), newLecture.getDailyTargetTime(), expectedEndDate);
             lectureId = courseRepository.saveLecture(memberId, courseId, video.getVideoId(), video.getChannel(), false, ENROLL_LECTURE_INDEX);
-            courseRepository.saveCourseVideo(memberId, courseId, lectureId, video.getVideoId(), ENROLL_DEFAULT_SECTION_SCHEDULE, ENROLL_VIDEO_INDEX, ENROLL_LECTURE_INDEX);
+            courseRepository.saveCourseVideo(memberId, courseId, lectureId, video.getVideoId(), ENROLL_DEFAULT_SECTION_SCHEDULE, ENROLL_VIDEO_INDEX, ENROLL_LECTURE_INDEX, video.getSummaryId());
         } else {
             courseId = courseRepository.saveCourse(memberId, video.getTitle(), video.getDuration(), video.getThumbnail());
             lectureId = courseRepository.saveLecture(memberId, courseId, video.getVideoId(), video.getChannel(), false, ENROLL_LECTURE_INDEX);
-            courseRepository.saveCourseVideo(memberId, courseId, lectureId, video.getVideoId(), ENROLL_DEFAULT_SECTION_NO_SCHEDULE, ENROLL_VIDEO_INDEX, ENROLL_LECTURE_INDEX);
+            courseRepository.saveCourseVideo(memberId, courseId, lectureId, video.getVideoId(), ENROLL_DEFAULT_SECTION_NO_SCHEDULE, ENROLL_VIDEO_INDEX, ENROLL_LECTURE_INDEX, video.getSummaryId());
         }
 
         return EnrolledCourseInfo.builder()
@@ -339,8 +342,9 @@ public class CourseService {
         int videoIndex = lastVideoIndex + 1;
 
         for (Video video : videoList) {
-            courseRepository.saveCourseVideo(course.getMemberId(), course.getCourseId(), lectureId, video.getVideoId(), ENROLL_DEFAULT_SECTION_NO_SCHEDULE, videoIndex, lectureIndex);
-            videoIndex++;
+            courseRepository.saveCourseVideo(course.getMemberId(), course.getCourseId(), lectureId, video.getVideoId(),
+                    ENROLL_DEFAULT_SECTION_NO_SCHEDULE, videoIndex++, lectureIndex,
+                    lectureRepository.getVideoById(video.getVideoId()).getSummaryId());
         }
     }
 
@@ -365,7 +369,7 @@ public class CourseService {
         } else {
             result = CompletableFuture.supplyAsync(() -> {
                 Video video = youtubeUtil.getVideoWithBlocking(videoCode);
-                Long videoId = videoOptional.isPresent() ? updateVideo(videoOptional.get()) : courseRepository.saveVideo(video);
+                Long videoId = videoOptional.isPresent() ? updateVideo(video) : courseRepository.saveVideo(video);
                 video.setVideoId(videoId);
                 return video;
             });
@@ -402,7 +406,7 @@ public class CourseService {
         List<Video> enrolledVideoList = courseRepository.getVideoListByCourseId(course.getCourseId());
         int lastVideoIndex = enrolledVideoList.get(enrolledVideoList.size() - 1).getIndex();
 
-        courseRepository.saveCourseVideo(course.getMemberId(), course.getCourseId(), lectureId, video.getVideoId(), ENROLL_DEFAULT_SECTION_NO_SCHEDULE, lastVideoIndex + 1, lectureIndex);
+        courseRepository.saveCourseVideo(course.getMemberId(), course.getCourseId(), lectureId, video.getVideoId(), ENROLL_DEFAULT_SECTION_NO_SCHEDULE, lastVideoIndex + 1, lectureIndex, video.getSummaryId());
     }
 
     private void scheduleVideos(Course course) {

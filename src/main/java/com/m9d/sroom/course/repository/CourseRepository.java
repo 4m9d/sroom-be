@@ -99,8 +99,8 @@ public class CourseRepository {
         return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
     }
 
-    public void saveCourseVideo(Long memberId, Long courseId, Long lectureId, Long videoId, int section, int videoIndex, int lectureIndex) {
-        jdbcTemplate.update(SAVE_COURSE_VIDEO_QUERY, memberId, courseId, lectureId, videoId, section, videoIndex, lectureIndex);
+    public void saveCourseVideo(Long memberId, Long courseId, Long lectureId, Long videoId, int section, int videoIndex, int lectureIndex, Long summaryId) {
+        jdbcTemplate.update(SAVE_COURSE_VIDEO_QUERY, memberId, courseId, lectureId, videoId, section, videoIndex, lectureIndex, summaryId);
     }
 
     public Long getCourseIdByLectureId(Long lectureId) {
@@ -149,6 +149,7 @@ public class CourseRepository {
                     .title(rs.getString("title"))
                     .updatedAt(rs.getTimestamp("updated_at"))
                     .publishedAt(rs.getTimestamp("published_at"))
+                    .summaryId(rs.getLong("summary_id"))
                     .build(), lectureCode);
             return Optional.ofNullable(video);
         } catch (EmptyResultDataAccessException e) {
@@ -416,7 +417,8 @@ public class CourseRepository {
     }
 
     public void updateSummaryId(Long videoId, Long summaryId) {
-        jdbcTemplate.update(UPDATE_SUMMARY_ID_QUERY, summaryId, videoId);
+        jdbcTemplate.update(UPDATE_COURSEVIDEO_SUMMARY_ID_QUERY, summaryId, videoId);
+        jdbcTemplate.update(UPDATE_VIDEO_SUMMARY_ID_QUERY, summaryId, videoId);
     }
 
     public void deleteCourseById(Long courseId) {
