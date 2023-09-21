@@ -400,16 +400,15 @@ public class CourseServiceV2 {
                 .max()
                 .orElse(0) + 1;
 
-        List<PlaylistVideo> playlistVideoList = playlistVideoRepository.getListByPlaylistId(playlistId);
-
-        for (PlaylistVideo playlistVideo : playlistVideoList) {
+        for (Video video : videoRepository.getListByPlaylistId(playlistId)) {
             courseVideoRepository.save(CourseVideo.builder()
                     .memberId(course.getMemberId())
                     .courseId(course.getCourseId())
-                    .videoId(playlistVideo.getVideoId())
+                    .videoId(video.getVideoId())
                     .section(ENROLL_DEFAULT_SECTION_NO_SCHEDULE)
                     .videoIndex(videoIndex++)
                     .lectureIndex(lectureIndex)
+                    .summaryId(video.getSummaryId())
                     .build());
         }
     }
@@ -462,7 +461,7 @@ public class CourseServiceV2 {
                 .channel(video.getChannel())
                 .build());
 
-        saveCourseVideo(course, video.getVideoId(), lastLectureIndex + 1);
+        saveCourseVideo(course, video, lastLectureIndex + 1);
 
         if (course.isScheduled()) {
             scheduleVideos(course);
@@ -477,7 +476,7 @@ public class CourseServiceV2 {
                 .build();
     }
 
-    private void saveCourseVideo(Course course, Long videoId, int lectureIndex) {
+    private void saveCourseVideo(Course course, Video video, int lectureIndex) {
         int lastVideoIndex = courseVideoRepository.getListByCourseId(course.getCourseId()).stream()
                 .mapToInt(CourseVideo::getVideoIndex)
                 .max()
@@ -486,10 +485,11 @@ public class CourseServiceV2 {
         courseVideoRepository.save(CourseVideo.builder()
                 .memberId(course.getMemberId())
                 .courseId(course.getCourseId())
-                .videoId(videoId)
+                .videoId(video.getVideoId())
                 .section(ENROLL_DEFAULT_SECTION_NO_SCHEDULE)
                 .videoIndex(lastVideoIndex + 1)
                 .lectureIndex(lectureIndex)
+                .summaryId(video.getSummaryId())
                 .build());
     }
 
