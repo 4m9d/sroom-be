@@ -8,7 +8,7 @@ import java.util.Date;
 @Repository
 public class CourseJdbcRepositoryImpl implements CourseRepository{
     @Override
-    public Long save(Course course) {
+    public Course save(Course course) {
         return null;
     }
 

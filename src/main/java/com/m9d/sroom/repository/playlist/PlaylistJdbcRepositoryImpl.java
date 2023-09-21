@@ -9,7 +9,7 @@ import java.util.Set;
 @Repository
 public class PlaylistJdbcRepositoryImpl implements PlaylistRepository{
     @Override
-    public Long save(Playlist playlist) {
+    public Playlist save(Playlist playlist) {
         return null;
     }
 
@@ -19,7 +19,7 @@ public class PlaylistJdbcRepositoryImpl implements PlaylistRepository{
     }
 
     @Override
-    public Long updateById(Long playlistId, Playlist playlist) {
+    public Playlist updateById(Long playlistId, Playlist playlist) {
         return null;
     }
 

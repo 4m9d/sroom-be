@@ -104,7 +104,7 @@ public class YoutubeUtil {
                 .channel(itemVo.getSnippet().getChannelTitle())
                 .description(itemVo.getSnippet().getDescription())
                 .publishedAt(dateUtil.convertISOToTimestamp(itemVo.getSnippet().getPublishedAt()))
-                .lectureCount(itemVo.getContentDetails().getItemCount())
+                .videoCount(itemVo.getContentDetails().getItemCount())
                 .build();
     }
 

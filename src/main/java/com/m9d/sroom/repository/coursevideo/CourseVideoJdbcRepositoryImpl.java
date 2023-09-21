@@ -1,7 +1,9 @@
 package com.m9d.sroom.repository.coursevideo;
 
+import com.m9d.sroom.course.dto.VideoInfoForSchedule;
 import com.m9d.sroom.global.mapper.CourseVideo;
 import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
+import com.m9d.sroom.lecture.dto.response.VideoWatchInfo;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -51,6 +53,21 @@ public class CourseVideoJdbcRepositoryImpl implements CourseVideoRepository{
 
     @Override
     public LastVideoInfo getLastByCourseId(Long courseId) {
+        return null;
+    }
+
+    @Override
+    public LastVideoInfo getLastInfoByCourseId(Long courseId) {
+        return null;
+    }
+
+    @Override
+    public List<VideoWatchInfo> getWatchInfoListByCourseIdAndSection(Long courseId, int section) {
+        return null;
+    }
+
+    @Override
+    public List<VideoInfoForSchedule> getInfoForScheduleByCourseId(Long courseId) {
         return null;
     }
 }

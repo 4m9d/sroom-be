@@ -58,4 +58,6 @@ public class Video {
 
     private boolean chapterUse;
 
+    private Integer materialStatus;
+
 }

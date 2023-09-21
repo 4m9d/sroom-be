@@ -7,11 +7,11 @@ import java.util.Set;
 
 public interface PlaylistRepository {
 
-    Long save(Playlist playlist);
+    Playlist save(Playlist playlist);
 
     Optional<Playlist> findByCode(String code);
 
-    Long updateById(Long playlistId, Playlist playlist);
+    Playlist updateById(Long playlistId, Playlist playlist);
 
     void updateDurationById(Long playlistId, int duration);
 

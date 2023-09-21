@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface LectureRepository {
 
-    Long save(Lecture lecture);
+    Lecture save(Lecture lecture);
 
     void deleteByCourseId(Long courseId);
 

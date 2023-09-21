@@ -8,13 +8,13 @@ import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.course.dto.response.MyCourses;
 import com.m9d.sroom.course.exception.CourseNotMatchException;
-import com.m9d.sroom.course.model.PlaylistPageResult;
+import com.m9d.sroom.course.dto.PlaylistPageResult;
 import com.m9d.sroom.course.repository.CourseRepository;
 import com.m9d.sroom.course.dto.response.CourseDetail;
 import com.m9d.sroom.gpt.service.GPTService;
 import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
 import com.m9d.sroom.lecture.dto.response.Section;
-import com.m9d.sroom.lecture.dto.response.VideoBrief;
+import com.m9d.sroom.lecture.dto.response.VideoWatchInfo;
 import com.m9d.sroom.material.model.MaterialStatus;
 import com.m9d.sroom.material.repository.MaterialRepository;
 import com.m9d.sroom.util.DateUtil;
@@ -169,7 +169,7 @@ public class CourseService {
                 courseRepository.saveCourseVideo(memberId, courseId, lectureId, videoInfo.getVideoId(), section + 1, videoInfo.getIndex(), ENROLL_LECTURE_INDEX);
                 videoCount++;
             } else {
-                courseRepository.saveCourseVideo(memberId, courseId, lectureId, videoInfo.getVideoId(), ENROLL_DEFAULT_SECTION, videoInfo.getIndex(), ENROLL_LECTURE_INDEX);
+                courseRepository.saveCourseVideo(memberId, courseId, lectureId, videoInfo.getVideoId(), ENROLL_DEFAULT_SECTION_NO_SCHEDULE, videoInfo.getIndex(), ENROLL_LECTURE_INDEX);
             }
         }
     }
@@ -189,7 +189,7 @@ public class CourseService {
         } else {
             courseId = courseRepository.saveCourse(memberId, video.getTitle(), video.getDuration(), video.getThumbnail());
             lectureId = courseRepository.saveLecture(memberId, courseId, video.getVideoId(), video.getChannel(), false, ENROLL_LECTURE_INDEX);
-            courseRepository.saveCourseVideo(memberId, courseId, lectureId, video.getVideoId(), ENROLL_DEFAULT_SECTION, ENROLL_VIDEO_INDEX, ENROLL_LECTURE_INDEX);
+            courseRepository.saveCourseVideo(memberId, courseId, lectureId, video.getVideoId(), ENROLL_DEFAULT_SECTION_NO_SCHEDULE, ENROLL_VIDEO_INDEX, ENROLL_LECTURE_INDEX);
         }
 
         return EnrolledCourseInfo.builder()
@@ -240,7 +240,7 @@ public class CourseService {
             }
             playlist.setPlaylistId(playlistId);
             courseRepository.deletePlaylistVideo(playlistId);
-            int playlistDuration = putPlaylistItemAndGetPlaylistDuration(playlistCode, playlistId, playlist.getLectureCount());
+            int playlistDuration = putPlaylistItemAndGetPlaylistDuration(playlistCode, playlistId, playlist.getVideoCount());
             courseRepository.updatePlaylistDuration(playlistId, playlistDuration);
             playlist.setDuration(playlistDuration);
         }
@@ -339,7 +339,7 @@ public class CourseService {
         int videoIndex = lastVideoIndex + 1;
 
         for (Video video : videoList) {
-            courseRepository.saveCourseVideo(course.getMemberId(), course.getCourseId(), lectureId, video.getVideoId(), ENROLL_DEFAULT_SECTION, videoIndex, lectureIndex);
+            courseRepository.saveCourseVideo(course.getMemberId(), course.getCourseId(), lectureId, video.getVideoId(), ENROLL_DEFAULT_SECTION_NO_SCHEDULE, videoIndex, lectureIndex);
             videoIndex++;
         }
     }
@@ -402,7 +402,7 @@ public class CourseService {
         List<Video> enrolledVideoList = courseRepository.getVideoListByCourseId(course.getCourseId());
         int lastVideoIndex = enrolledVideoList.get(enrolledVideoList.size() - 1).getIndex();
 
-        courseRepository.saveCourseVideo(course.getMemberId(), course.getCourseId(), lectureId, video.getVideoId(), ENROLL_DEFAULT_SECTION, lastVideoIndex + 1, lectureIndex);
+        courseRepository.saveCourseVideo(course.getMemberId(), course.getCourseId(), lectureId, video.getVideoId(), ENROLL_DEFAULT_SECTION_NO_SCHEDULE, lastVideoIndex + 1, lectureIndex);
     }
 
     private void scheduleVideos(Course course) {
@@ -454,7 +454,7 @@ public class CourseService {
                 .sum();
         int completedVideoCount = sections.stream()
                 .mapToInt(section -> (int) section.getVideos().stream()
-                        .filter(VideoBrief::isCompleted)
+                        .filter(VideoWatchInfo::isCompleted)
                         .count())
                 .sum();
         int progress = (int) ((double) currentDuration / course.getDuration() * 100);
@@ -506,21 +506,21 @@ public class CourseService {
     }
 
     private Section createSection(Long courseId, int section) {
-        List<VideoBrief> videoBriefList = courseRepository.getVideoBrief(courseId, section);
-        int weekDuration = videoBriefList.stream()
-                .mapToInt(VideoBrief::getVideoDuration)
+        List<VideoWatchInfo> videoWatchInfoList = courseRepository.getVideoBrief(courseId, section);
+        int weekDuration = videoWatchInfoList.stream()
+                .mapToInt(VideoWatchInfo::getVideoDuration)
                 .sum();
-        int currentWeekDuration = videoBriefList.stream()
+        int currentWeekDuration = videoWatchInfoList.stream()
                 .mapToInt(vb -> vb.isCompleted() ? vb.getVideoDuration() : vb.getLastViewDuration())
                 .sum();
-        boolean completed = videoBriefList.stream()
-                .allMatch(VideoBrief::isCompleted);
+        boolean completed = videoWatchInfoList.stream()
+                .allMatch(VideoWatchInfo::isCompleted);
         return Section.builder()
                 .section(section)
                 .currentWeekDuration(currentWeekDuration)
                 .completed(completed)
                 .weekDuration(weekDuration)
-                .videos(videoBriefList)
+                .videos(videoWatchInfoList)
                 .build();
     }
 }

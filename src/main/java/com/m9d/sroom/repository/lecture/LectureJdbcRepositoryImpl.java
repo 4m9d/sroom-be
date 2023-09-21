@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public class LectureJdbcRepositoryImpl implements LectureRepository{
     @Override
-    public Long save(Lecture lecture) {
+    public Lecture save(Lecture lecture) {
         return null;
     }
 

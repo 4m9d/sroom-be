@@ -130,7 +130,7 @@ public class LectureService {
         if (isPlaylist) {
             lectureCode = item.getId().getPlaylistId();
             Playlist playlist = getSearchedPlaylistLast(lectureCode);
-            videoCount = playlist.getLectureCount();
+            videoCount = playlist.getVideoCount();
             description = playlist.getDescription();
         } else {
             lectureCode = item.getId().getVideoId();
@@ -168,7 +168,7 @@ public class LectureService {
             playlist = Playlist.builder()
                     .playlistCode(lectureCode)
                     .description(playlistVo.getItems().get(FIRST_INDEX).getSnippet().getDescription())
-                    .lectureCount(playlistVo.getItems().get(FIRST_INDEX).getContentDetails().getItemCount())
+                    .videoCount(playlistVo.getItems().get(FIRST_INDEX).getContentDetails().getItemCount())
                     .build();
         }
 

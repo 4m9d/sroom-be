@@ -4,7 +4,7 @@ import com.m9d.sroom.global.mapper.Course;
 
 public interface CourseRepository {
 
-    Long save(Course course);
+    Course save(Course course);
 
     Course getById(Long courseId);
 

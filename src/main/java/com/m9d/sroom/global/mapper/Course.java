@@ -4,7 +4,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.sql.Timestamp;
 import java.util.Date;
 
 @Getter @Setter
@@ -25,11 +24,11 @@ public class Course {
 
     private int duration;
 
-    private Timestamp expectedEndTime;
+    private Date expectedEndDate;
 
-    private int dailyTargetTime;
+    private Integer dailyTargetTime;
 
-    private int weeks;
+    private Integer weeks;
 
     private boolean scheduled;
 

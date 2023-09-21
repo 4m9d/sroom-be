@@ -15,6 +15,8 @@ public class CourseVideo {
 
     private Long courseId;
 
+    private Long lectureId;
+
     private Long videoId;
 
     private int section;

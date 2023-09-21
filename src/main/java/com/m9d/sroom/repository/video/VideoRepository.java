@@ -8,7 +8,7 @@ import java.util.Set;
 
 public interface VideoRepository {
 
-    Long save(Video video);
+    Video save(Video video);
 
     Video getByCode(String videoCode);
 
@@ -16,7 +16,7 @@ public interface VideoRepository {
 
     Optional<Video> findById(Long videoId);
 
-    Long update(Video video);
+    Video updateById(Long videoId, Video video);
 
     void updateMaterialStatusByCode(String videoCode, int materialStatus);
 

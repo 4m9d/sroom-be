@@ -10,7 +10,7 @@ import java.util.Set;
 @Repository
 public class VideoJdbcRepositoryImpl implements VideoRepository{
     @Override
-    public Long save(Video video) {
+    public Video save(Video video) {
         return null;
     }
 
@@ -30,7 +30,7 @@ public class VideoJdbcRepositoryImpl implements VideoRepository{
     }
 
     @Override
-    public Long update(Video video) {
+    public Video updateById(Long videoId, Video video) {
         return null;
     }
 

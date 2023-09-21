@@ -1,7 +1,9 @@
 package com.m9d.sroom.repository.coursevideo;
 
+import com.m9d.sroom.course.dto.VideoInfoForSchedule;
 import com.m9d.sroom.global.mapper.CourseVideo;
 import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
+import com.m9d.sroom.lecture.dto.response.VideoWatchInfo;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,4 +26,10 @@ public interface CourseVideoRepository {
     Long getIdByCourseIdAndPrevIndex(Long courseId, int videoIndex);
 
     LastVideoInfo getLastByCourseId(Long courseId);
+
+    LastVideoInfo getLastInfoByCourseId(Long courseId);
+
+    List<VideoWatchInfo> getWatchInfoListByCourseIdAndSection(Long courseId, int section);
+
+    List<VideoInfoForSchedule> getInfoForScheduleByCourseId(Long courseId);
 }
