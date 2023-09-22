@@ -18,9 +18,5 @@ public interface VideoRepository {
 
     Video updateById(Long videoId, Video video);
 
-    void updateMaterialStatusByCode(String videoCode, int materialStatus);
-
-    Set<String> getCodeListByMemberId(Long memberId);
-
     List<Video> getListByPlaylistId(Long playlistId);
 }
