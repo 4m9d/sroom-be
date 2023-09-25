@@ -8,7 +8,7 @@ public interface CourseRepository {
 
     Course getById(Long courseId);
 
-    void updateById(Long courseId, Course course);
+    Course updateById(Long courseId, Course course);
 
     void deleteById(Long courseId);
 

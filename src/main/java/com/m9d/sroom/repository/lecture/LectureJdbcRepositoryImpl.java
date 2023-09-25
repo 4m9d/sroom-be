@@ -1,16 +1,37 @@
 package com.m9d.sroom.repository.lecture;
 
 import com.m9d.sroom.global.mapper.Lecture;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
 
 @Repository
-public class LectureJdbcRepositoryImpl implements LectureRepository{
+public class LectureJdbcRepositoryImpl implements LectureRepository {
+
+    private final JdbcTemplate jdbcTemplate;
+
+    public LectureJdbcRepositoryImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     @Override
+    @Transactional
     public Lecture save(Lecture lecture) {
-        return null;
+        jdbcTemplate.update(LectureRepositorySql.SAVE,
+                lecture.getCourseId(),
+                lecture.getSourceId(),
+                lecture.getPlaylist(),
+                lecture.getLectureIndex(),
+                lecture.getMemberId(),
+                lecture.getChannel());
+        return getById(jdbcTemplate.queryForObject(LectureRepositorySql.GET_LAST_ID, Long.class));
+    }
+
+    public Lecture getById(Long lectureId) {
+        return jdbcTemplate.queryForObject(LectureRepositorySql.GET_BY_ID, Lecture.getRowMapper(), lectureId);
     }
 
     @Override
@@ -25,7 +46,7 @@ public class LectureJdbcRepositoryImpl implements LectureRepository{
 
     @Override
     public List<Lecture> getListByCourseId(Long courseId) {
-        return null;
+        return jdbcTemplate.query(LectureRepositorySql.GET_LIST_BY_COURSE_ID, Lecture.getRowMapper(), courseId);
     }
 
     @Override

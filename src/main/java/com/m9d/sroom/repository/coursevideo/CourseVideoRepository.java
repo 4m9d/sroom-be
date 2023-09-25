@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface CourseVideoRepository {
 
-    void save(CourseVideo courseVideo);
+    CourseVideo save(CourseVideo courseVideo);
 
     void updateById(Long id, CourseVideo courseVideo);
 

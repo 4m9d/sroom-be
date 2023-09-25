@@ -26,6 +26,7 @@ import com.m9d.sroom.util.youtube.vo.playlistitem.PlaylistVideoItemVo;
 import com.m9d.sroom.util.youtube.vo.playlistitem.PlaylistVideoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
@@ -40,6 +41,7 @@ import static com.m9d.sroom.util.DateUtil.SECONDS_IN_MINUTE;
 import static com.m9d.sroom.util.youtube.YoutubeUtil.DEFAULT_INDEX_COUNT;
 
 @Slf4j
+@Service
 public class CourseServiceV2 {
     private final VideoRepository videoRepository;
     private final CourseRepository courseRepository;
@@ -113,18 +115,16 @@ public class CourseServiceV2 {
         return unfinishedCourseCount;
     }
 
-    public void requestToFastApi(String videoCode) {
-        Video video = videoRepository.getByCode(videoCode);
-        log.info("request to AI server successfully. videoCode = {}, title = {}", videoCode, video.getTitle());
+    public void requestToFastApi(Video video) {
+        log.info("request to AI server successfully. videoCode = {}, title = {}", video.getVideoCode(), video.getTitle());
 
         if (video.getMaterialStatus() == null || video.getMaterialStatus() == MaterialStatus.NO_REQUEST.getValue()) {
-            gptService.requestToFastApi(videoCode);
+            gptService.requestToFastApi(video.getVideoCode());
             video.setMaterialStatus(MaterialStatus.CREATING.getValue());
             videoRepository.updateById(video.getVideoId(), video);
         }
     }
 
-    @Transactional
     public EnrolledCourseInfo enrollCourse(Long memberId, NewLecture newLecture, boolean useSchedule) {
         log.info("course inserted. member = {}, lectureCode = {}", memberId, newLecture.getLectureCode());
         if (youtubeUtil.checkIfPlaylist(newLecture.getLectureCode())) {
@@ -171,8 +171,11 @@ public class CourseServiceV2 {
 
         return courseRepository.save(Course.builder()
                 .memberId(memberId)
-                .title(playlist.getTitle())
+                .courseTitle(playlist.getTitle())
                 .weeks(weeks)
+                .scheduled(useSchedule)
+                .duration(playlist.getDuration())
+                .thumbnail(playlist.getThumbnail())
                 .dailyTargetTime(dailyTargetTime)
                 .expectedEndDate(expectedEndDate)
                 .build());
@@ -186,8 +189,8 @@ public class CourseServiceV2 {
             section = ENROLL_DEFAULT_SECTION_SCHEDULE;
         }
 
-        List<Video> videoList = videoRepository.getListByPlaylistId(playlistId);
-        for (Video video : videoList) {
+        int videoIndex = 1;
+        for (Video video : videoRepository.getListByPlaylistId(playlistId)) {
             if (useSchedule && videoCount > newLecture.getScheduling().get(week)) {
                 week++;
                 section++;
@@ -199,7 +202,7 @@ public class CourseServiceV2 {
                     .lectureId(lectureId)
                     .videoId(video.getVideoId())
                     .section(section)
-                    .videoIndex(video.getIndex())
+                    .videoIndex(videoIndex++)
                     .lectureIndex(ENROLL_LECTURE_INDEX)
                     .build());
             videoCount++;
@@ -224,22 +227,13 @@ public class CourseServiceV2 {
 
         Course course = courseRepository.save(Course.builder()
                 .memberId(memberId)
-                .title(video.getTitle())
+                .courseTitle(video.getTitle())
                 .duration(video.getDuration())
                 .thumbnail(video.getThumbnail())
                 .scheduled(useSchedule)
                 .weeks(weeks)
                 .expectedEndDate(expectedEndDate)
                 .dailyTargetTime(dailyTargetTime)
-                .build());
-
-        courseVideoRepository.save(CourseVideo.builder()
-                .memberId(memberId)
-                .courseId(course.getCourseId())
-                .videoId(video.getVideoId())
-                .section(section)
-                .videoIndex(ENROLL_VIDEO_INDEX)
-                .lectureIndex(ENROLL_LECTURE_INDEX)
                 .build());
 
         Lecture lecture = lectureRepository.save(Lecture.builder()
@@ -249,6 +243,16 @@ public class CourseServiceV2 {
                 .channel(video.getChannel())
                 .playlist(false)
                 .lectureIndex(ENROLL_LECTURE_INDEX)
+                .build());
+
+        courseVideoRepository.save(CourseVideo.builder()
+                .memberId(memberId)
+                .courseId(course.getCourseId())
+                .videoId(video.getVideoId())
+                .section(section)
+                .videoIndex(ENROLL_VIDEO_INDEX)
+                .lectureIndex(ENROLL_LECTURE_INDEX)
+                .lectureId(lecture.getId())
                 .build());
 
         return EnrolledCourseInfo.builder()
@@ -265,7 +269,6 @@ public class CourseServiceV2 {
         }
     }
 
-    @Transactional
     public EnrolledCourseInfo addLectureInCourse(Long memberId, Long courseId, NewLecture newLecture) {
         boolean isValid = validateCourseId(memberId, courseId);
         if (!isValid) {
@@ -295,7 +298,7 @@ public class CourseServiceV2 {
             }
             playlistVideoRepository.deleteByPlaylistId(playlist.getPlaylistId());
             playlist.setDuration(putPlaylistItemAndGetPlaylistDuration(playlist));
-            return playlistRepository.save(playlist);
+            return playlistRepository.updateById(playlist.getPlaylistId(), playlist);
         }
 
     }
@@ -336,7 +339,7 @@ public class CourseServiceV2 {
             }
             CompletableFuture<Video> videoFuture = getVideoWithUpdateAsync(itemVo.getSnippet().getResourceId().getVideoId())
                     .thenApply(video -> {
-                        requestToFastApi(video.getVideoCode());
+                        requestToFastApi(video);
                         return video;
                     });
             futureVideos.add(videoFuture);
@@ -380,7 +383,7 @@ public class CourseServiceV2 {
                 .channel(playlist.getChannel())
                 .build());
 
-        saveCourseVideoList(course, playlist.getPlaylistId(), lastLectureIndex + 1);
+        saveCourseVideoList(course, playlist.getPlaylistId(), lecture.getId(), lastLectureIndex + 1);
 
         if (course.isScheduled()) {
             scheduleVideos(course);
@@ -388,13 +391,13 @@ public class CourseServiceV2 {
         course.setDuration(course.getDuration() + playlist.getDuration());
         courseRepository.updateById(course.getCourseId(), course);
         return EnrolledCourseInfo.builder()
-                .title(course.getTitle())
+                .title(course.getCourseTitle())
                 .courseId(course.getCourseId())
                 .lectureId(lecture.getId())
                 .build();
     }
 
-    private void saveCourseVideoList(Course course, Long playlistId, int lectureIndex) {
+    private void saveCourseVideoList(Course course, Long playlistId, Long lectureId, int lectureIndex) {
         int videoIndex = courseVideoRepository.getListByCourseId(course.getCourseId()).stream()
                 .mapToInt(CourseVideo::getVideoIndex)
                 .max()
@@ -408,6 +411,7 @@ public class CourseServiceV2 {
                     .section(ENROLL_DEFAULT_SECTION_NO_SCHEDULE)
                     .videoIndex(videoIndex++)
                     .lectureIndex(lectureIndex)
+                    .lectureId(lectureId)
                     .summaryId(video.getSummaryId())
                     .build());
         }
@@ -415,7 +419,7 @@ public class CourseServiceV2 {
 
     private Video getVideoAndRequestToAiServer(String videoCode) {
         Video video = getVideoWithUpdateAsync(videoCode).join();
-        requestToFastApi(video.getVideoCode());
+        requestToFastApi(video);
         return video;
     }
 
@@ -461,7 +465,7 @@ public class CourseServiceV2 {
                 .channel(video.getChannel())
                 .build());
 
-        saveCourseVideo(course, video, lastLectureIndex + 1);
+        saveCourseVideo(course, video, lecture.getId(), lastLectureIndex + 1);
 
         if (course.isScheduled()) {
             scheduleVideos(course);
@@ -476,7 +480,7 @@ public class CourseServiceV2 {
                 .build();
     }
 
-    private void saveCourseVideo(Course course, Video video, int lectureIndex) {
+    private void saveCourseVideo(Course course, Video video, Long lectureId, int lectureIndex) {
         int lastVideoIndex = courseVideoRepository.getListByCourseId(course.getCourseId()).stream()
                 .mapToInt(CourseVideo::getVideoIndex)
                 .max()
@@ -489,6 +493,7 @@ public class CourseServiceV2 {
                 .section(ENROLL_DEFAULT_SECTION_NO_SCHEDULE)
                 .videoIndex(lastVideoIndex + 1)
                 .lectureIndex(lectureIndex)
+                .lectureId(lectureId)
                 .summaryId(video.getSummaryId())
                 .build());
     }
@@ -555,7 +560,7 @@ public class CourseServiceV2 {
                 .sum();
         return CourseDetail.builder()
                 .courseId(courseId)
-                .courseTitle(course.getTitle())
+                .courseTitle(course.getCourseTitle())
                 .useSchedule(course.isScheduled())
                 .channels(String.join(", ", channels))
                 .courseDuration(course.getDuration())

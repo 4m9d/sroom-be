@@ -9,6 +9,8 @@ public interface PlaylistRepository {
 
     Playlist save(Playlist playlist);
 
+    Playlist getById(Long playlistId);
+
     Optional<Playlist> findByCode(String code);
 
     Playlist updateById(Long playlistId, Playlist playlist);

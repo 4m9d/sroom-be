@@ -328,7 +328,7 @@ public class CourseService {
         }
         courseRepository.updateCourseDuration(course.getCourseId(), course.getDuration() + playlist.getDuration());
         return EnrolledCourseInfo.builder()
-                .title(course.getTitle())
+                .title(course.getCourseTitle())
                 .courseId(course.getCourseId())
                 .lectureId(lectureId)
                 .build();
@@ -465,7 +465,7 @@ public class CourseService {
 
         return CourseDetail.builder()
                 .courseId(courseId)
-                .courseTitle(course.getTitle())
+                .courseTitle(course.getCourseTitle())
                 .useSchedule(course.isScheduled())
                 .channels(String.join(", ", channels))
                 .courseDuration(course.getDuration())

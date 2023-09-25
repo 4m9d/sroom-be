@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Repository
 public class VideoJdbcRepositoryImpl implements VideoRepository {
@@ -67,7 +66,7 @@ public class VideoJdbcRepositoryImpl implements VideoRepository {
                 video.getAccumulatedRating(),
                 video.getReviewCount(),
                 video.getSummaryId(),
-                video.isAvailable()
+                video.isAvailable(),
                 video.getDescription(),
                 video.isChapterUse(),
                 video.getTitle(),

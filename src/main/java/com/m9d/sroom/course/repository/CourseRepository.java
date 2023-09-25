@@ -202,7 +202,7 @@ public class CourseRepository {
         return jdbcTemplate.queryForObject(GET_COURSE_QUERY, ((rs, rowNum) -> Course.builder()
                 .courseId(courseId)
                 .memberId(rs.getLong("member_id"))
-                .title(rs.getString("course_title"))
+                .courseTitle(rs.getString("course_title"))
                 .duration(rs.getInt("course_duration"))
                 .scheduled(rs.getBoolean("is_scheduled"))
                 .thumbnail(rs.getString("thumbnail"))
