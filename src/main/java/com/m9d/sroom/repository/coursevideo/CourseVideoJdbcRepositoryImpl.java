@@ -1,6 +1,7 @@
 package com.m9d.sroom.repository.coursevideo;
 
 import com.m9d.sroom.course.dto.VideoInfoForSchedule;
+import com.m9d.sroom.course.sql.CourseSqlQuery;
 import com.m9d.sroom.global.mapper.CourseVideo;
 import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
 import com.m9d.sroom.lecture.dto.response.VideoWatchInfo;
@@ -59,12 +60,18 @@ public class CourseVideoJdbcRepositoryImpl implements CourseVideoRepository {
 
     @Override
     public Integer countByCourseId(Long courseId) {
-        return null;
+        return jdbcTemplate.queryForObject(CourseVideoRepositorySql.COOUNT_BY_COURSE_ID, (rs, rowNum) -> rs.getInt("count"), courseId);
     }
 
     @Override
     public Integer countCompletedByCourseId(Long courseId) {
-        return null;
+        return jdbcTemplate.queryForObject(CourseVideoRepositorySql.COMPLETED_COUNT_BY_COURSE_ID, (rs, rowNum) -> rs.getInt("completed_count"), courseId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteByCourseId(Long courseId) {
+        jdbcTemplate.update(CourseVideoRepositorySql.DELETE_BY_COURSE_ID, courseId);
     }
 
     @Override

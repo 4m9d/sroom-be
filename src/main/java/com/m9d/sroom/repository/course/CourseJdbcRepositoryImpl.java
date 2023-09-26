@@ -5,6 +5,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
+import java.util.List;
+
 @Repository
 public class CourseJdbcRepositoryImpl implements CourseRepository {
 
@@ -54,7 +57,27 @@ public class CourseJdbcRepositoryImpl implements CourseRepository {
     }
 
     @Override
+    @Transactional
     public void deleteById(Long courseId) {
+        jdbcTemplate.update(CourseRepositorySql.DELETE_BY_ID, courseId);
+    }
+
+    @Override
+    public List<Course> getByMemberId(Long memberId) {
+        return jdbcTemplate.query(CourseRepositorySql.GET_BY_MEMBER_ID, (rs, rowNum) -> Course.builder()
+                .courseId(rs.getLong("course_id"))
+                .courseTitle(rs.getString("course_title"))
+                .duration(rs.getInt("course_duration"))
+                .lastViewTime(rs.getTimestamp("last_view_time"))
+                .progress(rs.getInt("progress"))
+                .thumbnail(rs.getString("thumbnail"))
+                .scheduled(rs.getBoolean("is_scheduled"))
+                .weeks(rs.getInt("weeks"))
+                .expectedEndDate(rs.getDate("expected_end_date"))
+                .dailyTargetTime(rs.getInt("daily_target_time"))
+                .startDate(rs.getDate("start_date"))
+                .build()
+                , memberId);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.m9d.sroom.repository.lecture;
 
+import com.m9d.sroom.course.sql.CourseSqlQuery;
 import com.m9d.sroom.global.mapper.Lecture;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -35,13 +36,14 @@ public class LectureJdbcRepositoryImpl implements LectureRepository {
     }
 
     @Override
+    @Transactional
     public void deleteByCourseId(Long courseId) {
-
+        jdbcTemplate.update(LectureRepositorySql.DELETE_BY_COURSE_ID, courseId);
     }
 
     @Override
     public HashSet<String> getChannelSetByCourseId(Long courseId) {
-        return null;
+        return new HashSet<>(jdbcTemplate.query(LectureRepositorySql.GET_CHANNELS_BY_COURSE_ID, (rs, rowNum) -> rs.getString("channel"), courseId));
     }
 
     @Override

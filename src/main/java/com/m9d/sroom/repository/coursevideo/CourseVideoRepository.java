@@ -19,9 +19,12 @@ public interface CourseVideoRepository {
     List<CourseVideo> getListByCourseId(Long courseId);
 
     Optional<CourseVideo> findById(Long courseVideoId);
+
     Integer countByCourseId(Long courseId);
 
     Integer countCompletedByCourseId(Long courseId);
+
+    void deleteByCourseId(Long courseId);
 
     Long getIdByCourseIdAndPrevIndex(Long courseId, int videoIndex);
 

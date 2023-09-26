@@ -27,4 +27,17 @@ class CourseRepositorySql {
         is_scheduled = ?, weeks = ?, expected_end_date = ?, daily_target_time = ?, start_date = ?
         WHERE course_id = ?
     """
+
+    public static final String DELETE_BY_ID = """
+        DELETE FROM COURSE
+        WHERE course_id = ?
+    """
+
+    public static final String GET_BY_MEMBER_ID = """
+        SELECT
+        course_id, member_id, course_title, course_duration, last_view_time, progress, thumbnail, is_scheduled, weeks,
+        expected_end_date, daily_target_time, start_date
+        FROM COURSE
+        WHERE member_id = ?
+    """
 }

@@ -5,6 +5,7 @@ import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.course.dto.response.CourseDetail;
 import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
+import com.m9d.sroom.course.dto.response.MyCourses;
 import com.m9d.sroom.course.exception.CourseNotMatchException;
 import com.m9d.sroom.course.dto.PlaylistPageResult;
 import com.m9d.sroom.global.mapper.*;
@@ -13,6 +14,7 @@ import com.m9d.sroom.lecture.dto.response.Section;
 import com.m9d.sroom.lecture.dto.response.VideoWatchInfo;
 import com.m9d.sroom.material.model.MaterialStatus;
 import com.m9d.sroom.repository.course.CourseRepository;
+import com.m9d.sroom.repository.coursequiz.CourseQuizRepository;
 import com.m9d.sroom.repository.coursevideo.CourseVideoRepository;
 import com.m9d.sroom.repository.lecture.LectureRepository;
 import com.m9d.sroom.repository.playlist.PlaylistRepository;
@@ -36,8 +38,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import static com.m9d.sroom.course.constant.CourseConstant.*;
-import static com.m9d.sroom.util.DateUtil.DAYS_IN_WEEK;
-import static com.m9d.sroom.util.DateUtil.SECONDS_IN_MINUTE;
+import static com.m9d.sroom.util.DateUtil.*;
 import static com.m9d.sroom.util.youtube.YoutubeUtil.DEFAULT_INDEX_COUNT;
 
 @Slf4j
@@ -46,6 +47,7 @@ public class CourseServiceV2 {
     private final VideoRepository videoRepository;
     private final CourseRepository courseRepository;
     private final CourseVideoRepository courseVideoRepository;
+    private final CourseQuizRepository courseQuizRepository;
     private final LectureRepository lectureRepository;
     private final PlaylistRepository playlistRepository;
     private final PlaylistVideoRepository playlistVideoRepository;
@@ -56,12 +58,13 @@ public class CourseServiceV2 {
     private final GPTService gptService;
 
     public CourseServiceV2(VideoRepository videoRepository, CourseRepository courseRepository,
-                           CourseVideoRepository courseVideoRepository, LectureRepository lectureRepository,
+                           CourseVideoRepository courseVideoRepository, CourseQuizRepository courseQuizRepository, LectureRepository lectureRepository,
                            PlaylistRepository playlistRepository, PlaylistVideoRepository playlistVideoRepository,
                            DateUtil dateUtil, YoutubeApi youtubeApi, YoutubeUtil youtubeUtil, GPTService gptService) {
         this.videoRepository = videoRepository;
         this.courseRepository = courseRepository;
         this.courseVideoRepository = courseVideoRepository;
+        this.courseQuizRepository = courseQuizRepository;
         this.lectureRepository = lectureRepository;
         this.playlistRepository = playlistRepository;
         this.playlistVideoRepository = playlistVideoRepository;
@@ -72,37 +75,46 @@ public class CourseServiceV2 {
     }
 
 
-//    public MyCourses getMyCourses(Long memberId) {
-//
-//        List<CourseInfo> courseInfoList = courseRepository.getCourseListByMemberId(memberId);
-//        int unfinishedCourseCount = getUnfinishedCourseCount(courseInfoList);
-//
-//        int courseCount = courseInfoList.size();
-//
-//        int completionRate = (int) ((float) (courseCount - unfinishedCourseCount) / courseCount * 100);
-//
-//        for (int i = 0; i < courseInfoList.size(); i++) {
-//
-//            Long courseId = courseInfoList.get(i).getCourseId();
-//            HashSet<String> channels = courseRepository.getChannelSetByCourseId(courseId);
-//            int lectureCount = courseRepository.getTotalLectureCountByCourseId(courseId);
-//            int completedLectureCount = courseRepository.getCompletedVideoCountByCourseId(courseId);
-//
-//            courseInfoList.get(i).setChannels(String.join(", ", channels));
-//            courseInfoList.get(i).setTotalVideoCount(lectureCount);
-//            courseInfoList.get(i).setCompletedVideoCount(completedLectureCount);
-//        }
-//
-//        MyCourses myCourses = MyCourses.builder()
-//                .unfinishedCourse(unfinishedCourseCount)
-//                .completionRate(completionRate)
-//                .courses(courseInfoList)
-//                .build();
-//
-//        return myCourses;
-//    }
+    public MyCourses getMyCourses(Long memberId) {
+        List<Course> courseList = courseRepository.getByMemberId(memberId);
+        List<CourseInfo> courseInfoList = new ArrayList<>();
+        int unfinishedCourseCount = getUnfinishedCourseCount(courseList);
 
-    public int getUnfinishedCourseCount(List<CourseInfo> courseInfoList) {
+        int courseCount = courseList.size();
+
+        int completionRate = (int) ((float) (courseCount - unfinishedCourseCount) / courseCount * 100);
+
+        for (int i = 0; i < courseList.size(); i++) {
+            Course course = courseList.get(i);
+
+            Long courseId = course.getCourseId();
+            HashSet<String> channels = lectureRepository.getChannelSetByCourseId(courseId);
+            int lectureCount = courseVideoRepository.countByCourseId(courseId);
+            int completedLectureCount = courseVideoRepository.countCompletedByCourseId(courseId);
+
+            CourseInfo courseInfo = CourseInfo.builder()
+                    .courseId(course.getCourseId())
+                    .courseTitle(course.getCourseTitle())
+                    .thumbnail(course.getThumbnail())
+                    .channels(String.join(", ", channels))
+                    .lastViewTime(dateFormat.format(course.getLastViewTime()))
+                    .totalVideoCount(lectureCount)
+                    .completedVideoCount(completedLectureCount)
+                    .build();
+
+            courseInfoList.add(courseInfo);
+        }
+
+        MyCourses myCourses = MyCourses.builder()
+                .unfinishedCourse(unfinishedCourseCount)
+                .completionRate(completionRate)
+                .courses(courseInfoList)
+                .build();
+
+        return myCourses;
+    }
+
+    public int getUnfinishedCourseCount(List<Course> courseInfoList) {
 
         int unfinishedCourseCount = 0;
 
@@ -574,15 +586,15 @@ public class CourseServiceV2 {
                 .build();
     }
 
-//    @Transactional
-//    public void deleteCourse(Long memberId, Long courseId) {
-//        validateCourseId(memberId, courseId);
-//
-//        courseRepository.deleteCourseById(courseId);
-//        courseRepository.deleteCourseVideoByCourseId(courseId);
-//        courseRepository.deleteLectureByCourseId(courseId);
-//        courseRepository.deleteCourseQuizByCourseId(courseId);
-//    }
+    @Transactional
+    public void deleteCourse(Long memberId, Long courseId) {
+        validateCourseId(memberId, courseId);
+
+        courseRepository.deleteById(courseId);
+        courseVideoRepository.deleteByCourseId(courseId);
+        lectureRepository.deleteByCourseId(courseId);
+        courseQuizRepository.deleteByCourseId(courseId);
+    }
 
     private boolean validateCourseId(Long memberId, Long courseId) {
         Course course = courseRepository.getById(courseId);

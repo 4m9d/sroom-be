@@ -28,6 +28,16 @@ class CourseVideoRepositorySql {
         FROM COURSEVIDEO
         WHERE course_id = ?
     """
+    public static final String COOUNT_BY_COURSE_ID = """
+        SELECT COUNT(1) as count
+        FROM COURSEVIDEO
+        WHERE course_id = ?
+    """
+    public static final String COMPLETED_COUNT_BY_COURSE_ID = """
+    SELECT COUNT(1) as completed_count
+    FROM COURSEVIDEO
+    WHERE course_id = ? AND is_complete = true
+    """
     public static final String GET_LAST_INFO_BY_COURSE_ID = """
         SELECT v.video_id, v.title, v.video_code, v.channel, cv.start_time, cv.course_video_id
         FROM COURSEVIDEO cv
@@ -54,5 +64,10 @@ class CourseVideoRepositorySql {
         JOIN VIDEO v ON cv.video_id = v.video_id 
         WHERE cv.course_id = ? 
         ORDER BY cv.video_index ASC
+    """
+
+    public static final String DELETE_BY_COURSE_ID = """
+        DELETE FROM COURSEVIDEO
+        WHERE course_id = ?
     """
 }
