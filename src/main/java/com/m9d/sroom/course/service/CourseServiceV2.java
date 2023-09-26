@@ -76,42 +76,36 @@ public class CourseServiceV2 {
 
 
     public MyCourses getMyCourses(Long memberId) {
-        List<Course> courseList = courseRepository.getLatestOrderByMemberId(memberId);
+        List<Course> latestCourseList = courseRepository.getLatestOrderByMemberId(memberId);
         List<CourseInfo> courseInfoList = new ArrayList<>();
-        int unfinishedCourseCount = getUnfinishedCourseCount(courseList);
+        int unfinishedCourseCount = getUnfinishedCourseCount(latestCourseList);
 
-        int courseCount = courseList.size();
+        int courseCount = latestCourseList.size();
 
         int completionRate = (int) ((float) (courseCount - unfinishedCourseCount) / courseCount * 100);
 
-        for (int i = 0; i < courseList.size(); i++) {
-            Course course = courseList.get(i);
+        for (Course course : latestCourseList) {
 
             Long courseId = course.getCourseId();
-            HashSet<String> channels = lectureRepository.getChannelSetByCourseId(courseId);
-            int lectureCount = courseVideoRepository.countByCourseId(courseId);
-            int completedLectureCount = courseVideoRepository.countCompletedByCourseId(courseId);
 
             CourseInfo courseInfo = CourseInfo.builder()
                     .courseId(course.getCourseId())
                     .courseTitle(course.getCourseTitle())
                     .thumbnail(course.getThumbnail())
-                    .channels(String.join(", ", channels))
+                    .channels(String.join(", ", lectureRepository.getChannelSetByCourseId(courseId)))
                     .lastViewTime(dateFormat.format(course.getLastViewTime()))
-                    .totalVideoCount(lectureCount)
-                    .completedVideoCount(completedLectureCount)
+                    .totalVideoCount(courseVideoRepository.countByCourseId(courseId))
+                    .completedVideoCount(courseVideoRepository.countCompletedByCourseId(courseId))
                     .build();
 
             courseInfoList.add(courseInfo);
         }
 
-        MyCourses myCourses = MyCourses.builder()
+        return MyCourses.builder()
                 .unfinishedCourse(unfinishedCourseCount)
                 .completionRate(completionRate)
                 .courses(courseInfoList)
                 .build();
-
-        return myCourses;
     }
 
     public int getUnfinishedCourseCount(List<Course> courseInfoList) {
