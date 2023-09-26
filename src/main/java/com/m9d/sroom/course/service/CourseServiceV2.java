@@ -76,7 +76,7 @@ public class CourseServiceV2 {
 
 
     public MyCourses getMyCourses(Long memberId) {
-        List<Course> courseList = courseRepository.getByMemberId(memberId);
+        List<Course> courseList = courseRepository.getLatestOrderByMemberId(memberId);
         List<CourseInfo> courseInfoList = new ArrayList<>();
         int unfinishedCourseCount = getUnfinishedCourseCount(courseList);
 

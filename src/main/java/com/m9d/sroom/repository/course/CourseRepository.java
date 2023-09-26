@@ -16,6 +16,8 @@ public interface CourseRepository {
 
     List<Course> getByMemberId(Long memberId);
 
+    List<Course> getLatestOrderByMemberId(Long memberId);
+
     Integer countByMemberId(Long memberId);
 
     Integer countCompletedByMemberId(Long memberId);
