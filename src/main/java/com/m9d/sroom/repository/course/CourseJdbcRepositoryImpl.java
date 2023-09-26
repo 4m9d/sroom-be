@@ -64,20 +64,7 @@ public class CourseJdbcRepositoryImpl implements CourseRepository {
 
     @Override
     public List<Course> getByMemberId(Long memberId) {
-        return jdbcTemplate.query(CourseRepositorySql.GET_BY_MEMBER_ID, (rs, rowNum) -> Course.builder()
-                        .courseId(rs.getLong("course_id"))
-                        .courseTitle(rs.getString("course_title"))
-                        .duration(rs.getInt("course_duration"))
-                        .lastViewTime(rs.getTimestamp("last_view_time"))
-                        .progress(rs.getInt("progress"))
-                        .thumbnail(rs.getString("thumbnail"))
-                        .scheduled(rs.getBoolean("is_scheduled"))
-                        .weeks(rs.getInt("weeks"))
-                        .expectedEndDate(rs.getDate("expected_end_date"))
-                        .dailyTargetTime(rs.getInt("daily_target_time"))
-                        .startDate(rs.getDate("start_date"))
-                        .build()
-                , memberId);
+        return jdbcTemplate.query(CourseRepositorySql.GET_BY_MEMBER_ID, Course.getRowMapper(), memberId);
     }
 
     @Override
