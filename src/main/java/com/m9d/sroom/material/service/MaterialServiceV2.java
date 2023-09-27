@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -108,7 +109,7 @@ public class MaterialServiceV2 {
                 quizRes.setSubmittedAnswer(submittedQuizInfoRes.getSubmittedAnswer());
                 quizRes.setCorrect(submittedQuizInfoRes.isCorrect());
                 quizRes.setScrapped(submittedQuizInfoRes.isScrapped());
-                quizRes.setSubmittedAt(DateUtil.dateFormat.format(submittedQuizInfoRes.getSubmittedTime()));
+                quizRes.setSubmittedAt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(submittedQuizInfoRes.getSubmittedTime()));
             } else {
                 quizRes.setSubmitted(false);
             }

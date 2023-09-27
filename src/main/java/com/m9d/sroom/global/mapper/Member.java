@@ -4,6 +4,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
+import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -43,4 +44,20 @@ public class Member {
 
     @Setter
     private Integer status;
+
+    public static RowMapper<Member> getRowMapper() {
+        return (rs, rowNum) -> Member.builder()
+                .memberId(rs.getLong("member_id"))
+                .memberCode(rs.getString("member_code"))
+                .memberName(rs.getString("member_name"))
+                .refreshToken(rs.getString("refresh_token"))
+                .totalSolvedCount(rs.getInt("total_solved_count"))
+                .totalCorrectCount(rs.getInt("total_correct_count"))
+                .completionRate(rs.getInt("completion_rate"))
+                .totalLearningTime(rs.getInt("total_learning_time"))
+                .signUpTime(rs.getTimestamp("sign_up_time"))
+                .status(rs.getInt("status"))
+                .bio(rs.getString("bio"))
+                .build();
+    }
 }
