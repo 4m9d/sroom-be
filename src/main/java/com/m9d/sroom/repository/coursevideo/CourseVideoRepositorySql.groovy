@@ -29,7 +29,7 @@ class CourseVideoRepositorySql {
         WHERE course_id = ?
     """
 
-    public static final String GET_BY_LECTURE_ID = """
+    public static final String GET_LIST_BY_LECTURE_ID = """
         SELECT
         course_video_id, course_id, video_id, section, video_index, start_time, is_complete, summary_id, lecture_index, 
         member_id, last_view_time, max_duration, lecture_id

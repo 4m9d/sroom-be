@@ -109,7 +109,7 @@ public class ReviewService {
 
     LectureBrief4Review getVideoLectureBrief4Review(Lecture lecture) {
 
-        int viewDuration = courseVideoRepository.getByListLectureId(lecture.getId())
+        int viewDuration = courseVideoRepository.getListByLectureId(lecture.getId())
                 .get(0)
                 .getMaxDuration();
         Video video = videoRepository.getById(lecture.getSourceId());
@@ -194,7 +194,7 @@ public class ReviewService {
     }
 
     LectureBrief4Review getVideoCountData(Long lectureId) {
-        List<CourseVideo> courseVideoList = courseVideoRepository.getByListLectureId(lectureId);
+        List<CourseVideo> courseVideoList = courseVideoRepository.getListByLectureId(lectureId);
         int completedVideoCount = (int) courseVideoList.stream()
                 .filter(CourseVideo::isComplete)
                 .count();
