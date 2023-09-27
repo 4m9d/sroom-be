@@ -9,6 +9,10 @@ public interface LectureRepository {
 
     Lecture save(Lecture lecture);
 
+    Lecture getById(Long lectureId);
+
+    Lecture updateById(Long lectureId, Lecture lecture);
+
     void deleteByCourseId(Long courseId);
 
     HashSet<String> getChannelSetByCourseId(Long courseId);

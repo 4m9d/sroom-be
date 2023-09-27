@@ -40,6 +40,11 @@ public class VideoJdbcRepositoryImpl implements VideoRepository {
     }
 
     @Override
+    public Video getById(Long videoId) {
+        return jdbcTemplate.queryForObject(VideoRepositorySql.GET_BY_ID, Video.getRowMapper(), videoId);
+    }
+
+    @Override
     public Optional<Video> findByCode(String videoCode) {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(VideoRepositorySql.GET_BY_CODE, Video.getRowMapper(), videoCode));

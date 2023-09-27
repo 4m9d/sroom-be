@@ -18,4 +18,5 @@ public interface PlaylistRepository {
     void updateDurationById(Long playlistId, int duration);
 
     Set<String> getCodeListByMemberId(Long memberId);
+
 }

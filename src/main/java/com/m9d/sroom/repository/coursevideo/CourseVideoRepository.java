@@ -18,6 +18,8 @@ public interface CourseVideoRepository {
 
     List<CourseVideo> getListByCourseId(Long courseId);
 
+    List<CourseVideo> getByListLectureId(Long lectureId);
+
     Optional<CourseVideo> findById(Long courseVideoId);
 
     Integer countByCourseId(Long courseId);

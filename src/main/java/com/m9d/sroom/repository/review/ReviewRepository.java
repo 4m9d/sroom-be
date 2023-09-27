@@ -6,7 +6,11 @@ import java.util.List;
 
 public interface ReviewRepository {
 
+    Review save(Review review);
+
+    Review getById(Long reviewId);
+
     List<Review> getListByCode(String lectureCode, int offset, int limit);
 
-
+    Review getByLectureId(Long lectureId);
 }

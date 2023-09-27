@@ -1,45 +1,53 @@
 package com.m9d.sroom.review.service;
 
-import com.m9d.sroom.global.mapper.Playlist;
-import com.m9d.sroom.global.mapper.Video;
-import com.m9d.sroom.lecture.repository.LectureRepository;
+import com.m9d.sroom.global.mapper.*;
+import com.m9d.sroom.repository.coursevideo.CourseVideoRepository;
+import com.m9d.sroom.repository.lecture.LectureRepository;
+import com.m9d.sroom.repository.playlist.PlaylistRepository;
+import com.m9d.sroom.repository.review.ReviewRepository;
+import com.m9d.sroom.repository.video.VideoRepository;
 import com.m9d.sroom.review.dto.*;
-import com.m9d.sroom.review.dto.LectureBrief4Review;
-import com.m9d.sroom.review.dto.LectureBriefList4Review;
-import com.m9d.sroom.review.dto.LectureData;
-import com.m9d.sroom.global.mapper.Review;
-import com.m9d.sroom.review.repository.ReviewRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
-@Service
 @Slf4j
+@Service
 public class ReviewService {
 
-    private final ReviewRepository reviewRepository;
+    private final com.m9d.sroom.repository.review.ReviewRepository reviewRepository;
     private final LectureRepository lectureRepository;
+    private final PlaylistRepository playlistRepository;
+    private final VideoRepository videoRepository;
+    private final CourseVideoRepository courseVideoRepository;
 
 
-    public ReviewService(ReviewRepository reviewRepository, LectureRepository lectureRepository) {
+    public ReviewService(ReviewRepository reviewRepository, LectureRepository lectureRepository,
+                           PlaylistRepository playlistRepository, VideoRepository videoRepository,
+                           CourseVideoRepository courseVideoRepository) {
         this.reviewRepository = reviewRepository;
         this.lectureRepository = lectureRepository;
+        this.playlistRepository = playlistRepository;
+        this.videoRepository = videoRepository;
+        this.courseVideoRepository = courseVideoRepository;
     }
 
     public LectureBriefList4Review getLectureList(Long memberId, Long courseId) {
 
-        List<LectureData> lectureList = reviewRepository.getLectureDataListByCourseId(courseId);
+        List<Lecture> lectureList = lectureRepository.getListByCourseId(courseId);
         List<LectureBrief4Review> lectures = new ArrayList<>();
 
-        for(LectureData lectureData : lectureList) {
-            if(lectureData.isPlaylist()) {
-                lectures.add(getPlaylistLectureBrief4Review(lectureData));
+        for(Lecture lecture : lectureList) {
+            if(lecture.getPlaylist()) {
+                lectures.add(getPlaylistLectureBrief4Review(lecture));
             }
             else {
-                lectures.add(getVideoLectureBrief4Review(lectureData));
+                lectures.add(getVideoLectureBrief4Review(lecture));
             }
         }
 
@@ -51,10 +59,10 @@ public class ReviewService {
     @Transactional
     public ReviewSubmitResponse submitReview(Long memberId, Long lectureId, ReviewSubmitRequest reviewSubmitRequest) {
 
-        LectureData lectureData = reviewRepository.getLectureDataById(lectureId);
+        Lecture lecture = lectureRepository.getById(lectureId);
         String lectureCode = "";
 
-        lectureCode = applyReview(lectureData, reviewSubmitRequest);
+        lectureCode = applyReview(lecture, reviewSubmitRequest);
 
         Review review = Review.builder()
                 .lectureId(lectureId)
@@ -64,7 +72,7 @@ public class ReviewService {
                 .submittedRating(reviewSubmitRequest.getSubmittedRating())
                 .build();
 
-        Long reviewId = reviewRepository.insertReview(review);
+        Long reviewId = reviewRepository.save(review).getReviewId();
 
         return ReviewSubmitResponse.builder()
                 .reviewId(reviewId)
@@ -74,107 +82,126 @@ public class ReviewService {
                 .build();
     }
 
-    public LectureBrief4Review getPlaylistLectureBrief4Review(LectureData lectureData) {
+    LectureBrief4Review getPlaylistLectureBrief4Review(Lecture lecture) {
 
-        LectureBrief4Review videoCountData = reviewRepository.getVideoCountData(lectureData.getLectureId());
-        LectureBrief4Review playlistData = reviewRepository.getPlaylistDataBySourceId(lectureData.getSourceId());
+        LectureBrief4Review videoCountData = getVideoCountData(lecture.getId());
+        Playlist playlist = playlistRepository.getById(lecture.getSourceId());
         int progress = (videoCountData.getCompletedVideoCount() * 100) / videoCountData.getTotalVideoCount();
 
-        Review review = getReview(lectureData);
+        Review review = getReview(lecture);
 
         return LectureBrief4Review.builder()
-                .index(lectureData.getLectureIndex())
-                .lectureId(lectureData.getLectureId())
-                .title(playlistData.getTitle())
-                .thumbnail(playlistData.getThumbnail())
-                .channel(lectureData.getChannel())
+                .index(lecture.getLectureIndex())
+                .lectureId(lecture.getId())
+                .title(playlist.getTitle())
+                .thumbnail(playlist.getThumbnail())
+                .channel(lecture.getChannel())
                 .isPlaylist(true)
                 .totalVideoCount(videoCountData.getTotalVideoCount())
                 .completedVideoCount(videoCountData.getCompletedVideoCount())
                 .progress(progress)
                 .content(review.getContent())
                 .rating(review.getSubmittedRating())
-                .submittedAt(review.getSubmittedDate())
-                .isReviewAllowed(isReviewAllowed(progress, lectureData.getIsReviewed()))
+                .submittedAt((new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(review.getSubmittedDate())))
+                .isReviewAllowed(isReviewAllowed(progress, lecture.getReviewed()))
                 .build();
     }
 
-    public LectureBrief4Review getVideoLectureBrief4Review(LectureData lectureData) {
+    LectureBrief4Review getVideoLectureBrief4Review(Lecture lecture) {
 
-        int viewDuration = reviewRepository.getViewDurationByLectureId(lectureData.getLectureId());
-        LectureBrief4Review videoData = reviewRepository.getVideoDataBySourceId(lectureData.getSourceId());
-        int progress = (viewDuration * 100) / videoData.getLectureDuration();
+        int viewDuration = courseVideoRepository.getByListLectureId(lecture.getId())
+                .get(0)
+                .getMaxDuration();
+        Video video = videoRepository.getById(lecture.getSourceId());
+        int progress = (viewDuration * 100) / video.getDuration();
 
-        Review review = getReview(lectureData);
+        Review review = getReview(lecture);
+
+        if(lecture.getReviewed())
+            review = reviewRepository.getByLectureId(lecture.getId());
 
         return LectureBrief4Review.builder()
-                .index(lectureData.getLectureIndex())
-                .lectureId(lectureData.getLectureId())
-                .title(videoData.getTitle())
-                .thumbnail(videoData.getThumbnail())
-                .channel(lectureData.getChannel())
+                .index(lecture.getLectureIndex())
+                .lectureId(lecture.getId())
+                .title(video.getTitle())
+                .thumbnail(video.getThumbnail())
+                .channel(lecture.getChannel())
                 .isPlaylist(false)
                 .viewDuration(viewDuration)
-                .lectureDuration(videoData.getLectureDuration())
+                .lectureDuration(video.getDuration())
                 .progress(progress)
                 .content(review.getContent())
                 .rating(review.getSubmittedRating())
-                .submittedAt(review.getSubmittedDate())
-                .isReviewAllowed(isReviewAllowed(progress, lectureData.getIsReviewed()))
+                .submittedAt((new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(review.getSubmittedDate())))
+                .isReviewAllowed(isReviewAllowed(progress, lecture.getReviewed()))
                 .build();
 
     }
 
-    public String applyReview(LectureData lectureData, ReviewSubmitRequest reviewSubmitRequest) {
+    String applyReview(Lecture lecture, ReviewSubmitRequest reviewSubmitRequest) {
 
         String lectureCode = "";
 
-        if (lectureData.isPlaylist()) {
-            Playlist playlist = lectureRepository.getPlaylistById(lectureData.getSourceId());
+        if (lecture.getPlaylist()) {
+            Playlist playlist = playlistRepository.getById(lecture.getSourceId());
             lectureCode = playlist.getPlaylistCode();
             applyReviewToPlaylist(reviewSubmitRequest, playlist);
         }
         else {
-            Video video = lectureRepository.getVideoById(lectureData.getSourceId());
+            Video video = videoRepository.getById(lecture.getSourceId());
             lectureCode = video.getVideoCode();
             applyReviewToVideo(reviewSubmitRequest, video);
         }
 
-        reviewRepository.updateIsReviewed(lectureData.getLectureId());
+        lecture.setReviewed(true);
+
+        lectureRepository.updateById(lecture.getId(), lecture);
 
         return lectureCode;
     }
 
-    public void applyReviewToPlaylist(ReviewSubmitRequest reviewSubmitRequest, Playlist playlist) {
+    void applyReviewToPlaylist(ReviewSubmitRequest reviewSubmitRequest, Playlist playlist) {
 
         playlist.setReviewCount(playlist.getReviewCount() + 1);
         playlist.setAccumulatedRating(playlist.getAccumulatedRating() + reviewSubmitRequest.getSubmittedRating());
 
-        lectureRepository.updatePlaylist(playlist);
+        playlistRepository.updateById(playlist.getPlaylistId(), playlist);
     }
 
-    public void applyReviewToVideo(ReviewSubmitRequest reviewSubmitRequest, Video video) {
+    void applyReviewToVideo(ReviewSubmitRequest reviewSubmitRequest, Video video) {
 
         video.setReviewCount(video.getReviewCount() + 1);
         video.setAccumulatedRating(video.getAccumulatedRating() + reviewSubmitRequest.getSubmittedRating());
 
-        lectureRepository.updateVideo(video);
+        videoRepository.updateById(video.getVideoId(), video);
     }
 
-    public Review getReview(LectureData lectureData) {
+    Review getReview(Lecture lecture) {
         Review review = Review.builder().build();
 
         review.setSubmittedRating(null);
         review.setContent(null);
-        review.setSubmittedDate(null);
+        review.setSubmittedDate(new Timestamp(0));
 
-        if(lectureData.getIsReviewed())
-            review = reviewRepository.getReviewByLectureId(lectureData.getLectureId());
+        if(lecture.getReviewed())
+            review = reviewRepository.getByLectureId(lecture.getId());
 
         return review;
     }
 
-    public boolean isReviewAllowed(int progress, boolean isReviewed) {
+    boolean isReviewAllowed(int progress, boolean isReviewed) {
         return progress >= 70 && !isReviewed;
+    }
+
+    LectureBrief4Review getVideoCountData(Long lectureId) {
+        List<CourseVideo> courseVideoList = courseVideoRepository.getByListLectureId(lectureId);
+        int completedVideoCount = (int) courseVideoList.stream()
+                .filter(CourseVideo::isComplete)
+                .count();
+
+        return LectureBrief4Review.builder()
+                .totalVideoCount(courseVideoList.size())
+                .completedVideoCount(completedVideoCount)
+                .build();
     }
 }

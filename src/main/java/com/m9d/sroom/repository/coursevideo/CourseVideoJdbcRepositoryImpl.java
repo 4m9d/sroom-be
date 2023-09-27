@@ -67,6 +67,12 @@ public class CourseVideoJdbcRepositoryImpl implements CourseVideoRepository {
     }
 
     @Override
+    public List<CourseVideo> getByListLectureId(Long lectureId) {
+        return jdbcTemplate.query(CourseVideoRepositorySql.GET_BY_LECTURE_ID,
+                CourseVideo.getRowMapper(), lectureId);
+    }
+
+    @Override
     public Optional<CourseVideo> findById(Long courseVideoId) {
         return Optional.empty();
     }

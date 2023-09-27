@@ -36,6 +36,22 @@ public class LectureJdbcRepositoryImpl implements LectureRepository {
 
     @Override
     @Transactional
+    public Lecture updateById(Long lectureId, Lecture lecture) {
+        jdbcTemplate.update(LectureRepositorySql.UPDATE_BY_ID,
+                lecture.getCourseId(),
+                lecture.getSourceId(),
+                lecture.getPlaylist(),
+                lecture.getLectureIndex(),
+                lecture.getReviewed(),
+                lecture.getMemberId(),
+                lecture.getChannel(),
+                lecture.getId());
+
+        return getById(lectureId);
+    }
+
+    @Override
+    @Transactional
     public void deleteByCourseId(Long courseId) {
         jdbcTemplate.update(LectureRepositorySql.DELETE_BY_COURSE_ID, courseId);
     }

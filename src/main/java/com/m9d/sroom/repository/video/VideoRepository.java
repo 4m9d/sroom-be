@@ -12,6 +12,8 @@ public interface VideoRepository {
 
     Video getByCode(String videoCode);
 
+    Video getById(Long videoId);
+
     Optional<Video> findByCode(String videoCode);
 
     Optional<Video> findById(Long videoId);
