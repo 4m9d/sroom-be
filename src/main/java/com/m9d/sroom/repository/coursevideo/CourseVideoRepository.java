@@ -12,7 +12,7 @@ public interface CourseVideoRepository {
 
     CourseVideo save(CourseVideo courseVideo);
 
-    void updateById(Long id, CourseVideo courseVideo);
+    CourseVideo updateById(Long id, CourseVideo courseVideo);
 
     CourseVideo getById(Long courseVideoId);
 

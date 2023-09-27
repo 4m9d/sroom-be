@@ -499,7 +499,7 @@ public class CourseService {
             lastSectionTime = currentSectionTime;
 
             videoInfo.getCourseVideo().setSection(section);
-            courseVideoRepository.updateById(videoInfo.getCourseVideo().getCourseId(), videoInfo.getCourseVideo());
+            courseVideoRepository.updateById(videoInfo.getCourseVideo().getCourseVideoId(), videoInfo.getCourseVideo());
         }
 
         int lastSectionDays = (int) Math.ceil((double) lastSectionTime / dailyTargetTimeForSecond);

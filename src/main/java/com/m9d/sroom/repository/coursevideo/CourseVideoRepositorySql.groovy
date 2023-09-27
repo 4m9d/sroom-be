@@ -70,4 +70,10 @@ class CourseVideoRepositorySql {
         DELETE FROM COURSEVIDEO
         WHERE course_id = ?
     """
+    public static final String UPDATE_BY_ID = """
+        UPDATE COURSEVIDEO
+        SET course_id = ?, video_id = ?, section = ?, video_index = ?, start_time = ?, is_complete = ?, summary_id = ?,
+        lecture_index = ?, member_id = ?, last_view_time = ?, max_duration =?, lecture_id = ?
+        WHERE course_video_id = ?
+    """
 }

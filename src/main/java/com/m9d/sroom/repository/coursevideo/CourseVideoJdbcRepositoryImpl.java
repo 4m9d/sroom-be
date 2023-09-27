@@ -38,8 +38,22 @@ public class CourseVideoJdbcRepositoryImpl implements CourseVideoRepository {
     }
 
     @Override
-    public void updateById(Long id, CourseVideo courseVideo) {
-
+    public CourseVideo updateById(Long courseVideoId, CourseVideo courseVideo) {
+        jdbcTemplate.update(CourseVideoRepositorySql.UPDATE_BY_ID,
+                courseVideo.getCourseId(),
+                courseVideo.getVideoId(),
+                courseVideo.getSection(),
+                courseVideo.getVideoIndex(),
+                courseVideo.getStartTime(),
+                courseVideo.isComplete(),
+                courseVideo.getSummaryId(),
+                courseVideo.getLectureIndex(),
+                courseVideo.getMemberId(),
+                courseVideo.getLastViewTime(),
+                courseVideo.getMaxDuration(),
+                courseVideo.getLectureId(),
+                courseVideoId);
+        return getById(courseVideoId);
     }
 
     @Override
