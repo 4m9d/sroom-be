@@ -20,8 +20,7 @@ public class DateUtil {
 
     public static final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd").withZone(ZoneId.of("Asia/Seoul"));
     public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Seoul"));
-    public static final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
 
     public Long convertTimeToSeconds(String time) {
         String[] parts = time.split(":");

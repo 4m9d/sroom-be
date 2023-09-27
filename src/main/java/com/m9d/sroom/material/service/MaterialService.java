@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -110,7 +111,7 @@ public class MaterialService {
                 quizRes.setSubmittedAnswer(submittedQuizInfoRes.getSubmittedAnswer());
                 quizRes.setCorrect(submittedQuizInfoRes.isCorrect());
                 quizRes.setScrapped(submittedQuizInfoRes.isScrapped());
-                quizRes.setSubmittedAt(DateUtil.dateTimeFormat.format(submittedQuizInfoRes.getSubmittedTime()));
+                quizRes.setSubmittedAt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(submittedQuizInfoRes.getSubmittedTime()));
             } else {
                 quizRes.setSubmitted(false);
             }

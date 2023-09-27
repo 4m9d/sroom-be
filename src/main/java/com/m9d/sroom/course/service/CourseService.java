@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 import java.security.InvalidParameterException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -102,7 +103,7 @@ public class CourseService {
                     .courseTitle(course.getCourseTitle())
                     .thumbnail(course.getThumbnail())
                     .channels(String.join(", ", lectureRepository.getChannelSetByCourseId(courseId)))
-                    .lastViewTime(dateTimeFormat.format(course.getLastViewTime()))
+                    .lastViewTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(course.getLastViewTime()))
                     .totalVideoCount(videoCount)
                     .completedVideoCount(completedVideoCount)
                     .progress((int)((double)completedVideoCount / videoCount * 100))

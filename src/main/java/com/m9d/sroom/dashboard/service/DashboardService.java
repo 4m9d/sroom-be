@@ -14,6 +14,7 @@ import com.m9d.sroom.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
@@ -21,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 
 import static com.m9d.sroom.dashboard.constant.DashboardConstant.*;
-import static com.m9d.sroom.util.DateUtil.dateFormat;
 
 @Service
 @Slf4j
@@ -56,7 +56,7 @@ public class DashboardService {
         List<LearningHistory> learningHistoryList = new ArrayList<>();
         for(CourseDailyLog courseDailyLog : courseDailyLogList) {
             learningHistoryList.add(LearningHistory.builder()
-                    .date(dateFormat.format(courseDailyLog.getDailyLogDate()))
+                    .date(new SimpleDateFormat("yyyy-MM-dd").format(courseDailyLog.getDailyLogDate()))
                     .lectureCount(courseDailyLog.getLectureCount())
                     .learningTime(courseDailyLog.getLearningTime())
                     .quizCount(courseDailyLog.getQuizCount())
@@ -108,7 +108,7 @@ public class DashboardService {
 
         for(int i = 0; i < courseDailyLogList.size(); i++) {
 
-            LocalDate nowDate = LocalDate.parse(dateFormat.format(courseDailyLogList.get(i).getDailyLogDate()));
+            LocalDate nowDate = LocalDate.parse(new SimpleDateFormat("yyyy-MM-dd").format(courseDailyLogList.get(i).getDailyLogDate()));
 
             if(isConsecutive(beforeDate, nowDate)) {
                 consecutiveCount++;
