@@ -32,7 +32,7 @@ public class GPTService {
     private final Gson gson;
 
     public void saveResultFromFastApi() {
-        log.info("scheduling for request fastAPI to get summary and quizzes.");
+        log.debug("scheduling for request fastAPI to get summary and quizzes.");
 
         String resultStr;
         try {
@@ -45,7 +45,7 @@ public class GPTService {
         if(resultStr == null){
             return;
         }else{
-            log.info("response body from gpt server = {}", resultStr);
+            log.debug("response body from gpt server = {}", resultStr);
         }
 
         MaterialVo resultVo = getMaterialVo(resultStr);
