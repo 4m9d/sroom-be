@@ -77,7 +77,9 @@ public class GPTService {
         MaterialVo resultVo = null;
         try {
             resultVo = gson.fromJson(resultStr, MaterialVo.class);
-            log.info("received video material count is = {}", resultVo.getResults().size());
+            if(resultVo.getResults().size() > 0) {
+                log.info("received video material count is = {}", resultVo.getResults().size());
+            }
         } catch (JsonSyntaxException e) {
             log.error("Failed to parse JSON to MaterialVo. Input JSON: {}", resultStr, e);
         }
