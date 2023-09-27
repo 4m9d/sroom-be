@@ -70,7 +70,7 @@ public class LectureRepository {
 
         Playlist playlist = queryForObjectOrNull(query,
                 (rs, rowNum) -> Playlist.builder()
-                        .lectureCount(rs.getInt("video_count"))
+                        .videoCount(rs.getInt("video_count"))
                         .updatedAt(rs.getTimestamp("updated_at"))
                         .description(rs.getString("description"))
                         .build(), lectureCode);

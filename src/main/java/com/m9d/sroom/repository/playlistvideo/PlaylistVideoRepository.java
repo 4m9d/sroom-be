@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface PlaylistVideoRepository {
 
-    void save(PlaylistVideo playlistVideo);
+    PlaylistVideo save(PlaylistVideo playlistVideo);
 
     List<PlaylistVideo> getListByPlaylistId(Long playlistId);
 

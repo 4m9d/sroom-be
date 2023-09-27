@@ -26,5 +26,5 @@ public class Section {
     private int currentWeekDuration;
 
     @Schema(description = "해당 주차의 비디오 목록")
-    private List<VideoBrief> videos;
+    private List<VideoWatchInfo> videos;
 }

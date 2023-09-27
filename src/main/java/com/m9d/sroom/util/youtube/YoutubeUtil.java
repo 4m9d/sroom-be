@@ -2,6 +2,7 @@ package com.m9d.sroom.util.youtube;
 
 import com.m9d.sroom.global.mapper.Playlist;
 import com.m9d.sroom.global.mapper.Video;
+import com.m9d.sroom.repository.video.VideoRepository;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.util.youtube.resource.PlaylistItemReq;
 import com.m9d.sroom.util.youtube.resource.PlaylistReq;
@@ -16,9 +17,11 @@ import com.m9d.sroom.util.youtube.vo.video.VideoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 import java.util.Map;
+import java.util.Optional;
 
 import static com.m9d.sroom.lecture.constant.LectureConstant.*;
 
@@ -28,10 +31,12 @@ public class YoutubeUtil {
 
     private final DateUtil dateUtil;
     private final YoutubeApi youtubeApi;
+    private final VideoRepository videoRepository;
 
-    public YoutubeUtil(DateUtil dateUtil, YoutubeApi youtubeApi) {
+    public YoutubeUtil(DateUtil dateUtil, YoutubeApi youtubeApi, VideoRepository videoRepository) {
         this.dateUtil = dateUtil;
         this.youtubeApi = youtubeApi;
+        this.videoRepository = videoRepository;
     }
 
     public static final Map<String, String> LECTURE_LIST_PARAMETERS = Map.of(
@@ -104,7 +109,7 @@ public class YoutubeUtil {
                 .channel(itemVo.getSnippet().getChannelTitle())
                 .description(itemVo.getSnippet().getDescription())
                 .publishedAt(dateUtil.convertISOToTimestamp(itemVo.getSnippet().getPublishedAt()))
-                .lectureCount(itemVo.getContentDetails().getItemCount())
+                .videoCount(itemVo.getContentDetails().getItemCount())
                 .build();
     }
 
@@ -148,7 +153,7 @@ public class YoutubeUtil {
         }
     }
 
-    public boolean checkIfPlaylist(String lectureCode) {
+    public static boolean checkIfPlaylist(String lectureCode) {
         String firstTwoCharacters = lectureCode.substring(LECTURE_CODE_START_INDEX, LECTURE_CODE_PLAYLIST_INDICATOR_LENGTH);
         return firstTwoCharacters.equals(PLAYLIST_CODE_INDICATOR);
     }
@@ -171,5 +176,21 @@ public class YoutubeUtil {
     public boolean isPrivacyStatusUnusable(PlaylistVideoItemVo itemVo) {
         String privacyStatus = itemVo.getStatus().getPrivacyStatus();
         return privacyStatus.equals(JSONNODE_PRIVATE) || privacyStatus.equals(JSONNODE_UNSPECIFIED);
+    }
+
+    @Transactional
+    public Video saveOrUpdateVideo(String videoCode, Video video) {
+        Optional<Video> videoOptional = videoRepository.findByCode(videoCode);
+        if (videoOptional.isPresent()) {
+            Video videoOriginal = videoOptional.get();
+            video.setAccumulatedRating(videoOriginal.getAccumulatedRating());
+            video.setSummaryId(videoOriginal.getSummaryId());
+            video.setReviewCount(videoOriginal.getReviewCount());
+            video.setChapterUse(videoOriginal.isChapterUse());
+            video.setMaterialStatus(videoOriginal.getMaterialStatus());
+            return videoRepository.updateById(videoOptional.get().getVideoId(), video);
+        } else {
+            return videoRepository.save(video);
+        }
     }
 }

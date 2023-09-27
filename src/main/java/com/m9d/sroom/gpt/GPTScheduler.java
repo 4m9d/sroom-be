@@ -13,7 +13,7 @@ public class GPTScheduler {
 
     private final GPTService gptService;
 
-    @Scheduled(cron = "0/15 * * * * *")
+    @Scheduled(cron = "0/5 * * * * *")
     public void requestToGptRepeat() {
         gptService.saveResultFromFastApi();
     }

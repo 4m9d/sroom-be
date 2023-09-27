@@ -54,7 +54,6 @@ public class MaterialService {
         CourseVideo courseVideo = getCourseVideo(courseVideoId);
 
         validateCourseVideoIdForMember(memberId, courseVideo);
-        log.debug("courseVideo.summaryId = {}", courseVideo.getSummaryId());
 
         Long summaryId = (courseVideo.getSummaryId() == 0) ? null : courseVideo.getSummaryId();
 
@@ -334,7 +333,6 @@ public class MaterialService {
     public void saveMaterials(MaterialResultsVo materialVo) throws Exception {
         String videoCode = materialVo.getVideoId();
 
-
         Long videoId = courseRepository.findVideoIdByCode(videoCode);
 
         if (videoId == null) {
@@ -352,7 +350,6 @@ public class MaterialService {
         Long summaryId = materialRepository.saveSummary(videoId, materialVo.getSummary(), false);
         courseRepository.updateSummaryId(videoId, summaryId);
         materialRepository.updateMaterialStatusByCode(videoCode, MaterialStatus.CREATED.getValue());
-        log.info("videoCode = {}, videoId = {}, summaryId = {}, ", videoCode, videoId, summaryId);
 
         for (QuizVo quizVo : materialVo.getQuizzes()) {
             saveQuiz(videoId, quizVo);

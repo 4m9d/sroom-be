@@ -2,15 +2,21 @@ package com.m9d.sroom.repository.course;
 
 import com.m9d.sroom.global.mapper.Course;
 
+import java.util.List;
+
 public interface CourseRepository {
 
-    Long save(Course course);
+    Course save(Course course);
 
     Course getById(Long courseId);
 
-    void updateById(Long courseId, Course course);
+    Course updateById(Long courseId, Course course);
 
     void deleteById(Long courseId);
+
+    List<Course> getByMemberId(Long memberId);
+
+    List<Course> getLatestOrderByMemberId(Long memberId);
 
     Integer countByMemberId(Long memberId);
 

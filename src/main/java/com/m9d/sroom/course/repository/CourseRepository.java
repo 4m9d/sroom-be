@@ -7,7 +7,7 @@ import com.m9d.sroom.course.exception.CourseVideoNotFoundException;
 import com.m9d.sroom.course.sql.CourseSqlQuery;
 import com.m9d.sroom.lecture.dto.response.CourseBrief;
 import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
-import com.m9d.sroom.lecture.dto.response.VideoBrief;
+import com.m9d.sroom.lecture.dto.response.VideoWatchInfo;
 import com.m9d.sroom.material.model.CourseAndVideoId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -84,7 +84,7 @@ public class CourseRepository {
     }
 
     public Long savePlaylist(Playlist playlist) {
-        jdbcTemplate.update(SAVE_PLAYLIST_QUERY, playlist.getPlaylistCode(), playlist.getTitle(), playlist.getChannel(), playlist.getThumbnail(), playlist.getDescription(), playlist.getPublishedAt(), playlist.getLectureCount());
+        jdbcTemplate.update(SAVE_PLAYLIST_QUERY, playlist.getPlaylistCode(), playlist.getTitle(), playlist.getChannel(), playlist.getThumbnail(), playlist.getDescription(), playlist.getPublishedAt(), playlist.getVideoCount());
 
         return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
     }
@@ -99,8 +99,8 @@ public class CourseRepository {
         return jdbcTemplate.queryForObject(GET_LAST_INSERT_ID_QUERY, Long.class);
     }
 
-    public void saveCourseVideo(Long memberId, Long courseId, Long lectureId, Long videoId, int section, int videoIndex, int lectureIndex) {
-        jdbcTemplate.update(SAVE_COURSE_VIDEO_QUERY, memberId, courseId, lectureId, videoId, section, videoIndex, lectureIndex);
+    public void saveCourseVideo(Long memberId, Long courseId, Long lectureId, Long videoId, int section, int videoIndex, int lectureIndex, Long summaryId) {
+        jdbcTemplate.update(SAVE_COURSE_VIDEO_QUERY, memberId, courseId, lectureId, videoId, section, videoIndex, lectureIndex, summaryId);
     }
 
     public Long getCourseIdByLectureId(Long lectureId) {
@@ -149,6 +149,7 @@ public class CourseRepository {
                     .title(rs.getString("title"))
                     .updatedAt(rs.getTimestamp("updated_at"))
                     .publishedAt(rs.getTimestamp("published_at"))
+                    .summaryId(rs.getLong("summary_id"))
                     .build(), lectureCode);
             return Optional.ofNullable(video);
         } catch (EmptyResultDataAccessException e) {
@@ -184,7 +185,7 @@ public class CourseRepository {
     }
 
     public Long updatePlaylistAndGetId(Playlist playlist) {
-        jdbcTemplate.update(UPDATE_PLAYLIST_AND_GET_ID_QUERY, playlist.getTitle(), playlist.getChannel(), playlist.getDescription(), playlist.getPublishedAt(), playlist.getLectureCount(), playlist.getPlaylistCode());
+        jdbcTemplate.update(UPDATE_PLAYLIST_AND_GET_ID_QUERY, playlist.getTitle(), playlist.getChannel(), playlist.getDescription(), playlist.getPublishedAt(), playlist.getVideoCount(), playlist.getPlaylistCode());
 
         return jdbcTemplate.queryForObject(GET_PLAYLIST_ID_BY_PLAYLIST_CODE, (rs, rowNum) -> rs.getLong("playlist_id"), playlist.getPlaylistCode());
     }
@@ -201,13 +202,13 @@ public class CourseRepository {
         return jdbcTemplate.queryForObject(GET_COURSE_QUERY, ((rs, rowNum) -> Course.builder()
                 .courseId(courseId)
                 .memberId(rs.getLong("member_id"))
-                .title(rs.getString("course_title"))
+                .courseTitle(rs.getString("course_title"))
                 .duration(rs.getInt("course_duration"))
                 .scheduled(rs.getBoolean("is_scheduled"))
                 .thumbnail(rs.getString("thumbnail"))
                 .weeks(rs.getInt("weeks"))
                 .startDate(rs.getDate("start_date"))
-                .expectedEndTime(rs.getTimestamp("expected_end_date"))
+                .expectedEndDate(rs.getTimestamp("expected_end_date"))
                 .dailyTargetTime(rs.getInt("daily_target_time"))
                 .build()), courseId);
     }
@@ -263,8 +264,8 @@ public class CourseRepository {
         }
     }
 
-    public List<VideoBrief> getVideoBrief(Long courseId, int section) {
-        return jdbcTemplate.query(GET_VIDEO_BRIEF_QUERY, (rs, rowNum) -> VideoBrief.builder()
+    public List<VideoWatchInfo> getVideoBrief(Long courseId, int section) {
+        return jdbcTemplate.query(GET_VIDEO_BRIEF_QUERY, (rs, rowNum) -> VideoWatchInfo.builder()
                 .videoId(rs.getLong("video_id"))
                 .videoCode(rs.getString("video_code"))
                 .channel(rs.getString("channel"))
@@ -416,7 +417,8 @@ public class CourseRepository {
     }
 
     public void updateSummaryId(Long videoId, Long summaryId) {
-        jdbcTemplate.update(UPDATE_SUMMARY_ID_QUERY, summaryId, videoId);
+        jdbcTemplate.update(UPDATE_COURSEVIDEO_SUMMARY_ID_QUERY, summaryId, videoId);
+        jdbcTemplate.update(UPDATE_VIDEO_SUMMARY_ID_QUERY, summaryId, videoId);
     }
 
     public void deleteCourseById(Long courseId) {

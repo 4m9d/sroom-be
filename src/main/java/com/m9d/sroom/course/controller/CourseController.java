@@ -3,10 +3,12 @@ package com.m9d.sroom.course.controller;
 import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.course.dto.response.MyCourses;
-import com.m9d.sroom.course.service.CourseService;
 import com.m9d.sroom.course.dto.response.CourseDetail;
+import com.m9d.sroom.course.exception.CourseNotMatchException;
+import com.m9d.sroom.course.service.CourseService;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
+import com.m9d.sroom.util.youtube.YoutubeUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -45,9 +47,12 @@ public class CourseController {
     @Operation(summary = "강의 신규 등록", description = "강의코드를 입력받아 코스를 생성합니다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 강의 코스를 등록하였습니다.", content = @Content(schema = @Schema(implementation = EnrolledCourseInfo.class)))
     public EnrolledCourseInfo enrollCourse(@Valid @RequestBody NewLecture newLecture, @RequestParam("use_schedule") boolean useSchedule) {
-        Long memberId = jwtUtil.getMemberIdFromRequest();
-        EnrolledCourseInfo enrolledCourseInfo = courseService.enrollCourse(memberId, newLecture, useSchedule);
-        return enrolledCourseInfo;
+        if (YoutubeUtil.checkIfPlaylist(newLecture.getLectureCode())) {
+            return courseService.saveCourseWithPlaylist(jwtUtil.getMemberIdFromRequest(), newLecture, useSchedule,
+                    courseService.getPlaylistWithUpdate(newLecture.getLectureCode()));
+        } else {
+            return courseService.saveCourseWithVideo(jwtUtil.getMemberIdFromRequest(), newLecture, useSchedule);
+        }
     }
 
     @Auth
@@ -56,9 +61,14 @@ public class CourseController {
     @Operation(summary = "기존 코스 강의 등록", description = "강의코드와 코스ID를 받아 코스에 추가합니다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 코스에 강의를 추가하였습니다.", content = @Content(schema = @Schema(implementation = EnrolledCourseInfo.class)))
     public EnrolledCourseInfo addLectureInCourse(@PathVariable("courseId") Long courseId, @Valid @RequestBody NewLecture newLecture){
-        Long memberId = jwtUtil.getMemberIdFromRequest();
-        EnrolledCourseInfo enrolledCourseInfo = courseService.addLectureInCourse(memberId, courseId, newLecture);
-        return enrolledCourseInfo;
+        if (!courseService.validateCourseId(jwtUtil.getMemberIdFromRequest(), courseId)) {
+            throw new CourseNotMatchException();
+        }
+        if (YoutubeUtil.checkIfPlaylist(newLecture.getLectureCode())) {
+            return courseService.addPlaylistInCourse(courseId, courseService.getPlaylistWithUpdate(newLecture.getLectureCode()));
+        } else {
+            return courseService.addVideoInCourse(courseId, courseService.getVideoAndRequestToAiServer(newLecture.getLectureCode()));
+        }
     }
 
     @Auth
