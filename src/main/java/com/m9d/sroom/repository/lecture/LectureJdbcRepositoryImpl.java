@@ -42,7 +42,8 @@ public class LectureJdbcRepositoryImpl implements LectureRepository {
 
     @Override
     public HashSet<String> getChannelSetByCourseId(Long courseId) {
-        return new HashSet<>(jdbcTemplate.query(LectureRepositorySql.GET_CHANNELS_BY_COURSE_ID, (rs, rowNum) -> rs.getString("channel"), courseId));
+        return new HashSet<>(jdbcTemplate.query(LectureRepositorySql.GET_CHANNELS_BY_COURSE_ID,
+                (rs, rowNum) -> rs.getString("channel"), courseId));
     }
 
     @Override

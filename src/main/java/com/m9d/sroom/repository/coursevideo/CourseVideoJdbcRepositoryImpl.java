@@ -73,12 +73,14 @@ public class CourseVideoJdbcRepositoryImpl implements CourseVideoRepository {
 
     @Override
     public Integer countByCourseId(Long courseId) {
-        return jdbcTemplate.queryForObject(CourseVideoRepositorySql.COOUNT_BY_COURSE_ID, (rs, rowNum) -> rs.getInt("count"), courseId);
+        return jdbcTemplate.queryForObject(CourseVideoRepositorySql.COOUNT_BY_COURSE_ID,
+                (rs, rowNum) -> rs.getInt("count"), courseId);
     }
 
     @Override
     public Integer countCompletedByCourseId(Long courseId) {
-        return jdbcTemplate.queryForObject(CourseVideoRepositorySql.COMPLETED_COUNT_BY_COURSE_ID, (rs, rowNum) -> rs.getInt("completed_count"), courseId);
+        return jdbcTemplate.queryForObject(CourseVideoRepositorySql.COMPLETED_COUNT_BY_COURSE_ID,
+                (rs, rowNum) -> rs.getInt("completed_count"), courseId);
     }
 
     @Override

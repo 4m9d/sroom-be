@@ -77,35 +77,41 @@ public class CourseService {
 
     public MyCourses getMyCourses(Long memberId) {
         List<Course> latestCourseList = courseRepository.getLatestOrderByMemberId(memberId);
-        List<CourseInfo> courseInfoList = new ArrayList<>();
+        List<CourseInfo> courseInfoList = getCourseInfoList(latestCourseList);
         int unfinishedCourseCount = getUnfinishedCourseCount(latestCourseList);
-
         int courseCount = latestCourseList.size();
-
         int completionRate = (int) ((float) (courseCount - unfinishedCourseCount) / courseCount * 100);
-
-        for (Course course : latestCourseList) {
-
-            Long courseId = course.getCourseId();
-
-            CourseInfo courseInfo = CourseInfo.builder()
-                    .courseId(course.getCourseId())
-                    .courseTitle(course.getCourseTitle())
-                    .thumbnail(course.getThumbnail())
-                    .channels(String.join(", ", lectureRepository.getChannelSetByCourseId(courseId)))
-                    .lastViewTime(dateFormat.format(course.getLastViewTime()))
-                    .totalVideoCount(courseVideoRepository.countByCourseId(courseId))
-                    .completedVideoCount(courseVideoRepository.countCompletedByCourseId(courseId))
-                    .build();
-
-            courseInfoList.add(courseInfo);
-        }
 
         return MyCourses.builder()
                 .unfinishedCourse(unfinishedCourseCount)
                 .completionRate(completionRate)
                 .courses(courseInfoList)
                 .build();
+    }
+
+    public List<CourseInfo> getCourseInfoList(List<Course> latestCourseList) {
+        List<CourseInfo> courseInfoList = new ArrayList<>();
+
+        for (Course course : latestCourseList) {
+            Long courseId = course.getCourseId();
+            int videoCount = courseVideoRepository.countByCourseId(courseId);
+            int completedVideoCount = courseVideoRepository.countCompletedByCourseId(courseId);
+
+            CourseInfo courseInfo = CourseInfo.builder()
+                    .courseId(course.getCourseId())
+                    .courseTitle(course.getCourseTitle())
+                    .thumbnail(course.getThumbnail())
+                    .channels(String.join(", ", lectureRepository.getChannelSetByCourseId(courseId)))
+                    .lastViewTime(dateTimeFormat.format(course.getLastViewTime()))
+                    .totalVideoCount(videoCount)
+                    .completedVideoCount(completedVideoCount)
+                    .progress((int)((double)completedVideoCount / videoCount * 100))
+                    .build();
+
+            courseInfoList.add(courseInfo);
+        }
+
+        return courseInfoList;
     }
 
     public int getUnfinishedCourseCount(List<Course> courseInfoList) {

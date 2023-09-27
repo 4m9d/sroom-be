@@ -1,12 +1,20 @@
 package com.m9d.sroom.repository.member;
 
 import com.m9d.sroom.global.mapper.Member;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
 public class MemberJdbcRepositoryImpl implements MemberRepository{
+
+    JdbcTemplate jdbcTemplate;
+
+    public MemberJdbcRepositoryImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
+
     @Override
     public void save(Member member) {
 
@@ -14,7 +22,7 @@ public class MemberJdbcRepositoryImpl implements MemberRepository{
 
     @Override
     public Member getById(Long memberId) {
-        return null;
+        return jdbcTemplate.queryForObject(MemberRepositorySql.GET_BY_ID, Member.getRowMapper(), memberId);
     }
 
     @Override
