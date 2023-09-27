@@ -17,7 +17,6 @@ public class PlaylistVideoJdbcRepositoryImpl implements PlaylistVideoRepository 
     }
 
     @Override
-    @Transactional
     public PlaylistVideo save(PlaylistVideo playlistVideo) {
         jdbcTemplate.update(PlaylistVideoRepositorySql.SAVE,
                 playlistVideo.getPlaylistId(),

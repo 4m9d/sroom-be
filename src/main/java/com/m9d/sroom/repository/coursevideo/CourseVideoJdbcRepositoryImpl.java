@@ -22,7 +22,6 @@ public class CourseVideoJdbcRepositoryImpl implements CourseVideoRepository {
     }
 
     @Override
-    @Transactional
     public CourseVideo save(CourseVideo courseVideo) {
         jdbcTemplate.update(CourseVideoRepositorySql.SAVE,
                 courseVideo.getCourseId(),

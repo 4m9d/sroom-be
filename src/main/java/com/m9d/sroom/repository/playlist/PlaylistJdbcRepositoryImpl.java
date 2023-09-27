@@ -19,7 +19,6 @@ public class PlaylistJdbcRepositoryImpl implements PlaylistRepository {
     }
 
     @Override
-    @Transactional
     public Playlist save(Playlist playlist) {
         jdbcTemplate.update(PlaylistRepositorySql.SAVE,
                 playlist.getPlaylistCode(),

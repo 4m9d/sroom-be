@@ -18,7 +18,6 @@ public class CourseJdbcRepositoryImpl implements CourseRepository {
     }
 
     @Override
-    @Transactional
     public Course save(Course course) {
         jdbcTemplate.update(CourseRepositorySql.SAVE,
                 course.getMemberId(),

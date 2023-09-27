@@ -19,7 +19,6 @@ public class LectureJdbcRepositoryImpl implements LectureRepository {
     }
 
     @Override
-    @Transactional
     public Lecture save(Lecture lecture) {
         jdbcTemplate.update(LectureRepositorySql.SAVE,
                 lecture.getCourseId(),
