@@ -350,7 +350,6 @@ public class MaterialService {
         Long summaryId = materialRepository.saveSummary(videoId, materialVo.getSummary(), false);
         courseRepository.updateSummaryId(videoId, summaryId);
         materialRepository.updateMaterialStatusByCode(videoCode, MaterialStatus.CREATED.getValue());
-        log.info("videoCode = {}, videoId = {}, summaryId = {}, ", videoCode, videoId, summaryId);
 
         for (QuizVo quizVo : materialVo.getQuizzes()) {
             saveQuiz(videoId, quizVo);
