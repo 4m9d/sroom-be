@@ -108,7 +108,7 @@ public class MaterialServiceV2 {
                 quizRes.setSubmittedAnswer(submittedQuizInfoRes.getSubmittedAnswer());
                 quizRes.setCorrect(submittedQuizInfoRes.isCorrect());
                 quizRes.setScrapped(submittedQuizInfoRes.isScrapped());
-                quizRes.setSubmittedAt(DateUtil.dateFormat.format(submittedQuizInfoRes.getSubmittedTime()));
+                quizRes.setSubmittedAt(DateUtil.dateTimeFormat.format(submittedQuizInfoRes.getSubmittedTime()));
             } else {
                 quizRes.setSubmitted(false);
             }
