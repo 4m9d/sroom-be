@@ -19,6 +19,12 @@ class LectureRepositorySql {
         WHERE lecture_id = ?
     """
 
+    public static final String UPDATE_BY_ID = """
+        UPDATE LECTURE
+        SET course_id = ?, source_id = ?, is_playlist = ?, lecture_index = ?, is_reviewed = ?, member_id = ?, channel = ?
+        WHERE lecture_id = ?
+    """
+
     public static final String DELETE_BY_COURSE_ID = """
         DELETE FROM LECTURE
         WHERE course_id = ?
