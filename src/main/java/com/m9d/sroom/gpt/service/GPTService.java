@@ -19,10 +19,10 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequiredArgsConstructor
 public class GPTService {
 
-    @Value("${gpt.request-url}")
+    @Value("${ai.request-url}")
     private String gptRequestUrl;
 
-    @Value("${gpt.result-url}")
+    @Value("${ai.result-url}")
     private String gptResultUrl;
 
     private final WebClient webClient;
