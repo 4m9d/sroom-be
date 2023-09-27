@@ -4,8 +4,8 @@
 
 **❗️❗️매우 중요❗️❗️**
 
-db 접근정보 등 민감정보를 보호하기 위해 gitignore된 파일들이 존재합니다.
-sroom 개발자에게 문의한 후 secure.properties, schema.sql를 패키지에 포함시켜야 실행됩니다. 단, 파일이 github에 공개되지 않도록 다음과 같이 캐시를 삭제한 후 커밋해주세요.
+gitignore된 파일들이 존재합니다.
+sroom 개발자에게 문의한 후 schema.sql를 패키지에 포함시켜야 실행됩니다. 파일이 github에 공개되지 않도록 다음과 같이 캐시를 삭제한 후 커밋해주세요.
   ```bash
    git rm -r --cached .
    git add .
