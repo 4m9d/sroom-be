@@ -6,7 +6,9 @@ import java.util.List;
 
 public interface QuizOptionRepository {
 
-    void save(QuizOption quizOption);
+    QuizOption save(QuizOption quizOption);
+
+    QuizOption getById(Long quizOptionId);
 
     List<QuizOption> getListByQuizId(Long quizId);
 }

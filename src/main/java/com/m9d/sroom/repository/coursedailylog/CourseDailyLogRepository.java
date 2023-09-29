@@ -8,11 +8,11 @@ import java.util.Optional;
 
 public interface CourseDailyLogRepository {
 
-    void save(CourseDailyLog dailyLog);
+    CourseDailyLog save(CourseDailyLog dailyLog);
 
     Optional<CourseDailyLog> findByCourseIdAndDate(Long courseId, Date date);
 
-    void update(CourseDailyLog dailyLog);
+    CourseDailyLog updateById(Long dailyLogId, CourseDailyLog dailyLog);
 
 
 

@@ -16,7 +16,6 @@ import com.m9d.sroom.material.model.*;
 import com.m9d.sroom.material.model.SubmittedQuizInfoRes;
 import com.m9d.sroom.material.repository.MaterialRepository;
 import com.m9d.sroom.member.repository.MemberRepository;
-import com.m9d.sroom.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -124,7 +123,7 @@ public class MaterialService {
     private void setQuizOptions(QuizRes quizRes, List<QuizOption> options) {
         List<String> optionList = new ArrayList<>(5);
         for (QuizOption option : options) {
-            optionList.add(option.getIndex() - 1, option.getOptionText());
+            optionList.add(option.getOptionIndex() - 1, option.getOptionText());
         }
         quizRes.setOptions(optionList);
     }

@@ -5,6 +5,7 @@ import com.m9d.sroom.course.sql.CourseSqlQuery;
 import com.m9d.sroom.global.mapper.CourseVideo;
 import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
 import com.m9d.sroom.lecture.dto.response.VideoWatchInfo;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,7 +69,11 @@ public class CourseVideoJdbcRepositoryImpl implements CourseVideoRepository {
 
     @Override
     public Optional<CourseVideo> findById(Long courseVideoId) {
-        return Optional.empty();
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(CourseVideoRepositorySql.GET_BY_ID, CourseVideo.getRowMapper(), courseVideoId));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
@@ -135,5 +140,10 @@ public class CourseVideoJdbcRepositoryImpl implements CourseVideoRepository {
                         .duration(rs.getInt("duration"))
                         .build()
                 , courseId);
+    }
+
+    @Override
+    public void updateSummaryId(Long videoId, long summaryId) {
+        jdbcTemplate.update(CourseVideoRepositorySql.UPDATE_SUMMARY_ID, summaryId, videoId);
     }
 }

@@ -19,7 +19,7 @@ public class QuizRes {
     private List<String> options;
 
     @JsonProperty("is_submitted")
-    private boolean submitted;
+    private Boolean submitted;
 
     private String answer;
 

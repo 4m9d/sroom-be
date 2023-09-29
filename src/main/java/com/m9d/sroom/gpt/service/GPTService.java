@@ -5,6 +5,7 @@ import com.google.gson.JsonSyntaxException;
 import com.m9d.sroom.gpt.vo.MaterialResultsVo;
 import com.m9d.sroom.gpt.vo.MaterialVo;
 import com.m9d.sroom.material.service.MaterialService;
+import com.m9d.sroom.material.service.MaterialServiceV2;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.time.Duration;
 
 @Service
 @Slf4j
@@ -27,7 +30,7 @@ public class GPTService {
 
     private final WebClient webClient;
 
-    private final MaterialService materialService;
+    private final MaterialServiceV2 materialServiceV2;
 
     private final Gson gson;
 
@@ -42,9 +45,9 @@ public class GPTService {
             return;
         }
 
-        if(resultStr == null){
+        if (resultStr == null) {
             return;
-        }else{
+        } else {
             log.debug("response body from gpt server = {}", resultStr);
         }
 
@@ -65,6 +68,7 @@ public class GPTService {
                             .toUri())
                     .retrieve()
                     .bodyToMono(String.class)
+                    .timeout(Duration.ofSeconds(4))
                     .block();
         } catch (Exception e) {
             log.error("Error occurred while making a request to fastAPI server. message = {}", e.getMessage());
@@ -77,7 +81,7 @@ public class GPTService {
         MaterialVo resultVo = null;
         try {
             resultVo = gson.fromJson(resultStr, MaterialVo.class);
-            if(resultVo.getResults().size() > 0) {
+            if (!resultVo.getResults().isEmpty()) {
                 log.info("received video material count is = {}", resultVo.getResults().size());
             }
         } catch (JsonSyntaxException e) {
@@ -88,7 +92,7 @@ public class GPTService {
 
     public void saveResultEach(MaterialResultsVo materialVo) {
         try {
-            materialService.saveMaterials(materialVo);
+            materialServiceV2.saveMaterials(materialVo);
         } catch (Exception e) {
             log.error("failed to save summary, quizzes from GPT. error message = {}", e.getMessage(), e);
         }

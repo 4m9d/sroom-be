@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
+import java.sql.Timestamp;
 import java.util.Map;
 import java.util.Optional;
 
@@ -188,6 +189,7 @@ public class YoutubeUtil {
             video.setReviewCount(videoOriginal.getReviewCount());
             video.setChapterUse(videoOriginal.isChapterUse());
             video.setMaterialStatus(videoOriginal.getMaterialStatus());
+            video.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
             return videoRepository.updateById(videoOptional.get().getVideoId(), video);
         } else {
             return videoRepository.save(video);

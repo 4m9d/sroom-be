@@ -18,4 +18,13 @@ public enum QuizType {
         return value;
     }
 
+    public static QuizType fromValue(int value) {
+        for (QuizType type : values()) {
+            if (type.getValue() == value) {
+                return type;
+            }
+        }
+        throw new IllegalArgumentException("Invalid QuizType value: " + value);
+    }
+
 }

@@ -8,4 +8,10 @@ class MemberRepositorySql {
         FROM MEMBER
         WHERE member_id = ?
     """
+    public static final String UPDATE_BY_ID = """
+        UPDATE
+        MEMBER SET member_name = ?, refresh_token = ?, total_solved_count = ?, total_correct_count = ?,
+        completion_rate = ?, total_learning_time = ?, status = ?, bio = ?
+        WHERE member_id = ?
+    """
 }

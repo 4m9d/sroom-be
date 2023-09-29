@@ -14,6 +14,7 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,7 +70,7 @@ public class MaterialRepository {
                 .quizOptionId(rs.getLong("quiz_option_id"))
                 .quizId(quizId)
                 .optionText(rs.getString("option_text"))
-                .index(rs.getInt("option_index"))
+                .optionIndex(rs.getInt("option_index"))
                 .build(), quizId);
     }
 
@@ -91,11 +92,12 @@ public class MaterialRepository {
 
     public SummaryBrief getSummaryById(Long summaryId) {
         return jdbcTemplate.queryForObject(GET_SUMMARY_BY_ID_QUERY,
-                (rs, rowNum) -> new SummaryBrief(
-                        rs.getString("content"),
-                        rs.getBoolean("is_modified"),
-                        rs.getTimestamp("updated_time")
-                ), summaryId);
+                (rs, rowNum) -> SummaryBrief.builder()
+                        .content(rs.getString("content"))
+                        .modified(rs.getBoolean("is_modified"))
+                        .modifiedAt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(rs.getTimestamp("updated_time")))
+                        .build()
+                , summaryId);
     }
 
     public Optional<Summary> findSummaryByCourseVideoId(Long courseVideoId) {

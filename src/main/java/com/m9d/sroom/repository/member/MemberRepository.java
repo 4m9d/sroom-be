@@ -16,6 +16,8 @@ public interface MemberRepository {
 
     Optional<Member> findById(Long memberId);
 
+    Member updateById(Long memberId, Member member);
+
     void updateRefreshTokenById(Long memberId, String refreshToken);
 
     void addQuizCountById(Long memberId, int quizCount, int correctCount);
