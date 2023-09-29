@@ -101,9 +101,12 @@ public class MaterialServiceV2 {
                 .options(getOptionsStr(quiz.getId()))
                 .answer(getQuizAnswer(quiz))
                 .build();
-        courseQuizRepository.findByQuizIdAndCourseVideoId(quiz.getId(), courseVideoId)
-                .ifPresent(courseQuiz -> setQuizResWithCourseQuiz(quizRes, courseQuiz));
 
+        courseQuizRepository.findByQuizIdAndCourseVideoId(quiz.getId(), courseVideoId)
+                .ifPresentOrElse(
+                        courseQuiz -> setQuizResWithCourseQuiz(quizRes, courseQuiz),
+                        () -> quizRes.setSubmitted(false)
+                );
         return quizRes;
     }
 
@@ -210,13 +213,6 @@ public class MaterialServiceV2 {
     }
 
     private void validateSubmittedQuizzes(Long videoId, Long courseVideoId, List<SubmittedQuiz> submittedQuizList) {
-        long distinctIdCount = submittedQuizList.stream()
-                .map(SubmittedQuiz::getQuizId)
-                .distinct()
-                .count();
-        if (distinctIdCount > 1) {
-            throw new QuizNotMatchException();
-        }
         Optional<Quiz> quizOptional = quizRepository.findById(submittedQuizList.get(0).getQuizId());
 
         if (quizOptional.isEmpty()) {

@@ -21,5 +21,6 @@ class SummaryRepositorySql {
     public static final String UPDATE_BY_ID = """
         UPDATE
         SUMMARY SET content = ?, is_modified = ?
+        WHERE summary_id = ?
     """
 }
