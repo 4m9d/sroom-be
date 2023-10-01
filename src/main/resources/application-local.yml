@@ -24,7 +24,7 @@ spring:
 
 youtube:
   base-url: https://www.googleapis.com/youtube/v3
-gpt:
+ai:
   request-url : http://127.0.0.1:8000
   result-url: http://127.0.0.1:8000/results
 
