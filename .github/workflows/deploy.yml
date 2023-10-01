@@ -54,13 +54,13 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
-          container-name: backend-container
+          container-name: be-container
           image: ${{ env.IMAGE }}
       ## ECS 실행
       - name: Deploy ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: backend-service
+          service: be-service
           cluster: be-cluster
           wait-for-service-stability: true
