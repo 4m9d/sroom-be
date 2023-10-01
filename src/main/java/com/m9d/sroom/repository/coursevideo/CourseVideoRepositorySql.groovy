@@ -90,4 +90,10 @@ class CourseVideoRepositorySql {
         lecture_index = ?, member_id = ?, last_view_time = ?, max_duration =?, lecture_id = ?
         WHERE course_video_id = ?
     """
+    public static final String UPDATE_SUMMARY_ID = """
+        UPDATE COURSEVIDEO
+        SET summary_id = ?
+        WHERE video_id = ?
+        AND (summary_id = 0 OR summary_id IS NULL)
+    """
 }

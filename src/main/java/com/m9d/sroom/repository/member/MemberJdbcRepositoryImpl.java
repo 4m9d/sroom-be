@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public class MemberJdbcRepositoryImpl implements MemberRepository{
+public class MemberJdbcRepositoryImpl implements MemberRepository {
 
     JdbcTemplate jdbcTemplate;
 
@@ -38,6 +38,21 @@ public class MemberJdbcRepositoryImpl implements MemberRepository{
     @Override
     public Optional<Member> findById(Long memberId) {
         return Optional.empty();
+    }
+
+    @Override
+    public Member updateById(Long memberId, Member member) {
+        jdbcTemplate.update(MemberRepositorySql.UPDATE_BY_ID,
+                member.getMemberName(),
+                member.getRefreshToken(),
+                member.getTotalSolvedCount(),
+                member.getTotalCorrectCount(),
+                member.getCompletionRate(),
+                member.getTotalLearningTime(),
+                member.getStatus(),
+                member.getBio(),
+                memberId);
+        return getById(memberId);
     }
 
     @Override

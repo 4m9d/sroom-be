@@ -6,9 +6,11 @@ import java.util.Optional;
 
 public interface SummaryRepository {
 
-    void save(Summary summary);
+    Summary save(Summary summary);
 
-    Optional<Summary> findByCourseVideoId(Long courseVideoId);
+    Summary getById(Long summaryId);
 
-    void update(Summary summary);
+    Optional<Summary> findById(Long summaryId);
+
+    Summary updateById(Long summaryId, Summary summary);
 }

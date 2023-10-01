@@ -1,12 +1,14 @@
 package com.m9d.sroom.repository.course;
 
 import com.m9d.sroom.global.mapper.Course;
+import com.m9d.sroom.global.mapper.CourseVideo;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class CourseJdbcRepositoryImpl implements CourseRepository {

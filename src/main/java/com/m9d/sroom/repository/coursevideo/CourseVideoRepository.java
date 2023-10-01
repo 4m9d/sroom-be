@@ -37,4 +37,6 @@ public interface CourseVideoRepository {
     List<VideoWatchInfo> getWatchInfoListByCourseIdAndSection(Long courseId, int section);
 
     List<VideoInfoForSchedule> getInfoForScheduleByCourseId(Long courseId);
+
+    void updateSummaryId(Long videoId, long summaryId);
 }
