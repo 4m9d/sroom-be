@@ -18,6 +18,7 @@ import com.m9d.sroom.repository.coursevideo.CourseVideoRepository;
 import com.m9d.sroom.repository.member.MemberRepository;
 import com.m9d.sroom.repository.playlist.PlaylistRepository;
 import com.m9d.sroom.repository.review.ReviewRepository;
+import com.m9d.sroom.lecture.repository.LectureRepository;
 import com.m9d.sroom.repository.video.VideoRepository;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.util.youtube.YoutubeApi;
@@ -33,6 +34,7 @@ import com.m9d.sroom.util.youtube.vo.search.SearchSnippetVo;
 import com.m9d.sroom.util.youtube.vo.search.SearchVo;
 import com.m9d.sroom.util.youtube.vo.video.VideoVo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 import reactor.core.publisher.Mono;
@@ -55,6 +57,7 @@ import static com.m9d.sroom.lecture.constant.LectureConstant.*;
 import static com.m9d.sroom.util.youtube.YoutubeUtil.*;
 
 @Slf4j
+@Service
 public class LectureServiceV2 {
     private final PlaylistRepository playlistRepository;
     private final ReviewRepository reviewRepository;
@@ -62,24 +65,30 @@ public class LectureServiceV2 {
     private final VideoRepository videoRepository;
     private final CourseVideoRepository courseVideoRepository;
     private final MemberRepository memberRepository;
+    private final LectureRepository lectureRepository;
     private final CourseDailyLogRepository courseDailyLogRepository;
     private final YoutubeUtil youtubeUtil;
     private final YoutubeApi youtubeApi;
     private final DateUtil dateUtil;
 
-    public LectureServiceV2(PlaylistRepository playlistRepository, ReviewRepository reviewRepository, CourseRepository courseRepository, VideoRepository videoRepository, CourseVideoRepository courseVideoRepository, MemberRepository memberRepository, CourseDailyLogRepository courseDailyLogRepository, YoutubeUtil youtubeUtil,
+    public LectureServiceV2(CourseRepository courseRepository, ReviewRepository reviewRepository,
+                            MemberRepository memberRepository, PlaylistRepository playlistRepository,
+                            VideoRepository videoRepository, YoutubeUtil youtubeUtil, LectureRepository lectureRepository,
+                            CourseVideoRepository courseVideoRepository, CourseDailyLogRepository courseDailyLogRepository,
                             YoutubeApi youtubeApi, DateUtil dateUtil) {
-        this.playlistRepository = playlistRepository;
-        this.reviewRepository = reviewRepository;
-        this.courseRepository = courseRepository;
-        this.videoRepository = videoRepository;
-        this.courseVideoRepository = courseVideoRepository;
-        this.memberRepository = memberRepository;
-        this.courseDailyLogRepository = courseDailyLogRepository;
-        this.youtubeUtil = youtubeUtil;
-        this.youtubeApi = youtubeApi;
-        this.dateUtil = dateUtil;
+            this.reviewRepository = reviewRepository;
+            this.courseRepository = courseRepository;
+            this.courseVideoRepository = courseVideoRepository;
+            this.memberRepository = memberRepository;
+            this.lectureRepository = lectureRepository;
+            this.courseDailyLogRepository = courseDailyLogRepository;
+            this.playlistRepository = playlistRepository;
+            this.videoRepository = videoRepository;
+            this.youtubeUtil = youtubeUtil;
+            this.youtubeApi = youtubeApi;
+            this.dateUtil = dateUtil;
     }
+
 
     @Transactional
     public KeywordSearch searchByKeyword(Long memberId, KeywordSearchParam keywordSearchParam) {
@@ -363,70 +372,103 @@ public class LectureServiceV2 {
         return HtmlUtils.htmlUnescape(input);
     }
 
-//    @Transactional
-//    public Recommendations getRecommendations(Long memberId) {
-//        HashSet<RecommendLecture> recommendLectureHashSet = new HashSet<>();
-//        List<RecommendLecture> recommendLectureList = new ArrayList<>();
-//        List<RecommendLecture> topRatedVideos = getTopRatedVideos();
-//        List<RecommendLecture> topRatedPlaylists = getTopRatedPlaylists();
-//        List<RecommendLecture> recommendLecturesByChannel = getRecommendsByChannel(memberId);
-//
-//        Set<String> enrolledLectureSet = getEnrolledLectures(memberId);
-//
-//        recommendLectureHashSet.addAll(topRatedVideos);
-//        recommendLectureHashSet.addAll(topRatedPlaylists);
-//        recommendLectureHashSet.addAll(recommendLecturesByChannel);
-//
-//        for (String lectureCode : enrolledLectureSet) {
-//            recommendLectureHashSet.removeIf(recommendLecture -> (recommendLecture.getLectureCode().equals(lectureCode)));
-//        }
-//
-//        recommendLectureList.addAll(recommendLectureHashSet);
-//        Collections.shuffle(recommendLectureList);
-//
-//        Recommendations recommendations = Recommendations.builder()
-//                .recommendations(recommendLectureList)
-//                .build();
-//
-//        return recommendations;
-//    }
-//
-//    public List<RecommendLecture> getTopRatedVideos() {
-//        return lectureRepository.getVideosSortedByRating();
-//    }
-//
-//    public List<RecommendLecture> getTopRatedPlaylists() {
-//        return lectureRepository.getPlaylistsSortedByRating();
-//    }
-//
-//    public List<RecommendLecture> getRecommendsByChannel(Long memberId) {
-//        List<RecommendLecture> recommendLecturesByChannel = new ArrayList<>();
-//        List<String> channels = getMostEnrolledChannels(memberId);
-//
-//        final int SELECT_BY_RANDOM_LIMIT = 1;
-//        final int SELECT_BY_PUBLISH_DATE_LIMIT = 2;
-//        final int SELECT_BY_VIEWED_LIMIT = 3;
-//
-//        for (String channelName : channels) {
-//            List<RecommendLecture> randomVideosByChannel = lectureRepository.getRandomVideosByChannel(channelName, SELECT_BY_RANDOM_LIMIT);
-//            List<RecommendLecture> randomPlaylistsByChannel = lectureRepository.getRandomPlaylistsByChannel(channelName, SELECT_BY_RANDOM_LIMIT);
-//
-//            List<RecommendLecture> mostViewedVideosByChannel = lectureRepository.getMostViewedVideosByChannel(channelName, SELECT_BY_VIEWED_LIMIT);
-//            List<RecommendLecture> mostViewedPlaylistsByChannel = lectureRepository.getMostViewedPlaylistsByChannel(channelName, SELECT_BY_VIEWED_LIMIT);
-//
-//            List<RecommendLecture> latestPublishedVideosByChannel = lectureRepository.getLatestVideosByChannel(channelName, SELECT_BY_PUBLISH_DATE_LIMIT);
-//            List<RecommendLecture> latestPublishedPlaylistsByChannel = lectureRepository.getLatestPlaylistsByChannel(channelName, SELECT_BY_PUBLISH_DATE_LIMIT);
-//
-//            recommendLecturesByChannel.addAll(randomVideosByChannel);
-//            recommendLecturesByChannel.addAll(randomPlaylistsByChannel);
-//            recommendLecturesByChannel.addAll(mostViewedPlaylistsByChannel);
-//            recommendLecturesByChannel.addAll(mostViewedVideosByChannel);
-//            recommendLecturesByChannel.addAll(latestPublishedVideosByChannel);
-//            recommendLecturesByChannel.addAll(latestPublishedPlaylistsByChannel);
-//        }
-//
-//        return recommendLecturesByChannel;
-//    }
+    @Transactional
+    public Recommendations getRecommendations(Long memberId) {
+        HashSet<RecommendLecture> recommendLectureHashSet = new HashSet<>();
+        List<RecommendLecture> recommendLectureList = new ArrayList<>();
+        List<RecommendLecture> topRatedVideos = getTopRatedVideos();
+        List<RecommendLecture> topRatedPlaylists = getTopRatedPlaylists();
+        List<RecommendLecture> recommendLecturesByChannel = getRecommendsByChannel(memberId);
+
+        Set<String> enrolledLectureSet = getEnrolledLectures(memberId);
+
+        recommendLectureHashSet.addAll(topRatedVideos);
+        recommendLectureHashSet.addAll(topRatedPlaylists);
+        recommendLectureHashSet.addAll(recommendLecturesByChannel);
+
+        for (String lectureCode : enrolledLectureSet) {
+            recommendLectureHashSet.removeIf(recommendLecture -> (recommendLecture.getLectureCode().equals(lectureCode)));
+        }
+
+        recommendLectureList.addAll(recommendLectureHashSet);
+        Collections.shuffle(recommendLectureList);
+
+        Recommendations recommendations = Recommendations.builder()
+                .recommendations(recommendLectureList)
+                .build();
+
+        return recommendations;
+    }
+
+    public List<RecommendLecture> getTopRatedVideos() {
+        return getRecommendLectures(videoRepository.getTopRatedOrder(5));
+    }
+
+    public List<RecommendLecture> getTopRatedPlaylists() {
+        return getRecommendLectures(playlistRepository.getTopRatedOrder(5));
+    }
+
+
+    public List<RecommendLecture> getRecommendsByChannel(Long memberId) {
+        List<RecommendLecture> recommendLecturesByChannel = new ArrayList<>();
+        List<String> channels = getMostEnrolledChannels(memberId);
+
+        final int SELECT_BY_RANDOM_LIMIT = 1;
+        final int SELECT_BY_PUBLISH_DATE_LIMIT = 2;
+        final int SELECT_BY_VIEWED_LIMIT = 3;
+
+        for (String channelName : channels) {
+            List<Object> lectures = new ArrayList<>();
+
+            lectures.addAll(videoRepository.getRandomByChannel(channelName, SELECT_BY_RANDOM_LIMIT));
+            lectures.addAll(playlistRepository.getRandomByChannel(channelName, SELECT_BY_RANDOM_LIMIT));
+
+            lectures.addAll(videoRepository.getViewCountOrderByChannel(channelName, SELECT_BY_VIEWED_LIMIT));
+            lectures.addAll(playlistRepository.getViewCountOrderByChannel(channelName, SELECT_BY_VIEWED_LIMIT));
+
+            lectures.addAll(videoRepository.getLatestOrderByChannel(channelName, SELECT_BY_PUBLISH_DATE_LIMIT));
+            lectures.addAll(playlistRepository.getLatestOrderByChannel(channelName, SELECT_BY_PUBLISH_DATE_LIMIT));
+
+            recommendLecturesByChannel.addAll(getRecommendLectures(lectures));
+        }
+
+        return recommendLecturesByChannel;
+    }
+
+    public List<RecommendLecture> getRecommendLectures(List<?> lectures) {
+        List<RecommendLecture> recommendLectures = new ArrayList<>();
+
+        for (Object lecture : lectures) {
+            if (lecture instanceof Video) {
+                Video video = (Video) lecture;
+                recommendLectures.add(RecommendLecture.builder()
+                        .lectureTitle(video.getTitle())
+                        .description(video.getDescription())
+                        .channel(video.getChannel())
+                        .lectureCode(video.getVideoCode())
+                        .isPlaylist(false)
+                        .rating((double) video.getAccumulatedRating() / video.getReviewCount())
+                        .reviewCount(video.getReviewCount())
+                        .thumbnail(video.getThumbnail())
+                        .build());
+            }
+            else if (lecture instanceof Playlist) {
+                Playlist playlist = (Playlist) lecture;
+                recommendLectures.add(RecommendLecture.builder()
+                        .lectureTitle(playlist.getTitle())
+                        .description(playlist.getDescription())
+                        .channel(playlist.getChannel())
+                        .lectureCode(playlist.getPlaylistCode())
+                        .isPlaylist(true)
+                        .rating((double) playlist.getAccumulatedRating() / playlist.getReviewCount())
+                        .reviewCount(playlist.getReviewCount())
+                        .thumbnail(playlist.getThumbnail())
+                        .build());
+            }
+        }
+        return recommendLectures;
+    }
+
 
     public Set<String> getEnrolledLectures(Long memberId) {
         Set<String> lectureSet = new HashSet<>();
@@ -435,9 +477,10 @@ public class LectureServiceV2 {
         return lectureSet;
     }
 
-//    public List<String> getMostEnrolledChannels(Long memberId) {
-//        return lectureRepository.getMostEnrolledChannels(memberId);
-//    }
+    public List<String> getMostEnrolledChannels(Long memberId) {
+        return lectureRepository.getMostEnrolledChannels(memberId);
+    }
+
 
     @Transactional
     public LectureStatus updateLectureTime(Long memberId, Long courseVideoId, LectureTimeRecord record, boolean isMarkedAsCompleted) {

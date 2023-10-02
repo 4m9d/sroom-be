@@ -57,6 +57,11 @@ public class VideoJdbcRepositoryImpl implements VideoRepository {
     }
 
     @Override
+    public List<Video> getTopRatedOrder(int limit) {
+        return jdbcTemplate.query(VideoRepositorySql.GET_TOP_RATED_ORDER, Video.getRowMapper(), limit);
+    }
+
+    @Override
     public Optional<Video> findById(Long videoId) {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(VideoRepositorySql.GET_BY_ID, Video.getRowMapper(), videoId));
@@ -98,5 +103,20 @@ public class VideoJdbcRepositoryImpl implements VideoRepository {
     public Set<String> getCodeSetByMemberId(Long memberId) {
         return new HashSet<>(jdbcTemplate.query(VideoRepositorySql.GET_CODE_SET_BY_MEMBER_ID, (rs, rowNum) ->
                 rs.getString("video_code"), memberId));
+    }
+
+    @Override
+    public List<Video> getRandomByChannel(String channel, int limit) {
+        return jdbcTemplate.query(VideoRepositorySql.GET_RANDOM_BY_CHANNEL, Video.getRowMapper(), channel, limit);
+    }
+
+    @Override
+    public List<Video> getViewCountOrderByChannel(String channel, int limit) {
+        return jdbcTemplate.query(VideoRepositorySql.GET_VIEW_COUNT_ORDER_BY_CHANNEL, Video.getRowMapper(), channel, limit);
+    }
+
+    @Override
+    public List<Video> getLatestOrderByChannel(String channel, int limit) {
+        return jdbcTemplate.query(VideoRepositorySql.GET_LATEST_ORDER_BY_CHANNEL, Video.getRowMapper(), channel, limit);
     }
 }

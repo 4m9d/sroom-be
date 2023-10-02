@@ -42,4 +42,12 @@ class LectureRepositorySql {
         FROM LECTURE
         WHERE course_id = ?
     """
+
+    public static final String GET_MOST_ENROLLED_CHANNELS_BY_MEMBER_ID_QUERY = """
+        SELECT channel
+        FROM LECTURE
+        WHERE member_id = ?
+        GROUP BY channel
+        ORDER BY COUNT(1) DESC
+    """
 }

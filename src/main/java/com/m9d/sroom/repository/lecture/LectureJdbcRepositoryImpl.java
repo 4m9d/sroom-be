@@ -69,6 +69,7 @@ public class LectureJdbcRepositoryImpl implements LectureRepository {
 
     @Override
     public List<String> getChannelListOrderByCount(Long member_id) {
-        return null;
+        return jdbcTemplate.query(LectureRepositorySql.GET_MOST_ENROLLED_CHANNELS_BY_MEMBER_ID_QUERY,
+                (rs, rowNum) -> rs.getString("channel"), member_id);
     }
 }

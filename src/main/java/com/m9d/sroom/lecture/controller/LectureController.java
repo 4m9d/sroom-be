@@ -5,6 +5,7 @@ import com.m9d.sroom.lecture.dto.request.LectureDetailParam;
 import com.m9d.sroom.lecture.dto.request.LectureTimeRecord;
 import com.m9d.sroom.lecture.dto.response.*;
 import com.m9d.sroom.lecture.service.LectureService;
+import com.m9d.sroom.lecture.service.LectureServiceV2;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
 import com.m9d.sroom.util.youtube.YoutubeUtil;
@@ -81,7 +82,7 @@ public class LectureController {
         Long memberId = jwtUtil.getMemberIdFromRequest();
         boolean isPlaylist = youtubeUtil.checkIfPlaylist(lectureCode);
 
-        ResponseEntity<?> lectureDetail = lectureService.getLectureDetail(memberId, isPlaylist, lectureCode, lectureDetailParam);
+        ResponseEntity<?> lectureDetail = (ResponseEntity<?>) lectureService.getLectureDetail(memberId, isPlaylist, lectureCode, lectureDetailParam);
         return lectureDetail;
     }
 
