@@ -25,4 +25,8 @@ public interface MemberRepository {
     void addTotalLearningTimeById(Long memberId, int timeToAddInSecond);
 
     void updateCompletionRateById(Long memberId, int completionRate);
+
+    Integer countCompletedCourseById(Long memberId);
+
+    Integer countCourseById(Long memberId);
 }

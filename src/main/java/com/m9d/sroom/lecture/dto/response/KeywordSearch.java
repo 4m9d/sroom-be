@@ -25,5 +25,5 @@ public class KeywordSearch {
     private String prevPageToken;
 
     @Schema(description = "조회된 강의 리스트")
-    private List<Lecture> lectures;
+    private List<LectureResponse> lectures;
 }

@@ -53,4 +53,11 @@ class CourseRepositorySql {
         ELSE 0
     END, last_view_time DESC
     """
+    public static final String GET_BRIEF_LIST_BY_MEMBER_ID = """
+        SELECT c.course_title, c.course_id, COUNT(cv.course_id) as video_count
+        FROM COURSE c
+        LEFT JOIN COURSEVIDEO cv ON c.course_id = cv.course_id
+        WHERE c.member_id = ?
+        GROUP BY c.course_id;
+    """
 }

@@ -74,4 +74,14 @@ public class MemberJdbcRepositoryImpl implements MemberRepository {
     public void updateCompletionRateById(Long memberId, int completionRate) {
 
     }
+
+    @Override
+    public Integer countCompletedCourseById(Long memberId) {
+        return jdbcTemplate.queryForObject(MemberRepositorySql.COUNT_COMPLETED_COURSE_BY_ID, Integer.class, memberId);
+    }
+
+    @Override
+    public Integer countCourseById(Long memberId) {
+        return jdbcTemplate.queryForObject(MemberRepositorySql.COUNT_COURSE_BY_ID, Integer.class, memberId);
+    }
 }

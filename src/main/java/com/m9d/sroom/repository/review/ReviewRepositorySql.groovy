@@ -22,4 +22,11 @@ class ReviewRepositorySql {
         FROM REVIEW
         WHERE lecture_id = ?
     """
+
+    public static final String GET_BRIEF_LIST_BY_CODE = """
+        SELECT r.review_id, r.content, r.submitted_rating, m.member_name, r.submitted_date 
+        FROM REVIEW r JOIN MEMBER m ON r.member_id = m.member_id 
+        WHERE r.source_code = ? 
+        ORDER BY r.submitted_date DESC LIMIT ? OFFSET ?
+    """
 }

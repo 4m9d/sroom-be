@@ -1,7 +1,6 @@
 package com.m9d.sroom.repository.coursevideo;
 
 import com.m9d.sroom.course.dto.VideoInfoForSchedule;
-import com.m9d.sroom.course.sql.CourseSqlQuery;
 import com.m9d.sroom.global.mapper.CourseVideo;
 import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
 import com.m9d.sroom.lecture.dto.response.VideoWatchInfo;
@@ -101,8 +100,13 @@ public class CourseVideoJdbcRepositoryImpl implements CourseVideoRepository {
     }
 
     @Override
-    public Long getIdByCourseIdAndPrevIndex(Long courseId, int videoIndex) {
-        return null;
+    public Optional<CourseVideo> findByCourseIdAndPrevIndex(Long courseId, int videoIndex) {
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(CourseVideoRepositorySql.GET_BY_COURSE_ID_AND_PREV_INDEX,
+                    CourseVideo.getRowMapper(), courseId, videoIndex));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override

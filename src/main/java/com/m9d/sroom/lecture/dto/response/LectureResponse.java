@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Lecture{
+public class LectureResponse {
 
     @Schema(description = "강의 제목", example = "네트워크 기초(개정판)")
     private String lectureTitle;

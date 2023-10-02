@@ -27,6 +27,20 @@ class VideoRepositorySql {
         WHERE video_id = ?
     """
 
+    public static final String GET_TOP_RATED_ORDER = """
+        SELECT 
+        video_id, video_code, duration, channel, thumbnail, accumulated_rating, review_count, summary_id, 
+        is_available, description, chapter_usage, title, language, license, updated_at, view_count, published_at, 
+        membership, material_status,
+            CASE
+                WHEN review_count = 0 THEN 0
+                ELSE CAST(accumulated_rating AS DOUBLE) / review_count
+            END AS rating
+        FROM VIDEO 
+        ORDER BY rating DESC
+        LIMIT ? 
+    """
+
     public static final String UPDATE_BY_ID = """
         UPDATE VIDEO
         SET duration = ?, channel = ?, thumbnail = ?, accumulated_rating = ?, review_count = ?, summary_id = ?,
@@ -45,5 +59,44 @@ class VideoRepositorySql {
         ON v.video_id = pv.video_id
         WHERE pv.playlist_id = ?
         ORDER BY pv.video_index
+    """
+
+    public static final String GET_CODE_SET_BY_MEMBER_ID = """
+        SELECT v.video_code 
+        FROM COURSEVIDEO cv JOIN VIDEO v ON cv.video_id = v.video_id 
+        WHERE cv.member_id = ?
+    """
+
+    public static final String GET_RANDOM_BY_CHANNEL = """
+        SELECT 
+        video_id, video_code, duration, channel, thumbnail, accumulated_rating, review_count, summary_id, 
+        is_available, description, chapter_usage, title, language, license, updated_at, view_count, published_at, 
+        membership, material_status 
+        FROM VIDEO
+        WHERE channel = ?
+        ORDER BY RAND()
+        LIMIT ?
+    """
+
+    public static final String GET_VIEW_COUNT_ORDER_BY_CHANNEL = """
+        SELECT 
+        video_id, video_code, duration, channel, thumbnail, accumulated_rating, review_count, summary_id, 
+        is_available, description, chapter_usage, title, language, license, updated_at, view_count, published_at, 
+        membership, material_status 
+        FROM VIDEO
+        WHERE channel = ?
+        ORDER BY view_count DESC
+        LIMIT ?
+    """
+
+    public static final String GET_LATEST_ORDER_BY_CHANNEL = """
+        SELECT 
+        video_id, video_code, duration, channel, thumbnail, accumulated_rating, review_count, summary_id, 
+        is_available, description, chapter_usage, title, language, license, updated_at, view_count, published_at, 
+        membership, material_status 
+        FROM VIDEO
+        WHERE channel = ?
+        ORDER BY published_at DESC
+        LIMIT ?
     """
 }

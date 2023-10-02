@@ -16,9 +16,17 @@ public interface VideoRepository {
 
     Optional<Video> findByCode(String videoCode);
 
+    List<Video> getTopRatedOrder(int limit);
+
     Optional<Video> findById(Long videoId);
 
     Video updateById(Long videoId, Video video);
 
     List<Video> getListByPlaylistId(Long playlistId);
+    Set<String> getCodeSetByMemberId(Long memberId);
+    List<Video> getRandomByChannel(String channel, int limit);
+
+    List<Video> getViewCountOrderByChannel(String channel, int limit);
+
+    List<Video> getLatestOrderByChannel(String channel, int limit);
 }

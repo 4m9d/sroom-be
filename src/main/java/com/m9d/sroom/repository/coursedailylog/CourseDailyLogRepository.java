@@ -10,11 +10,11 @@ public interface CourseDailyLogRepository {
 
     CourseDailyLog save(CourseDailyLog dailyLog);
 
+    CourseDailyLog getById(Long dailyLogId);
+
     Optional<CourseDailyLog> findByCourseIdAndDate(Long courseId, Date date);
 
     CourseDailyLog updateById(Long dailyLogId, CourseDailyLog dailyLog);
-
-
 
     void updateQuizCountByCourseIdAndDate(Long courseId, Date date, int quizCount);
 

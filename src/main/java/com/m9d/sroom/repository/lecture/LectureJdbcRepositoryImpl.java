@@ -1,6 +1,5 @@
 package com.m9d.sroom.repository.lecture;
 
-import com.m9d.sroom.course.sql.CourseSqlQuery;
 import com.m9d.sroom.global.mapper.Lecture;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -69,6 +68,7 @@ public class LectureJdbcRepositoryImpl implements LectureRepository {
 
     @Override
     public List<String> getChannelListOrderByCount(Long member_id) {
-        return null;
+        return jdbcTemplate.query(LectureRepositorySql.GET_MOST_ENROLLED_CHANNELS_BY_MEMBER_ID_QUERY,
+                (rs, rowNum) -> rs.getString("channel"), member_id);
     }
 }

@@ -1,14 +1,11 @@
 package com.m9d.sroom.repository.coursedailylog;
 
-import com.m9d.sroom.dashboard.dto.response.LearningHistory;
-import com.m9d.sroom.dashboard.sql.DashboardSqlQuery;
 import com.m9d.sroom.global.mapper.CourseDailyLog;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,14 +30,17 @@ public class CourseDailyLogJdbcRepositoryImpl implements CourseDailyLogRepositor
         return getById(jdbcTemplate.queryForObject(CourseDailyLogRepositorySql.GET_LAST_ID, Long.class));
     }
 
-    private CourseDailyLog getById(Long aLong) {
-        return null;
+    @Override
+    public CourseDailyLog getById(Long dailyLogId) {
+        return jdbcTemplate.queryForObject(CourseDailyLogRepositorySql.GET_BY_ID,
+                CourseDailyLog.getRowMapper(), dailyLogId);
     }
 
     @Override
     public Optional<CourseDailyLog> findByCourseIdAndDate(Long courseId, Date date) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(CourseDailyLogRepositorySql.GET_BY_COURSE_ID_AND_DATE, CourseDailyLog.getRowMapper(), courseId, date));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(CourseDailyLogRepositorySql.GET_BY_COURSE_ID_AND_DATE,
+                    CourseDailyLog.getRowMapper(), courseId, date));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -48,7 +48,12 @@ public class CourseDailyLogJdbcRepositoryImpl implements CourseDailyLogRepositor
 
     @Override
     public CourseDailyLog updateById(Long dailyLogId, CourseDailyLog dailyLog) {
-        return null;
+        jdbcTemplate.update(CourseDailyLogRepositorySql.UPDATE_BY_ID,
+                dailyLog.getLearningTime(),
+                dailyLog.getQuizCount(),
+                dailyLog.getLectureCount(),
+                dailyLogId);
+        return getById(dailyLogId);
     }
 
     @Override

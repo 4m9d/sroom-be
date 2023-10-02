@@ -14,4 +14,14 @@ class MemberRepositorySql {
         completion_rate = ?, total_learning_time = ?, status = ?, bio = ?
         WHERE member_id = ?
     """
+    public static final String COUNT_COMPLETED_COURSE_BY_ID = """
+        SELECT COUNT(1)
+        FROM COURSE
+        WHERE member_id = ? AND progress = 100
+    """
+    public static final String COUNT_COURSE_BY_ID = """
+        SELECT COUNT(1)
+        FROM COURSE
+        WHERE member_id = ?
+    """
 }
