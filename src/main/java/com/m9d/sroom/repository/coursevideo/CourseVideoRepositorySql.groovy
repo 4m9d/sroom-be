@@ -44,9 +44,9 @@ class CourseVideoRepositorySql {
     """
 
     public static final String COMPLETED_COUNT_BY_COURSE_ID = """
-    SELECT COUNT(1) as completed_count
-    FROM COURSEVIDEO
-    WHERE course_id = ? AND is_complete = true
+        SELECT COUNT(1) as completed_count
+        FROM COURSEVIDEO
+        WHERE course_id = ? AND is_complete = true
     """
 
     public static final String GET_LAST_INFO_BY_COURSE_ID = """
@@ -95,5 +95,14 @@ class CourseVideoRepositorySql {
         SET summary_id = ?
         WHERE video_id = ?
         AND (summary_id = 0 OR summary_id IS NULL)
+    """
+    public static final String GET_BY_COURSE_ID_AND_PREV_INDEX = """
+        SELECT course_video_id, course_id, video_id, section, video_index, start_time, is_complete, summary_id, 
+        lecture_index, member_id, last_view_time, max_duration, lecture_id
+        FROM COURSEVIDEO
+        WHERE course_id = ?
+        AND video_index > ?
+        ORDER BY video_index
+        LIMIT 1
     """
 }

@@ -1,12 +1,15 @@
 package com.m9d.sroom.repository.video;
 
 import com.m9d.sroom.global.mapper.Video;
+import com.m9d.sroom.lecture.sql.LectureSqlQuery;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public class VideoJdbcRepositoryImpl implements VideoRepository {
@@ -89,5 +92,11 @@ public class VideoJdbcRepositoryImpl implements VideoRepository {
     @Override
     public List<Video> getListByPlaylistId(Long playlistId) {
         return jdbcTemplate.query(VideoRepositorySql.GET_LIST_BY_PLAYLIST_ID, Video.getRowMapper(), playlistId);
+    }
+
+    @Override
+    public Set<String> getCodeSetByMemberId(Long memberId) {
+        return new HashSet<>(jdbcTemplate.query(VideoRepositorySql.GET_CODE_SET_BY_MEMBER_ID, (rs, rowNum) ->
+                rs.getString("video_code"), memberId));
     }
 }

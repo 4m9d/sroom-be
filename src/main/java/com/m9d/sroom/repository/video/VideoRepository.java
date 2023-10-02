@@ -21,4 +21,6 @@ public interface VideoRepository {
     Video updateById(Long videoId, Video video);
 
     List<Video> getListByPlaylistId(Long playlistId);
+
+    Set<String> getCodeSetByMemberId(Long memberId);
 }

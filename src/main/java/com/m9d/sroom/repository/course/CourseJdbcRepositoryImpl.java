@@ -2,6 +2,7 @@ package com.m9d.sroom.repository.course;
 
 import com.m9d.sroom.global.mapper.Course;
 import com.m9d.sroom.global.mapper.CourseVideo;
+import com.m9d.sroom.lecture.dto.response.CourseBrief;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
+
+import static com.m9d.sroom.course.sql.CourseSqlQuery.GET_COURSE_LIST_QUERY;
 
 @Repository
 public class CourseJdbcRepositoryImpl implements CourseRepository {
@@ -81,5 +84,10 @@ public class CourseJdbcRepositoryImpl implements CourseRepository {
     @Override
     public Integer countCompletedByMemberId(Long memberId) {
         return null;
+    }
+
+    @Override
+    public List<CourseBrief> getBriefListByMemberId(Long memberId) {
+        return jdbcTemplate.query(CourseRepositorySql.GET_BRIEF_LIST_BY_MEMBER_ID, CourseBrief.getRowMapper(), memberId);
     }
 }

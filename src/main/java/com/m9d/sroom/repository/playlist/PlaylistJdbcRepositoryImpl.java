@@ -1,11 +1,13 @@
 package com.m9d.sroom.repository.playlist;
 
 import com.m9d.sroom.global.mapper.Playlist;
+import com.m9d.sroom.lecture.sql.LectureSqlQuery;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -71,7 +73,8 @@ public class PlaylistJdbcRepositoryImpl implements PlaylistRepository {
     }
 
     @Override
-    public Set<String> getCodeListByMemberId(Long memberId) {
-        return null;
+    public HashSet<String> getCodeSetByMemberId(Long memberId) {
+        return new HashSet<>(jdbcTemplate.query(PlaylistRepositorySql.GET_CODE_SET_BY_MEMBER_ID_QUERY,
+                (rs, rowNum) -> rs.getString("playlist_code"), memberId));
     }
 }

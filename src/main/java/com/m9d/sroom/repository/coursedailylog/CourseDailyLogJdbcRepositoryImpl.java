@@ -33,14 +33,17 @@ public class CourseDailyLogJdbcRepositoryImpl implements CourseDailyLogRepositor
         return getById(jdbcTemplate.queryForObject(CourseDailyLogRepositorySql.GET_LAST_ID, Long.class));
     }
 
-    private CourseDailyLog getById(Long aLong) {
-        return null;
+    @Override
+    public CourseDailyLog getById(Long dailyLogId) {
+        return jdbcTemplate.queryForObject(CourseDailyLogRepositorySql.GET_BY_ID,
+                CourseDailyLog.getRowMapper(), dailyLogId);
     }
 
     @Override
     public Optional<CourseDailyLog> findByCourseIdAndDate(Long courseId, Date date) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(CourseDailyLogRepositorySql.GET_BY_COURSE_ID_AND_DATE, CourseDailyLog.getRowMapper(), courseId, date));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(CourseDailyLogRepositorySql.GET_BY_COURSE_ID_AND_DATE,
+                    CourseDailyLog.getRowMapper(), courseId, date));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -48,7 +51,12 @@ public class CourseDailyLogJdbcRepositoryImpl implements CourseDailyLogRepositor
 
     @Override
     public CourseDailyLog updateById(Long dailyLogId, CourseDailyLog dailyLog) {
-        return null;
+        jdbcTemplate.update(CourseDailyLogRepositorySql.UPDATE_BY_ID,
+                dailyLog.getLearningTime(),
+                dailyLog.getQuizCount(),
+                dailyLog.getLectureCount(),
+                dailyLogId);
+        return getById(dailyLogId);
     }
 
     @Override

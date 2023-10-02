@@ -2,21 +2,23 @@ package com.m9d.sroom.lecture.service;
 
 import com.m9d.sroom.course.exception.CourseNotMatchException;
 import com.m9d.sroom.course.exception.CourseVideoNotFoundException;
-import com.m9d.sroom.course.repository.CourseRepository;
-import com.m9d.sroom.global.mapper.CourseDailyLog;
-import com.m9d.sroom.global.mapper.CourseVideo;
-import com.m9d.sroom.global.mapper.Playlist;
-import com.m9d.sroom.global.mapper.Video;
+import com.m9d.sroom.global.mapper.*;
+import com.m9d.sroom.lecture.dto.VideoCompletionStatus;
 import com.m9d.sroom.lecture.dto.request.KeywordSearchParam;
 import com.m9d.sroom.lecture.dto.request.LectureDetailParam;
 import com.m9d.sroom.lecture.dto.request.LectureTimeRecord;
 import com.m9d.sroom.lecture.dto.response.*;
+import com.m9d.sroom.lecture.dto.response.Lecture;
 import com.m9d.sroom.lecture.exception.TwoOnlyParamTrueException;
 import com.m9d.sroom.lecture.exception.VideoIndexParamException;
 import com.m9d.sroom.lecture.exception.VideoNotFoundException;
-import com.m9d.sroom.lecture.model.VideoCompletionStatus;
-import com.m9d.sroom.lecture.repository.LectureRepository;
-import com.m9d.sroom.member.repository.MemberRepository;
+import com.m9d.sroom.repository.course.CourseRepository;
+import com.m9d.sroom.repository.coursedailylog.CourseDailyLogRepository;
+import com.m9d.sroom.repository.coursevideo.CourseVideoRepository;
+import com.m9d.sroom.repository.member.MemberRepository;
+import com.m9d.sroom.repository.playlist.PlaylistRepository;
+import com.m9d.sroom.repository.review.ReviewRepository;
+import com.m9d.sroom.repository.video.VideoRepository;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.util.youtube.YoutubeApi;
 import com.m9d.sroom.util.youtube.YoutubeUtil;
@@ -31,7 +33,6 @@ import com.m9d.sroom.util.youtube.vo.search.SearchSnippetVo;
 import com.m9d.sroom.util.youtube.vo.search.SearchVo;
 import com.m9d.sroom.util.youtube.vo.video.VideoVo;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.HtmlUtils;
 import reactor.core.publisher.Mono;
@@ -51,23 +52,30 @@ import java.util.stream.Collectors;
 import static com.m9d.sroom.course.constant.CourseConstant.PLAYLIST_UPDATE_THRESHOLD_HOURS;
 import static com.m9d.sroom.course.constant.CourseConstant.VIDEO_UPDATE_THRESHOLD_HOURS;
 import static com.m9d.sroom.lecture.constant.LectureConstant.*;
-import static com.m9d.sroom.lecture.model.VideoCompletionStatus.*;
 import static com.m9d.sroom.util.youtube.YoutubeUtil.*;
 
 @Slf4j
 public class LectureServiceV2 {
-
-    private final LectureRepository lectureRepository;
+    private final PlaylistRepository playlistRepository;
+    private final ReviewRepository reviewRepository;
     private final CourseRepository courseRepository;
+    private final VideoRepository videoRepository;
+    private final CourseVideoRepository courseVideoRepository;
     private final MemberRepository memberRepository;
+    private final CourseDailyLogRepository courseDailyLogRepository;
     private final YoutubeUtil youtubeUtil;
     private final YoutubeApi youtubeApi;
     private final DateUtil dateUtil;
 
-    public LectureServiceV2(LectureRepository lectureRepository, CourseRepository courseRepository, MemberRepository memberRepository, YoutubeUtil youtubeUtil, YoutubeApi youtubeApi, DateUtil dateUtil) {
-        this.lectureRepository = lectureRepository;
+    public LectureServiceV2(PlaylistRepository playlistRepository, ReviewRepository reviewRepository, CourseRepository courseRepository, VideoRepository videoRepository, CourseVideoRepository courseVideoRepository, MemberRepository memberRepository, CourseDailyLogRepository courseDailyLogRepository, YoutubeUtil youtubeUtil,
+                            YoutubeApi youtubeApi, DateUtil dateUtil) {
+        this.playlistRepository = playlistRepository;
+        this.reviewRepository = reviewRepository;
         this.courseRepository = courseRepository;
+        this.videoRepository = videoRepository;
+        this.courseVideoRepository = courseVideoRepository;
         this.memberRepository = memberRepository;
+        this.courseDailyLogRepository = courseDailyLogRepository;
         this.youtubeUtil = youtubeUtil;
         this.youtubeApi = youtubeApi;
         this.dateUtil = dateUtil;
@@ -75,7 +83,7 @@ public class LectureServiceV2 {
 
     @Transactional
     public KeywordSearch searchByKeyword(Long memberId, KeywordSearchParam keywordSearchParam) {
-        log.info("lecture keyword search. keyword : {}", keywordSearchParam.getKeyword());
+        log.info("lecture keyword search. memberId = {}, keyword : {}", memberId, keywordSearchParam.getKeyword());
         Mono<SearchVo> searchVoMono = getSearchVoMono(keywordSearchParam);
         Set<String> enrolledLectureSet = getEnrolledLectures(memberId);
 
@@ -83,20 +91,17 @@ public class LectureServiceV2 {
         String nextPageToken = Optional.of(searchVo)
                 .map(SearchVo::getNextPageToken)
                 .orElse(null);
-        List<Lecture> lectureList = getSearchedLectureList(searchVo, enrolledLectureSet);
 
         return KeywordSearch.builder()
                 .nextPageToken(nextPageToken)
                 .resultPerPage(searchVo.getPageInfo().getResultsPerPage())
-                .lectures(lectureList)
+                .lectures(getSearchedLectureList(searchVo, enrolledLectureSet))
                 .build();
     }
 
     private Mono<SearchVo> getSearchVoMono(KeywordSearchParam keywordSearchParam) {
-        String encodedKeyword = URLEncoder.encode(keywordSearchParam.getKeyword(), StandardCharsets.UTF_8);
-
         return youtubeApi.getSearchVo(SearchReq.builder()
-                .keyword(encodedKeyword)
+                .keyword(URLEncoder.encode(keywordSearchParam.getKeyword(), StandardCharsets.UTF_8))
                 .filter(keywordSearchParam.getFilter())
                 .limit(keywordSearchParam.getLimit())
                 .pageToken(keywordSearchParam.getNext_page_token())
@@ -104,23 +109,21 @@ public class LectureServiceV2 {
     }
 
     public List<Lecture> getSearchedLectureList(SearchVo searchVo, Set<String> enrolledLectureSet) {
-        List<CompletableFuture<Lecture>> futures = searchVo.getItems().stream()
+        List<CompletableFuture<Lecture>> futures = searchVo
+                .getItems().stream()
                 .map(item -> CompletableFuture.supplyAsync(() -> getLecture(enrolledLectureSet, item)))
                 .collect(Collectors.toList());
-        List<Lecture> lectures = futures.stream()
+        return futures.stream()
                 .map(CompletableFuture::join)
                 .collect(Collectors.toList());
-        return lectures;
     }
 
     private Lecture getLecture(Set<String> enrolledLectureSet, SearchItemVo item) {
         SearchSnippetVo snippetVo = item.getSnippet();
-        String thumbnail = youtubeUtil.selectThumbnailInVo(snippetVo.getThumbnails());
-
         String lectureCode;
-        long viewCount = 0L;
-        int videoCount = 1;
         String description;
+        long viewCount = -1L;
+        int videoCount = 1;
 
         boolean isPlaylist = item.getId().getKind().equals(JSONNODE_TYPE_PLAYLIST);
         if (isPlaylist) {
@@ -131,7 +134,9 @@ public class LectureServiceV2 {
         } else {
             lectureCode = item.getId().getVideoId();
             Video video = getSearchedVideoLast(lectureCode);
-            viewCount = video.getViewCount();
+            if (video.getViewCount() != null) {
+                viewCount = video.getViewCount();
+            }
             description = video.getDescription();
         }
 
@@ -145,52 +150,43 @@ public class LectureServiceV2 {
                 .playlist(isPlaylist)
                 .lectureCount(videoCount)
                 .viewCount(viewCount)
-                .thumbnail(thumbnail)
+                .thumbnail(youtubeUtil.selectThumbnailInVo(snippetVo.getThumbnails()))
                 .build();
     }
 
-    private Playlist getSearchedPlaylistLast(String lectureCode) {
-        Optional<Playlist> playlistOptional = lectureRepository.findVideoCountAndDescription(lectureCode);
+    private Playlist getSearchedPlaylistLast(String playlistCode) {
+        Optional<Playlist> playlistOptional = playlistRepository.findByCode(playlistCode);
 
-        Playlist playlist;
-        if (playlistOptional.isPresent() && dateUtil.validateExpiration(playlistOptional.get().getUpdatedAt(), PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
-            playlist = playlistOptional.get();
+        if (playlistOptional.isPresent() &&
+                dateUtil.validateExpiration(playlistOptional.get().getUpdatedAt(), PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
+            return playlistOptional.get();
         } else {
-            Mono<PlaylistVo> playlistVoMono = youtubeApi.getPlaylistVo(PlaylistReq.builder()
-                    .playlistCode(lectureCode)
-                    .build());
-
-            PlaylistVo playlistVo = youtubeUtil.safeGetVo(playlistVoMono);
-            playlist = Playlist.builder()
-                    .playlistCode(lectureCode)
-                    .description(playlistVo.getItems().get(FIRST_INDEX).getSnippet().getDescription())
-                    .videoCount(playlistVo.getItems().get(FIRST_INDEX).getContentDetails().getItemCount())
-                    .build();
+            return youtubeUtil.getPlaylistWithBlocking(playlistCode);
         }
-
-        return playlist;
     }
 
     @Transactional
-    public ResponseEntity<?> getLectureDetail(Long memberId, boolean isPlaylist, String lectureCode, LectureDetailParam lectureDetailParam) {
-        lectureDetailParamValidate(isPlaylist, lectureDetailParam);
+    public Object getLectureDetail(Long memberId, boolean isPlaylist, String lectureCode, LectureDetailParam lectureDetailParam) {
+        validateLectureDetailParam(isPlaylist, lectureDetailParam);
         log.info("lecture detail request. memberId = {}, lectureCode = {}", memberId, lectureCode);
 
-        Object response;
-        if (lectureDetailParam.isIndex_only()) {
-            response = getPlaylistItemList(lectureCode);
-        } else if (lectureDetailParam.isReview_only()) {
-            response = getReviewBriefList(lectureCode, lectureDetailParam.getReview_offset(), lectureDetailParam.getReview_limit());
-        } else if (isPlaylist) {
-            response = getPlaylistDetail(memberId, lectureCode, lectureDetailParam.getReview_limit());
-        } else {
-            response = getVideoDetail(memberId, lectureCode, lectureDetailParam.getReview_limit());
+        if (!isPlaylist && !lectureDetailParam.isReview_only()) {
+            return getVideoDetail(memberId, lectureCode, lectureDetailParam.getReview_limit());
         }
 
-        return ResponseEntity.ok(response);
+        if (isPlaylist && !lectureDetailParam.isIndex_only() && !lectureDetailParam.isReview_only()) {
+            return getPlaylistDetail(memberId, lectureCode, lectureDetailParam.getReview_limit());
+        }
+
+        if (lectureDetailParam.isIndex_only()) {
+            return getPlaylistItemList(lectureCode);
+        }
+
+        return reviewRepository.getBriefListByCode(lectureCode, lectureDetailParam.getReview_offset(),
+                lectureDetailParam.getReview_limit());
     }
 
-    public void lectureDetailParamValidate(boolean isPlaylist, LectureDetailParam lectureDetailParam) {
+    public void validateLectureDetailParam(boolean isPlaylist, LectureDetailParam lectureDetailParam) {
         if (lectureDetailParam.isIndex_only() && lectureDetailParam.isReview_only()) {
             throw new TwoOnlyParamTrueException();
         }
@@ -204,12 +200,11 @@ public class LectureServiceV2 {
         List<Index> indexList = new ArrayList<>();
 
         String nextPageToken = null;
-        PlaylistVideoVo playlistVideoVo;
         int pageCount = MAX_PLAYLIST_ITEM / DEFAULT_INDEX_COUNT;
 
 
         for (int i = 0; i < pageCount; i++) {
-            playlistVideoVo = youtubeUtil.getPlaylistItemWithBlocking(playlistCode, nextPageToken, DEFAULT_INDEX_COUNT);
+            PlaylistVideoVo playlistVideoVo = youtubeUtil.getPlaylistItemWithBlocking(playlistCode, nextPageToken, DEFAULT_INDEX_COUNT);
             pageCount = playlistVideoVo.getPageInfo().getTotalResults() / DEFAULT_INDEX_COUNT + 1;
             nextPageToken = Optional.of(playlistVideoVo)
                     .map(PlaylistVideoVo::getNextPageToken)
@@ -220,7 +215,6 @@ public class LectureServiceV2 {
                 break;
             }
         }
-
 
         for (Index index : indexList) {
             totalDurationSeconds.addAndGet(index.getDuration());
@@ -233,18 +227,14 @@ public class LectureServiceV2 {
                 .build();
     }
 
-    private List<ReviewBrief> getReviewBriefList(String lectureCode, int reviewOffset, int reviewLimit) {
-        return lectureRepository.getReviewBriefList(lectureCode, reviewOffset, reviewLimit);
-    }
-
     public PlaylistDetail getPlaylistDetail(Long memberId, String playlistCode, int reviewLimit) {
         Mono<PlaylistVo> playlistVoMono = youtubeApi.getPlaylistVo(PlaylistReq.builder()
                 .playlistCode(playlistCode)
                 .build());
 
-        Set<String> enrolledPlaylistSet = lectureRepository.getPlaylistByMemberId(memberId);
-        List<CourseBrief> courseBriefList = courseRepository.getCourseBriefListByMember(memberId);
-        List<ReviewBrief> reviewList = lectureRepository.getReviewBriefList(playlistCode, DEFAULT_REVIEW_OFFSET, reviewLimit);
+        Set<String> enrolledPlaylistSet = playlistRepository.getCodeSetByMemberId(memberId);
+        List<CourseBrief> courseBriefList = courseRepository.getBriefListByMemberId(memberId);
+        List<ReviewBrief> reviewList = reviewRepository.getBriefListByCode(playlistCode, DEFAULT_REVIEW_OFFSET, reviewLimit);
         Playlist playlist = youtubeUtil.getPlaylistFromMono(playlistVoMono);
 
         return PlaylistDetail.builder()
@@ -270,10 +260,13 @@ public class LectureServiceV2 {
             if (youtubeUtil.isPrivacyStatusUnusable(itemVo)) {
                 continue;
             }
-            String videoCode = itemVo.getSnippet().getResourceId().getVideoId();
-            int videoIndex = itemVo.getSnippet().getPosition();
-            CompletableFuture<Index> future = CompletableFuture.supplyAsync(() -> getIndex(videoIndex, videoCode));
-            futureList.add(future);
+            futureList.add(CompletableFuture.supplyAsync(() ->
+                    getIndex(itemVo
+                                    .getSnippet()
+                                    .getPosition(),
+                            itemVo.getSnippet()
+                                    .getResourceId()
+                                    .getVideoId())));
         }
 
         return futureList.stream()
@@ -294,16 +287,15 @@ public class LectureServiceV2 {
                 .build();
     }
 
-    private Video getSearchedVideoLast(String lectureCode) {
-        Optional<Video> videoOptional = lectureRepository.findVideo(lectureCode);
+    private Video getSearchedVideoLast(String videoCode) {
+        Optional<Video> videoOptional = videoRepository.findByCode(videoCode);
 
-        Video video;
-        if (videoOptional.isPresent() && dateUtil.validateExpiration(videoOptional.get().getUpdatedAt(), VIDEO_UPDATE_THRESHOLD_HOURS)) {
-            video = videoOptional.get();
+        if (videoOptional.isPresent() && dateUtil.validateExpiration(videoOptional.get().getUpdatedAt(),
+                VIDEO_UPDATE_THRESHOLD_HOURS)) {
+            return videoOptional.get();
         } else {
-            video = youtubeUtil.getVideoWithBlocking(lectureCode);
+            return youtubeUtil.getVideoWithBlocking(videoCode);
         }
-        return video;
     }
 
     public VideoDetail getVideoDetail(Long memberId, String videoCode, int reviewLimit) {
@@ -311,9 +303,9 @@ public class LectureServiceV2 {
                 .videoCode(videoCode)
                 .build());
 
-        Set<String> enrolledVideoSet = lectureRepository.getVideosByMemberId(memberId);
-        List<ReviewBrief> reviewList = lectureRepository.getReviewBriefList(videoCode, DEFAULT_REVIEW_OFFSET, reviewLimit);
-        List<CourseBrief> courseBriefList = courseRepository.getCourseBriefListByMember(memberId);
+        Set<String> enrolledVideoSet = videoRepository.getCodeSetByMemberId(memberId);
+        List<ReviewBrief> reviewList = reviewRepository.getBriefListByCode(videoCode, DEFAULT_REVIEW_OFFSET, reviewLimit);
+        List<CourseBrief> courseBriefList = courseRepository.getBriefListByMemberId(memberId);
 
         Video video;
         try {
@@ -358,7 +350,7 @@ public class LectureServiceV2 {
 
     private double calculateAverageRating(List<ReviewBrief> reviews) {
         if (reviews == null || reviews.isEmpty()) {
-            return 0.0; // Return 0 if there are no reviews
+            return 0.0;
         }
 
         return reviews.stream()
@@ -371,81 +363,81 @@ public class LectureServiceV2 {
         return HtmlUtils.htmlUnescape(input);
     }
 
-    @Transactional
-    public Recommendations getRecommendations(Long memberId) {
-        HashSet<RecommendLecture> recommendLectureHashSet = new HashSet<>();
-        List<RecommendLecture> recommendLectureList = new ArrayList<>();
-        List<RecommendLecture> topRatedVideos = getTopRatedVideos();
-        List<RecommendLecture> topRatedPlaylists = getTopRatedPlaylists();
-        List<RecommendLecture> recommendLecturesByChannel = getRecommendsByChannel(memberId);
-
-        Set<String> enrolledLectureSet = getEnrolledLectures(memberId);
-
-        recommendLectureHashSet.addAll(topRatedVideos);
-        recommendLectureHashSet.addAll(topRatedPlaylists);
-        recommendLectureHashSet.addAll(recommendLecturesByChannel);
-
-        for (String lectureCode : enrolledLectureSet) {
-            recommendLectureHashSet.removeIf(recommendLecture -> (recommendLecture.getLectureCode().equals(lectureCode)));
-        }
-
-        recommendLectureList.addAll(recommendLectureHashSet);
-        Collections.shuffle(recommendLectureList);
-
-        Recommendations recommendations = Recommendations.builder()
-                .recommendations(recommendLectureList)
-                .build();
-
-        return recommendations;
-    }
-
-    public List<RecommendLecture> getTopRatedVideos() {
-        return lectureRepository.getVideosSortedByRating();
-    }
-
-    public List<RecommendLecture> getTopRatedPlaylists() {
-        return lectureRepository.getPlaylistsSortedByRating();
-    }
-
-    public List<RecommendLecture> getRecommendsByChannel(Long memberId) {
-        List<RecommendLecture> recommendLecturesByChannel = new ArrayList<>();
-        List<String> channels = getMostEnrolledChannels(memberId);
-
-        final int SELECT_BY_RANDOM_LIMIT = 1;
-        final int SELECT_BY_PUBLISH_DATE_LIMIT = 2;
-        final int SELECT_BY_VIEWED_LIMIT = 3;
-
-        for (String channelName : channels) {
-            List<RecommendLecture> randomVideosByChannel = lectureRepository.getRandomVideosByChannel(channelName, SELECT_BY_RANDOM_LIMIT);
-            List<RecommendLecture> randomPlaylistsByChannel = lectureRepository.getRandomPlaylistsByChannel(channelName, SELECT_BY_RANDOM_LIMIT);
-
-            List<RecommendLecture> mostViewedVideosByChannel = lectureRepository.getMostViewedVideosByChannel(channelName, SELECT_BY_VIEWED_LIMIT);
-            List<RecommendLecture> mostViewedPlaylistsByChannel = lectureRepository.getMostViewedPlaylistsByChannel(channelName, SELECT_BY_VIEWED_LIMIT);
-
-            List<RecommendLecture> latestPublishedVideosByChannel = lectureRepository.getLatestVideosByChannel(channelName, SELECT_BY_PUBLISH_DATE_LIMIT);
-            List<RecommendLecture> latestPublishedPlaylistsByChannel = lectureRepository.getLatestPlaylistsByChannel(channelName, SELECT_BY_PUBLISH_DATE_LIMIT);
-
-            recommendLecturesByChannel.addAll(randomVideosByChannel);
-            recommendLecturesByChannel.addAll(randomPlaylistsByChannel);
-            recommendLecturesByChannel.addAll(mostViewedPlaylistsByChannel);
-            recommendLecturesByChannel.addAll(mostViewedVideosByChannel);
-            recommendLecturesByChannel.addAll(latestPublishedVideosByChannel);
-            recommendLecturesByChannel.addAll(latestPublishedPlaylistsByChannel);
-        }
-
-        return recommendLecturesByChannel;
-    }
+//    @Transactional
+//    public Recommendations getRecommendations(Long memberId) {
+//        HashSet<RecommendLecture> recommendLectureHashSet = new HashSet<>();
+//        List<RecommendLecture> recommendLectureList = new ArrayList<>();
+//        List<RecommendLecture> topRatedVideos = getTopRatedVideos();
+//        List<RecommendLecture> topRatedPlaylists = getTopRatedPlaylists();
+//        List<RecommendLecture> recommendLecturesByChannel = getRecommendsByChannel(memberId);
+//
+//        Set<String> enrolledLectureSet = getEnrolledLectures(memberId);
+//
+//        recommendLectureHashSet.addAll(topRatedVideos);
+//        recommendLectureHashSet.addAll(topRatedPlaylists);
+//        recommendLectureHashSet.addAll(recommendLecturesByChannel);
+//
+//        for (String lectureCode : enrolledLectureSet) {
+//            recommendLectureHashSet.removeIf(recommendLecture -> (recommendLecture.getLectureCode().equals(lectureCode)));
+//        }
+//
+//        recommendLectureList.addAll(recommendLectureHashSet);
+//        Collections.shuffle(recommendLectureList);
+//
+//        Recommendations recommendations = Recommendations.builder()
+//                .recommendations(recommendLectureList)
+//                .build();
+//
+//        return recommendations;
+//    }
+//
+//    public List<RecommendLecture> getTopRatedVideos() {
+//        return lectureRepository.getVideosSortedByRating();
+//    }
+//
+//    public List<RecommendLecture> getTopRatedPlaylists() {
+//        return lectureRepository.getPlaylistsSortedByRating();
+//    }
+//
+//    public List<RecommendLecture> getRecommendsByChannel(Long memberId) {
+//        List<RecommendLecture> recommendLecturesByChannel = new ArrayList<>();
+//        List<String> channels = getMostEnrolledChannels(memberId);
+//
+//        final int SELECT_BY_RANDOM_LIMIT = 1;
+//        final int SELECT_BY_PUBLISH_DATE_LIMIT = 2;
+//        final int SELECT_BY_VIEWED_LIMIT = 3;
+//
+//        for (String channelName : channels) {
+//            List<RecommendLecture> randomVideosByChannel = lectureRepository.getRandomVideosByChannel(channelName, SELECT_BY_RANDOM_LIMIT);
+//            List<RecommendLecture> randomPlaylistsByChannel = lectureRepository.getRandomPlaylistsByChannel(channelName, SELECT_BY_RANDOM_LIMIT);
+//
+//            List<RecommendLecture> mostViewedVideosByChannel = lectureRepository.getMostViewedVideosByChannel(channelName, SELECT_BY_VIEWED_LIMIT);
+//            List<RecommendLecture> mostViewedPlaylistsByChannel = lectureRepository.getMostViewedPlaylistsByChannel(channelName, SELECT_BY_VIEWED_LIMIT);
+//
+//            List<RecommendLecture> latestPublishedVideosByChannel = lectureRepository.getLatestVideosByChannel(channelName, SELECT_BY_PUBLISH_DATE_LIMIT);
+//            List<RecommendLecture> latestPublishedPlaylistsByChannel = lectureRepository.getLatestPlaylistsByChannel(channelName, SELECT_BY_PUBLISH_DATE_LIMIT);
+//
+//            recommendLecturesByChannel.addAll(randomVideosByChannel);
+//            recommendLecturesByChannel.addAll(randomPlaylistsByChannel);
+//            recommendLecturesByChannel.addAll(mostViewedPlaylistsByChannel);
+//            recommendLecturesByChannel.addAll(mostViewedVideosByChannel);
+//            recommendLecturesByChannel.addAll(latestPublishedVideosByChannel);
+//            recommendLecturesByChannel.addAll(latestPublishedPlaylistsByChannel);
+//        }
+//
+//        return recommendLecturesByChannel;
+//    }
 
     public Set<String> getEnrolledLectures(Long memberId) {
         Set<String> lectureSet = new HashSet<>();
-        lectureSet.addAll(lectureRepository.getVideosByMemberId(memberId));
-        lectureSet.addAll(lectureRepository.getPlaylistByMemberId(memberId));
+        lectureSet.addAll(videoRepository.getCodeSetByMemberId(memberId));
+        lectureSet.addAll(playlistRepository.getCodeSetByMemberId(memberId));
         return lectureSet;
     }
 
-    public List<String> getMostEnrolledChannels(Long memberId) {
-        return lectureRepository.getMostEnrolledChannels(memberId);
-    }
+//    public List<String> getMostEnrolledChannels(Long memberId) {
+//        return lectureRepository.getMostEnrolledChannels(memberId);
+//    }
 
     @Transactional
     public LectureStatus updateLectureTime(Long memberId, Long courseVideoId, LectureTimeRecord record, boolean isMarkedAsCompleted) {
@@ -454,34 +446,36 @@ public class LectureServiceV2 {
 
         VideoCompletionStatus status = getVideoCompletionStatus(record.getViewDuration(), timeGap, courseVideo, isMarkedAsCompleted);
 
-        if (!status.equals(REWOUND_FROM_COMPLETE) && !status.equals(REWOUND_FROM_INCOMPLETE)) {
+        if (!status.getRewound()) {
             updateCourseDailyLog(memberId, courseVideo.getCourseId(), timeGap, status);
-            memberRepository.addTotalLearningTime(memberId, Math.max(timeGap, 0));
+            Member member = memberRepository.getById(memberId);
+            member.setTotalLearningTime(Math.max(timeGap, 0) + member.getTotalLearningTime());
+            memberRepository.updateById(memberId, member);
         }
 
-        if (status.equals(COMPLETED_NOW) || status.equals(FULLY_WATCHED_FROM_INCOMPLETE)) {
+        if (status.getCompletedNow()) {
             updateCourseProgress(memberId, courseVideo.getCourseId(), 1);
         }
 
-        if (status.equals(FULLY_WATCHED_FROM_COMPLETE) || status.equals(FULLY_WATCHED_FROM_INCOMPLETE)) {
+        if (status.getFullyWatched()) {
             updateLastViewVideoToNext(courseVideo.getCourseId(), courseVideo.getVideoIndex());
         }
 
         courseVideo.setMaxDuration(Math.max(record.getViewDuration(), courseVideo.getMaxDuration()));
         courseVideo.setStartTime(record.getViewDuration());
-        courseVideo.setComplete(status.getValue());
+        courseVideo.setComplete(status.getCompleted());
         courseVideo.setLastViewTime(new Timestamp(System.currentTimeMillis()));
-        courseRepository.updateVideoViewStatus(courseVideo);
+        courseVideoRepository.updateById(courseVideoId, courseVideo);
 
         return LectureStatus.builder()
                 .courseVideoId(courseVideoId)
                 .viewDuration(record.getViewDuration())
-                .complete(status.getValue())
+                .complete(status.getCompleted())
                 .build();
     }
 
     private CourseVideo getCourseVideo(Long memberId, Long courseVideoId) {
-        Optional<CourseVideo> courseVideoOptional = courseRepository.findCourseVideoById(courseVideoId);
+        Optional<CourseVideo> courseVideoOptional = courseVideoRepository.findById(courseVideoId);
 
         if (courseVideoOptional.isEmpty()) {
             throw new CourseVideoNotFoundException();
@@ -497,65 +491,56 @@ public class LectureServiceV2 {
     }
 
     private VideoCompletionStatus getVideoCompletionStatus(int newDuration, int timeGap, CourseVideo courseVideo, boolean isMarkedAsCompleted) {
-        VideoCompletionStatus status;
+        VideoCompletionStatus status = new VideoCompletionStatus();
 
-        if (timeGap > 0) {
-            status = courseVideo.isComplete() ? COMPLETED_PREVIOUSLY : INCOMPLETE;
+        status.setRewound(timeGap <= 0);
+
+        Optional<Video> videoOptional = videoRepository.findById(courseVideo.getVideoId());
+        if (videoOptional.isEmpty()) {
+            throw new VideoNotFoundException();
+        }
+
+        if (courseVideo.isComplete()) {
+            status.setCompleted(true);
         } else {
-            status = courseVideo.isComplete() ? REWOUND_FROM_COMPLETE : REWOUND_FROM_INCOMPLETE;
+            status.setCompleted(false);
+
+            boolean currVideoComplete =
+                    (newDuration / (double) videoOptional.get().getDuration()) > MINIMUM_VIEW_PERCENT_FOR_COMPLETION
+                            || isMarkedAsCompleted;
+            if (currVideoComplete) {
+                status.setCompleted(true);
+                status.setCompletedNow(true);
+            }
         }
 
-        Video video = getVideo(courseVideo.getVideoId());
-
-        if (status.equals(INCOMPLETE)) {
-
-            boolean currVideoComplete = (newDuration / (double) video.getDuration()) > MINIMUM_VIEW_PERCENT_FOR_COMPLETION;
-            status = currVideoComplete ? COMPLETED_NOW : INCOMPLETE;
-
-        }
-
-        if (isMarkedAsCompleted && !courseVideo.isComplete()) {
-            status = COMPLETED_NOW;
-        }
-
-        if (newDuration >= video.getDuration() - LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS) {
-            status = status.equals(COMPLETED_NOW) ? FULLY_WATCHED_FROM_INCOMPLETE : FULLY_WATCHED_FROM_COMPLETE;
+        if (newDuration >= videoOptional.get().getDuration() - LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS) {
+            status.setFullyWatched(true);
+            status.setCompleted(true);
         }
 
         return status;
     }
 
-    private Video getVideo(Long videoId) {
-        Optional<Video> videoOptional = lectureRepository.findVideoById(videoId);
-
-        if (videoOptional.isEmpty()) {
-            throw new VideoNotFoundException();
-        }
-        return videoOptional.get();
-    }
-
     private void updateCourseProgress(Long memberId, Long courseId, int newCompletedVideoCount) {
-        int courseVideoCount = courseRepository.getVideoCountByCourseId(courseId);
-        int completedVideoCount = courseRepository.getCompletedVideoCountByCourseId(courseId) + newCompletedVideoCount;
+        Course course = courseRepository.getById(courseId);
+        course.setProgress((courseVideoRepository.countCompletedByCourseId(courseId) + newCompletedVideoCount) * 100
+                / courseVideoRepository.countByCourseId(courseId));
+        courseRepository.updateById(courseId, course);
 
-        int courseProgress = completedVideoCount * 100 / courseVideoCount;
-
-        courseRepository.updateCourseProgress(courseId, courseProgress);
-
-        if (courseVideoCount == completedVideoCount) {
-            int courseCount = courseRepository.getCourseCountByMemberId(memberId);
-            int completedCourseCount = courseRepository.getCompletedCourseCountByMemberId(memberId);
-
-            int memberCompletionRate = completedCourseCount * 100 / courseCount;
-
-            memberRepository.updateCompletionRate(memberId, memberCompletionRate);
+        if (course.getProgress() == 100) {
+            Member member = memberRepository.getById(memberId);
+            member.setCompletionRate(memberRepository.countCompletedCourseById(memberId) * 100
+                    / memberRepository.countCourseById(memberId));
+            memberRepository.updateById(memberId, member);
         }
     }
 
     private void updateCourseDailyLog(Long memberId, Long courseId, int timeGap, VideoCompletionStatus videoStatus) {
-        Optional<CourseDailyLog> dailyLogOptional = courseRepository.findCourseDailyLogByDate(courseId, Date.valueOf(LocalDate.now()));
+        Optional<CourseDailyLog> dailyLogOptional = courseDailyLogRepository.findByCourseIdAndDate(courseId,
+                Date.valueOf(LocalDate.now()));
         int learningTimeToAdd = Math.max(timeGap, 0);
-        int lectureCountToAdd = videoStatus.equals(COMPLETED_NOW) ? 1 : 0;
+        int lectureCountToAdd = videoStatus.getCompletedNow() ? 1 : 0;
 
         if (dailyLogOptional.isEmpty()) {
             CourseDailyLog initialDailyLog = CourseDailyLog.builder()
@@ -566,21 +551,23 @@ public class LectureServiceV2 {
                     .quizCount(0)
                     .lectureCount(lectureCountToAdd)
                     .build();
-            courseRepository.saveCourseDailyLog(initialDailyLog);
+            courseDailyLogRepository.save(initialDailyLog);
         } else {
             CourseDailyLog dailyLog = dailyLogOptional.get();
             dailyLog.setLearningTime(dailyLog.getLearningTime() + learningTimeToAdd);
             dailyLog.setLectureCount(dailyLog.getLectureCount() + lectureCountToAdd);
-            courseRepository.updateCourseDailyLog(dailyLog);
+            courseDailyLogRepository.updateById(dailyLog.getCourseDailyLogId(), dailyLog);
         }
     }
 
     private void updateLastViewVideoToNext(Long courseId, int videoIndex) {
-        Long courseVideoId = courseRepository.getCourseVideoByPrevIndex(courseId, videoIndex);
+        Optional<CourseVideo> courseVideoOptional = courseVideoRepository.findByCourseIdAndPrevIndex(courseId, videoIndex);
 
-        if (courseVideoId != null) {
-            Timestamp timeToRecord = Timestamp.valueOf(LocalDateTime.now().plusSeconds(LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS));
-            courseRepository.updateLastViewTimeById(courseVideoId, timeToRecord);
+        if (courseVideoOptional.isPresent()) {
+            CourseVideo courseVideo = courseVideoOptional.get();
+            courseVideo.setLastViewTime(
+                    Timestamp.valueOf(LocalDateTime.now().plusSeconds(LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS)));
+            courseVideoRepository.updateById(courseVideo.getCourseVideoId(), courseVideo);
         }
     }
 }

@@ -6,6 +6,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+import static com.m9d.sroom.course.sql.CourseSqlQuery.GET_COMPLETED_COURSE_COUNT_BY_MEMBER_Id_QUERY;
+import static com.m9d.sroom.course.sql.CourseSqlQuery.GET_COURSE_COUNT_BY_MEMBER_ID_QUERY;
+
 @Repository
 public class MemberJdbcRepositoryImpl implements MemberRepository {
 
@@ -73,5 +76,15 @@ public class MemberJdbcRepositoryImpl implements MemberRepository {
     @Override
     public void updateCompletionRateById(Long memberId, int completionRate) {
 
+    }
+
+    @Override
+    public Integer countCompletedCourseById(Long memberId) {
+        return jdbcTemplate.queryForObject(MemberRepositorySql.COUNT_COMPLETED_COURSE_BY_ID, Integer.class, memberId);
+    }
+
+    @Override
+    public Integer countCourseById(Long memberId) {
+        return jdbcTemplate.queryForObject(MemberRepositorySql.COUNT_COURSE_BY_ID, Integer.class, memberId);
     }
 }

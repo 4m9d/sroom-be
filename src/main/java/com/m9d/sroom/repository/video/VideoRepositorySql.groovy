@@ -46,4 +46,10 @@ class VideoRepositorySql {
         WHERE pv.playlist_id = ?
         ORDER BY pv.video_index
     """
+
+    public static final String GET_CODE_SET_BY_MEMBER_ID = """
+        SELECT v.video_code 
+        FROM COURSEVIDEO cv JOIN VIDEO v ON cv.video_id = v.video_id 
+        WHERE cv.member_id = ?
+    """
 }

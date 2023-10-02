@@ -33,4 +33,9 @@ class PlaylistRepositorySql {
         duration = ?, updated_at = ?, title = ?, published_at = ?, video_count = ?
         WHERE playlist_id = ?
     """
+    public static final String GET_CODE_SET_BY_MEMBER_ID_QUERY = """
+        SELECT p.playlist_code 
+        FROM LECTURE l JOIN PLAYLIST p ON l.source_id = p.playlist_id 
+        WHERE l.member_id = ? AND l.is_playlist = true
+    """
 }

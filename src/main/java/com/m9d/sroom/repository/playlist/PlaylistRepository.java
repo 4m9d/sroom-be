@@ -2,6 +2,7 @@ package com.m9d.sroom.repository.playlist;
 
 import com.m9d.sroom.global.mapper.Playlist;
 
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -17,6 +18,5 @@ public interface PlaylistRepository {
 
     void updateDurationById(Long playlistId, int duration);
 
-    Set<String> getCodeListByMemberId(Long memberId);
-
+    HashSet<String> getCodeSetByMemberId(Long memberId);
 }

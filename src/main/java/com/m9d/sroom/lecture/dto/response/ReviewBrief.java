@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.jdbc.core.RowMapper;
+
+import java.text.SimpleDateFormat;
 
 @Schema(description = "후기 정보")
 @Data
@@ -27,4 +30,15 @@ public class ReviewBrief {
 
     @Schema(description = "후기 생성 날짜", example = "2022-01-34")
     private String publishedAt;
+
+    public static RowMapper<ReviewBrief> getRowMapper(int offset) {
+        return (rs, rowNum) -> ReviewBrief.builder()
+                .index(rowNum + offset + 1)
+                .reviewContent(rs.getString("content"))
+                .submittedRating(rs.getInt("submitted_rating"))
+                .reviewerName(rs.getString("member_name"))
+                .publishedAt(new SimpleDateFormat("yyyy-MM-dd")
+                        .format(rs.getTimestamp("submitted_date")))
+                .build();
+    }
 }

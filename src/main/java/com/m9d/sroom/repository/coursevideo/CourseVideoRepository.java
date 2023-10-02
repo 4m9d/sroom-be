@@ -28,7 +28,7 @@ public interface CourseVideoRepository {
 
     void deleteByCourseId(Long courseId);
 
-    Long getIdByCourseIdAndPrevIndex(Long courseId, int videoIndex);
+    Optional<CourseVideo> findByCourseIdAndPrevIndex(Long courseId, int videoIndex);
 
     LastVideoInfo getLastByCourseId(Long courseId);
 

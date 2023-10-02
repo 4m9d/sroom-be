@@ -1,6 +1,7 @@
 package com.m9d.sroom.repository.review;
 
 import com.m9d.sroom.global.mapper.Review;
+import com.m9d.sroom.lecture.dto.response.ReviewBrief;
 import com.m9d.sroom.repository.lecture.LectureRepositorySql;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -9,7 +10,7 @@ import java.sql.JDBCType;
 import java.util.List;
 
 @Repository
-public class ReviewJdbcRepositoryImpl implements ReviewRepository{
+public class ReviewJdbcRepositoryImpl implements ReviewRepository {
 
     JdbcTemplate jdbcTemplate;
 
@@ -42,5 +43,11 @@ public class ReviewJdbcRepositoryImpl implements ReviewRepository{
     @Override
     public Review getByLectureId(Long lectureId) {
         return jdbcTemplate.queryForObject(ReviewRepositorySql.GET_BY_LECTURE_ID, Review.getRowmapper(), lectureId);
+    }
+
+    @Override
+    public List<ReviewBrief> getBriefListByCode(String lectureCode, int offset, int limit) {
+        return jdbcTemplate.query(ReviewRepositorySql.GET_BRIEF_LIST_BY_CODE, ReviewBrief.getRowMapper(offset),
+                lectureCode, limit, offset);
     }
 }
