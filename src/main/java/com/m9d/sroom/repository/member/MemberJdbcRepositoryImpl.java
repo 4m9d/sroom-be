@@ -6,9 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-import static com.m9d.sroom.course.sql.CourseSqlQuery.GET_COMPLETED_COURSE_COUNT_BY_MEMBER_Id_QUERY;
-import static com.m9d.sroom.course.sql.CourseSqlQuery.GET_COURSE_COUNT_BY_MEMBER_ID_QUERY;
-
 @Repository
 public class MemberJdbcRepositoryImpl implements MemberRepository {
 

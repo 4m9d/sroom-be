@@ -5,7 +5,6 @@ import com.m9d.sroom.lecture.dto.request.LectureDetailParam;
 import com.m9d.sroom.lecture.dto.request.LectureTimeRecord;
 import com.m9d.sroom.lecture.dto.response.*;
 import com.m9d.sroom.lecture.service.LectureService;
-import com.m9d.sroom.lecture.service.LectureServiceV2;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
 import com.m9d.sroom.util.youtube.YoutubeUtil;
@@ -19,7 +18,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -32,7 +30,6 @@ public class LectureController {
 
     private final LectureService lectureService;
     private final JwtUtil jwtUtil;
-    private final YoutubeUtil youtubeUtil;
 
     @Auth
     @GetMapping("")
@@ -48,8 +45,7 @@ public class LectureController {
     @ApiResponse(responseCode = "200", description = "성공적으로 검색 결과를 반환하였습니다.", content = @Content(schema = @Schema(implementation = KeywordSearch.class)))
     public KeywordSearch getLecturesByKeyword(@Valid @ModelAttribute KeywordSearchParam keywordSearchParam) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
-        KeywordSearch keywordSearch = lectureService.searchByKeyword(memberId, keywordSearchParam);
-        return keywordSearch;
+        return lectureService.searchByKeyword(memberId, keywordSearchParam);
     }
 
     @Auth
@@ -60,9 +56,7 @@ public class LectureController {
     public Recommendations getRecommendations() {
         Long memberId = jwtUtil.getMemberIdFromRequest();
         log.info("recommend start");
-        Recommendations recommendations = lectureService.getRecommendations(memberId);
-
-        return recommendations;
+        return lectureService.getRecommendations(memberId);
     }
 
     @Auth
@@ -78,12 +72,10 @@ public class LectureController {
             @Parameter(in = ParameterIn.QUERY, name = "index_next_token", description = "목차 다음 페이지 토큰", required = false, example = "EAAaBlBUOkNESQ")
     })
     @ApiResponse(responseCode = "200", description = "성공적으로 강의 상세 정보를 반환하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(oneOf = {PlaylistDetail.class, VideoDetail.class, IndexInfo.class}))})
-    public ResponseEntity<?> getLectureDetail(@PathVariable(name = "lectureCode") String lectureCode, @ModelAttribute LectureDetailParam lectureDetailParam) {
+    public Object getLectureDetail(@PathVariable(name = "lectureCode") String lectureCode, @ModelAttribute LectureDetailParam lectureDetailParam) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
-        boolean isPlaylist = youtubeUtil.checkIfPlaylist(lectureCode);
-
-        ResponseEntity<?> lectureDetail = (ResponseEntity<?>) lectureService.getLectureDetail(memberId, isPlaylist, lectureCode, lectureDetailParam);
-        return lectureDetail;
+        boolean isPlaylist = YoutubeUtil.checkIfPlaylist(lectureCode);
+        return lectureService.getLectureDetail(memberId, isPlaylist, lectureCode, lectureDetailParam);
     }
 
     @Auth

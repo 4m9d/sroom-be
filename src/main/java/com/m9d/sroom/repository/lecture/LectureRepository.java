@@ -20,7 +20,4 @@ public interface LectureRepository {
     List<Lecture> getListByCourseId(Long courseId);
 
     List<String> getChannelListOrderByCount(Long member_id);
-
-
-
 }

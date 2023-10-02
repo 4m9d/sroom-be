@@ -1,14 +1,11 @@
 package com.m9d.sroom.repository.coursedailylog;
 
-import com.m9d.sroom.dashboard.dto.response.LearningHistory;
-import com.m9d.sroom.dashboard.sql.DashboardSqlQuery;
 import com.m9d.sroom.global.mapper.CourseDailyLog;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
 

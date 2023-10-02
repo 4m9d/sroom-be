@@ -1,7 +1,6 @@
 package com.m9d.sroom.repository.video;
 
 import com.m9d.sroom.global.mapper.Video;
-import com.m9d.sroom.lecture.sql.LectureSqlQuery;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;

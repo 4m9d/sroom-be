@@ -1,6 +1,5 @@
 package com.m9d.sroom.repository.lecture;
 
-import com.m9d.sroom.course.sql.CourseSqlQuery;
 import com.m9d.sroom.global.mapper.Lecture;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
