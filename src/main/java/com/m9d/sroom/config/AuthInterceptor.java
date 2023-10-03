@@ -25,8 +25,6 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        log.info("Request URI = {}, HTTP Method = {}", request.getRequestURI(), request.getMethod());
-
         if (!(handler instanceof HandlerMethod)) {
             return true;
         }
@@ -58,7 +56,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             }
 
             request.setAttribute("memberId", jwtDetail.get("memberId"));
-
+            log.info("Request memberId = {}, URI = {}, HTTP Method = {}", jwtDetail.get("memberId"), request.getRequestURI(), request.getMethod());
         } catch (Exception e) {
             log.error("Error validating token", e);
             throw new InvalidAccessTokenException();
