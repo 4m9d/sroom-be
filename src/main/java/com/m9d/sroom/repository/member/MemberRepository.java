@@ -18,14 +18,6 @@ public interface MemberRepository {
 
     Member updateById(Long memberId, Member member);
 
-    void updateRefreshTokenById(Long memberId, String refreshToken);
-
-    void addQuizCountById(Long memberId, int quizCount, int correctCount);
-
-    void addTotalLearningTimeById(Long memberId, int timeToAddInSecond);
-
-    void updateCompletionRateById(Long memberId, int completionRate);
-
     Integer countCompletedCourseById(Long memberId);
 
     Integer countCourseById(Long memberId);

@@ -11,8 +11,6 @@ public interface ReviewRepository {
 
     Review getById(Long reviewId);
 
-    List<Review> getListByCode(String lectureCode, int offset, int limit);
-
     Review getByLectureId(Long lectureId);
 
     List<ReviewBrief> getBriefListByCode(String lectureCode, int reviewOffset, int reviewLimit);

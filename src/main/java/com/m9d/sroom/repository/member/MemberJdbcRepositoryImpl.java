@@ -21,7 +21,7 @@ public class MemberJdbcRepositoryImpl implements MemberRepository {
         jdbcTemplate.update(MemberRepositorySql.SAVE,
                 member.getMemberCode(),
                 member.getMemberName());
-        return getById(jdbcTemplate.queryForObject(MemberRepositorySql.GET_LAST_ID, Long.class));
+        return getByCode(member.getMemberCode());
     }
 
     @Override
@@ -67,26 +67,6 @@ public class MemberJdbcRepositoryImpl implements MemberRepository {
                 member.getBio(),
                 memberId);
         return getById(memberId);
-    }
-
-    @Override
-    public void updateRefreshTokenById(Long memberId, String refreshToken) {
-
-    }
-
-    @Override
-    public void addQuizCountById(Long memberId, int quizCount, int correctCount) {
-
-    }
-
-    @Override
-    public void addTotalLearningTimeById(Long memberId, int timeToAddInSecond) {
-
-    }
-
-    @Override
-    public void updateCompletionRateById(Long memberId, int completionRate) {
-
     }
 
     @Override

@@ -23,7 +23,9 @@ public interface VideoRepository {
     Video updateById(Long videoId, Video video);
 
     List<Video> getListByPlaylistId(Long playlistId);
+
     Set<String> getCodeSetByMemberId(Long memberId);
+
     List<Video> getRandomByChannel(String channel, int limit);
 
     List<Video> getViewCountOrderByChannel(String channel, int limit);

@@ -18,8 +18,4 @@ public interface CourseQuizRepository {
     Optional<CourseQuiz> findByQuizIdAndCourseVideoId(Long quizId, Long courseVideoId);
 
     void deleteByCourseId(Long courseId);
-
-    void updateScrappedById(Long courseQuizId);
-
-    Boolean isScrappedById(Long courseQuizId);
 }

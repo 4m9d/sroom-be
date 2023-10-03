@@ -71,19 +71,9 @@ public class PlaylistJdbcRepositoryImpl implements PlaylistRepository {
     }
 
     @Override
-    public void updateDurationById(Long playlistId, int duration) {
-
-    }
-
-    @Override
     public HashSet<String> getCodeSetByMemberId(Long memberId) {
         return new HashSet<>(jdbcTemplate.query(PlaylistRepositorySql.GET_CODE_SET_BY_MEMBER_ID_QUERY,
                 (rs, rowNum) -> rs.getString("playlist_code"), memberId));
-    }
-
-    @Override
-    public Set<String> getCodeListByMemberId(Long memberId) {
-        return null;
     }
 
     @Override

@@ -8,8 +8,6 @@ public interface PlaylistVideoRepository {
 
     PlaylistVideo save(PlaylistVideo playlistVideo);
 
-    List<PlaylistVideo> getListByPlaylistId(Long playlistId);
-
     void deleteByPlaylistId(Long playlistId);
 
 

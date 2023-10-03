@@ -110,11 +110,6 @@ public class CourseVideoJdbcRepositoryImpl implements CourseVideoRepository {
     }
 
     @Override
-    public LastVideoInfo getLastByCourseId(Long courseId) {
-        return null;
-    }
-
-    @Override
     public LastVideoInfo getLastInfoByCourseId(Long courseId) {
         return jdbcTemplate.queryForObject(CourseVideoRepositorySql.GET_LAST_INFO_BY_COURSE_ID, (rs, rowNum) -> LastVideoInfo.builder()
                         .videoId(rs.getLong("video_id"))

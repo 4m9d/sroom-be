@@ -62,23 +62,8 @@ public class CourseJdbcRepositoryImpl implements CourseRepository {
     }
 
     @Override
-    public List<Course> getByMemberId(Long memberId) {
-        return jdbcTemplate.query(CourseRepositorySql.GET_BY_MEMBER_ID, Course.getRowMapper(), memberId);
-    }
-
-    @Override
     public List<Course> getLatestOrderByMemberId(Long memberId) {
         return jdbcTemplate.query(CourseRepositorySql.GET_LATEST_ORDER_BY_MEMBER_ID, Course.getRowMapper(), memberId);
-    }
-
-    @Override
-    public Integer countByMemberId(Long memberId) {
-        return null;
-    }
-
-    @Override
-    public Integer countCompletedByMemberId(Long memberId) {
-        return null;
     }
 
     @Override
