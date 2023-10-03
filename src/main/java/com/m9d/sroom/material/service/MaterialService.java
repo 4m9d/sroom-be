@@ -147,11 +147,8 @@ public class MaterialService {
     public SummaryId updateSummary(Long memberId, Long courseVideoId, String content) {
         CourseVideo courseVideo = validateCourseVideoForMember(memberId, courseVideoId);
 
-        Optional<Summary> summaryOptional = summaryRepository.findById(courseVideo.getSummaryId());
-        if (summaryOptional.isEmpty()) {
-            throw new SummaryNotFoundException();
-        }
-        Summary summary = summaryOptional.get();
+        Summary summary = summaryRepository.findById(courseVideo.getSummaryId())
+                .orElseThrow(SummaryNotFoundException::new);
 
         if (summary.isModified()) {
             summary.setContent(content);
@@ -173,12 +170,9 @@ public class MaterialService {
     }
 
     private CourseVideo validateCourseVideoForMember(Long memberId, Long courseVideoId) {
-        Optional<CourseVideo> courseVideoOptional = courseVideoRepository.findById(courseVideoId);
-        if (courseVideoOptional.isEmpty()) {
-            throw new CourseVideoNotFoundException();
-        }
+        CourseVideo courseVideo = courseVideoRepository.findById(courseVideoId)
+                .orElseThrow(CourseVideoNotFoundException::new);
 
-        CourseVideo courseVideo = courseVideoOptional.get();
         if (!courseVideo.getMemberId().equals(memberId)) {
             throw new CourseNotMatchException();
         }
@@ -213,23 +207,19 @@ public class MaterialService {
     }
 
     private void validateSubmittedQuizzes(Long videoId, Long courseVideoId, List<SubmittedQuiz> submittedQuizList) {
-        Optional<Quiz> quizOptional = quizRepository.findById(submittedQuizList.get(0).getQuizId());
+        Quiz quiz = quizRepository.findById(submittedQuizList.get(0).getQuizId())
+                .orElseThrow(QuizNotFoundException::new);
 
-        if (quizOptional.isEmpty()) {
-            throw new QuizNotFoundException();
-        }
-
-        if (!quizOptional.get().getVideoId().equals(videoId)) {
+        if (!quiz.getVideoId().equals(videoId)) {
             throw new QuizIdNotMatchException();
         }
 
-        for (SubmittedQuiz quiz : submittedQuizList) {
-            Optional<CourseQuiz> courseQuizOptional = courseQuizRepository.findByQuizIdAndCourseVideoId(quiz.getQuizId(), courseVideoId);
-            if (courseQuizOptional.isPresent()) {
+        for (SubmittedQuiz submittedQuiz : submittedQuizList) {
+            if (courseQuizRepository.findByQuizIdAndCourseVideoId(submittedQuiz.getQuizId(), courseVideoId).isPresent()) {
                 throw new CourseQuizDuplicationException();
             }
 
-            if (quiz.getIsCorrect() == null) {
+            if (submittedQuiz.getIsCorrect() == null) {
                 throw new QuizAnswerFormatNotValidException();
             }
         }
@@ -311,33 +301,27 @@ public class MaterialService {
     }
 
     private CourseQuiz validateCourseQuizForMember(Long memberId, Long courseQuizId) {
-        Optional<CourseQuiz> courseQuizOptional = courseQuizRepository.findById(courseQuizId);
+        CourseQuiz courseQuiz = courseQuizRepository.findById(courseQuizId)
+                .orElseThrow(CourseQuizNotFoundException::new);
 
-        if (courseQuizOptional.isEmpty()) {
-            throw new CourseQuizNotFoundException();
-        }
-
-        Long memberIdByCourse = courseRepository.getById(courseQuizOptional.get()
+        Long memberIdByCourse = courseRepository.getById(courseQuiz
                         .getCourseId())
                 .getMemberId();
         if (!memberId.equals(memberIdByCourse)) {
             throw new CourseNotMatchException();
         }
-        return courseQuizOptional.get();
+        return courseQuiz;
     }
 
     @Transactional
     public void saveMaterials(MaterialResultsVo materialVo) throws Exception {
-        Optional<Video> videoOptional = videoRepository.findByCode(materialVo.getVideoId());
+        Video video = videoRepository.findByCode(materialVo.getVideoId())
+                .orElseThrow(() -> {
+                    log.warn("can't find video information from db. video code = {}", materialVo.getVideoId());
+                    return new VideoNotFoundFromDBException();
+                });
 
-        if (videoOptional.isEmpty()) {
-            log.warn("can't find video information from db. video code = {}", materialVo.getVideoId());
-            throw new VideoNotFoundFromDBException();
-        }
-
-        Video video = videoOptional.get();
         Long summaryId;
-
         if (materialVo.getIsValid() == MaterialVaildStatus.IN_VALID.getValue()) {
             video.setMaterialStatus(MaterialStatus.CREATION_FAILED.getValue());
             summaryId = (long) MaterialStatus.CREATION_FAILED.getValue();
