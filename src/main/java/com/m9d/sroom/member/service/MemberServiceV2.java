@@ -8,15 +8,18 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.m9d.sroom.global.mapper.Member;
 import com.m9d.sroom.member.dto.request.RefreshToken;
 import com.m9d.sroom.member.dto.response.Login;
+import com.m9d.sroom.member.dto.response.NameUpdateResponse;
 import com.m9d.sroom.member.exception.*;
-import com.m9d.sroom.member.repository.MemberRepository;
+import com.m9d.sroom.repository.member.MemberRepository;
 import com.m9d.sroom.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 
 import static com.m9d.sroom.member.constant.MemberConstant.*;
@@ -24,6 +27,7 @@ import static com.m9d.sroom.util.JwtUtil.EXPIRATION_TIME;
 
 
 @Slf4j
+@Service
 public class MemberServiceV2 {
 
     private final MemberRepository memberRepository;
@@ -46,10 +50,8 @@ public class MemberServiceV2 {
     }
 
     public GoogleIdToken verifyCredential(String credential) throws Exception {
-        HttpTransport transport = new NetHttpTransport();
-        GsonFactory jsonFactory = GsonFactory.getDefaultInstance();
-
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(transport, jsonFactory)
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(),
+                GsonFactory.getDefaultInstance())
                 .setAudience(Collections.singletonList(clientId))
                 .build();
 
@@ -63,25 +65,23 @@ public class MemberServiceV2 {
     }
 
     public Member findOrCreateMemberByMemberCode(String memberCode) {
-        return memberRepository.findByMemberCode(memberCode)
+        return memberRepository.findByCode(memberCode)
                 .orElseGet(() -> createNewMember(memberCode));
     }
 
     public Member createNewMember(String memberCode) {
-        String memberName = generateMemberName();
-        memberRepository.save(memberCode, memberName);
-        return memberRepository.getByMemberCode(memberCode);
+        return memberRepository.save(Member.builder()
+                .memberCode(memberCode)
+                .memberName(generateMemberName())
+                .build());
     }
 
     public String generateMemberName() {
-        final Random RANDOM = new Random();
-
-        int randomNumber = RANDOM.nextInt(NUMBER_BOUND);
-        return String.format(DEFAULT_MEMBER_NAME_FORMAT, randomNumber);
+        return String.format(DEFAULT_MEMBER_NAME_FORMAT, new Random().nextInt(NUMBER_BOUND));
     }
 
     @Transactional
-    public Login verifyRefreshTokenAndReturnLogin(Long memberId, RefreshToken refreshToken) {
+    public Login verifyRefreshToken(Long memberId, RefreshToken refreshToken) {
         Map<String, Object> refreshTokenDetail = jwtUtil.getDetailFromToken(refreshToken.getRefreshToken());
 
         if ((Long) refreshTokenDetail.get(EXPIRATION_TIME) <= System.currentTimeMillis() / MILLIS_TO_SECONDS) {
@@ -91,7 +91,8 @@ public class MemberServiceV2 {
             throw new MemberNotMatchException();
         }
 
-        String refreshTokenFromDB = memberRepository.getRefreshById(memberId);
+        String refreshTokenFromDB = memberRepository.getById(memberId)
+                .getRefreshToken();
         if (!refreshTokenFromDB.equals(refreshToken.getRefreshToken())) {
             throw new RefreshRenewedException();
         }
@@ -100,22 +101,40 @@ public class MemberServiceV2 {
     }
 
     public Login renewTokens(Long memberId, String pictureUrl) {
-        Member member = memberRepository.findByMemberId(memberId)
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
         return generateLogin(member, pictureUrl);
     }
 
     public Login generateLogin(Member member, String picture) {
         String accessToken = jwtUtil.generateAccessToken(member.getMemberId(), picture);
-        String refreshToken = jwtUtil.generateRefreshToken(member.getMemberId(), picture);
-        memberRepository.saveRefreshToken(member.getMemberId(), refreshToken);
+
+        member.setRefreshToken(jwtUtil.generateRefreshToken(member.getMemberId(), picture));
+        memberRepository.updateById(member.getMemberId(), member);
 
         return Login.builder()
                 .accessToken(accessToken)
-                .refreshToken(refreshToken)
-                .expiresAt((Long) jwtUtil.getDetailFromToken(accessToken).get(EXPIRATION_TIME))
+                .refreshToken(member
+                        .getRefreshToken())
+                .expiresAt((Long) jwtUtil
+                        .getDetailFromToken(accessToken)
+                        .get(EXPIRATION_TIME))
                 .name(member.getMemberName())
+                .profile(picture)
                 .bio(member.getBio())
+                .build();
+    }
+
+    @Transactional
+    public NameUpdateResponse updateMemberName(Long memberId, String name) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(MemberNotFoundException::new);
+        member.setMemberName(name);
+        memberRepository.updateById(memberId, member);
+
+        return NameUpdateResponse.builder()
+                .memberId(memberId)
+                .name(name)
                 .build();
     }
 }

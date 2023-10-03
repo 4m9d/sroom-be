@@ -1,6 +1,7 @@
 package com.m9d.sroom.repository.member;
 
 import com.m9d.sroom.global.mapper.Member;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -16,8 +17,11 @@ public class MemberJdbcRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public void save(Member member) {
-
+    public Member save(Member member) {
+        jdbcTemplate.update(MemberRepositorySql.SAVE,
+                member.getMemberCode(),
+                member.getMemberName());
+        return getById(jdbcTemplate.queryForObject(MemberRepositorySql.GET_LAST_ID, Long.class));
     }
 
     @Override
@@ -27,17 +31,27 @@ public class MemberJdbcRepositoryImpl implements MemberRepository {
 
     @Override
     public Member getByCode(String memberCode) {
-        return null;
+        return jdbcTemplate.queryForObject(MemberRepositorySql.GET_BY_CODE, Member.getRowMapper(), memberCode);
     }
 
     @Override
     public Optional<Member> findByCode(String memberCode) {
-        return Optional.empty();
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(MemberRepositorySql.GET_BY_CODE, Member.getRowMapper(),
+                    memberCode));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
     public Optional<Member> findById(Long memberId) {
-        return Optional.empty();
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(MemberRepositorySql.GET_BY_ID, Member.getRowMapper(),
+                    memberId));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
