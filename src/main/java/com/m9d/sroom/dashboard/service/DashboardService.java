@@ -46,6 +46,13 @@ public class DashboardService {
 
         List<Course> courseList = courseRepository.getLatestOrderByMemberId(memberId);
         List<CourseInfo> latestCourses = courseService.getCourseInfoList(courseList);
+        List<CourseInfo> latestLectures = new ArrayList<>();
+
+        if (latestCourses.size() >= 2) {
+            latestLectures = latestCourses.subList(0, 2);
+        } else {
+            latestLectures.addAll(latestCourses);
+        }
 
         List<CourseDailyLog> courseDailyLogList = courseDailyLogRepository.getDateDataByMemberId(memberId);
         Member member = memberRepository.getById(memberId);
@@ -69,7 +76,7 @@ public class DashboardService {
                 .completionRate(member.getCompletionRate())
                 .totalLearningTime(member.getTotalLearningTime())
                 .motivation(motivation)
-                .latestLectures(latestCourses.subList(0, 2))
+                .latestLectures(latestLectures)
                 .learningHistories(learningHistoryList)
                 .build();
 
