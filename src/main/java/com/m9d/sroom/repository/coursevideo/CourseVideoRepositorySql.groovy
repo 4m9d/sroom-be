@@ -52,7 +52,7 @@ class CourseVideoRepositorySql {
     public static final String GET_LAST_INFO_BY_COURSE_ID = """
         SELECT v.video_id, v.title, v.video_code, v.channel, cv.start_time, cv.course_video_id
         FROM COURSEVIDEO cv
-        JOIN video v ON cv.video_id = v.video_id
+        JOIN VIDEO v ON cv.video_id = v.video_id
         WHERE cv.course_id = ?
         ORDER BY cv.last_view_time DESC, cv.video_index ASC
         LIMIT 1
