@@ -67,7 +67,7 @@ class PlaylistRepositorySql {
         p.description, p.duration, p.updated_at, p.title, p.published_at, p.video_count
         FROM PLAYLIST p
         JOIN PLAYLISTVIDEO pv ON p.playlist_id = pv.playlist_id
-        JOIN video v ON pv.video_id = v.video_id
+        JOIN VIDEO v ON pv.video_id = v.video_id
         WHERE p.channel = ?
         GROUP BY p.playlist_id
         ORDER BY SUM(v.view_count) DESC
