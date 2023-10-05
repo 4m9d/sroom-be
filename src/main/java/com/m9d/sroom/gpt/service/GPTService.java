@@ -97,8 +97,9 @@ public class GPTService {
         }
     }
 
-    public void requestToFastApi(String videoCode) {
-        String requestUrl = gptRequestUrl.concat("/?").concat("video_id=").concat(videoCode);
+    public void requestToFastApi(String videoCode, String videoTitle) {
+        String requestUrl = gptRequestUrl.concat("/?").concat("video_id=").concat(videoCode)
+                .concat("&video_title=").concat(videoTitle);
 
         try {
             HttpStatus status = webClient.get()

@@ -132,7 +132,7 @@ public class CourseService {
         log.info("request to AI server successfully. videoCode = {}, title = {}", video.getVideoCode(), video.getTitle());
 
         if (video.getMaterialStatus() == null || video.getMaterialStatus() == MaterialStatus.NO_REQUEST.getValue()) {
-            gptService.requestToFastApi(video.getVideoCode());
+            gptService.requestToFastApi(video.getVideoCode(), video.getTitle());
             video.setMaterialStatus(MaterialStatus.CREATING.getValue());
             videoRepository.updateById(video.getVideoId(), video);
         }
