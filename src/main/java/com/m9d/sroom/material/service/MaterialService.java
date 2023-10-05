@@ -254,10 +254,10 @@ public class MaterialService {
     }
 
     private void updateMemberQuizCount(Member member, List<SubmittedQuiz> quizList) {
-        member.setTotalCorrectCount(quizList.size());
+        member.setTotalSolvedCount(quizList.size() + member.getTotalSolvedCount());
         member.setTotalCorrectCount((int) quizList.stream()
                 .filter(SubmittedQuiz::getIsCorrect)
-                .count());
+                .count() + member.getTotalCorrectCount());
         memberRepository.updateById(member.getMemberId(), member);
     }
 
