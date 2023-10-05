@@ -47,8 +47,8 @@ public class WebAppConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOrigins("*")
                 .allowCredentials(true)
-                .allowedHeaders("authorization", "content-type", "accept")
+                .allowedHeaders("*")
                 .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
-                .exposedHeaders("authorization");
+                .exposedHeaders("*");
     }
 }
