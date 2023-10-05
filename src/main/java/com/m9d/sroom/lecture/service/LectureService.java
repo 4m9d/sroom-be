@@ -536,6 +536,7 @@ public class LectureService {
         VideoCompletionStatus status = new VideoCompletionStatus();
 
         status.setRewound(timeGap <= 0);
+        status.setCompletedNow(false);
 
         Optional<Video> videoOptional = videoRepository.findById(courseVideo.getVideoId());
         if (videoOptional.isEmpty()) {
@@ -559,6 +560,8 @@ public class LectureService {
         if (newDuration >= videoOptional.get().getDuration() - LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS) {
             status.setFullyWatched(true);
             status.setCompleted(true);
+        } else {
+            status.setFullyWatched(false);
         }
 
         return status;
