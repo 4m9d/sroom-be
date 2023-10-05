@@ -63,7 +63,7 @@ class CourseVideoRepositorySql {
         v.video_id, v.video_code, v.channel, v.title, cv.video_index, cv.is_complete, 
         cv.start_time, v.duration, cv.course_video_id
         FROM COURSEVIDEO cv
-        JOIN video v ON cv.video_id = v.video_id
+        JOIN VIDEO v ON cv.video_id = v.video_id
         WHERE cv.course_id = ? AND cv.section = ?
         ORDER BY cv.video_index ASC
     """
