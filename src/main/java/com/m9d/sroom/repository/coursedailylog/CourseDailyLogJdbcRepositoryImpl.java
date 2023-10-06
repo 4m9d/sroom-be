@@ -57,16 +57,6 @@ public class CourseDailyLogJdbcRepositoryImpl implements CourseDailyLogRepositor
     }
 
     @Override
-    public void updateQuizCountByCourseIdAndDate(Long courseId, Date date, int quizCount) {
-
-    }
-
-    @Override
-    public Integer countQuizByCourseIdAndDate(Long courseId, Date date) {
-        return null;
-    }
-
-    @Override
     public List<CourseDailyLog> getDateDataByMemberId(Long memberId) {
 
         return jdbcTemplate.query(CourseDailyLogRepositorySql.GET_DATE_GROUP_DATA_BY_MEMBER_ID,

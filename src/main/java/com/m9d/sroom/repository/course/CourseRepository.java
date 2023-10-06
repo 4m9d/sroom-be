@@ -17,13 +17,7 @@ public interface CourseRepository {
 
     void deleteById(Long courseId);
 
-    List<Course> getByMemberId(Long memberId);
-
     List<Course> getLatestOrderByMemberId(Long memberId);
-
-    Integer countByMemberId(Long memberId);
-
-    Integer countCompletedByMemberId(Long memberId);
 
     List<CourseBrief> getBriefListByMemberId(Long memberId);
 }

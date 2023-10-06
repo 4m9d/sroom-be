@@ -36,11 +36,6 @@ public class ReviewJdbcRepositoryImpl implements ReviewRepository {
     }
 
     @Override
-    public List<Review> getListByCode(String lectureCode, int offset, int limit) {
-        return null;
-    }
-
-    @Override
     public Review getByLectureId(Long lectureId) {
         return jdbcTemplate.queryForObject(ReviewRepositorySql.GET_BY_LECTURE_ID, Review.getRowmapper(), lectureId);
     }

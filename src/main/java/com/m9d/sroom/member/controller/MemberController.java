@@ -46,7 +46,7 @@ public class MemberController {
     @ApiResponse(responseCode = "200", description = "토큰 갱신에 성공하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(allOf = Login.class))})
     public Login refresh(@RequestBody RefreshToken refreshToken) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
-        return memberService.verifyRefreshTokenAndReturnLogin(memberId, refreshToken);
+        return memberService.verifyRefreshToken(memberId, refreshToken);
     }
 
     @Auth

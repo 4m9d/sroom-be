@@ -55,7 +55,9 @@ public class CourseQuizJdbcRepositoryImpl implements CourseQuizRepository {
     @Override
     public Optional<CourseQuiz> findByQuizIdAndCourseVideoId(Long quizId, Long courseVideoId) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(CourseQuizRepositorySql.GET_BY_QUIZ_ID_AND_COURSE_VIDEO_ID, CourseQuiz.getRowMapper(), quizId, courseVideoId));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(
+                    CourseQuizRepositorySql.GET_BY_QUIZ_ID_AND_COURSE_VIDEO_ID,
+                    CourseQuiz.getRowMapper(), quizId, courseVideoId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -64,15 +66,5 @@ public class CourseQuizJdbcRepositoryImpl implements CourseQuizRepository {
     @Override
     public void deleteByCourseId(Long courseId) {
         jdbcTemplate.update(CourseQuizRepositorySql.DELETE_BY_COURSE_ID, courseId);
-    }
-
-    @Override
-    public void updateScrappedById(Long courseQuizId) {
-
-    }
-
-    @Override
-    public Boolean isScrappedById(Long courseQuizId) {
-        return null;
     }
 }

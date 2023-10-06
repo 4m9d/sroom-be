@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface MemberRepository {
 
-    void save(Member member);
+    Member save(Member member);
 
     Member getById(Long memberId);
 
@@ -17,14 +17,6 @@ public interface MemberRepository {
     Optional<Member> findById(Long memberId);
 
     Member updateById(Long memberId, Member member);
-
-    void updateRefreshTokenById(Long memberId, String refreshToken);
-
-    void addQuizCountById(Long memberId, int quizCount, int correctCount);
-
-    void addTotalLearningTimeById(Long memberId, int timeToAddInSecond);
-
-    void updateCompletionRateById(Long memberId, int completionRate);
 
     Integer countCompletedCourseById(Long memberId);
 

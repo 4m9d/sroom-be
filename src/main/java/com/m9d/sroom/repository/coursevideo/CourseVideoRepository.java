@@ -30,8 +30,6 @@ public interface CourseVideoRepository {
 
     Optional<CourseVideo> findByCourseIdAndPrevIndex(Long courseId, int videoIndex);
 
-    LastVideoInfo getLastByCourseId(Long courseId);
-
     LastVideoInfo getLastInfoByCourseId(Long courseId);
 
     List<VideoWatchInfo> getWatchInfoListByCourseIdAndSection(Long courseId, int section);

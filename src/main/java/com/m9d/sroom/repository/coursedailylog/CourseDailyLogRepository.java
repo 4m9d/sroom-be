@@ -16,9 +16,5 @@ public interface CourseDailyLogRepository {
 
     CourseDailyLog updateById(Long dailyLogId, CourseDailyLog dailyLog);
 
-    void updateQuizCountByCourseIdAndDate(Long courseId, Date date, int quizCount);
-
-    Integer countQuizByCourseIdAndDate(Long courseId, Date date);
-
     public List<CourseDailyLog> getDateDataByMemberId(Long memberId);
 }

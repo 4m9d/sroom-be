@@ -30,11 +30,6 @@ public class PlaylistVideoJdbcRepositoryImpl implements PlaylistVideoRepository 
     }
 
     @Override
-    public List<PlaylistVideo> getListByPlaylistId(Long playlistId) {
-        return null;
-    }
-
-    @Override
     public void deleteByPlaylistId(Long playlistId) {
         jdbcTemplate.update(PlaylistVideoRepositorySql.DELETE_BY_PLAYLIST_ID, playlistId);
     }

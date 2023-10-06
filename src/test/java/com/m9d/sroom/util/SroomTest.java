@@ -2,12 +2,9 @@ package com.m9d.sroom.util;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.m9d.sroom.course.repository.CourseRepository;
 import com.m9d.sroom.course.service.CourseService;
-import com.m9d.sroom.dashboard.repository.DashboardRepository;
 import com.m9d.sroom.dashboard.service.DashboardService;
 import com.m9d.sroom.lecture.service.LectureService;
-import com.m9d.sroom.member.repository.MemberRepository;
 import com.m9d.sroom.member.service.MemberService;
 import com.m9d.sroom.util.youtube.YoutubeApi;
 import com.m9d.sroom.util.youtube.YoutubeUtil;
@@ -40,12 +37,6 @@ public class SroomTest {
     protected DashboardService dashboardService;
 
     @Autowired
-    protected DashboardRepository dashboardRepository;
-
-    @Autowired
-    protected MemberRepository memberRepository;
-
-    @Autowired
     protected JwtUtil jwtUtil;
 
     @Autowired
@@ -53,9 +44,6 @@ public class SroomTest {
 
     @Autowired
     protected LectureService lectureService;
-
-    @Autowired
-    protected CourseRepository courseRepository;
 
     @Autowired
     protected DateUtil dateUtil;

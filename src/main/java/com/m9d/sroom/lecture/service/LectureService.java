@@ -299,8 +299,8 @@ public class LectureService {
     private Video getSearchedVideoLast(String videoCode) {
         Optional<Video> videoOptional = videoRepository.findByCode(videoCode);
 
-        if (videoOptional.isPresent() && dateUtil.validateExpiration(videoOptional.get().getUpdatedAt(),
-                VIDEO_UPDATE_THRESHOLD_HOURS)) {
+        if (videoOptional.isPresent() &&
+                dateUtil.validateExpiration(videoOptional.get().getUpdatedAt(), VIDEO_UPDATE_THRESHOLD_HOURS)) {
             return videoOptional.get();
         } else {
             return youtubeUtil.getVideoWithBlocking(videoCode);
@@ -517,13 +517,8 @@ public class LectureService {
     }
 
     private CourseVideo getCourseVideo(Long memberId, Long courseVideoId) {
-        Optional<CourseVideo> courseVideoOptional = courseVideoRepository.findById(courseVideoId);
-
-        if (courseVideoOptional.isEmpty()) {
-            throw new CourseVideoNotFoundException();
-        }
-
-        CourseVideo courseVideo = courseVideoOptional.get();
+        CourseVideo courseVideo = courseVideoRepository.findById(courseVideoId)
+                .orElseThrow(CourseVideoNotFoundException::new);
 
         if (!courseVideo.getMemberId().equals(memberId)) {
             throw new CourseNotMatchException();
@@ -534,14 +529,11 @@ public class LectureService {
 
     private VideoCompletionStatus getVideoCompletionStatus(int newDuration, int timeGap, CourseVideo courseVideo, boolean isMarkedAsCompleted) {
         VideoCompletionStatus status = new VideoCompletionStatus();
-
         status.setRewound(timeGap <= 0);
         status.setCompletedNow(false);
 
-        Optional<Video> videoOptional = videoRepository.findById(courseVideo.getVideoId());
-        if (videoOptional.isEmpty()) {
-            throw new VideoNotFoundException();
-        }
+        Video video = videoRepository.findById(courseVideo.getVideoId())
+                .orElseThrow(VideoNotFoundException::new);
 
         if (courseVideo.isComplete()) {
             status.setCompleted(true);
@@ -549,7 +541,7 @@ public class LectureService {
             status.setCompleted(false);
 
             boolean currVideoComplete =
-                    (newDuration / (double) videoOptional.get().getDuration()) > MINIMUM_VIEW_PERCENT_FOR_COMPLETION
+                    (newDuration / (double) video.getDuration()) > MINIMUM_VIEW_PERCENT_FOR_COMPLETION
                             || isMarkedAsCompleted;
             if (currVideoComplete) {
                 status.setCompleted(true);
@@ -557,7 +549,7 @@ public class LectureService {
             }
         }
 
-        if (newDuration >= videoOptional.get().getDuration() - LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS) {
+        if (newDuration >= video.getDuration() - LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS) {
             status.setFullyWatched(true);
             status.setCompleted(true);
         } else {

@@ -17,10 +17,7 @@ public interface PlaylistRepository {
 
     List<Playlist> getTopRatedOrder(int limit);
 
-    void updateDurationById(Long playlistId, int duration);
-
     HashSet<String> getCodeSetByMemberId(Long memberId);
-    Set<String> getCodeListByMemberId(Long memberId);
 
     List<Playlist> getRandomByChannel(String channel, int limit);
 
