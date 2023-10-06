@@ -208,6 +208,7 @@ public class CourseService {
                     .section(section)
                     .videoIndex(videoIndex++)
                     .lectureIndex(ENROLL_LECTURE_INDEX)
+                    .summaryId(video.getSummaryId())
                     .build());
             videoCount++;
         }
