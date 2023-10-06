@@ -89,6 +89,14 @@ public class ReviewService {
         int progress = (videoCountData.getCompletedVideoCount() * 100) / videoCountData.getTotalVideoCount();
 
         Review review = getReview(lecture);
+        String submittedDate;
+
+        if (review.getSubmittedDate() != null) {
+            submittedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(review.getSubmittedDate());
+        }
+        else {
+            submittedDate = null;
+        }
 
         return LectureBrief4Review.builder()
                 .index(lecture.getLectureIndex())
@@ -102,23 +110,30 @@ public class ReviewService {
                 .progress(progress)
                 .content(review.getContent())
                 .rating(review.getSubmittedRating())
-                .submittedAt((new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(review.getSubmittedDate())))
+                .submittedAt(submittedDate)
                 .isReviewAllowed(isReviewAllowed(progress, lecture.getReviewed()))
                 .build();
     }
 
     LectureBrief4Review getVideoLectureBrief4Review(Lecture lecture) {
 
-        int viewDuration = courseVideoRepository.getListByLectureId(lecture.getId())
-                .get(0)
-                .getMaxDuration();
+        CourseVideo courseVideo = courseVideoRepository.getListByLectureId(lecture.getId())
+                .get(0);
         Video video = videoRepository.getById(lecture.getSourceId());
-        int progress = (viewDuration * 100) / video.getDuration();
+        int progress = (courseVideo.getMaxDuration() * 100) / video.getDuration();
+
+        if(progress < 70 && courseVideo.isComplete())
+            progress = 100;
 
         Review review = getReview(lecture);
+        String submittedDate;
 
-        if(lecture.getReviewed())
-            review = reviewRepository.getByLectureId(lecture.getId());
+        if (review.getSubmittedDate() != null) {
+            submittedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(review.getSubmittedDate());
+        }
+        else {
+            submittedDate = null;
+        }
 
         return LectureBrief4Review.builder()
                 .index(lecture.getLectureIndex())
@@ -127,12 +142,12 @@ public class ReviewService {
                 .thumbnail(video.getThumbnail())
                 .channel(lecture.getChannel())
                 .isPlaylist(false)
-                .viewDuration(viewDuration)
+                .viewDuration(courseVideo.getMaxDuration())
                 .lectureDuration(video.getDuration())
                 .progress(progress)
                 .content(review.getContent())
                 .rating(review.getSubmittedRating())
-                .submittedAt((new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(review.getSubmittedDate())))
+                .submittedAt(submittedDate)
                 .isReviewAllowed(isReviewAllowed(progress, lecture.getReviewed()))
                 .build();
 
@@ -181,7 +196,7 @@ public class ReviewService {
 
         review.setSubmittedRating(null);
         review.setContent(null);
-        review.setSubmittedDate(new Timestamp(0));
+        review.setSubmittedDate(null);
 
         if(lecture.getReviewed())
             review = reviewRepository.getByLectureId(lecture.getId());
