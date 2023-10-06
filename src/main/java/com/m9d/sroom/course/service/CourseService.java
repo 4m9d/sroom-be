@@ -287,8 +287,9 @@ public class CourseService {
             if (playlistOptional.isEmpty()) {
                 playlist = playlistRepository.save(playlist);
             } else {
-                playlist = playlistRepository.updateById(playlistOptional.get()
-                        .getPlaylistId(), playlist);
+                playlist.setAccumulatedRating(playlistOptional.get().getAccumulatedRating());
+                playlist.setReviewCount(playlistOptional.get().getReviewCount());
+                playlist = playlistRepository.updateById(playlistOptional.get().getPlaylistId(), playlist);
             }
             playlistVideoRepository.deleteByPlaylistId(playlist.getPlaylistId());
             playlist.setDuration(putPlaylistItemAndGetPlaylistDuration(playlist));
