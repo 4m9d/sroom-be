@@ -106,7 +106,7 @@ public class CourseService {
                     .lastViewTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(course.getLastViewTime()))
                     .totalVideoCount(videoCount)
                     .completedVideoCount(completedVideoCount)
-                    .progress((int)((double)completedVideoCount / videoCount * 100))
+                    .progress((int) ((double) completedVideoCount / videoCount * 100))
                     .build();
 
             courseInfoList.add(courseInfo);
@@ -259,6 +259,7 @@ public class CourseService {
                 .videoIndex(ENROLL_VIDEO_INDEX)
                 .lectureIndex(ENROLL_LECTURE_INDEX)
                 .lectureId(lecture.getId())
+                .summaryId(video.getSummaryId())
                 .build());
 
         return EnrolledCourseInfo.builder()
