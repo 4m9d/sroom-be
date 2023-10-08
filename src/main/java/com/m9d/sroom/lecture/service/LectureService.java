@@ -493,6 +493,7 @@ public class LectureService {
             Member member = memberRepository.getById(memberId);
             member.setTotalLearningTime(Math.max(timeGap, 0) + member.getTotalLearningTime());
             memberRepository.updateById(memberId, member);
+            updateCourseLastViewTime(courseVideo.getCourseId());
         }
 
         if (status.getCompletedNow()) {
@@ -595,6 +596,12 @@ public class LectureService {
             dailyLog.setLectureCount(dailyLog.getLectureCount() + lectureCountToAdd);
             courseDailyLogRepository.updateById(dailyLog.getCourseDailyLogId(), dailyLog);
         }
+    }
+
+    private void updateCourseLastViewTime(Long courseId) {
+        Course course = courseRepository.getById(courseId);
+        course.setLastViewTime(new Timestamp(System.currentTimeMillis()));
+        courseRepository.updateById(courseId, course);
     }
 
     private void updateLastViewVideoToNext(Long courseId, int videoIndex) {
