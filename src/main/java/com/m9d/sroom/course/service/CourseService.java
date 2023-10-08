@@ -95,18 +95,36 @@ public class CourseService {
 
         for (Course course : latestCourseList) {
             Long courseId = course.getCourseId();
-            int videoCount = courseVideoRepository.countByCourseId(courseId);
-            int completedVideoCount = courseVideoRepository.countCompletedByCourseId(courseId);
+            List<CourseVideo> courseVideoList = courseVideoRepository.getListByCourseId(courseId);
+            int videoCount = 0;
+            int completedVideoCount = 0;
+            int progress;
+
+            for (CourseVideo courseVideo : courseVideoList) {
+                videoCount++;
+                if (courseVideo.isComplete()) {
+                    completedVideoCount++;
+                }
+            }
+
+            if (courseVideoList.size() > 1) {
+                progress = (int) ((double) completedVideoCount / videoCount * 100);
+                System.out.println(progress);
+            }
+            else {
+                progress = (courseVideoList.get(0).getMaxDuration() * 100) /
+                        videoRepository.getById(courseVideoList.get(0).getVideoId()).getDuration();
+            }
 
             CourseInfo courseInfo = CourseInfo.builder()
-                    .courseId(course.getCourseId())
+                    .courseId(courseId)
                     .courseTitle(course.getCourseTitle())
                     .thumbnail(course.getThumbnail())
                     .channels(String.join(", ", lectureRepository.getChannelSetByCourseId(courseId)))
                     .lastViewTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(course.getLastViewTime()))
                     .totalVideoCount(videoCount)
                     .completedVideoCount(completedVideoCount)
-                    .progress((int) ((double) completedVideoCount / videoCount * 100))
+                    .progress(progress)
                     .build();
 
             courseInfoList.add(courseInfo);

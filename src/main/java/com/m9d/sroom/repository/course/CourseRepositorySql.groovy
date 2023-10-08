@@ -42,16 +42,16 @@ class CourseRepositorySql {
     """
 
     public static final String GET_LATEST_ORDER_BY_MEMBER_ID = """
-    SELECT 
-    course_id, member_id, course_title, course_duration, last_view_time, progress, thumbnail, is_scheduled, weeks,
-    expected_end_date, daily_target_time, start_date
-    FROM COURSE 
-    WHERE member_id = ?
-    ORDER BY 
-    CASE
-        WHEN progress = 100 THEN 1
-        ELSE 0
-    END, last_view_time DESC
+        SELECT 
+        course_id, member_id, course_title, course_duration, last_view_time, progress, thumbnail, is_scheduled, weeks,
+        expected_end_date, daily_target_time, start_date
+        FROM COURSE 
+        WHERE member_id = ?
+        ORDER BY 
+        CASE
+            WHEN progress = 100 THEN 1
+            ELSE 0
+        END ASC, last_view_time DESC
     """
     public static final String GET_BRIEF_LIST_BY_MEMBER_ID = """
         SELECT c.course_title, c.course_id, COUNT(cv.course_id) as video_count
