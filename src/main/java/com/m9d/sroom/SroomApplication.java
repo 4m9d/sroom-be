@@ -8,6 +8,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import javax.annotation.PostConstruct;
+import java.util.TimeZone;
 import java.util.concurrent.Executor;
 
 @SpringBootApplication
@@ -17,6 +19,12 @@ public class SroomApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SroomApplication.class, args);
+	}
+
+	@PostConstruct
+	public void init() {
+		// timezone 설정
+		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Seoul"));
 	}
 
 	@Bean
