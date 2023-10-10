@@ -96,24 +96,19 @@ public class CourseService {
         for (Course course : latestCourseList) {
             Long courseId = course.getCourseId();
             List<CourseVideo> courseVideoList = courseVideoRepository.getListByCourseId(courseId);
-            int videoCount = 0;
-            int completedVideoCount = 0;
             int progress;
+            int videoCount = courseVideoList.size();
+            int completedVideoCount = (int) courseVideoList.stream()
+                    .filter(CourseVideo::isComplete)
+                    .count();
 
-            for (CourseVideo courseVideo : courseVideoList) {
-                videoCount++;
-                if (courseVideo.isComplete()) {
-                    completedVideoCount++;
-                }
-            }
-
-            if (courseVideoList.size() > 1) {
+            if (videoCount > 1) {
                 progress = (int) ((double) completedVideoCount / videoCount * 100);
-                System.out.println(progress);
             }
             else {
-                progress = (courseVideoList.get(0).getMaxDuration() * 100) /
-                        videoRepository.getById(courseVideoList.get(0).getVideoId()).getDuration();
+                CourseVideo courseVideo = courseVideoList.get(0);
+                progress = (courseVideo.getMaxDuration() * 100) /
+                        videoRepository.getById(courseVideo.getVideoId()).getDuration();
             }
 
             CourseInfo courseInfo = CourseInfo.builder()
