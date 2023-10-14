@@ -2,12 +2,12 @@ package com.m9d.sroom.util;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.m9d.sroom.course.service.CourseService;
-import com.m9d.sroom.dashboard.service.DashboardService;
-import com.m9d.sroom.lecture.service.LectureService;
-import com.m9d.sroom.member.service.MemberService;
-import com.m9d.sroom.util.youtube.YoutubeApi;
-import com.m9d.sroom.util.youtube.YoutubeUtil;
+import com.m9d.sroom.course.CourseService;
+import com.m9d.sroom.dashboard.DashboardService;
+import com.m9d.sroom.lecture.LectureService;
+import com.m9d.sroom.member.MemberService;
+import com.m9d.sroom.youtube.YoutubeApi;
+import com.m9d.sroom.youtube.YoutubeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

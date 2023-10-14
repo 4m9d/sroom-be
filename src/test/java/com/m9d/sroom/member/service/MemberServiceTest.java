@@ -1,6 +1,7 @@
 package com.m9d.sroom.member.service;
 
-import com.m9d.sroom.global.mapper.MemberDto;
+import com.m9d.sroom.member.MemberDto;
+import com.m9d.sroom.member.MemberService;
 import com.m9d.sroom.member.dto.request.RefreshToken;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.member.exception.MemberNotMatchException;

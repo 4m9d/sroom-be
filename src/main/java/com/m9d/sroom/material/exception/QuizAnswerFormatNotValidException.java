@@ -1,6 +1,6 @@
 package com.m9d.sroom.material.exception;
 
-import com.m9d.sroom.global.error.InvalidParameterException;
+import com.m9d.sroom.common.error.InvalidParameterException;
 
 public class QuizAnswerFormatNotValidException extends InvalidParameterException {
 

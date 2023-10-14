@@ -1,6 +1,6 @@
 package com.m9d.sroom.course.dto;
 
-import com.m9d.sroom.global.mapper.CourseVideoDto;
+import com.m9d.sroom.common.dto.CourseVideoDto;
 import lombok.Builder;
 import lombok.Data;
 

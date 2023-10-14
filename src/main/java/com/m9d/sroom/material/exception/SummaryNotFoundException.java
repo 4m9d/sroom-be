@@ -1,6 +1,6 @@
 package com.m9d.sroom.material.exception;
 
-import com.m9d.sroom.global.error.NotFoundException;
+import com.m9d.sroom.common.error.NotFoundException;
 
 public class SummaryNotFoundException extends NotFoundException {
 

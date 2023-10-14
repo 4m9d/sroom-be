@@ -1,12 +1,10 @@
 package com.m9d.sroom.util;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.course.dto.response.CourseDetail;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
-import com.m9d.sroom.global.mapper.MemberDto;
-import com.m9d.sroom.global.mapper.PlaylistDto;
-import com.m9d.sroom.global.mapper.VideoDto;
+import com.m9d.sroom.member.MemberDto;
+import com.m9d.sroom.playlist.PlaylistDto;
 import com.m9d.sroom.lecture.dto.response.KeywordSearch;
 import com.m9d.sroom.lecture.dto.response.PlaylistDetail;
 import com.m9d.sroom.member.dto.response.Login;
