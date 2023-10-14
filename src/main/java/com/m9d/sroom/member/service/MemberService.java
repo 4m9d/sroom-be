@@ -4,7 +4,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
-import com.m9d.sroom.global.mapper.Member;
+import com.m9d.sroom.global.mapper.MemberDto;
 import com.m9d.sroom.member.dto.request.RefreshToken;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.member.dto.response.NameUpdateResponse;
@@ -43,8 +43,8 @@ public class MemberService {
     public Login authenticateMember(String credential) throws Exception {
         GoogleIdToken idToken = verifyCredential(credential);
 
-        Member member = findOrCreateMemberByMemberCode(idToken.getPayload().getSubject());
-        return generateLogin(member, (String) idToken.getPayload().get("picture"));
+        MemberDto memberDto = findOrCreateMemberByMemberCode(idToken.getPayload().getSubject());
+        return generateLogin(memberDto, (String) idToken.getPayload().get("picture"));
     }
 
     public GoogleIdToken verifyCredential(String credential) throws Exception {
@@ -62,13 +62,13 @@ public class MemberService {
         return idToken;
     }
 
-    public Member findOrCreateMemberByMemberCode(String memberCode) {
+    public MemberDto findOrCreateMemberByMemberCode(String memberCode) {
         return memberRepository.findByCode(memberCode)
                 .orElseGet(() -> createNewMember(memberCode));
     }
 
-    public Member createNewMember(String memberCode) {
-        return memberRepository.save(Member.builder()
+    public MemberDto createNewMember(String memberCode) {
+        return memberRepository.save(MemberDto.builder()
                 .memberCode(memberCode)
                 .memberName(generateMemberName())
                 .build());
@@ -99,36 +99,36 @@ public class MemberService {
     }
 
     public Login renewTokens(Long memberId, String pictureUrl) {
-        Member member = memberRepository.findById(memberId)
+        MemberDto memberDto = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
-        return generateLogin(member, pictureUrl);
+        return generateLogin(memberDto, pictureUrl);
     }
 
-    public Login generateLogin(Member member, String picture) {
-        String accessToken = jwtUtil.generateAccessToken(member.getMemberId(), picture);
+    public Login generateLogin(MemberDto memberDto, String picture) {
+        String accessToken = jwtUtil.generateAccessToken(memberDto.getMemberId(), picture);
 
-        member.setRefreshToken(jwtUtil.generateRefreshToken(member.getMemberId(), picture));
-        memberRepository.updateById(member.getMemberId(), member);
+        memberDto.setRefreshToken(jwtUtil.generateRefreshToken(memberDto.getMemberId(), picture));
+        memberRepository.updateById(memberDto.getMemberId(), memberDto);
 
         return Login.builder()
                 .accessToken(accessToken)
-                .refreshToken(member
+                .refreshToken(memberDto
                         .getRefreshToken())
                 .expiresAt((Long) jwtUtil
                         .getDetailFromToken(accessToken)
                         .get(EXPIRATION_TIME))
-                .name(member.getMemberName())
+                .name(memberDto.getMemberName())
                 .profile(picture)
-                .bio(member.getBio())
+                .bio(memberDto.getBio())
                 .build();
     }
 
     @Transactional
     public NameUpdateResponse updateMemberName(Long memberId, String name) {
-        Member member = memberRepository.findById(memberId)
+        MemberDto memberDto = memberRepository.findById(memberId)
                 .orElseThrow(MemberNotFoundException::new);
-        member.setMemberName(name);
-        memberRepository.updateById(memberId, member);
+        memberDto.setMemberName(name);
+        memberRepository.updateById(memberId, memberDto);
 
         return NameUpdateResponse.builder()
                 .memberId(memberId)

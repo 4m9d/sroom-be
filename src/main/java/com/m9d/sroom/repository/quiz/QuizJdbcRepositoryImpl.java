@@ -1,6 +1,6 @@
 package com.m9d.sroom.repository.quiz;
 
-import com.m9d.sroom.global.mapper.Quiz;
+import com.m9d.sroom.global.mapper.QuizDto;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -18,30 +18,30 @@ public class QuizJdbcRepositoryImpl implements QuizRepository {
     }
 
     @Override
-    public Quiz save(Quiz quiz) {
+    public QuizDto save(QuizDto quizDto) {
         jdbcTemplate.update(QuizRepositorySql.SAVE,
-                quiz.getVideoId(),
-                quiz.getType(),
-                quiz.getQuestion(),
-                quiz.getSubjectiveAnswer(),
-                quiz.getChoiceAnswer());
+                quizDto.getVideoId(),
+                quizDto.getType(),
+                quizDto.getQuestion(),
+                quizDto.getSubjectiveAnswer(),
+                quizDto.getChoiceAnswer());
         return getById(jdbcTemplate.queryForObject(QuizRepositorySql.GET_LAST_ID, Long.class));
     }
 
     @Override
-    public List<Quiz> getListByVideoId(Long videoId) {
-        return jdbcTemplate.query(QuizRepositorySql.GET_LIST_BY_VIDEO_ID, Quiz.getRowMapper(), videoId);
+    public List<QuizDto> getListByVideoId(Long videoId) {
+        return jdbcTemplate.query(QuizRepositorySql.GET_LIST_BY_VIDEO_ID, QuizDto.getRowMapper(), videoId);
     }
 
     @Override
-    public Quiz getById(Long quizId) {
-        return jdbcTemplate.queryForObject(QuizRepositorySql.GET_BY_ID, Quiz.getRowMapper(), quizId);
+    public QuizDto getById(Long quizId) {
+        return jdbcTemplate.queryForObject(QuizRepositorySql.GET_BY_ID, QuizDto.getRowMapper(), quizId);
     }
 
     @Override
-    public Optional<Quiz> findById(Long quizId) {
+    public Optional<QuizDto> findById(Long quizId) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(QuizRepositorySql.GET_BY_ID, Quiz.getRowMapper(), quizId));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(QuizRepositorySql.GET_BY_ID, QuizDto.getRowMapper(), quizId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

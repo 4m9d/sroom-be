@@ -7,11 +7,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 
 @Getter
 @Builder
-public class Member {
+public class MemberDto {
 
     @Id
     private Long memberId;
@@ -45,8 +44,8 @@ public class Member {
     @Setter
     private Integer status;
 
-    public static RowMapper<Member> getRowMapper() {
-        return (rs, rowNum) -> Member.builder()
+    public static RowMapper<MemberDto> getRowMapper() {
+        return (rs, rowNum) -> MemberDto.builder()
                 .memberId(rs.getLong("member_id"))
                 .memberCode(rs.getString("member_code"))
                 .memberName(rs.getString("member_name"))

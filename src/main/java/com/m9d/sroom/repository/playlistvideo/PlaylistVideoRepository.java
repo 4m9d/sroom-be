@@ -1,12 +1,10 @@
 package com.m9d.sroom.repository.playlistvideo;
 
-import com.m9d.sroom.global.mapper.PlaylistVideo;
-
-import java.util.List;
+import com.m9d.sroom.global.mapper.PlaylistVideoDto;
 
 public interface PlaylistVideoRepository {
 
-    PlaylistVideo save(PlaylistVideo playlistVideo);
+    PlaylistVideoDto save(PlaylistVideoDto playlistVideoDto);
 
     void deleteByPlaylistId(Long playlistId);
 

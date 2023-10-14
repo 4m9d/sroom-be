@@ -1,7 +1,7 @@
 package com.m9d.sroom.util.youtube;
 
-import com.m9d.sroom.global.mapper.Playlist;
-import com.m9d.sroom.global.mapper.Video;
+import com.m9d.sroom.global.mapper.PlaylistDto;
+import com.m9d.sroom.global.mapper.VideoDto;
 import com.m9d.sroom.repository.video.VideoRepository;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.util.youtube.resource.PlaylistItemReq;
@@ -76,7 +76,7 @@ public class YoutubeUtil {
     public static final String JSONNODE_TYPE_PLAYLIST = "youtube#playlist";
     public static final String JSONNODE_TYPE_VIDEO = "youtube#video";
 
-    public Playlist getPlaylistWithBlocking(String playlistCode) {
+    public PlaylistDto getPlaylistWithBlocking(String playlistCode) {
         Mono<PlaylistVo> playlistVoMono = youtubeApi.getPlaylistVo(PlaylistReq.builder()
                 .playlistCode(playlistCode)
                 .build());
@@ -84,7 +84,7 @@ public class YoutubeUtil {
         return getPlaylistFromMono(playlistVoMono);
     }
 
-    public Video getVideoWithBlocking(String videoCode) {
+    public VideoDto getVideoWithBlocking(String videoCode) {
         Mono<VideoVo> videoVoMono = youtubeApi.getVideoVo(VideoReq.builder()
                 .videoCode(videoCode)
                 .build());
@@ -100,10 +100,10 @@ public class YoutubeUtil {
         return safeGetVo(playlistVideoVoMono);
     }
 
-    public Playlist getPlaylistFromMono(Mono<PlaylistVo> playlistVoMono) {
+    public PlaylistDto getPlaylistFromMono(Mono<PlaylistVo> playlistVoMono) {
         PlaylistItemVo itemVo = safeGetVo(playlistVoMono).getItems().get(FIRST_INDEX);
 
-        return Playlist.builder()
+        return PlaylistDto.builder()
                 .playlistCode(itemVo.getId())
                 .thumbnail(selectThumbnailInVo(itemVo.getSnippet().getThumbnails()))
                 .title(itemVo.getSnippet().getTitle())
@@ -114,7 +114,7 @@ public class YoutubeUtil {
                 .build();
     }
 
-    public Video getVideoFromMono(Mono<VideoVo> videoVoMono) throws IndexOutOfBoundsException {
+    public VideoDto getVideoFromMono(Mono<VideoVo> videoVoMono) throws IndexOutOfBoundsException {
         VideoItemVo itemVo = safeGetVo(videoVoMono).getItems().get(FIRST_INDEX);
 
         String language;
@@ -129,7 +129,7 @@ public class YoutubeUtil {
             membership = true;
         }
 
-        return Video.builder()
+        return VideoDto.builder()
                 .videoCode(itemVo.getId())
                 .title(itemVo.getSnippet().getTitle())
                 .channel(itemVo.getSnippet().getChannelTitle())
@@ -180,19 +180,19 @@ public class YoutubeUtil {
     }
 
     @Transactional
-    public Video saveOrUpdateVideo(String videoCode, Video video) {
-        Optional<Video> videoOptional = videoRepository.findByCode(videoCode);
+    public VideoDto saveOrUpdateVideo(String videoCode, VideoDto videoDto) {
+        Optional<VideoDto> videoOptional = videoRepository.findByCode(videoCode);
         if (videoOptional.isPresent()) {
-            Video videoOriginal = videoOptional.get();
-            video.setAccumulatedRating(videoOriginal.getAccumulatedRating());
-            video.setSummaryId(videoOriginal.getSummaryId());
-            video.setReviewCount(videoOriginal.getReviewCount());
-            video.setChapterUse(videoOriginal.isChapterUse());
-            video.setMaterialStatus(videoOriginal.getMaterialStatus());
-            video.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
-            return videoRepository.updateById(videoOptional.get().getVideoId(), video);
+            VideoDto videoDtoOriginal = videoOptional.get();
+            videoDto.setAccumulatedRating(videoDtoOriginal.getAccumulatedRating());
+            videoDto.setSummaryId(videoDtoOriginal.getSummaryId());
+            videoDto.setReviewCount(videoDtoOriginal.getReviewCount());
+            videoDto.setChapterUse(videoDtoOriginal.isChapterUse());
+            videoDto.setMaterialStatus(videoDtoOriginal.getMaterialStatus());
+            videoDto.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+            return videoRepository.updateById(videoOptional.get().getVideoId(), videoDto);
         } else {
-            return videoRepository.save(video);
+            return videoRepository.save(videoDto);
         }
     }
 }

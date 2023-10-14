@@ -1,11 +1,8 @@
 package com.m9d.sroom.repository.playlistvideo;
 
-import com.m9d.sroom.global.mapper.PlaylistVideo;
+import com.m9d.sroom.global.mapper.PlaylistVideoDto;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Repository
 public class PlaylistVideoJdbcRepositoryImpl implements PlaylistVideoRepository {
@@ -17,16 +14,16 @@ public class PlaylistVideoJdbcRepositoryImpl implements PlaylistVideoRepository 
     }
 
     @Override
-    public PlaylistVideo save(PlaylistVideo playlistVideo) {
+    public PlaylistVideoDto save(PlaylistVideoDto playlistVideoDto) {
         jdbcTemplate.update(PlaylistVideoRepositorySql.SAVE,
-                playlistVideo.getPlaylistId(),
-                playlistVideo.getVideoId(),
-                playlistVideo.getVideoIndex());
+                playlistVideoDto.getPlaylistId(),
+                playlistVideoDto.getVideoId(),
+                playlistVideoDto.getVideoIndex());
         return getById(jdbcTemplate.queryForObject(PlaylistVideoRepositorySql.GET_LAST_ID, Long.class));
     }
 
-    private PlaylistVideo getById(Long playlistVideoId) {
-        return jdbcTemplate.queryForObject(PlaylistVideoRepositorySql.GET_BY_ID, PlaylistVideo.getMapper(), playlistVideoId);
+    private PlaylistVideoDto getById(Long playlistVideoId) {
+        return jdbcTemplate.queryForObject(PlaylistVideoRepositorySql.GET_BY_ID, PlaylistVideoDto.getMapper(), playlistVideoId);
     }
 
     @Override

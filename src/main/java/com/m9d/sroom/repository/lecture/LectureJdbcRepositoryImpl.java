@@ -1,6 +1,6 @@
 package com.m9d.sroom.repository.lecture;
 
-import com.m9d.sroom.global.mapper.Lecture;
+import com.m9d.sroom.global.mapper.LectureDto;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,33 +18,33 @@ public class LectureJdbcRepositoryImpl implements LectureRepository {
     }
 
     @Override
-    public Lecture save(Lecture lecture) {
+    public LectureDto save(LectureDto lectureDto) {
         jdbcTemplate.update(LectureRepositorySql.SAVE,
-                lecture.getCourseId(),
-                lecture.getSourceId(),
-                lecture.getPlaylist(),
-                lecture.getLectureIndex(),
-                lecture.getMemberId(),
-                lecture.getChannel());
+                lectureDto.getCourseId(),
+                lectureDto.getSourceId(),
+                lectureDto.getPlaylist(),
+                lectureDto.getLectureIndex(),
+                lectureDto.getMemberId(),
+                lectureDto.getChannel());
         return getById(jdbcTemplate.queryForObject(LectureRepositorySql.GET_LAST_ID, Long.class));
     }
 
-    public Lecture getById(Long lectureId) {
-        return jdbcTemplate.queryForObject(LectureRepositorySql.GET_BY_ID, Lecture.getRowMapper(), lectureId);
+    public LectureDto getById(Long lectureId) {
+        return jdbcTemplate.queryForObject(LectureRepositorySql.GET_BY_ID, LectureDto.getRowMapper(), lectureId);
     }
 
     @Override
     @Transactional
-    public Lecture updateById(Long lectureId, Lecture lecture) {
+    public LectureDto updateById(Long lectureId, LectureDto lectureDto) {
         jdbcTemplate.update(LectureRepositorySql.UPDATE_BY_ID,
-                lecture.getCourseId(),
-                lecture.getSourceId(),
-                lecture.getPlaylist(),
-                lecture.getLectureIndex(),
-                lecture.getReviewed(),
-                lecture.getMemberId(),
-                lecture.getChannel(),
-                lecture.getId());
+                lectureDto.getCourseId(),
+                lectureDto.getSourceId(),
+                lectureDto.getPlaylist(),
+                lectureDto.getLectureIndex(),
+                lectureDto.getReviewed(),
+                lectureDto.getMemberId(),
+                lectureDto.getChannel(),
+                lectureDto.getId());
 
         return getById(lectureId);
     }
@@ -62,8 +62,8 @@ public class LectureJdbcRepositoryImpl implements LectureRepository {
     }
 
     @Override
-    public List<Lecture> getListByCourseId(Long courseId) {
-        return jdbcTemplate.query(LectureRepositorySql.GET_LIST_BY_COURSE_ID, Lecture.getRowMapper(), courseId);
+    public List<LectureDto> getListByCourseId(Long courseId) {
+        return jdbcTemplate.query(LectureRepositorySql.GET_LIST_BY_COURSE_ID, LectureDto.getRowMapper(), courseId);
     }
 
     @Override

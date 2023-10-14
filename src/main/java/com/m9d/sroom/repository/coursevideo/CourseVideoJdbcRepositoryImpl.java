@@ -1,7 +1,7 @@
 package com.m9d.sroom.repository.coursevideo;
 
 import com.m9d.sroom.course.dto.VideoInfoForSchedule;
-import com.m9d.sroom.global.mapper.CourseVideo;
+import com.m9d.sroom.global.mapper.CourseVideoDto;
 import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
 import com.m9d.sroom.lecture.dto.response.VideoWatchInfo;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -22,60 +22,60 @@ public class CourseVideoJdbcRepositoryImpl implements CourseVideoRepository {
     }
 
     @Override
-    public CourseVideo save(CourseVideo courseVideo) {
+    public CourseVideoDto save(CourseVideoDto courseVideoDto) {
         jdbcTemplate.update(CourseVideoRepositorySql.SAVE,
-                courseVideo.getCourseId(),
-                courseVideo.getVideoId(),
-                courseVideo.getSection(),
-                courseVideo.getVideoIndex(),
-                courseVideo.getSummaryId(),
-                courseVideo.getLectureIndex(),
-                courseVideo.getMemberId(),
-                courseVideo.getLastViewTime(),
-                courseVideo.getMaxDuration(),
-                courseVideo.getLectureId());
+                courseVideoDto.getCourseId(),
+                courseVideoDto.getVideoId(),
+                courseVideoDto.getSection(),
+                courseVideoDto.getVideoIndex(),
+                courseVideoDto.getSummaryId(),
+                courseVideoDto.getLectureIndex(),
+                courseVideoDto.getMemberId(),
+                courseVideoDto.getLastViewTime(),
+                courseVideoDto.getMaxDuration(),
+                courseVideoDto.getLectureId());
         return getById(jdbcTemplate.queryForObject(CourseVideoRepositorySql.GET_LAST_ID, Long.class));
     }
 
     @Override
-    public CourseVideo updateById(Long courseVideoId, CourseVideo courseVideo) {
+    public CourseVideoDto updateById(Long courseVideoId, CourseVideoDto courseVideoDto) {
         jdbcTemplate.update(CourseVideoRepositorySql.UPDATE_BY_ID,
-                courseVideo.getCourseId(),
-                courseVideo.getVideoId(),
-                courseVideo.getSection(),
-                courseVideo.getVideoIndex(),
-                courseVideo.getStartTime(),
-                courseVideo.isComplete(),
-                courseVideo.getSummaryId(),
-                courseVideo.getLectureIndex(),
-                courseVideo.getMemberId(),
-                courseVideo.getLastViewTime(),
-                courseVideo.getMaxDuration(),
-                courseVideo.getLectureId(),
+                courseVideoDto.getCourseId(),
+                courseVideoDto.getVideoId(),
+                courseVideoDto.getSection(),
+                courseVideoDto.getVideoIndex(),
+                courseVideoDto.getStartTime(),
+                courseVideoDto.isComplete(),
+                courseVideoDto.getSummaryId(),
+                courseVideoDto.getLectureIndex(),
+                courseVideoDto.getMemberId(),
+                courseVideoDto.getLastViewTime(),
+                courseVideoDto.getMaxDuration(),
+                courseVideoDto.getLectureId(),
                 courseVideoId);
         return getById(courseVideoId);
     }
 
     @Override
-    public CourseVideo getById(Long courseVideoId) {
-        return jdbcTemplate.queryForObject(CourseVideoRepositorySql.GET_BY_ID, CourseVideo.getRowMapper(), courseVideoId);
+    public CourseVideoDto getById(Long courseVideoId) {
+        return jdbcTemplate.queryForObject(CourseVideoRepositorySql.GET_BY_ID, CourseVideoDto.getRowMapper(), courseVideoId);
     }
 
     @Override
-    public List<CourseVideo> getListByCourseId(Long courseId) {
-        return jdbcTemplate.query(CourseVideoRepositorySql.GET_LIST_BY_COURSE_ID, CourseVideo.getRowMapper(), courseId);
+    public List<CourseVideoDto> getListByCourseId(Long courseId) {
+        return jdbcTemplate.query(CourseVideoRepositorySql.GET_LIST_BY_COURSE_ID, CourseVideoDto.getRowMapper(), courseId);
     }
 
     @Override
-    public List<CourseVideo> getListByLectureId(Long lectureId) {
+    public List<CourseVideoDto> getListByLectureId(Long lectureId) {
         return jdbcTemplate.query(CourseVideoRepositorySql.GET_LIST_BY_LECTURE_ID,
-                CourseVideo.getRowMapper(), lectureId);
+                CourseVideoDto.getRowMapper(), lectureId);
     }
 
     @Override
-    public Optional<CourseVideo> findById(Long courseVideoId) {
+    public Optional<CourseVideoDto> findById(Long courseVideoId) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(CourseVideoRepositorySql.GET_BY_ID, CourseVideo.getRowMapper(), courseVideoId));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(CourseVideoRepositorySql.GET_BY_ID, CourseVideoDto.getRowMapper(), courseVideoId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -100,10 +100,10 @@ public class CourseVideoJdbcRepositoryImpl implements CourseVideoRepository {
     }
 
     @Override
-    public Optional<CourseVideo> findByCourseIdAndPrevIndex(Long courseId, int videoIndex) {
+    public Optional<CourseVideoDto> findByCourseIdAndPrevIndex(Long courseId, int videoIndex) {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(CourseVideoRepositorySql.GET_BY_COURSE_ID_AND_PREV_INDEX,
-                    CourseVideo.getRowMapper(), courseId, videoIndex));
+                    CourseVideoDto.getRowMapper(), courseId, videoIndex));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
@@ -141,7 +141,7 @@ public class CourseVideoJdbcRepositoryImpl implements CourseVideoRepository {
     @Override
     public List<VideoInfoForSchedule> getInfoForScheduleByCourseId(Long courseId) {
         return jdbcTemplate.query(CourseVideoRepositorySql.GET_INFO_FOR_SCHEDULE_BY_COURSE_ID, (rs, rowNum) -> VideoInfoForSchedule.builder()
-                        .courseVideo(CourseVideo.getRowMapper().mapRow(rs, rowNum))
+                        .courseVideoDto(CourseVideoDto.getRowMapper().mapRow(rs, rowNum))
                         .duration(rs.getInt("duration"))
                         .build()
                 , courseId);

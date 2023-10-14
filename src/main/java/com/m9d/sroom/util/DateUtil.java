@@ -35,14 +35,14 @@ public class DateUtil {
         }
     }
 
-    public int convertISOToSeconds(String isoTime) {
+    public static int convertISOToSeconds(String isoTime) {
         Duration duration = Duration.parse(isoTime);
 
         int totalSeconds = (int) duration.toSeconds();
         return totalSeconds;
     }
 
-    public  Date convertStringToDate(String strDate) {
+    public static Date convertStringToDate(String strDate) {
         try {
             java.time.LocalDate localDate = LocalDate.parse(strDate, dateFormatter);
             return java.sql.Date.valueOf(localDate);
@@ -60,7 +60,7 @@ public class DateUtil {
         return false;
     }
 
-    public Timestamp convertISOToTimestamp(String isoString) {
+    public static Timestamp convertISOToTimestamp(String isoString) {
         try {
             Instant instant = Instant.parse(isoString);
             return Timestamp.from(instant);

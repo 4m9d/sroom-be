@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 
 @Data
 @Builder
-public class CourseQuiz {
+public class CourseQuizDto {
 
     private Long id;
 
@@ -28,8 +28,8 @@ public class CourseQuiz {
 
     private Timestamp submittedTime;
 
-    public static RowMapper<CourseQuiz> getRowMapper() {
-        return (rs, rowNum) -> CourseQuiz.builder()
+    public static RowMapper<CourseQuizDto> getRowMapper() {
+        return (rs, rowNum) -> CourseQuizDto.builder()
                 .id(rs.getLong("course_quiz_id"))
                 .courseId(rs.getLong("course_id"))
                 .quizId(rs.getLong("quiz_id"))

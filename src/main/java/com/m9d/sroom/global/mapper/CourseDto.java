@@ -1,17 +1,18 @@
 package com.m9d.sroom.global.mapper;
 
+import com.m9d.sroom.object.Course;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.Timestamp;
 import java.util.Date;
 
 @Data
-@Builder
-public class Course {
+@Builder(toBuilder = true)
+@AllArgsConstructor
+public class CourseDto {
 
     private Long courseId;
 
@@ -41,8 +42,16 @@ public class Course {
 
     private Integer progress;
 
-    public static RowMapper<Course> getRowMapper() {
-        return (rs, rowNum) -> Course.builder()
+    public CourseDto(Course course) {
+        this.videoCount = course.getVideoCount();
+        this.courseTitle = course.getTitle();
+        this.thumbnail = course.getThumbnail();
+        this.duration = course.getDuration();
+        this.expectedEndDate = course.getExpectedEndDate();
+    }
+
+    public static RowMapper<CourseDto> getRowMapper() {
+        return (rs, rowNum) -> CourseDto.builder()
                 .courseId(rs.getLong("course_id"))
                 .memberId(rs.getLong("member_id"))
                 .courseTitle(rs.getString("course_title"))

@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 
 @Data
 @Builder
-public class Summary {
+public class SummaryDto {
 
     private Long id;
 
@@ -27,8 +27,8 @@ public class Summary {
 
     private boolean modified;
 
-    public static RowMapper<Summary> getRowMapper() {
-        return (rs, rowNum) -> Summary.builder()
+    public static RowMapper<SummaryDto> getRowMapper() {
+        return (rs, rowNum) -> SummaryDto.builder()
                 .id(rs.getLong("summary_id"))
                 .videoId(rs.getLong("video_id"))
                 .content(rs.getString("content"))

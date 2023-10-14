@@ -1,16 +1,16 @@
 package com.m9d.sroom.repository.summary;
 
-import com.m9d.sroom.global.mapper.Summary;
+import com.m9d.sroom.global.mapper.SummaryDto;
 
 import java.util.Optional;
 
 public interface SummaryRepository {
 
-    Summary save(Summary summary);
+    SummaryDto save(SummaryDto summaryDto);
 
-    Summary getById(Long summaryId);
+    SummaryDto getById(Long summaryId);
 
-    Optional<Summary> findById(Long summaryId);
+    Optional<SummaryDto> findById(Long summaryId);
 
-    Summary updateById(Long summaryId, Summary summary);
+    SummaryDto updateById(Long summaryId, SummaryDto summaryDto);
 }

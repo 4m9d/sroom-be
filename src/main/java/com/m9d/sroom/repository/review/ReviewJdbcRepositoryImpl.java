@@ -1,12 +1,11 @@
 package com.m9d.sroom.repository.review;
 
-import com.m9d.sroom.global.mapper.Review;
+import com.m9d.sroom.global.mapper.ReviewDto;
 import com.m9d.sroom.lecture.dto.response.ReviewBrief;
 import com.m9d.sroom.repository.lecture.LectureRepositorySql;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.sql.JDBCType;
 import java.util.List;
 
 @Repository
@@ -19,25 +18,25 @@ public class ReviewJdbcRepositoryImpl implements ReviewRepository {
     }
 
     @Override
-    public Review save(Review review) {
+    public ReviewDto save(ReviewDto reviewDto) {
         jdbcTemplate.update(ReviewRepositorySql.SAVE,
-                review.getSourceCode(),
-                review.getMemberId(),
-                review.getLectureId(),
-                review.getSubmittedRating(),
-                review.getContent(),
-                review.getSubmittedDate());
+                reviewDto.getSourceCode(),
+                reviewDto.getMemberId(),
+                reviewDto.getLectureId(),
+                reviewDto.getSubmittedRating(),
+                reviewDto.getContent(),
+                reviewDto.getSubmittedDate());
         return getById(jdbcTemplate.queryForObject(LectureRepositorySql.GET_LAST_ID, Long.class));
     }
 
     @Override
-    public Review getById(Long reviewId) {
-        return jdbcTemplate.queryForObject(ReviewRepositorySql.GET_BY_ID, Review.getRowmapper(), reviewId);
+    public ReviewDto getById(Long reviewId) {
+        return jdbcTemplate.queryForObject(ReviewRepositorySql.GET_BY_ID, ReviewDto.getRowmapper(), reviewId);
     }
 
     @Override
-    public Review getByLectureId(Long lectureId) {
-        return jdbcTemplate.queryForObject(ReviewRepositorySql.GET_BY_LECTURE_ID, Review.getRowmapper(), lectureId);
+    public ReviewDto getByLectureId(Long lectureId) {
+        return jdbcTemplate.queryForObject(ReviewRepositorySql.GET_BY_LECTURE_ID, ReviewDto.getRowmapper(), lectureId);
     }
 
     @Override

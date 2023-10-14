@@ -10,7 +10,7 @@ import java.util.Date;
 @Getter
 @Setter
 @Builder
-public class CourseDailyLog {
+public class CourseDailyLogDto {
 
     private Long courseDailyLogId;
 
@@ -26,8 +26,8 @@ public class CourseDailyLog {
 
     private int lectureCount;
 
-    public static RowMapper<CourseDailyLog> getRowMapper() {
-        return ((rs, rowNum) -> CourseDailyLog.builder()
+    public static RowMapper<CourseDailyLogDto> getRowMapper() {
+        return ((rs, rowNum) -> CourseDailyLogDto.builder()
                 .courseDailyLogId(rs.getLong("course_daily_log_id"))
                 .memberId(rs.getLong("member_id"))
                 .courseId(rs.getLong("course_id"))

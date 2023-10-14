@@ -1,6 +1,6 @@
 package com.m9d.sroom.repository.course;
 
-import com.m9d.sroom.global.mapper.Course;
+import com.m9d.sroom.global.mapper.CourseDto;
 import com.m9d.sroom.lecture.dto.response.CourseBrief;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -18,40 +18,40 @@ public class CourseJdbcRepositoryImpl implements CourseRepository {
     }
 
     @Override
-    public Course save(Course course) {
+    public CourseDto save(CourseDto courseDto) {
         jdbcTemplate.update(CourseRepositorySql.SAVE,
-                course.getMemberId(),
-                course.getCourseTitle(),
-                course.getDuration(),
-                course.getLastViewTime(),
-                course.getThumbnail(),
-                course.isScheduled(),
-                course.getWeeks(),
-                course.getExpectedEndDate(),
-                course.getDailyTargetTime());
+                courseDto.getMemberId(),
+                courseDto.getCourseTitle(),
+                courseDto.getDuration(),
+                courseDto.getLastViewTime(),
+                courseDto.getThumbnail(),
+                courseDto.isScheduled(),
+                courseDto.getWeeks(),
+                courseDto.getExpectedEndDate(),
+                courseDto.getDailyTargetTime());
         return getById(jdbcTemplate.queryForObject(CourseRepositorySql.GET_LAST_ID, Long.class));
     }
 
     @Override
-    public Course getById(Long courseId) {
-        return jdbcTemplate.queryForObject(CourseRepositorySql.GET_BY_ID, Course.getRowMapper(), courseId);
+    public CourseDto getById(Long courseId) {
+        return jdbcTemplate.queryForObject(CourseRepositorySql.GET_BY_ID, CourseDto.getRowMapper(), courseId);
     }
 
     @Override
-    public Course updateById(Long courseId, Course course) {
+    public CourseDto updateById(Long courseId, CourseDto courseDto) {
         jdbcTemplate.update(CourseRepositorySql.UPDATE_BY_ID,
-                course.getMemberId(),
-                course.getCourseTitle(),
-                course.getDuration(),
-                course.getLastViewTime(),
-                course.getProgress(),
-                course.getThumbnail(),
-                course.isScheduled(),
-                course.getWeeks(),
-                course.getExpectedEndDate(),
-                course.getDailyTargetTime(),
-                course.getStartDate(),
-                course.getCourseId());
+                courseDto.getMemberId(),
+                courseDto.getCourseTitle(),
+                courseDto.getDuration(),
+                courseDto.getLastViewTime(),
+                courseDto.getProgress(),
+                courseDto.getThumbnail(),
+                courseDto.isScheduled(),
+                courseDto.getWeeks(),
+                courseDto.getExpectedEndDate(),
+                courseDto.getDailyTargetTime(),
+                courseDto.getStartDate(),
+                courseDto.getCourseId());
         return getById(courseId);
     }
 
@@ -62,8 +62,8 @@ public class CourseJdbcRepositoryImpl implements CourseRepository {
     }
 
     @Override
-    public List<Course> getLatestOrderByMemberId(Long memberId) {
-        return jdbcTemplate.query(CourseRepositorySql.GET_LATEST_ORDER_BY_MEMBER_ID, Course.getRowMapper(), memberId);
+    public List<CourseDto> getLatestOrderByMemberId(Long memberId) {
+        return jdbcTemplate.query(CourseRepositorySql.GET_LATEST_ORDER_BY_MEMBER_ID, CourseDto.getRowMapper(), memberId);
     }
 
     @Override

@@ -63,21 +63,21 @@ public class MaterialService {
 
     @Transactional
     public Material getMaterials(Long memberId, Long courseVideoId) {
-        CourseVideo courseVideo = validateCourseVideoForMember(memberId, courseVideoId);
+        CourseVideoDto courseVideoDto = validateCourseVideoForMember(memberId, courseVideoId);
 
-        if (courseVideo.getSummaryId() == MaterialStatus.CREATING.getValue()) {
+        if (courseVideoDto.getSummaryId() == MaterialStatus.CREATING.getValue()) {
             return Material.builder()
                     .status(MaterialStatus.CREATING.getValue())
                     .build();
-        } else if (courseVideo.getSummaryId() == MaterialStatus.CREATION_FAILED.getValue()) {
+        } else if (courseVideoDto.getSummaryId() == MaterialStatus.CREATION_FAILED.getValue()) {
             return Material.builder()
                     .status(MaterialStatus.CREATION_FAILED.getValue())
                     .build();
         } else {
-            List<QuizRes> quizResList = getQuizResList(courseVideo.getVideoId(), courseVideoId);
+            List<QuizRes> quizResList = getQuizResList(courseVideoDto.getVideoId(), courseVideoId);
             return Material.builder()
                     .status(MaterialStatus.CREATED.getValue())
-                    .summaryBrief(new SummaryBrief(summaryRepository.getById(courseVideo.getSummaryId())))
+                    .summaryBrief(new SummaryBrief(summaryRepository.getById(courseVideoDto.getSummaryId())))
                     .quizzes(quizResList)
                     .totalQuizCount(quizResList.size())
                     .build();
@@ -86,25 +86,25 @@ public class MaterialService {
 
     private List<QuizRes> getQuizResList(Long videoId, Long courseVideoId) {
         List<QuizRes> quizResList = new ArrayList<>();
-        for (Quiz quiz : quizRepository.getListByVideoId(videoId)) {
-            quizResList.add(getQuizRes(courseVideoId, quiz));
+        for (QuizDto quizDto : quizRepository.getListByVideoId(videoId)) {
+            quizResList.add(getQuizRes(courseVideoId, quizDto));
         }
 
         return quizResList;
     }
 
-    private QuizRes getQuizRes(Long courseVideoId, Quiz quiz) {
+    private QuizRes getQuizRes(Long courseVideoId, QuizDto quizDto) {
         QuizRes quizRes = QuizRes.builder()
-                .id(quiz.getId())
-                .type(quiz.getType())
-                .question(quiz.getQuestion())
-                .options(getOptionsStr(quiz.getId()))
-                .answer(getQuizAnswer(quiz))
+                .id(quizDto.getId())
+                .type(quizDto.getType())
+                .question(quizDto.getQuestion())
+                .options(getOptionsStr(quizDto.getId()))
+                .answer(getQuizAnswer(quizDto))
                 .build();
 
-        courseQuizRepository.findByQuizIdAndCourseVideoId(quiz.getId(), courseVideoId)
+        courseQuizRepository.findByQuizIdAndCourseVideoId(quizDto.getId(), courseVideoId)
                 .ifPresentOrElse(
-                        courseQuiz -> setQuizResWithCourseQuiz(quizRes, courseQuiz),
+                        courseQuizDto -> setQuizResWithCourseQuiz(quizRes, courseQuizDto),
                         () -> quizRes.setSubmitted(false)
                 );
         return quizRes;
@@ -112,105 +112,105 @@ public class MaterialService {
 
     private List<String> getOptionsStr(Long quizId) {
         return quizOptionRepository.getListByQuizId(quizId).stream()
-                .sorted(Comparator.comparingInt(QuizOption::getOptionIndex))
-                .map(QuizOption::getOptionText)
+                .sorted(Comparator.comparingInt(QuizOptionDto::getOptionIndex))
+                .map(QuizOptionDto::getOptionText)
                 .collect(Collectors.toList());
     }
 
-    private String getQuizAnswer(Quiz quiz) {
-        switch (QuizType.fromValue(quiz.getType())) {
+    private String getQuizAnswer(QuizDto quizDto) {
+        switch (QuizType.fromValue(quizDto.getType())) {
             case MULTIPLE_CHOICE:
-                return String.valueOf(quiz.getChoiceAnswer());
+                return String.valueOf(quizDto.getChoiceAnswer());
             case SUBJECTIVE:
-                return quiz.getSubjectiveAnswer();
+                return quizDto.getSubjectiveAnswer();
             case TRUE_FALSE:
-                return quiz.getChoiceAnswer().equals(0) ? "false" : "true";
+                return quizDto.getChoiceAnswer().equals(0) ? "false" : "true";
             default:
-                throw new QuizTypeNotMatchException(quiz.getType());
+                throw new QuizTypeNotMatchException(quizDto.getType());
         }
     }
 
-    private void setQuizResWithCourseQuiz(QuizRes quizRes, CourseQuiz courseQuiz) {
+    private void setQuizResWithCourseQuiz(QuizRes quizRes, CourseQuizDto courseQuizDto) {
         quizRes.setSubmitted(true);
-        quizRes.setCorrect(courseQuiz.getCorrect());
-        quizRes.setScrapped(courseQuiz.getScrapped());
-        quizRes.setSubmittedAt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(courseQuiz.getSubmittedTime()));
+        quizRes.setCorrect(courseQuizDto.getCorrect());
+        quizRes.setScrapped(courseQuizDto.getScrapped());
+        quizRes.setSubmittedAt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(courseQuizDto.getSubmittedTime()));
 
         if (quizRes.getType() == QuizType.TRUE_FALSE.getValue()) {
-            quizRes.setSubmittedAnswer(courseQuiz.getSubmittedAnswer().equals("0") ? "false" : "true");
+            quizRes.setSubmittedAnswer(courseQuizDto.getSubmittedAnswer().equals("0") ? "false" : "true");
         } else {
-            quizRes.setSubmittedAnswer(courseQuiz.getSubmittedAnswer());
+            quizRes.setSubmittedAnswer(courseQuizDto.getSubmittedAnswer());
         }
     }
 
     @Transactional
     public SummaryId updateSummary(Long memberId, Long courseVideoId, String content) {
-        CourseVideo courseVideo = validateCourseVideoForMember(memberId, courseVideoId);
+        CourseVideoDto courseVideoDto = validateCourseVideoForMember(memberId, courseVideoId);
 
-        Summary summary = summaryRepository.findById(courseVideo.getSummaryId())
+        SummaryDto summaryDto = summaryRepository.findById(courseVideoDto.getSummaryId())
                 .orElseThrow(SummaryNotFoundException::new);
 
-        if (summary.isModified()) {
-            summary.setContent(content);
-            summaryRepository.updateById(summary.getId(), summary);
+        if (summaryDto.isModified()) {
+            summaryDto.setContent(content);
+            summaryRepository.updateById(summaryDto.getId(), summaryDto);
         } else {
-            summary = summaryRepository.save(Summary.builder()
-                    .videoId(courseVideo.getVideoId())
+            summaryDto = summaryRepository.save(SummaryDto.builder()
+                    .videoId(courseVideoDto.getVideoId())
                     .content(content)
                     .modified(true)
                     .build());
 
-            courseVideo.setSummaryId(summary.getId());
-            courseVideoRepository.updateById(courseVideoId, courseVideo);
+            courseVideoDto.setSummaryId(summaryDto.getId());
+            courseVideoRepository.updateById(courseVideoId, courseVideoDto);
         }
 
         return SummaryId.builder()
-                .summaryId(summary.getId())
+                .summaryId(summaryDto.getId())
                 .build();
     }
 
-    private CourseVideo validateCourseVideoForMember(Long memberId, Long courseVideoId) {
-        CourseVideo courseVideo = courseVideoRepository.findById(courseVideoId)
+    private CourseVideoDto validateCourseVideoForMember(Long memberId, Long courseVideoId) {
+        CourseVideoDto courseVideoDto = courseVideoRepository.findById(courseVideoId)
                 .orElseThrow(CourseVideoNotFoundException::new);
 
-        if (!courseVideo.getMemberId().equals(memberId)) {
+        if (!courseVideoDto.getMemberId().equals(memberId)) {
             throw new CourseNotMatchException();
         }
-        return courseVideo;
+        return courseVideoDto;
     }
 
     @Transactional
     public List<SubmittedQuizInfo> submitQuizResults(Long memberId, Long courseVideoId, List<SubmittedQuiz> submittedQuizList) {
-        CourseVideo courseVideo = validateCourseVideoForMember(memberId, courseVideoId);
+        CourseVideoDto courseVideoDto = validateCourseVideoForMember(memberId, courseVideoId);
 
-        validateSubmittedQuizzes(courseVideo.getVideoId(), courseVideoId, submittedQuizList);
+        validateSubmittedQuizzes(courseVideoDto.getVideoId(), courseVideoId, submittedQuizList);
 
-        updateDailyLogQuizCount(memberId, courseVideo.getCourseId(), submittedQuizList.size());
+        updateDailyLogQuizCount(memberId, courseVideoDto.getCourseId(), submittedQuizList.size());
         updateMemberQuizCount(memberRepository.getById(memberId), submittedQuizList);
 
         List<SubmittedQuizInfo> quizInfoList = new ArrayList<>();
         for (SubmittedQuiz submittedQuiz : submittedQuizList) {
-            Quiz quiz = quizRepository.getById(submittedQuiz.getQuizId());
+            QuizDto quizDto = quizRepository.getById(submittedQuiz.getQuizId());
 
-            CourseQuiz courseQuiz = courseQuizRepository.save(CourseQuiz.builder()
-                    .courseId(courseVideo.getCourseId())
-                    .quizId(quiz.getId())
-                    .videoId(courseVideo.getVideoId())
-                    .submittedAnswer(alterSubmittedAnswer(quiz.getType(), submittedQuiz.getSubmittedAnswer()))
+            CourseQuizDto courseQuizDto = courseQuizRepository.save(CourseQuizDto.builder()
+                    .courseId(courseVideoDto.getCourseId())
+                    .quizId(quizDto.getId())
+                    .videoId(courseVideoDto.getVideoId())
+                    .submittedAnswer(alterSubmittedAnswer(quizDto.getType(), submittedQuiz.getSubmittedAnswer()))
                     .correct(submittedQuiz.getIsCorrect())
                     .courseVideoId(courseVideoId)
                     .build());
 
-            quizInfoList.add(new SubmittedQuizInfo(quiz.getId(), courseQuiz.getId()));
+            quizInfoList.add(new SubmittedQuizInfo(quizDto.getId(), courseQuizDto.getId()));
         }
         return quizInfoList;
     }
 
     private void validateSubmittedQuizzes(Long videoId, Long courseVideoId, List<SubmittedQuiz> submittedQuizList) {
-        Quiz quiz = quizRepository.findById(submittedQuizList.get(0).getQuizId())
+        QuizDto quizDto = quizRepository.findById(submittedQuizList.get(0).getQuizId())
                 .orElseThrow(QuizNotFoundException::new);
 
-        if (!quiz.getVideoId().equals(videoId)) {
+        if (!quizDto.getVideoId().equals(videoId)) {
             throw new QuizIdNotMatchException();
         }
 
@@ -226,9 +226,9 @@ public class MaterialService {
     }
 
     private void updateDailyLogQuizCount(Long memberId, Long courseId, int submittedQuizCount) {
-        Optional<CourseDailyLog> courseDailyLogOptional = courseDailyLogRepository.findByCourseIdAndDate(courseId, Date.valueOf(LocalDate.now()));
+        Optional<CourseDailyLogDto> courseDailyLogOptional = courseDailyLogRepository.findByCourseIdAndDate(courseId, Date.valueOf(LocalDate.now()));
         if (courseDailyLogOptional.isEmpty()) {
-            courseDailyLogRepository.save(CourseDailyLog.builder()
+            courseDailyLogRepository.save(CourseDailyLogDto.builder()
                     .memberId(memberId)
                     .courseId(courseId)
                     .dailyLogDate(Date.valueOf(LocalDate.now()))
@@ -237,18 +237,18 @@ public class MaterialService {
                     .lectureCount(0)
                     .build());
         } else {
-            CourseDailyLog dailyLog = courseDailyLogOptional.get();
+            CourseDailyLogDto dailyLog = courseDailyLogOptional.get();
             dailyLog.setQuizCount(dailyLog.getQuizCount() + submittedQuizCount);
             courseDailyLogRepository.updateById(dailyLog.getCourseDailyLogId(), dailyLog);
         }
     }
 
-    private void updateMemberQuizCount(Member member, List<SubmittedQuiz> quizList) {
-        member.setTotalSolvedCount(quizList.size() + member.getTotalSolvedCount());
-        member.setTotalCorrectCount((int) quizList.stream()
+    private void updateMemberQuizCount(MemberDto memberDto, List<SubmittedQuiz> quizList) {
+        memberDto.setTotalSolvedCount(quizList.size() + memberDto.getTotalSolvedCount());
+        memberDto.setTotalCorrectCount((int) quizList.stream()
                 .filter(SubmittedQuiz::getIsCorrect)
-                .count() + member.getTotalCorrectCount());
-        memberRepository.updateById(member.getMemberId(), member);
+                .count() + memberDto.getTotalCorrectCount());
+        memberRepository.updateById(memberDto.getMemberId(), memberDto);
     }
 
     private String alterSubmittedAnswer(int quizType, String submittedAnswerReq) {
@@ -289,33 +289,33 @@ public class MaterialService {
 
     @Transactional
     public ScrapResult switchScrapFlag(Long memberId, Long courseQuizId) {
-        CourseQuiz courseQuiz = validateCourseQuizForMember(memberId, courseQuizId);
+        CourseQuizDto courseQuizDto = validateCourseQuizForMember(memberId, courseQuizId);
 
-        courseQuiz.setScrapped(!courseQuiz.getScrapped());
-        courseQuizRepository.updateById(courseQuiz.getId(), courseQuiz);
+        courseQuizDto.setScrapped(!courseQuizDto.getScrapped());
+        courseQuizRepository.updateById(courseQuizDto.getId(), courseQuizDto);
 
         return ScrapResult.builder()
                 .courseQuizId(courseQuizId)
-                .scrapped(courseQuiz.getScrapped())
+                .scrapped(courseQuizDto.getScrapped())
                 .build();
     }
 
-    private CourseQuiz validateCourseQuizForMember(Long memberId, Long courseQuizId) {
-        CourseQuiz courseQuiz = courseQuizRepository.findById(courseQuizId)
+    private CourseQuizDto validateCourseQuizForMember(Long memberId, Long courseQuizId) {
+        CourseQuizDto courseQuizDto = courseQuizRepository.findById(courseQuizId)
                 .orElseThrow(CourseQuizNotFoundException::new);
 
-        Long memberIdByCourse = courseRepository.getById(courseQuiz
+        Long memberIdByCourse = courseRepository.getById(courseQuizDto
                         .getCourseId())
                 .getMemberId();
         if (!memberId.equals(memberIdByCourse)) {
             throw new CourseNotMatchException();
         }
-        return courseQuiz;
+        return courseQuizDto;
     }
 
     @Transactional
     public void saveMaterials(MaterialResultsVo materialVo) throws Exception {
-        Video video = videoRepository.findByCode(materialVo.getVideoId())
+        VideoDto videoDto = videoRepository.findByCode(materialVo.getVideoId())
                 .orElseThrow(() -> {
                     log.warn("can't find video information from db. video code = {}", materialVo.getVideoId());
                     return new VideoNotFoundFromDBException();
@@ -323,28 +323,28 @@ public class MaterialService {
 
         Long summaryId;
         if (materialVo.getIsValid() == MaterialVaildStatus.IN_VALID.getValue()) {
-            video.setMaterialStatus(MaterialStatus.CREATION_FAILED.getValue());
+            videoDto.setMaterialStatus(MaterialStatus.CREATION_FAILED.getValue());
             summaryId = (long) MaterialStatus.CREATION_FAILED.getValue();
         } else {
-            video.setMaterialStatus(MaterialStatus.CREATED.getValue());
-            summaryId = summaryRepository.save(Summary.builder()
-                            .videoId(video.getVideoId())
+            videoDto.setMaterialStatus(MaterialStatus.CREATED.getValue());
+            summaryId = summaryRepository.save(SummaryDto.builder()
+                            .videoId(videoDto.getVideoId())
                             .content(materialVo.getSummary())
                             .modified(false)
                             .build())
                     .getId();
         }
-        video.setSummaryId(summaryId);
-        videoRepository.updateById(video.getVideoId(), video);
-        courseVideoRepository.updateSummaryId(video.getVideoId(), summaryId);
+        videoDto.setSummaryId(summaryId);
+        videoRepository.updateById(videoDto.getVideoId(), videoDto);
+        courseVideoRepository.updateSummaryId(videoDto.getVideoId(), summaryId);
 
         for (QuizVo quizVo : materialVo.getQuizzes()) {
-            saveQuiz(video.getVideoId(), quizVo);
+            saveQuiz(videoDto.getVideoId(), quizVo);
         }
     }
 
     private void saveQuiz(Long videoId, QuizVo quizVo) throws NumberFormatException, QuizTypeNotMatchException {
-        Quiz quiz = Quiz.builder()
+        QuizDto quizDto = QuizDto.builder()
                 .videoId(videoId)
                 .type(quizVo.getQuizType())
                 .question(quizVo.getQuizQuestion())
@@ -353,18 +353,18 @@ public class MaterialService {
         switch (QuizType.fromValue(quizVo.getQuizType())) {
             case MULTIPLE_CHOICE:
             case TRUE_FALSE:
-                quiz.setChoiceAnswer(Integer.parseInt(quizVo.getAnswer()));
+                quizDto.setChoiceAnswer(Integer.parseInt(quizVo.getAnswer()));
                 break;
             case SUBJECTIVE:
-                quiz.setSubjectiveAnswer(quizVo.getAnswer());
+                quizDto.setSubjectiveAnswer(quizVo.getAnswer());
                 break;
             default:
                 throw new QuizTypeNotMatchException(quizVo.getQuizType());
         }
-        quiz = quizRepository.save(quiz);
+        quizDto = quizRepository.save(quizDto);
 
         if (quizVo.getQuizType() == QuizType.MULTIPLE_CHOICE.getValue()) {
-            saveQuizOptions(quiz.getId(), quizVo.getOptions());
+            saveQuizOptions(quizDto.getId(), quizVo.getOptions());
         }
     }
 
@@ -372,7 +372,7 @@ public class MaterialService {
         int optionCount = Math.min(DEFAULT_QUIZ_OPTION_COUNT, quizOptionList.size());
 
         for (int optionIndex = 0; optionIndex < optionCount; optionIndex++) {
-            quizOptionRepository.save(QuizOption.builder()
+            quizOptionRepository.save(QuizOptionDto.builder()
                     .quizId(quizId)
                     .optionText(quizOptionList.get(optionIndex))
                     .optionIndex(optionIndex + 1)

@@ -1,5 +1,7 @@
 package com.m9d.sroom.global.mapper;
 
+import com.m9d.sroom.util.youtube.dto.VideoInfo;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,8 +11,9 @@ import java.sql.Timestamp;
 
 @Getter
 @Setter
-@Builder
-public class Video {
+@Builder(toBuilder = true)
+@AllArgsConstructor
+public class VideoDto {
 
     private String videoCode;
 
@@ -62,8 +65,23 @@ public class Video {
 
     private Integer materialStatus;
 
-    public static RowMapper<Video> getRowMapper() {
-        return (rs, rowNum) -> Video.builder()
+    public VideoDto(VideoInfo videoInfo) {
+        this.videoCode = videoInfo.getCode();
+        this.title = videoInfo.getTitle();
+        this.channel = videoInfo.getChannel();
+        this.thumbnail = videoInfo.getThumbnail();
+        this.description = videoInfo.getDescription();
+        this.duration = videoInfo.getDuration();
+        this.viewCount = videoInfo.getViewCount();
+        this.publishedAt = videoInfo.getPublishedAt();
+        this.language = videoInfo.getLanguage();
+        this.license = videoInfo.getLicense();
+        this.membership = videoInfo.getMembership();
+        this.summaryId = 0L;
+    }
+
+    public static RowMapper<VideoDto> getRowMapper() {
+        return (rs, rowNum) -> VideoDto.builder()
                 .videoId(rs.getLong("video_id"))
                 .videoCode(rs.getString("video_code"))
                 .duration(rs.getInt("duration"))

@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 @Data
 @Builder
-public class PlaylistVideo {
+public class PlaylistVideoDto {
 
     private Long id;
 
@@ -16,8 +16,8 @@ public class PlaylistVideo {
 
     private Integer videoIndex;
 
-    public static RowMapper<PlaylistVideo> getMapper() {
-        return (rs, rowNum) -> PlaylistVideo.builder()
+    public static RowMapper<PlaylistVideoDto> getMapper() {
+        return (rs, rowNum) -> PlaylistVideoDto.builder()
                 .id(rs.getLong("playlist_video_id"))
                 .playlistId(rs.getLong("playlist_id"))
                 .videoId(rs.getLong("video_id"))

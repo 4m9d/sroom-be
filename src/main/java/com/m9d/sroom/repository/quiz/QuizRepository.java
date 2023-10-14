@@ -1,18 +1,18 @@
 package com.m9d.sroom.repository.quiz;
 
 
-import com.m9d.sroom.global.mapper.Quiz;
+import com.m9d.sroom.global.mapper.QuizDto;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface QuizRepository {
 
-    Quiz save(Quiz quiz);
+    QuizDto save(QuizDto quizDto);
 
-    List<Quiz> getListByVideoId(Long videoId);
+    List<QuizDto> getListByVideoId(Long videoId);
 
-    Quiz getById(Long quizId);
+    QuizDto getById(Long quizId);
 
-    Optional<Quiz> findById(Long quizId);
+    Optional<QuizDto> findById(Long quizId);
 }

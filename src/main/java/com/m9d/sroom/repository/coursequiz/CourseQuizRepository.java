@@ -1,21 +1,21 @@
 package com.m9d.sroom.repository.coursequiz;
 
 
-import com.m9d.sroom.global.mapper.CourseQuiz;
+import com.m9d.sroom.global.mapper.CourseQuizDto;
 
 import java.util.Optional;
 
 public interface CourseQuizRepository {
 
-    CourseQuiz save(CourseQuiz courseQuiz);
+    CourseQuizDto save(CourseQuizDto courseQuizDto);
 
-    CourseQuiz getById(Long courseQuizId);
+    CourseQuizDto getById(Long courseQuizId);
 
-    Optional<CourseQuiz> findById(Long courseQuizId);
+    Optional<CourseQuizDto> findById(Long courseQuizId);
 
-    CourseQuiz updateById(Long courseQuizId, CourseQuiz courseQuiz);
+    CourseQuizDto updateById(Long courseQuizId, CourseQuizDto courseQuizDto);
 
-    Optional<CourseQuiz> findByQuizIdAndCourseVideoId(Long quizId, Long courseVideoId);
+    Optional<CourseQuizDto> findByQuizIdAndCourseVideoId(Long quizId, Long courseVideoId);
 
     void deleteByCourseId(Long courseId);
 }

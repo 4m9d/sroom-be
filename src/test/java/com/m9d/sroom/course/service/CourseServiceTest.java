@@ -3,7 +3,7 @@ package com.m9d.sroom.course.service;
 import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.course.dto.response.MyCourses;
-import com.m9d.sroom.global.mapper.Member;
+import com.m9d.sroom.global.mapper.MemberDto;
 import com.m9d.sroom.util.ServiceTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
@@ -17,8 +17,8 @@ public class CourseServiceTest extends ServiceTest {
     @DisplayName("유저가 등록한 강의 코스들의 정보를 불러옵니다.")
     void getCourseListTest() {
         //given
-        Member member = getNewMember();
-        Long memberId = member.getMemberId();
+        MemberDto memberDto = getNewMember();
+        Long memberId = memberDto.getMemberId();
 
         String courseInsertSql = "INSERT INTO COURSE(member_id, course_title, thumbnail, last_view_time, progress) values(?, ?, ?, ?, ?)";
         jdbcTemplate.update(courseInsertSql, memberId, "course1", " ", "2023-06-13", 100);
@@ -51,13 +51,13 @@ public class CourseServiceTest extends ServiceTest {
     @DisplayName("신규 코스 등록에 성공합니다.")
     void createNewCourse() {
         //given
-        Member member = getNewMember();
+        MemberDto memberDto = getNewMember();
 
         //when
         NewLecture newLecture = NewLecture.builder()
                 .lectureCode(VIDEO_CODE)
                 .build();
-        EnrolledCourseInfo enrolledCourseInfo = courseService.enrollCourse(member.getMemberId(), newLecture, false);
+        EnrolledCourseInfo enrolledCourseInfo = courseService.enrollCourse(memberDto.getMemberId(), newLecture, false);
 
         //then
         Long courseIdInLectureTable = courseRepository.getCourseIdByLectureId(enrolledCourseInfo.getLectureId());

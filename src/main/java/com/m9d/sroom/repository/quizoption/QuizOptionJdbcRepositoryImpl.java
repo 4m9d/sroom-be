@@ -1,6 +1,6 @@
 package com.m9d.sroom.repository.quizoption;
 
-import com.m9d.sroom.global.mapper.QuizOption;
+import com.m9d.sroom.global.mapper.QuizOptionDto;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -16,21 +16,21 @@ public class QuizOptionJdbcRepositoryImpl implements QuizOptionRepository {
     }
 
     @Override
-    public QuizOption save(QuizOption quizOption) {
+    public QuizOptionDto save(QuizOptionDto quizOptionDto) {
         jdbcTemplate.update(QuizOptionRepositorySql.SAVE,
-                quizOption.getQuizId(),
-                quizOption.getOptionText(),
-                quizOption.getOptionIndex());
+                quizOptionDto.getQuizId(),
+                quizOptionDto.getOptionText(),
+                quizOptionDto.getOptionIndex());
         return getById(jdbcTemplate.queryForObject(QuizOptionRepositorySql.GET_LAST_ID, Long.class));
     }
 
     @Override
-    public QuizOption getById(Long quizOptionId) {
-        return jdbcTemplate.queryForObject(QuizOptionRepositorySql.GET_BY_ID, QuizOption.getRowMapper(), quizOptionId);
+    public QuizOptionDto getById(Long quizOptionId) {
+        return jdbcTemplate.queryForObject(QuizOptionRepositorySql.GET_BY_ID, QuizOptionDto.getRowMapper(), quizOptionId);
     }
 
     @Override
-    public List<QuizOption> getListByQuizId(Long quizId) {
-        return jdbcTemplate.query(QuizOptionRepositorySql.GET_LIST_BY_QUIZ_ID, QuizOption.getRowMapper(), quizId);
+    public List<QuizOptionDto> getListByQuizId(Long quizId) {
+        return jdbcTemplate.query(QuizOptionRepositorySql.GET_LIST_BY_QUIZ_ID, QuizOptionDto.getRowMapper(), quizId);
     }
 }

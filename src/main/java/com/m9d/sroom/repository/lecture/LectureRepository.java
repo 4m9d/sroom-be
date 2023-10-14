@@ -1,23 +1,23 @@
 package com.m9d.sroom.repository.lecture;
 
-import com.m9d.sroom.global.mapper.Lecture;
+import com.m9d.sroom.global.mapper.LectureDto;
 
 import java.util.HashSet;
 import java.util.List;
 
 public interface LectureRepository {
 
-    Lecture save(Lecture lecture);
+    LectureDto save(LectureDto lectureDto);
 
-    Lecture getById(Long lectureId);
+    LectureDto getById(Long lectureId);
 
-    Lecture updateById(Long lectureId, Lecture lecture);
+    LectureDto updateById(Long lectureId, LectureDto lectureDto);
 
     void deleteByCourseId(Long courseId);
 
     HashSet<String> getChannelSetByCourseId(Long courseId);
 
-    List<Lecture> getListByCourseId(Long courseId);
+    List<LectureDto> getListByCourseId(Long courseId);
 
     List<String> getChannelListOrderByCount(Long member_id);
 }

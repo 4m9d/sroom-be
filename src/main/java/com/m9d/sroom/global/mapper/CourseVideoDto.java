@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Builder
-public class CourseVideo {
+public class CourseVideoDto {
 
     private Long courseVideoId;
 
@@ -38,8 +38,8 @@ public class CourseVideo {
 
     private int maxDuration;
 
-    public static RowMapper<CourseVideo> getRowMapper() {
-        return (rs, rowNum) -> CourseVideo.builder()
+    public static RowMapper<CourseVideoDto> getRowMapper() {
+        return (rs, rowNum) -> CourseVideoDto.builder()
                 .courseVideoId(rs.getLong("course_video_id"))
                 .courseId(rs.getLong("course_id"))
                 .videoId(rs.getLong("video_id"))

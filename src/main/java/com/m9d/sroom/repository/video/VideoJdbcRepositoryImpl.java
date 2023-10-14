@@ -1,6 +1,6 @@
 package com.m9d.sroom.repository.video;
 
-import com.m9d.sroom.global.mapper.Video;
+import com.m9d.sroom.global.mapper.VideoDto;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -20,82 +20,82 @@ public class VideoJdbcRepositoryImpl implements VideoRepository {
     }
 
     @Override
-    public Video save(Video video) {
+    public VideoDto save(VideoDto videoDto) {
         jdbcTemplate.update(VideoRepositorySql.SAVE,
-                video.getVideoCode(),
-                video.getDuration(),
-                video.getChannel(),
-                video.getThumbnail(),
-                video.getSummaryId(),
-                video.getDescription(),
-                video.getTitle(),
-                video.getLanguage(),
-                video.getLicense(),
-                video.getViewCount(),
-                video.getPublishedAt());
-        return getByCode(video.getVideoCode());
+                videoDto.getVideoCode(),
+                videoDto.getDuration(),
+                videoDto.getChannel(),
+                videoDto.getThumbnail(),
+                videoDto.getSummaryId(),
+                videoDto.getDescription(),
+                videoDto.getTitle(),
+                videoDto.getLanguage(),
+                videoDto.getLicense(),
+                videoDto.getViewCount(),
+                videoDto.getPublishedAt());
+        return getByCode(videoDto.getVideoCode());
     }
 
     @Override
-    public Video getByCode(String videoCode) {
-        return jdbcTemplate.queryForObject(VideoRepositorySql.GET_BY_CODE, Video.getRowMapper(), videoCode);
+    public VideoDto getByCode(String videoCode) {
+        return jdbcTemplate.queryForObject(VideoRepositorySql.GET_BY_CODE, VideoDto.getRowMapper(), videoCode);
     }
 
     @Override
-    public Video getById(Long videoId) {
-        return jdbcTemplate.queryForObject(VideoRepositorySql.GET_BY_ID, Video.getRowMapper(), videoId);
+    public VideoDto getById(Long videoId) {
+        return jdbcTemplate.queryForObject(VideoRepositorySql.GET_BY_ID, VideoDto.getRowMapper(), videoId);
     }
 
     @Override
-    public Optional<Video> findByCode(String videoCode) {
+    public Optional<VideoDto> findByCode(String videoCode) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(VideoRepositorySql.GET_BY_CODE, Video.getRowMapper(), videoCode));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(VideoRepositorySql.GET_BY_CODE, VideoDto.getRowMapper(), videoCode));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
-    public List<Video> getTopRatedOrder(int limit) {
-        return jdbcTemplate.query(VideoRepositorySql.GET_TOP_RATED_ORDER, Video.getRowMapper(), limit);
+    public List<VideoDto> getTopRatedOrder(int limit) {
+        return jdbcTemplate.query(VideoRepositorySql.GET_TOP_RATED_ORDER, VideoDto.getRowMapper(), limit);
     }
 
     @Override
-    public Optional<Video> findById(Long videoId) {
+    public Optional<VideoDto> findById(Long videoId) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(VideoRepositorySql.GET_BY_ID, Video.getRowMapper(), videoId));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(VideoRepositorySql.GET_BY_ID, VideoDto.getRowMapper(), videoId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
-    public Video updateById(Long videoId, Video video) {
+    public VideoDto updateById(Long videoId, VideoDto videoDto) {
         jdbcTemplate.update(VideoRepositorySql.UPDATE_BY_ID,
-                video.getDuration(),
-                video.getChannel(),
-                video.getThumbnail(),
-                video.getAccumulatedRating(),
-                video.getReviewCount(),
-                video.getSummaryId(),
-                video.isAvailable(),
-                video.getDescription(),
-                video.isChapterUse(),
-                video.getTitle(),
-                video.getLanguage(),
-                video.getLicense(),
-                video.getUpdatedAt(),
-                video.getViewCount(),
-                video.getPublishedAt(),
-                video.isMembership(),
-                video.getMaterialStatus(),
-                video.getVideoId());
-        return getByCode(video.getVideoCode());
+                videoDto.getDuration(),
+                videoDto.getChannel(),
+                videoDto.getThumbnail(),
+                videoDto.getAccumulatedRating(),
+                videoDto.getReviewCount(),
+                videoDto.getSummaryId(),
+                videoDto.isAvailable(),
+                videoDto.getDescription(),
+                videoDto.isChapterUse(),
+                videoDto.getTitle(),
+                videoDto.getLanguage(),
+                videoDto.getLicense(),
+                videoDto.getUpdatedAt(),
+                videoDto.getViewCount(),
+                videoDto.getPublishedAt(),
+                videoDto.isMembership(),
+                videoDto.getMaterialStatus(),
+                videoDto.getVideoId());
+        return getByCode(videoDto.getVideoCode());
     }
 
     @Override
-    public List<Video> getListByPlaylistId(Long playlistId) {
-        return jdbcTemplate.query(VideoRepositorySql.GET_LIST_BY_PLAYLIST_ID, Video.getRowMapper(), playlistId);
+    public List<VideoDto> getListByPlaylistId(Long playlistId) {
+        return jdbcTemplate.query(VideoRepositorySql.GET_LIST_BY_PLAYLIST_ID, VideoDto.getRowMapper(), playlistId);
     }
 
     @Override
@@ -105,17 +105,17 @@ public class VideoJdbcRepositoryImpl implements VideoRepository {
     }
 
     @Override
-    public List<Video> getRandomByChannel(String channel, int limit) {
-        return jdbcTemplate.query(VideoRepositorySql.GET_RANDOM_BY_CHANNEL, Video.getRowMapper(), channel, limit);
+    public List<VideoDto> getRandomByChannel(String channel, int limit) {
+        return jdbcTemplate.query(VideoRepositorySql.GET_RANDOM_BY_CHANNEL, VideoDto.getRowMapper(), channel, limit);
     }
 
     @Override
-    public List<Video> getViewCountOrderByChannel(String channel, int limit) {
-        return jdbcTemplate.query(VideoRepositorySql.GET_VIEW_COUNT_ORDER_BY_CHANNEL, Video.getRowMapper(), channel, limit);
+    public List<VideoDto> getViewCountOrderByChannel(String channel, int limit) {
+        return jdbcTemplate.query(VideoRepositorySql.GET_VIEW_COUNT_ORDER_BY_CHANNEL, VideoDto.getRowMapper(), channel, limit);
     }
 
     @Override
-    public List<Video> getLatestOrderByChannel(String channel, int limit) {
-        return jdbcTemplate.query(VideoRepositorySql.GET_LATEST_ORDER_BY_CHANNEL, Video.getRowMapper(), channel, limit);
+    public List<VideoDto> getLatestOrderByChannel(String channel, int limit) {
+        return jdbcTemplate.query(VideoRepositorySql.GET_LATEST_ORDER_BY_CHANNEL, VideoDto.getRowMapper(), channel, limit);
     }
 }

@@ -1,6 +1,6 @@
 package com.m9d.sroom.course.dto;
 
-import com.m9d.sroom.global.mapper.CourseVideo;
+import com.m9d.sroom.global.mapper.CourseVideoDto;
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,7 +8,7 @@ import lombok.Data;
 @Builder
 public class VideoInfoForSchedule {
 
-    private CourseVideo courseVideo;
+    private CourseVideoDto courseVideoDto;
 
     private Integer duration;
 }

@@ -1,5 +1,7 @@
 package com.m9d.sroom.global.mapper;
 
+import com.m9d.sroom.util.youtube.dto.PlaylistInfo;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,8 +11,9 @@ import java.sql.Timestamp;
 import java.util.List;
 
 @Getter @Setter
-@Builder
-public class Playlist {
+@Builder(toBuilder = true)
+@AllArgsConstructor
+public class PlaylistDto {
 
     private String playlistCode;
 
@@ -42,10 +45,21 @@ public class Playlist {
 
     private Timestamp updatedAt;
 
-    private List<Video> videoList;
+    private List<VideoDto> videoDtoList;
 
-    public static RowMapper<Playlist> getRowMapper() {
-        return (rs, rowNum) -> Playlist.builder()
+    public PlaylistDto(PlaylistInfo playlistInfo, int duration) {
+        this.playlistCode = playlistInfo.getCode();
+        this.title = playlistInfo.getTitle();
+        this.channel = playlistInfo.getChannel();
+        this.thumbnail = playlistInfo.getThumbnail();
+        this.description = playlistInfo.getDescription();
+        this.publishedAt = playlistInfo.getPublishedAt();
+        this.videoCount = playlistInfo.getVideoCount();
+        this.duration = duration;
+    }
+
+    public static RowMapper<PlaylistDto> getRowMapper() {
+        return (rs, rowNum) -> PlaylistDto.builder()
                 .playlistId(rs.getLong("playlist_id"))
                 .playlistCode(rs.getString("playlist_code"))
                 .channel(rs.getString("channel"))

@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 @Data
 @Builder
-public class Quiz {
+public class QuizDto {
 
     private Long id;
 
@@ -20,8 +20,8 @@ public class Quiz {
 
     private Integer choiceAnswer;
 
-    public static RowMapper<Quiz> getRowMapper() {
-        return (rs, rowNum) -> Quiz.builder()
+    public static RowMapper<QuizDto> getRowMapper() {
+        return (rs, rowNum) -> QuizDto.builder()
                 .id(rs.getLong("quiz_id"))
                 .videoId(rs.getLong("video_id"))
                 .type(rs.getInt("type"))

@@ -1,6 +1,6 @@
 package com.m9d.sroom.repository.coursedailylog;
 
-import com.m9d.sroom.global.mapper.CourseDailyLog;
+import com.m9d.sroom.global.mapper.CourseDailyLogDto;
 
 import java.sql.Date;
 import java.util.List;
@@ -8,13 +8,13 @@ import java.util.Optional;
 
 public interface CourseDailyLogRepository {
 
-    CourseDailyLog save(CourseDailyLog dailyLog);
+    CourseDailyLogDto save(CourseDailyLogDto dailyLog);
 
-    CourseDailyLog getById(Long dailyLogId);
+    CourseDailyLogDto getById(Long dailyLogId);
 
-    Optional<CourseDailyLog> findByCourseIdAndDate(Long courseId, Date date);
+    Optional<CourseDailyLogDto> findByCourseIdAndDate(Long courseId, Date date);
 
-    CourseDailyLog updateById(Long dailyLogId, CourseDailyLog dailyLog);
+    CourseDailyLogDto updateById(Long dailyLogId, CourseDailyLogDto dailyLog);
 
-    public List<CourseDailyLog> getDateDataByMemberId(Long memberId);
+    public List<CourseDailyLogDto> getDateDataByMemberId(Long memberId);
 }

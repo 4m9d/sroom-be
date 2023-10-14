@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 @Data
 @Builder
 @Schema(description = "각 강의에 대한 리뷰 데이터")
-public class Review {
+public class ReviewDto {
 
     private Long reviewId;
 
@@ -26,8 +26,8 @@ public class Review {
 
     private Timestamp submittedDate;
 
-    public static RowMapper<Review> getRowmapper() {
-        return (rs, rowNum) -> Review.builder()
+    public static RowMapper<ReviewDto> getRowmapper() {
+        return (rs, rowNum) -> ReviewDto.builder()
                 .reviewId(rs.getLong("review_id"))
                 .sourceCode(rs.getString("source_code"))
                 .memberId(rs.getLong("member_id"))

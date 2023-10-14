@@ -1,23 +1,21 @@
 package com.m9d.sroom.repository.course;
 
-import com.m9d.sroom.global.mapper.Course;
-import com.m9d.sroom.global.mapper.CourseVideo;
+import com.m9d.sroom.global.mapper.CourseDto;
 import com.m9d.sroom.lecture.dto.response.CourseBrief;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface CourseRepository {
 
-    Course save(Course course);
+    CourseDto save(CourseDto courseDto);
 
-    Course getById(Long courseId);
+    CourseDto getById(Long courseId);
 
-    Course updateById(Long courseId, Course course);
+    CourseDto updateById(Long courseId, CourseDto courseDto);
 
     void deleteById(Long courseId);
 
-    List<Course> getLatestOrderByMemberId(Long memberId);
+    List<CourseDto> getLatestOrderByMemberId(Long memberId);
 
     List<CourseBrief> getBriefListByMemberId(Long memberId);
 }

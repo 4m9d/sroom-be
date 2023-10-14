@@ -2,7 +2,7 @@ package com.m9d.sroom.dashboard.service;
 
 
 import com.m9d.sroom.dashboard.dto.response.Dashboard;
-import com.m9d.sroom.global.mapper.Member;
+import com.m9d.sroom.global.mapper.MemberDto;
 import com.m9d.sroom.util.ServiceTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -16,8 +16,8 @@ public class DashboardServiceTest extends ServiceTest {
     @DisplayName("유저의 대시보드 정보를 불러옵니다")
     void getDashboardTest() {
         //given
-        Member member = getNewMember();
-        Long memberId = member.getMemberId();
+        MemberDto memberDto = getNewMember();
+        Long memberId = memberDto.getMemberId();
 
         int total_correct_count = 1;
         int total_solved_count = 2;

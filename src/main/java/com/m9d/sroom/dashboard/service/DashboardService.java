@@ -4,9 +4,9 @@ import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.service.CourseService;
 import com.m9d.sroom.dashboard.dto.response.Dashboard;
 import com.m9d.sroom.dashboard.dto.response.LearningHistory;
-import com.m9d.sroom.global.mapper.Course;
-import com.m9d.sroom.global.mapper.CourseDailyLog;
-import com.m9d.sroom.global.mapper.Member;
+import com.m9d.sroom.global.mapper.CourseDto;
+import com.m9d.sroom.global.mapper.CourseDailyLogDto;
+import com.m9d.sroom.global.mapper.MemberDto;
 import com.m9d.sroom.repository.course.CourseRepository;
 import com.m9d.sroom.repository.coursedailylog.CourseDailyLogRepository;
 import com.m9d.sroom.repository.member.MemberRepository;
@@ -44,8 +44,8 @@ public class DashboardService {
 
     public Dashboard getDashboard(Long memberId) {
 
-        List<Course> courseList = courseRepository.getLatestOrderByMemberId(memberId);
-        List<CourseInfo> latestCourses = courseService.getCourseInfoList(courseList);
+        List<CourseDto> courseDtoList = courseRepository.getLatestOrderByMemberId(memberId);
+        List<CourseInfo> latestCourses = courseService.getCourseInfoList(courseDtoList);
         List<CourseInfo> latestLectures = new ArrayList<>();
 
         if (latestCourses.size() >= 2) {
@@ -54,27 +54,27 @@ public class DashboardService {
             latestLectures.addAll(latestCourses);
         }
 
-        List<CourseDailyLog> courseDailyLogList = courseDailyLogRepository.getDateDataByMemberId(memberId);
-        Member member = memberRepository.getById(memberId);
-        String motivation = getMotivation(courseDailyLogList, member);
+        List<CourseDailyLogDto> courseDailyLogDtoList = courseDailyLogRepository.getDateDataByMemberId(memberId);
+        MemberDto memberDto = memberRepository.getById(memberId);
+        String motivation = getMotivation(courseDailyLogDtoList, memberDto);
 
-        int correctnessRate = (int)(((float) member.getTotalCorrectCount() / member.getTotalSolvedCount()) * 100);
+        int correctnessRate = (int)(((float) memberDto.getTotalCorrectCount() / memberDto.getTotalSolvedCount()) * 100);
 
         List<LearningHistory> learningHistoryList = new ArrayList<>();
-        for(CourseDailyLog courseDailyLog : courseDailyLogList) {
+        for(CourseDailyLogDto courseDailyLogDto : courseDailyLogDtoList) {
             learningHistoryList.add(LearningHistory.builder()
-                    .date(new SimpleDateFormat("yyyy-MM-dd").format(courseDailyLog.getDailyLogDate()))
-                    .lectureCount(courseDailyLog.getLectureCount())
-                    .learningTime(courseDailyLog.getLearningTime())
-                    .quizCount(courseDailyLog.getQuizCount())
+                    .date(new SimpleDateFormat("yyyy-MM-dd").format(courseDailyLogDto.getDailyLogDate()))
+                    .lectureCount(courseDailyLogDto.getLectureCount())
+                    .learningTime(courseDailyLogDto.getLearningTime())
+                    .quizCount(courseDailyLogDto.getQuizCount())
                     .build());
         }
 
 
         Dashboard dashboardInfo = Dashboard.builder()
                 .correctnessRate(correctnessRate)
-                .completionRate(member.getCompletionRate())
-                .totalLearningTime(member.getTotalLearningTime())
+                .completionRate(memberDto.getCompletionRate())
+                .totalLearningTime(memberDto.getTotalLearningTime())
                 .motivation(motivation)
                 .latestLectures(latestLectures)
                 .learningHistories(learningHistoryList)
@@ -83,16 +83,16 @@ public class DashboardService {
         return dashboardInfo;
     }
 
-    public String getMotivation(List<CourseDailyLog> learningHistories, Member member) {
+    public String getMotivation(List<CourseDailyLogDto> learningHistories, MemberDto memberDto) {
         List<String> motivationList = new ArrayList<>();
         motivationList.addAll(MOTIVATION_GENERAL);
 
         int consecutiveLearningDays = getConsecutiveLearningDay(learningHistories);
-        int totalLearningTime = member.getTotalLearningTime() / SECONDS_PER_HOUR;
+        int totalLearningTime = memberDto.getTotalLearningTime() / SECONDS_PER_HOUR;
         int leftTargetTime = TARGET_TIME_INTERVAL - (totalLearningTime % TARGET_TIME_INTERVAL);
         int targetTime = TARGET_TIME_INTERVAL * (totalLearningTime / TARGET_TIME_INTERVAL + 1);
 
-        motivationList.add(member.getMemberName() + MOTIVATION_INDUCE_REVIEW);
+        motivationList.add(memberDto.getMemberName() + MOTIVATION_INDUCE_REVIEW);
 
         motivationList.add(leftTargetTime + MOTIVATION_TOTAL_LEARNING_TIME_PREFIX + targetTime + MOTIVATION_TOTAL_LEARNING_TIME_SUFFIX);
 
@@ -108,14 +108,14 @@ public class DashboardService {
         return motivationList.get(0);
     }
 
-    public int getConsecutiveLearningDay(List<CourseDailyLog> courseDailyLogList) {
+    public int getConsecutiveLearningDay(List<CourseDailyLogDto> courseDailyLogDtoList) {
 
         int consecutiveCount = 0;
         LocalDate beforeDate = LocalDate.now();
 
-        for(int i = 0; i < courseDailyLogList.size(); i++) {
+        for(int i = 0; i < courseDailyLogDtoList.size(); i++) {
 
-            LocalDate nowDate = LocalDate.parse(new SimpleDateFormat("yyyy-MM-dd").format(courseDailyLogList.get(i).getDailyLogDate()));
+            LocalDate nowDate = LocalDate.parse(new SimpleDateFormat("yyyy-MM-dd").format(courseDailyLogDtoList.get(i).getDailyLogDate()));
 
             if(isConsecutive(beforeDate, nowDate)) {
                 consecutiveCount++;

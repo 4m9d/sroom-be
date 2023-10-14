@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 @Data
 @Builder
-public class QuizOption {
+public class QuizOptionDto {
 
     private Long quizOptionId;
 
@@ -16,8 +16,8 @@ public class QuizOption {
 
     private int optionIndex;
 
-    public static RowMapper<QuizOption> getRowMapper() {
-        return (rs, rowNum) -> QuizOption.builder()
+    public static RowMapper<QuizOptionDto> getRowMapper() {
+        return (rs, rowNum) -> QuizOptionDto.builder()
                 .quizOptionId(rs.getLong("quiz_option_id"))
                 .quizId(rs.getLong("quiz_id"))
                 .optionText(rs.getString("option_text"))

@@ -1,6 +1,6 @@
 package com.m9d.sroom.repository.coursequiz;
 
-import com.m9d.sroom.global.mapper.CourseQuiz;
+import com.m9d.sroom.global.mapper.CourseQuizDto;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -17,47 +17,47 @@ public class CourseQuizJdbcRepositoryImpl implements CourseQuizRepository {
     }
 
     @Override
-    public CourseQuiz save(CourseQuiz courseQuiz) {
+    public CourseQuizDto save(CourseQuizDto courseQuizDto) {
         jdbcTemplate.update(CourseQuizRepositorySql.SAVE,
-                courseQuiz.getCourseId(),
-                courseQuiz.getQuizId(),
-                courseQuiz.getVideoId(),
-                courseQuiz.getSubmittedAnswer(),
-                courseQuiz.getCorrect(),
-                courseQuiz.getCourseVideoId());
+                courseQuizDto.getCourseId(),
+                courseQuizDto.getQuizId(),
+                courseQuizDto.getVideoId(),
+                courseQuizDto.getSubmittedAnswer(),
+                courseQuizDto.getCorrect(),
+                courseQuizDto.getCourseVideoId());
         return getById(jdbcTemplate.queryForObject(CourseQuizRepositorySql.GET_LAST_ID, Long.class));
     }
 
     @Override
-    public CourseQuiz getById(Long courseQuizId) {
-        return jdbcTemplate.queryForObject(CourseQuizRepositorySql.GET_BY_ID, CourseQuiz.getRowMapper(), courseQuizId);
+    public CourseQuizDto getById(Long courseQuizId) {
+        return jdbcTemplate.queryForObject(CourseQuizRepositorySql.GET_BY_ID, CourseQuizDto.getRowMapper(), courseQuizId);
     }
 
     @Override
-    public Optional<CourseQuiz> findById(Long courseQuizId) {
+    public Optional<CourseQuizDto> findById(Long courseQuizId) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(CourseQuizRepositorySql.GET_BY_ID, CourseQuiz.getRowMapper(), courseQuizId));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(CourseQuizRepositorySql.GET_BY_ID, CourseQuizDto.getRowMapper(), courseQuizId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
-    public CourseQuiz updateById(Long courseQuizId, CourseQuiz courseQuiz) {
+    public CourseQuizDto updateById(Long courseQuizId, CourseQuizDto courseQuizDto) {
         jdbcTemplate.update(CourseQuizRepositorySql.UPDATE_BY_ID,
-                courseQuiz.getSubmittedAnswer(),
-                courseQuiz.getCorrect(),
-                courseQuiz.getScrapped(),
+                courseQuizDto.getSubmittedAnswer(),
+                courseQuizDto.getCorrect(),
+                courseQuizDto.getScrapped(),
                 courseQuizId);
         return getById(courseQuizId);
     }
 
     @Override
-    public Optional<CourseQuiz> findByQuizIdAndCourseVideoId(Long quizId, Long courseVideoId) {
+    public Optional<CourseQuizDto> findByQuizIdAndCourseVideoId(Long quizId, Long courseVideoId) {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
                     CourseQuizRepositorySql.GET_BY_QUIZ_ID_AND_COURSE_VIDEO_ID,
-                    CourseQuiz.getRowMapper(), quizId, courseVideoId));
+                    CourseQuizDto.getRowMapper(), quizId, courseVideoId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

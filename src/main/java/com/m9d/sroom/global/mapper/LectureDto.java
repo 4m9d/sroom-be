@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 @Data
 @Builder
-public class Lecture {
+public class LectureDto {
 
     private Long id;
 
@@ -24,8 +24,8 @@ public class Lecture {
 
     private String channel;
 
-    public static RowMapper<Lecture> getRowMapper() {
-        return (rs, rowNum) -> Lecture.builder()
+    public static RowMapper<LectureDto> getRowMapper() {
+        return (rs, rowNum) -> LectureDto.builder()
                 .id(rs.getLong("lecture_id"))
                 .courseId(rs.getLong("course_id"))
                 .sourceId(rs.getLong("source_id"))

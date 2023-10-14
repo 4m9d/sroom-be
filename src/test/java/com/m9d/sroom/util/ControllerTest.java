@@ -1,11 +1,14 @@
 package com.m9d.sroom.util;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.course.dto.response.CourseDetail;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
+import com.m9d.sroom.global.mapper.MemberDto;
+import com.m9d.sroom.global.mapper.PlaylistDto;
+import com.m9d.sroom.global.mapper.VideoDto;
 import com.m9d.sroom.lecture.dto.response.KeywordSearch;
 import com.m9d.sroom.lecture.dto.response.PlaylistDetail;
-import com.m9d.sroom.global.mapper.Member;
 import com.m9d.sroom.member.dto.response.Login;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -21,15 +24,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ControllerTest extends SroomTest {
 
     protected Login getNewLogin() {
-        Member member = getNewMember();
-        return memberService.generateLogin(member, (String) idToken.getPayload().get("picture"));
+        MemberDto memberDto = getNewMember();
+        return memberService.generateLogin(memberDto, "picture");
     }
 
-    protected Login getNewLogin(Member member) {
-        return memberService.generateLogin(member, (String) idToken.getPayload().get("picture"));
+    protected Login getNewLogin(MemberDto memberDto) {
+        return memberService.generateLogin(memberDto, "picture");
     }
 
-    protected Member getNewMember() {
+    protected MemberDto getNewMember() {
         UUID uuid = UUID.randomUUID();
 
         String memberCode = uuid.toString();
@@ -68,7 +71,8 @@ public class ControllerTest extends SroomTest {
         NewLecture newLecture = NewLecture.builder()
                 .lectureCode(VIDEO_CODE)
                 .build();
-        EnrolledCourseInfo courseId = courseService.enrollCourse(memberId, newLecture, false);
+        EnrolledCourseInfo courseId = courseService.saveCourseWithVideo(memberId, newLecture, false);
+
         return courseId.getCourseId();
     }
 
@@ -81,7 +85,8 @@ public class ControllerTest extends SroomTest {
                 .dailyTargetTime(20)
                 .expectedEndDate("2023-09-22")
                 .build();
-        EnrolledCourseInfo courseInfo = courseService.enrollCourse(memberId, newLecture, true);
+        PlaylistDto playlistDto = courseService.getPlaylistWithUpdate(newLecture.getLectureCode());
+        EnrolledCourseInfo courseInfo = courseService.saveCourseWithPlaylist(memberId, newLecture, true, playlistDto);
         return courseInfo.getCourseId();
     }
 
@@ -91,12 +96,13 @@ public class ControllerTest extends SroomTest {
         NewLecture newLecture = NewLecture.builder()
                 .lectureCode(PLAYLIST_CODE)
                 .build();
-        EnrolledCourseInfo courseInfo = courseService.enrollCourse(memberId, newLecture, false);
+        PlaylistDto playlistDto = courseService.getPlaylistWithUpdate(newLecture.getLectureCode());
+        EnrolledCourseInfo courseInfo = courseService.saveCourseWithPlaylist(memberId, newLecture, false, playlistDto);
         return courseInfo.getCourseId();
     }
 
     protected CourseDetail registerNewVideo(Long memberId, String videoCode) {
-        EnrolledCourseInfo courseInfo = courseService.enrollCourse(memberId, getNewLectureWithoutSchedule(videoCode), false);
+        EnrolledCourseInfo courseInfo = courseService.saveCourseWithVideo(memberId, getNewLectureWithoutSchedule(videoCode), false);
 
         CourseDetail courseDetail = courseService.getCourseDetail(memberId, courseInfo.getCourseId());
 

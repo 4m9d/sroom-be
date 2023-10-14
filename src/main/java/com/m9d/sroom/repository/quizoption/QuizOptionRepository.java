@@ -1,14 +1,14 @@
 package com.m9d.sroom.repository.quizoption;
 
-import com.m9d.sroom.global.mapper.QuizOption;
+import com.m9d.sroom.global.mapper.QuizOptionDto;
 
 import java.util.List;
 
 public interface QuizOptionRepository {
 
-    QuizOption save(QuizOption quizOption);
+    QuizOptionDto save(QuizOptionDto quizOptionDto);
 
-    QuizOption getById(Long quizOptionId);
+    QuizOptionDto getById(Long quizOptionId);
 
-    List<QuizOption> getListByQuizId(Long quizId);
+    List<QuizOptionDto> getListByQuizId(Long quizId);
 }
