@@ -2,6 +2,9 @@ package com.m9d.sroom.playlist;
 
 import com.m9d.sroom.common.object.Content;
 import com.m9d.sroom.youtube.dto.PlaylistInfo;
+import lombok.Getter;
+
+import java.sql.Timestamp;
 
 public class Playlist extends Content {
 
@@ -9,6 +12,10 @@ public class Playlist extends Content {
 
     public Playlist(PlaylistInfo playlistInfo) {
         this.playlistInfo = playlistInfo;
+    }
+
+    protected PlaylistInfo getPlaylistInfo(){
+        return playlistInfo;
     }
 
     @Override
@@ -34,5 +41,24 @@ public class Playlist extends Content {
     @Override
     public boolean isPlaylist() {
         return true;
+    }
+
+    @Override
+    public String getDescription() {
+        return playlistInfo.getDescription();
+    }
+
+    @Override
+    public String getCode() {
+        return playlistInfo.getCode();
+    }
+
+    @Override
+    public Timestamp getPublishedAt() {
+        return playlistInfo.getPublishedAt();
+    }
+
+    public int getVideoCount() {
+        return playlistInfo.getVideoCount();
     }
 }

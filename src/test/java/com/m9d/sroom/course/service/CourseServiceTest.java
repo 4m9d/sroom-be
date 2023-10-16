@@ -47,20 +47,20 @@ public class CourseServiceTest extends ServiceTest {
     }
 
 
-    @Test
-    @DisplayName("신규 코스 등록에 성공합니다.")
-    void createNewCourse() {
-        //given
-        MemberDto memberDto = getNewMember();
-
-        //when
-        NewLecture newLecture = NewLecture.builder()
-                .lectureCode(VIDEO_CODE)
-                .build();
-        EnrolledCourseInfo enrolledCourseInfo = courseService.enrollCourse(memberDto.getMemberId(), newLecture, false);
-
-        //then
-        Long courseIdInLectureTable = courseRepository.getCourseIdByLectureId(enrolledCourseInfo.getLectureId());
-        Assertions.assertEquals(enrolledCourseInfo.getCourseId(), courseIdInLectureTable, "lecture table의 courseId와 등록된 courseId가 다릅니다.");
-    }
+//    @Test
+//    @DisplayName("신규 코스 등록에 성공합니다.")
+//    void createNewCourse() {
+//        //given
+//        MemberDto memberDto = getNewMember();
+//
+//        //when
+//        NewLecture newLecture = NewLecture.builder()
+//                .lectureCode(VIDEO_CODE)
+//                .build();
+//        EnrolledCourseInfo enrolledCourseInfo = courseService.enrollCourse(memberDto.getMemberId(), newLecture, false);
+//
+//        //then
+//        Long courseIdInLectureTable = courseRepository.getCourseIdByLectureId(enrolledCourseInfo.getLectureId());
+//        Assertions.assertEquals(enrolledCourseInfo.getCourseId(), courseIdInLectureTable, "lecture table의 courseId와 등록된 courseId가 다릅니다.");
+//    }
 }

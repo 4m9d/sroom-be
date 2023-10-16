@@ -10,6 +10,8 @@ public interface PlaylistRepository {
 
     PlaylistDto getById(Long playlistId);
 
+    PlaylistDto getByCode(String playlistCode);
+
     Optional<PlaylistDto> findByCode(String code);
 
     PlaylistDto updateById(Long playlistId, PlaylistDto playlistDto);

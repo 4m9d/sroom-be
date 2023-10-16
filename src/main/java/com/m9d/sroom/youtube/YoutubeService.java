@@ -1,7 +1,6 @@
 package com.m9d.sroom.youtube;
 
 import com.m9d.sroom.youtube.api.YoutubeApiV2;
-import com.m9d.sroom.util.youtube.dto.*;
 import com.m9d.sroom.youtube.dto.*;
 import com.m9d.sroom.youtube.resource.PlaylistItemReq;
 import com.m9d.sroom.youtube.resource.PlaylistReq;
@@ -59,11 +58,6 @@ public class YoutubeService {
                 .build());
 
         return new SearchInfo(searchVo);
-    }
-
-    public boolean checkIfPlaylist(String lectureCode) {
-        String firstTwoCharacters = lectureCode.substring(LECTURE_CODE_START_INDEX, LECTURE_CODE_PLAYLIST_INDICATOR_LENGTH);
-        return firstTwoCharacters.equals(PLAYLIST_CODE_INDICATOR);
     }
 
     public boolean isPrivacyStatusUnusable(PlaylistVideoInfo videoInfo) {

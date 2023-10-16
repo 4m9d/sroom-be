@@ -3,6 +3,8 @@ package com.m9d.sroom.youtube.dto;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.youtube.vo.playlist.PlaylistItemVo;
 import com.m9d.sroom.youtube.vo.playlist.PlaylistVo;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.sql.Timestamp;
@@ -10,6 +12,8 @@ import java.sql.Timestamp;
 import static com.m9d.sroom.youtube.YoutubeConstant.FIRST_INDEX;
 
 @Getter
+@Builder
+@AllArgsConstructor
 public class PlaylistInfo extends ContentInfo {
 
     private final String code;

@@ -4,6 +4,7 @@ import com.m9d.sroom.playlist.PlaylistDto;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -34,6 +35,11 @@ public class PlaylistJdbcRepositoryImpl implements PlaylistRepository {
     @Override
     public PlaylistDto getById(Long playlistId) {
         return jdbcTemplate.queryForObject(PlaylistRepositorySql.GET_BY_ID, PlaylistDto.getRowMapper(), playlistId);
+    }
+
+    @Override
+    public PlaylistDto getByCode(String playlistCode) {
+        return jdbcTemplate.queryForObject(PlaylistRepositorySql.GET_BY_CODE, PlaylistDto.getRowMapper(), playlistCode);
     }
 
     @Override

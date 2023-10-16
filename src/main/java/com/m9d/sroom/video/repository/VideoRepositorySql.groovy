@@ -61,6 +61,18 @@ class VideoRepositorySql {
         ORDER BY pv.video_index
     """
 
+    public static final String GET_LIST_BY_PLAYLIST_CODE = """
+        SELECT
+        v.video_id, v.video_code, v.duration, v.channel, v.thumbnail, v.accumulated_rating, v.review_count,
+        v.summary_id, v.is_available, v.description, v.chapter_usage, v.title, v.language, v.license, v.updated_at, 
+        v.view_count, v.published_at, v.membership, v.material_status, pv.video_index
+        FROM VIDEO v
+        JOIN PLAYLISTVIDEO pv
+        ON v.video_id = pv.video_id
+        WHERE pv.playlist_code = ?
+        ORDER BY pv.video_index
+    """
+
     public static final String GET_CODE_SET_BY_MEMBER_ID = """
         SELECT v.video_code 
         FROM COURSEVIDEO cv JOIN VIDEO v ON cv.video_id = v.video_id 

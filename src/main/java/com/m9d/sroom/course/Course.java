@@ -49,4 +49,12 @@ public class Course {
         return contentSavedList.get(0)
                 .getId();
     }
+
+    public Integer getWeeks() {
+        return enrollCondition.getWeeks();
+    }
+
+    public Integer getDailyTargetTime() {
+        return enrollCondition.getDailyTargetTime();
+    }
 }

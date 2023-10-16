@@ -1,6 +1,5 @@
 package com.m9d.sroom.youtube;
 
-import com.m9d.sroom.util.youtube.resource.*;
 import com.m9d.sroom.youtube.vo.playlist.PlaylistVo;
 import com.m9d.sroom.youtube.vo.playlistitem.PlaylistVideoVo;
 import com.m9d.sroom.youtube.vo.search.SearchVo;

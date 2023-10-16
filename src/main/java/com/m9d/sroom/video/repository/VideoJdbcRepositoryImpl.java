@@ -95,7 +95,7 @@ public class VideoJdbcRepositoryImpl implements VideoRepository {
 
     @Override
     public List<VideoDto> getListByPlaylistId(Long playlistId) {
-        return jdbcTemplate.query(VideoRepositorySql.GET_LIST_BY_PLAYLIST_ID, VideoDto.getRowMapper(), playlistId);
+        return jdbcTemplate.query(VideoRepositorySql.GET_LIST_BY_PLAYLIST_ID, VideoDto.getRowMapperWithIndex(), playlistId);
     }
 
     @Override

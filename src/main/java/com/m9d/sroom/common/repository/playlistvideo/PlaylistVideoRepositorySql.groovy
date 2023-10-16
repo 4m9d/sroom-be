@@ -24,4 +24,10 @@ class PlaylistVideoRepositorySql {
         FROM PLAYLISTVIDEO
         WHERE playlist_id = ?
     """
+
+    public static final String DELETE_BY_PLAYLIST_CODE = """
+        DELETE
+        FROM PLAYLISTVIDEO
+        WHERE playlist_code = ?
+    """
 }

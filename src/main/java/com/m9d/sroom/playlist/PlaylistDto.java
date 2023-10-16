@@ -11,7 +11,8 @@ import org.springframework.jdbc.core.RowMapper;
 import java.sql.Timestamp;
 import java.util.List;
 
-@Getter @Setter
+@Getter
+@Setter
 @Builder(toBuilder = true)
 @AllArgsConstructor
 public class PlaylistDto {
@@ -48,15 +49,27 @@ public class PlaylistDto {
 
     private List<VideoDto> videoDtoList;
 
-    public PlaylistDto(PlaylistInfo playlistInfo, int duration) {
-        this.playlistCode = playlistInfo.getCode();
-        this.title = playlistInfo.getTitle();
-        this.channel = playlistInfo.getChannel();
-        this.thumbnail = playlistInfo.getThumbnail();
-        this.description = playlistInfo.getDescription();
-        this.publishedAt = playlistInfo.getPublishedAt();
-        this.videoCount = playlistInfo.getVideoCount();
+    public PlaylistDto(Playlist playlist, int duration) {
+        this.playlistCode = playlist.getCode();
+        this.title = playlist.getTitle();
+        this.channel = playlist.getChannel();
+        this.thumbnail = playlist.getThumbnail();
+        this.description = playlist.getDescription();
+        this.publishedAt = playlist.getPublishedAt();
+        this.videoCount = playlist.getVideoCount();
         this.duration = duration;
+    }
+
+    public PlaylistInfo toPlaylistInfo() {
+        return PlaylistInfo.builder()
+                .code(playlistCode)
+                .title(title)
+                .channel(channel)
+                .thumbnail(thumbnail)
+                .description(description)
+                .publishedAt(publishedAt)
+                .videoCount(videoCount)
+                .build();
     }
 
     public static RowMapper<PlaylistDto> getRowMapper() {

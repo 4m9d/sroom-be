@@ -172,7 +172,7 @@ public class LectureService {
         Optional<PlaylistDto> playlistOptional = playlistRepository.findByCode(playlistCode);
 
         if (playlistOptional.isPresent() &&
-                dateUtil.validateExpiration(playlistOptional.get().getUpdatedAt(), PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
+                dateUtil.hasRecentUpdate(playlistOptional.get().getUpdatedAt(), PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
             return playlistOptional.get();
         } else {
             return youtubeUtil.getPlaylistWithBlocking(playlistCode);
@@ -305,7 +305,7 @@ public class LectureService {
         Optional<VideoDto> videoOptional = videoRepository.findByCode(videoCode);
 
         if (videoOptional.isPresent() &&
-                dateUtil.validateExpiration(videoOptional.get().getUpdatedAt(), VIDEO_UPDATE_THRESHOLD_HOURS)) {
+                dateUtil.hasRecentUpdate(videoOptional.get().getUpdatedAt(), VIDEO_UPDATE_THRESHOLD_HOURS)) {
             return videoOptional.get();
         } else {
             return youtubeUtil.getVideoWithBlocking(videoCode);

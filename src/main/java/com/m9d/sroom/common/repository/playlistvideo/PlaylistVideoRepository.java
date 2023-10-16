@@ -8,5 +8,4 @@ public interface PlaylistVideoRepository {
 
     void deleteByPlaylistId(Long playlistId);
 
-
 }

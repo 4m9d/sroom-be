@@ -2,9 +2,9 @@ package com.m9d.sroom.video;
 
 import com.m9d.sroom.common.object.Content;
 import com.m9d.sroom.youtube.dto.VideoInfo;
-import lombok.Getter;
 
-@Getter
+import java.sql.Timestamp;
+
 public class Video extends Content {
 
     private final VideoInfo videoInfo;
@@ -38,9 +38,39 @@ public class Video extends Content {
         return false;
     }
 
+    @Override
+    public String getDescription() {
+        return videoInfo.getDescription();
+    }
+
+    @Override
     public String getCode() {
         return videoInfo.getCode();
     }
 
+    @Override
+    public Timestamp getPublishedAt() {
+        return videoInfo.getPublishedAt();
+    }
 
+
+    public String getLanguage() {
+        return videoInfo.getLanguage();
+    }
+
+    public Long getViewCount() {
+        return videoInfo.getViewCount();
+    }
+
+    public boolean getMembership() {
+        return videoInfo.getMembership();
+    }
+
+    public PlaylistItem toPlaylistItem(Integer position) {
+        return new PlaylistItem(videoInfo, position);
+    }
+
+    public String getLicense() {
+        return videoInfo.getLicense();
+    }
 }

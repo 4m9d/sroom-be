@@ -1,7 +1,6 @@
 package com.m9d.sroom.course;
 
 import com.m9d.sroom.common.dto.*;
-import com.m9d.sroom.course.CourseDto;
 import com.m9d.sroom.common.dto.CourseVideoDto;
 import com.m9d.sroom.course.dto.VideoInfoForSchedule;
 import com.m9d.sroom.course.dto.request.NewLecture;
@@ -298,7 +297,7 @@ public class CourseService {
         Optional<PlaylistDto> playlistOptional = playlistRepository.findByCode(playlistCode);
 
         if (playlistOptional.isPresent() &&
-                dateUtil.validateExpiration(playlistOptional.get().getUpdatedAt(), PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
+                dateUtil.hasRecentUpdate(playlistOptional.get().getUpdatedAt(), PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
             return playlistOptional.get();
         } else {
             PlaylistDto playlistDto = youtubeUtil.getPlaylistWithBlocking(playlistCode);
@@ -445,7 +444,7 @@ public class CourseService {
         CompletableFuture<VideoDto> result;
 
         if (videoOptional.isPresent() &&
-                dateUtil.validateExpiration(videoOptional.get().getUpdatedAt(), VIDEO_UPDATE_THRESHOLD_HOURS)) {
+                DateUtil.hasRecentUpdate(videoOptional.get().getUpdatedAt(), VIDEO_UPDATE_THRESHOLD_HOURS)) {
             return CompletableFuture.completedFuture(videoOptional.get());
         } else {
             result = CompletableFuture.supplyAsync(() -> {

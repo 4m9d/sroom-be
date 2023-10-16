@@ -1,5 +1,7 @@
 package com.m9d.sroom.common.dto;
 
+import com.m9d.sroom.common.object.CourseVideo;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,6 +12,7 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
 public class CourseVideoDto {
 
     private Long courseVideoId;
@@ -37,6 +40,17 @@ public class CourseVideoDto {
     private Timestamp lastViewTime;
 
     private int maxDuration;
+
+    public CourseVideoDto(Long memberId, Long courseId, Long lectureId, CourseVideo courseVideo){
+        this.memberId = memberId;
+        this.courseId = courseId;
+        this.videoId = courseVideo.getVideoId();
+        this.section = courseVideo.getSection();
+        this.videoIndex = courseVideo.getVideoIndex();
+        this.lectureIndex = courseVideo.getLectureIndex();
+        this.summaryId = courseVideo.getSummaryId();
+        this.lectureId = lectureId;
+    }
 
     public static RowMapper<CourseVideoDto> getRowMapper() {
         return (rs, rowNum) -> CourseVideoDto.builder()

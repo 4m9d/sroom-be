@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -51,13 +50,9 @@ public class DateUtil {
         }
     }
 
-    public boolean validateExpiration(Timestamp time, long updateThresholdHours) {
+    public static boolean hasRecentUpdate(Timestamp time, long updateThresholdHours) {
         LocalDateTime updatedAt = LocalDateTime.ofInstant(time.toInstant(), ZoneId.systemDefault());
-        if (updatedAt.isAfter(LocalDateTime.now().minusHours(updateThresholdHours))) {
-            return true;
-        }
-
-        return false;
+        return updatedAt.isAfter(LocalDateTime.now().minusHours(updateThresholdHours));
     }
 
     public static Timestamp convertISOToTimestamp(String isoString) {

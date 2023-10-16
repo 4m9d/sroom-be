@@ -11,8 +11,14 @@ public class PlaylistWithItemList extends Playlist{
     @Getter
     private final List<PlaylistItem> playlistItemList;
 
-    public PlaylistWithItemList(PlaylistInfo playlistInfo, List<PlaylistItem> playlistItemList) {
-        super(playlistInfo);
+    public PlaylistWithItemList(Playlist playlist, List<PlaylistItem> playlistItemList) {
+        super(playlist.getPlaylistInfo());
         this.playlistItemList = playlistItemList;
+    }
+
+    public int getDuration(){
+        return playlistItemList.stream()
+                .mapToInt(PlaylistItem::getDuration)
+                .sum();
     }
 }

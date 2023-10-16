@@ -41,12 +41,15 @@ public class CourseDto {
 
     private Integer progress;
 
-    public CourseDto(Course course) {
+    public CourseDto(Long memberId, Course course) {
+        this.memberId = memberId;
         this.videoCount = course.getVideoCount();
         this.courseTitle = course.getTitle();
         this.thumbnail = course.getThumbnail();
         this.duration = course.getDuration();
         this.expectedEndDate = course.getExpectedEndDate();
+        this.weeks = course.getWeeks();
+        this.dailyTargetTime = course.getDailyTargetTime();
     }
 
     public static RowMapper<CourseDto> getRowMapper() {
