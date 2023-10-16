@@ -7,7 +7,7 @@ import com.m9d.sroom.lecture.dto.response.*;
 import com.m9d.sroom.lecture.service.LectureService;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
-import com.m9d.sroom.util.youtube.YoutubeUtil;
+import com.m9d.sroom.youtube.YoutubeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -74,7 +74,7 @@ public class LectureController {
     @ApiResponse(responseCode = "200", description = "성공적으로 강의 상세 정보를 반환하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(oneOf = {PlaylistDetail.class, VideoDetail.class, IndexInfo.class}))})
     public Object getLectureDetail(@PathVariable(name = "lectureCode") String lectureCode, @ModelAttribute LectureDetailParam lectureDetailParam) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
-        boolean isPlaylist = YoutubeUtil.checkIfPlaylist(lectureCode);
+        boolean isPlaylist = YoutubeService.checkIfPlaylist(lectureCode);
         return lectureService.getLectureDetail(memberId, isPlaylist, lectureCode, lectureDetailParam);
     }
 

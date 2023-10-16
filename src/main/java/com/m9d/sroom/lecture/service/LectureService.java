@@ -1,8 +1,8 @@
 package com.m9d.sroom.lecture.service;
 
+import com.m9d.sroom.common.dto.*;
 import com.m9d.sroom.course.exception.CourseNotMatchException;
 import com.m9d.sroom.course.exception.CourseVideoNotFoundException;
-import com.m9d.sroom.global.mapper.*;
 import com.m9d.sroom.lecture.dto.VideoCompletionStatus;
 import com.m9d.sroom.lecture.dto.request.KeywordSearchParam;
 import com.m9d.sroom.lecture.dto.request.LectureDetailParam;
@@ -12,27 +12,27 @@ import com.m9d.sroom.lecture.dto.response.LectureResponse;
 import com.m9d.sroom.lecture.exception.TwoOnlyParamTrueException;
 import com.m9d.sroom.lecture.exception.VideoIndexParamException;
 import com.m9d.sroom.lecture.exception.VideoNotFoundException;
-import com.m9d.sroom.repository.course.CourseRepository;
-import com.m9d.sroom.repository.coursedailylog.CourseDailyLogRepository;
-import com.m9d.sroom.repository.coursevideo.CourseVideoRepository;
-import com.m9d.sroom.repository.lecture.LectureRepository;
-import com.m9d.sroom.repository.member.MemberRepository;
-import com.m9d.sroom.repository.playlist.PlaylistRepository;
-import com.m9d.sroom.repository.review.ReviewRepository;
-import com.m9d.sroom.repository.video.VideoRepository;
+import com.m9d.sroom.common.repository.course.CourseRepository;
+import com.m9d.sroom.common.repository.coursedailylog.CourseDailyLogRepository;
+import com.m9d.sroom.common.repository.coursevideo.CourseVideoRepository;
+import com.m9d.sroom.common.repository.lecture.LectureRepository;
+import com.m9d.sroom.common.repository.member.MemberRepository;
+import com.m9d.sroom.common.repository.playlist.PlaylistRepository;
+import com.m9d.sroom.common.repository.review.ReviewRepository;
+import com.m9d.sroom.common.repository.video.VideoRepository;
 import com.m9d.sroom.util.DateUtil;
-import com.m9d.sroom.util.youtube.YoutubeApi;
-import com.m9d.sroom.util.youtube.YoutubeUtil;
-import com.m9d.sroom.util.youtube.resource.PlaylistReq;
-import com.m9d.sroom.util.youtube.resource.SearchReq;
-import com.m9d.sroom.util.youtube.resource.VideoReq;
-import com.m9d.sroom.util.youtube.vo.playlist.PlaylistVo;
-import com.m9d.sroom.util.youtube.vo.playlistitem.PlaylistVideoItemVo;
-import com.m9d.sroom.util.youtube.vo.playlistitem.PlaylistVideoVo;
-import com.m9d.sroom.util.youtube.vo.search.SearchItemVo;
-import com.m9d.sroom.util.youtube.vo.search.SearchSnippetVo;
-import com.m9d.sroom.util.youtube.vo.search.SearchVo;
-import com.m9d.sroom.util.youtube.vo.video.VideoVo;
+import com.m9d.sroom.youtube.api.YoutubeApi;
+import com.m9d.sroom.youtube.YoutubeService;
+import com.m9d.sroom.youtube.resource.PlaylistReq;
+import com.m9d.sroom.youtube.resource.SearchReq;
+import com.m9d.sroom.youtube.resource.VideoReq;
+import com.m9d.sroom.youtube.vo.playlist.PlaylistVo;
+import com.m9d.sroom.youtube.vo.playlistitem.PlaylistVideoItemVo;
+import com.m9d.sroom.youtube.vo.playlistitem.PlaylistVideoVo;
+import com.m9d.sroom.youtube.vo.search.SearchItemVo;
+import com.m9d.sroom.youtube.vo.search.SearchSnippetVo;
+import com.m9d.sroom.youtube.vo.search.SearchVo;
+import com.m9d.sroom.youtube.vo.video.VideoVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
 import static com.m9d.sroom.course.constant.CourseConstant.PLAYLIST_UPDATE_THRESHOLD_HOURS;
 import static com.m9d.sroom.course.constant.CourseConstant.VIDEO_UPDATE_THRESHOLD_HOURS;
 import static com.m9d.sroom.lecture.constant.LectureConstant.*;
-import static com.m9d.sroom.util.youtube.YoutubeUtil.*;
+import static com.m9d.sroom.youtube.YoutubeService.*;
 
 @Slf4j
 @Service
@@ -67,13 +67,13 @@ public class LectureService {
     private final MemberRepository memberRepository;
     private final CourseDailyLogRepository courseDailyLogRepository;
     private final LectureRepository lectureRepository;
-    private final YoutubeUtil youtubeUtil;
+    private final YoutubeService youtubeService;
     private final YoutubeApi youtubeApi;
     private final DateUtil dateUtil;
 
     public LectureService(CourseRepository courseRepository, ReviewRepository reviewRepository,
                           MemberRepository memberRepository, PlaylistRepository playlistRepository,
-                          VideoRepository videoRepository, LectureRepository lectureRepository, YoutubeUtil youtubeUtil,
+                          VideoRepository videoRepository, LectureRepository lectureRepository, YoutubeService youtubeService,
                           CourseVideoRepository courseVideoRepository, CourseDailyLogRepository courseDailyLogRepository,
                           YoutubeApi youtubeApi, DateUtil dateUtil) {
         this.reviewRepository = reviewRepository;
@@ -84,7 +84,7 @@ public class LectureService {
         this.courseDailyLogRepository = courseDailyLogRepository;
         this.playlistRepository = playlistRepository;
         this.videoRepository = videoRepository;
-        this.youtubeUtil = youtubeUtil;
+        this.youtubeService = youtubeService;
         this.youtubeApi = youtubeApi;
         this.dateUtil = dateUtil;
     }
@@ -96,7 +96,7 @@ public class LectureService {
         Mono<SearchVo> searchVoMono = getSearchVoMono(keywordSearchParam);
         Set<String> enrolledLectureSet = getEnrolledLectures(memberId);
 
-        SearchVo searchVo = youtubeUtil.safeGetVo(searchVoMono);
+        SearchVo searchVo = youtubeService.safeGetVo(searchVoMono);
         String nextPageToken = Optional.of(searchVo)
                 .map(SearchVo::getNextPageToken)
                 .orElse(null);
@@ -159,7 +159,7 @@ public class LectureService {
                 .playlist(isPlaylist)
                 .lectureCount(videoCount)
                 .viewCount(viewCount)
-                .thumbnail(youtubeUtil.selectThumbnailInVo(snippetVo.getThumbnails()))
+                .thumbnail(youtubeService.selectThumbnailInVo(snippetVo.getThumbnails()))
                 .build();
     }
 
@@ -170,7 +170,7 @@ public class LectureService {
                 dateUtil.validateExpiration(playlistOptional.get().getUpdatedAt(), PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
             return playlistOptional.get();
         } else {
-            return youtubeUtil.getPlaylistWithBlocking(playlistCode);
+            return youtubeService.getPlaylistWithBlocking(playlistCode);
         }
     }
 
@@ -213,7 +213,7 @@ public class LectureService {
 
 
         for (int i = 0; i < pageCount; i++) {
-            PlaylistVideoVo playlistVideoVo = youtubeUtil.getPlaylistItemWithBlocking(playlistCode, nextPageToken, DEFAULT_INDEX_COUNT);
+            PlaylistVideoVo playlistVideoVo = youtubeService.getPlaylistItemWithBlocking(playlistCode, nextPageToken, DEFAULT_INDEX_COUNT);
             pageCount = playlistVideoVo.getPageInfo().getTotalResults() / DEFAULT_INDEX_COUNT + 1;
             nextPageToken = Optional.of(playlistVideoVo)
                     .map(PlaylistVideoVo::getNextPageToken)
@@ -244,7 +244,7 @@ public class LectureService {
         Set<String> enrolledPlaylistSet = playlistRepository.getCodeSetByMemberId(memberId);
         List<CourseBrief> courseBriefList = courseRepository.getBriefListByMemberId(memberId);
         List<ReviewBrief> reviewList = reviewRepository.getBriefListByCode(playlistCode, DEFAULT_REVIEW_OFFSET, reviewLimit);
-        Playlist playlist = youtubeUtil.getPlaylistFromMono(playlistVoMono);
+        Playlist playlist = youtubeService.getPlaylistFromMono(playlistVoMono);
 
         return PlaylistDetail.builder()
                 .lectureCode(playlistCode)
@@ -266,7 +266,7 @@ public class LectureService {
         List<CompletableFuture<Index>> futureList = new ArrayList<>();
 
         for (PlaylistVideoItemVo itemVo : playlistVideoVo.getItems()) {
-            if (youtubeUtil.isPrivacyStatusUnusable(itemVo)) {
+            if (youtubeService.isPrivacyStatusUnusable(itemVo)) {
                 continue;
             }
             futureList.add(CompletableFuture.supplyAsync(() ->
@@ -303,7 +303,7 @@ public class LectureService {
                 dateUtil.validateExpiration(videoOptional.get().getUpdatedAt(), VIDEO_UPDATE_THRESHOLD_HOURS)) {
             return videoOptional.get();
         } else {
-            return youtubeUtil.getVideoWithBlocking(videoCode);
+            return youtubeService.getVideoWithBlocking(videoCode);
         }
     }
 
@@ -318,7 +318,7 @@ public class LectureService {
 
         Video video;
         try {
-            video = youtubeUtil.getVideoFromMono(videoVoMono);
+            video = youtubeService.getVideoFromMono(videoVoMono);
         } catch (IndexOutOfBoundsException e) {
             log.warn("존재하지 않는 영상입니다. video code = {}", videoCode);
             throw new VideoNotFoundException();

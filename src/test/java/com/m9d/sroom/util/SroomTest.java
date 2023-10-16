@@ -2,12 +2,12 @@ package com.m9d.sroom.util;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.m9d.sroom.course.service.CourseService;
-import com.m9d.sroom.dashboard.service.DashboardService;
+import com.m9d.sroom.course.CourseService;
+import com.m9d.sroom.dashboard.DashboardService;
 import com.m9d.sroom.lecture.service.LectureService;
 import com.m9d.sroom.member.service.MemberService;
-import com.m9d.sroom.util.youtube.YoutubeApi;
-import com.m9d.sroom.util.youtube.YoutubeUtil;
+import com.m9d.sroom.youtube.api.YoutubeApi;
+import com.m9d.sroom.youtube.YoutubeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -52,7 +52,7 @@ public class SroomTest {
     protected YoutubeApi youtubeApi;
 
     @Autowired
-    protected YoutubeUtil youtubeUtil;
+    protected YoutubeService youtubeService;
 
     protected static final String VIDEO_CODE = "Z9dvM7qgN9s";
     protected static final String PLAYLIST_CODE = "PLv2d7VI9OotQUUsgcTBHuy5vJkSgzVHL0";

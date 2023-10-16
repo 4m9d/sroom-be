@@ -1,6 +1,6 @@
 package com.m9d.sroom.material.exception;
 
-import com.m9d.sroom.global.error.DuplicationException;
+import com.m9d.sroom.common.error.DuplicationException;
 
 public class CourseQuizDuplicationException extends DuplicationException {
 

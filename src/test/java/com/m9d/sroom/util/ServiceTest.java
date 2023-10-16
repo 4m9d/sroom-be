@@ -1,6 +1,6 @@
 package com.m9d.sroom.util;
 
-import com.m9d.sroom.global.mapper.Member;
+import com.m9d.sroom.common.dto.Member;
 
 import java.sql.Timestamp;
 import java.util.UUID;

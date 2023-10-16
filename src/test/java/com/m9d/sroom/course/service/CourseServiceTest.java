@@ -3,7 +3,7 @@ package com.m9d.sroom.course.service;
 import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.course.dto.response.MyCourses;
-import com.m9d.sroom.global.mapper.Member;
+import com.m9d.sroom.common.dto.Member;
 import com.m9d.sroom.util.ServiceTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;

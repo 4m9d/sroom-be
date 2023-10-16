@@ -1,7 +1,7 @@
 package com.m9d.sroom.lecture.service;
 
 import com.m9d.sroom.lecture.dto.response.RecommendLecture;
-import com.m9d.sroom.global.mapper.Member;
+import com.m9d.sroom.common.dto.Member;
 import com.m9d.sroom.util.ServiceTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

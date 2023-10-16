@@ -1,0 +1,17 @@
+package com.m9d.sroom.youtube.vo.search;
+
+import com.m9d.sroom.youtube.vo.global.PageInfoVo;
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+public class SearchVo {
+
+    private String nextPageToken;
+
+    private PageInfoVo pageInfo;
+
+    List<SearchItemVo> items;
+
+}

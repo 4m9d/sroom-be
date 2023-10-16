@@ -1,0 +1,34 @@
+package com.m9d.sroom.common.repository.video;
+
+import com.m9d.sroom.common.dto.Video;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+public interface VideoRepository {
+
+    Video save(Video video);
+
+    Video getByCode(String videoCode);
+
+    Video getById(Long videoId);
+
+    Optional<Video> findByCode(String videoCode);
+
+    List<Video> getTopRatedOrder(int limit);
+
+    Optional<Video> findById(Long videoId);
+
+    Video updateById(Long videoId, Video video);
+
+    List<Video> getListByPlaylistId(Long playlistId);
+
+    Set<String> getCodeSetByMemberId(Long memberId);
+
+    List<Video> getRandomByChannel(String channel, int limit);
+
+    List<Video> getViewCountOrderByChannel(String channel, int limit);
+
+    List<Video> getLatestOrderByChannel(String channel, int limit);
+}

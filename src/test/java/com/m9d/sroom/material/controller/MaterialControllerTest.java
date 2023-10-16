@@ -1,7 +1,7 @@
 package com.m9d.sroom.material.controller;
 
 import com.m9d.sroom.course.dto.response.CourseDetail;
-import com.m9d.sroom.global.mapper.Member;
+import com.m9d.sroom.common.dto.Member;
 import com.m9d.sroom.util.ControllerTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -2,8 +2,8 @@ package com.m9d.sroom.global;
 
 import com.google.gson.Gson;
 import com.m9d.sroom.util.SroomTest;
-import com.m9d.sroom.util.youtube.resource.SearchReq;
-import com.m9d.sroom.util.youtube.vo.search.SearchVo;
+import com.m9d.sroom.youtube.resource.SearchReq;
+import com.m9d.sroom.youtube.vo.search.SearchVo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -360,7 +360,7 @@ public class UtilTest extends SroomTest {
         System.out.println(System.currentTimeMillis());
         Mono<SearchVo> test = youtubeApi.getSearchVo(lectureListReq);
         System.out.println(System.currentTimeMillis());
-        SearchVo searchVo = youtubeUtil.safeGetVo(test);
+        SearchVo searchVo = youtubeService.safeGetVo(test);
         System.out.println(System.currentTimeMillis());
         System.out.println(searchVo.toString());
         System.out.println(System.currentTimeMillis());

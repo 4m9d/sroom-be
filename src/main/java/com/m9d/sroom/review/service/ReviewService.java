@@ -1,17 +1,16 @@
 package com.m9d.sroom.review.service;
 
-import com.m9d.sroom.global.mapper.*;
-import com.m9d.sroom.repository.coursevideo.CourseVideoRepository;
-import com.m9d.sroom.repository.lecture.LectureRepository;
-import com.m9d.sroom.repository.playlist.PlaylistRepository;
-import com.m9d.sroom.repository.review.ReviewRepository;
-import com.m9d.sroom.repository.video.VideoRepository;
+import com.m9d.sroom.common.dto.*;
+import com.m9d.sroom.common.repository.coursevideo.CourseVideoRepository;
+import com.m9d.sroom.common.repository.lecture.LectureRepository;
+import com.m9d.sroom.common.repository.playlist.PlaylistRepository;
+import com.m9d.sroom.common.repository.review.ReviewRepository;
+import com.m9d.sroom.common.repository.video.VideoRepository;
 import com.m9d.sroom.review.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +19,7 @@ import java.util.List;
 @Service
 public class ReviewService {
 
-    private final com.m9d.sroom.repository.review.ReviewRepository reviewRepository;
+    private final ReviewRepository reviewRepository;
     private final LectureRepository lectureRepository;
     private final PlaylistRepository playlistRepository;
     private final VideoRepository videoRepository;
