@@ -24,4 +24,9 @@ class PlaylistVideoRepositorySql {
         FROM PLAYLISTVIDEO
         WHERE playlist_id = ?
     """
+    public static final String GET_LIST_BY_PLAYLIST_ID = """
+        SELECT
+        playlist_video_id, playlist_id, video_id, video_index
+        FROM 
+    """
 }

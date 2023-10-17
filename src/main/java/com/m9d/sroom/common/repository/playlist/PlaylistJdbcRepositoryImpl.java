@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.playlist;
 
-import com.m9d.sroom.common.dto.Playlist;
+import com.m9d.sroom.common.entity.PlaylistEntity;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -18,7 +18,7 @@ public class PlaylistJdbcRepositoryImpl implements PlaylistRepository {
     }
 
     @Override
-    public Playlist save(Playlist playlist) {
+    public PlaylistEntity save(PlaylistEntity playlist) {
         jdbcTemplate.update(PlaylistRepositorySql.SAVE,
                 playlist.getPlaylistCode(),
                 playlist.getChannel(),
@@ -32,21 +32,26 @@ public class PlaylistJdbcRepositoryImpl implements PlaylistRepository {
     }
 
     @Override
-    public Playlist getById(Long playlistId) {
-        return jdbcTemplate.queryForObject(PlaylistRepositorySql.GET_BY_ID, Playlist.getRowMapper(), playlistId);
+    public PlaylistEntity getById(Long playlistId) {
+        return jdbcTemplate.queryForObject(PlaylistRepositorySql.GET_BY_ID, PlaylistEntity.getRowMapper(), playlistId);
     }
 
     @Override
-    public Optional<Playlist> findByCode(String playlistCode) {
+    public Optional<PlaylistEntity> findByCode(String playlistCode) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(PlaylistRepositorySql.GET_BY_CODE, Playlist.getRowMapper(), playlistCode));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(PlaylistRepositorySql.GET_BY_CODE, PlaylistEntity.getRowMapper(), playlistCode));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
-    public Playlist updateById(Long playlistId, Playlist playlist) {
+    public PlaylistEntity getByCode(String playlistCode) {
+        return jdbcTemplate.queryForObject(PlaylistRepositorySql.GET_BY_CODE, PlaylistEntity.getRowMapper(), playlistCode);
+    }
+
+    @Override
+    public PlaylistEntity updateById(Long playlistId, PlaylistEntity playlist) {
         jdbcTemplate.update(PlaylistRepositorySql.UPDATE_BY_ID,
                 playlist.getChannel(),
                 playlist.getThumbnail(),
@@ -65,8 +70,8 @@ public class PlaylistJdbcRepositoryImpl implements PlaylistRepository {
     }
 
     @Override
-    public List<Playlist> getTopRatedOrder(int limit) {
-        return jdbcTemplate.query(PlaylistRepositorySql.GET_TOP_RATED_ORDER, Playlist.getRowMapper(), limit);
+    public List<PlaylistEntity> getTopRatedOrder(int limit) {
+        return jdbcTemplate.query(PlaylistRepositorySql.GET_TOP_RATED_ORDER, PlaylistEntity.getRowMapper(), limit);
     }
 
     @Override
@@ -76,17 +81,17 @@ public class PlaylistJdbcRepositoryImpl implements PlaylistRepository {
     }
 
     @Override
-    public List<Playlist> getRandomByChannel(String channel, int limit) {
-        return jdbcTemplate.query(PlaylistRepositorySql.GET_RANDOM_BY_CHANNEL, Playlist.getRowMapper(), channel, limit);
+    public List<PlaylistEntity> getRandomByChannel(String channel, int limit) {
+        return jdbcTemplate.query(PlaylistRepositorySql.GET_RANDOM_BY_CHANNEL, PlaylistEntity.getRowMapper(), channel, limit);
     }
 
     @Override
-    public List<Playlist> getViewCountOrderByChannel(String channel, int limit) {
-        return jdbcTemplate.query(PlaylistRepositorySql.GET_VIEW_COUNT_ORDER_BY_CHANNEL, Playlist.getRowMapper(), channel, limit);
+    public List<PlaylistEntity> getViewCountOrderByChannel(String channel, int limit) {
+        return jdbcTemplate.query(PlaylistRepositorySql.GET_VIEW_COUNT_ORDER_BY_CHANNEL, PlaylistEntity.getRowMapper(), channel, limit);
     }
 
     @Override
-    public List<Playlist> getLatestOrderByChannel(String channel, int limit) {
-        return jdbcTemplate.query(PlaylistRepositorySql.GET_LATEST_ORDER_BY_CHANNEL, Playlist.getRowMapper(), channel, limit);
+    public List<PlaylistEntity> getLatestOrderByChannel(String channel, int limit) {
+        return jdbcTemplate.query(PlaylistRepositorySql.GET_LATEST_ORDER_BY_CHANNEL, PlaylistEntity.getRowMapper(), channel, limit);
     }
 }

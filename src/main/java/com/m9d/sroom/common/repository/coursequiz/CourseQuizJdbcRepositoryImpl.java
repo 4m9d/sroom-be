@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.coursequiz;
 
-import com.m9d.sroom.common.dto.CourseQuiz;
+import com.m9d.sroom.common.entity.CourseQuizEntity;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -17,7 +17,7 @@ public class CourseQuizJdbcRepositoryImpl implements CourseQuizRepository {
     }
 
     @Override
-    public CourseQuiz save(CourseQuiz courseQuiz) {
+    public CourseQuizEntity save(CourseQuizEntity courseQuiz) {
         jdbcTemplate.update(CourseQuizRepositorySql.SAVE,
                 courseQuiz.getCourseId(),
                 courseQuiz.getQuizId(),
@@ -29,21 +29,21 @@ public class CourseQuizJdbcRepositoryImpl implements CourseQuizRepository {
     }
 
     @Override
-    public CourseQuiz getById(Long courseQuizId) {
-        return jdbcTemplate.queryForObject(CourseQuizRepositorySql.GET_BY_ID, CourseQuiz.getRowMapper(), courseQuizId);
+    public CourseQuizEntity getById(Long courseQuizId) {
+        return jdbcTemplate.queryForObject(CourseQuizRepositorySql.GET_BY_ID, CourseQuizEntity.getRowMapper(), courseQuizId);
     }
 
     @Override
-    public Optional<CourseQuiz> findById(Long courseQuizId) {
+    public Optional<CourseQuizEntity> findById(Long courseQuizId) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(CourseQuizRepositorySql.GET_BY_ID, CourseQuiz.getRowMapper(), courseQuizId));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(CourseQuizRepositorySql.GET_BY_ID, CourseQuizEntity.getRowMapper(), courseQuizId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
-    public CourseQuiz updateById(Long courseQuizId, CourseQuiz courseQuiz) {
+    public CourseQuizEntity updateById(Long courseQuizId, CourseQuizEntity courseQuiz) {
         jdbcTemplate.update(CourseQuizRepositorySql.UPDATE_BY_ID,
                 courseQuiz.getSubmittedAnswer(),
                 courseQuiz.getCorrect(),
@@ -53,11 +53,11 @@ public class CourseQuizJdbcRepositoryImpl implements CourseQuizRepository {
     }
 
     @Override
-    public Optional<CourseQuiz> findByQuizIdAndCourseVideoId(Long quizId, Long courseVideoId) {
+    public Optional<CourseQuizEntity> findByQuizIdAndCourseVideoId(Long quizId, Long courseVideoId) {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(
                     CourseQuizRepositorySql.GET_BY_QUIZ_ID_AND_COURSE_VIDEO_ID,
-                    CourseQuiz.getRowMapper(), quizId, courseVideoId));
+                    CourseQuizEntity.getRowMapper(), quizId, courseVideoId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

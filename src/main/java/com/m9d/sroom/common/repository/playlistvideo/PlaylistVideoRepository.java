@@ -1,12 +1,11 @@
 package com.m9d.sroom.common.repository.playlistvideo;
 
-import com.m9d.sroom.common.dto.PlaylistVideo;
+import com.m9d.sroom.common.entity.PlaylistVideoEntity;
 
 public interface PlaylistVideoRepository {
 
-    PlaylistVideo save(PlaylistVideo playlistVideo);
+    PlaylistVideoEntity save(PlaylistVideoEntity playlistVideo);
 
     void deleteByPlaylistId(Long playlistId);
-
 
 }

@@ -1,7 +1,7 @@
 package com.m9d.sroom.common.repository.coursevideo;
 
 import com.m9d.sroom.course.dto.VideoInfoForSchedule;
-import com.m9d.sroom.common.dto.CourseVideo;
+import com.m9d.sroom.common.entity.CourseVideoEntity;
 import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
 import com.m9d.sroom.lecture.dto.response.VideoWatchInfo;
 
@@ -10,17 +10,19 @@ import java.util.Optional;
 
 public interface CourseVideoRepository {
 
-    CourseVideo save(CourseVideo courseVideo);
+    CourseVideoEntity save(CourseVideoEntity courseVideo);
 
-    CourseVideo updateById(Long id, CourseVideo courseVideo);
+    CourseVideoEntity updateById(Long id, CourseVideoEntity courseVideo);
 
-    CourseVideo getById(Long courseVideoId);
+    CourseVideoEntity getById(Long courseVideoId);
 
-    List<CourseVideo> getListByCourseId(Long courseId);
+    List<CourseVideoEntity> getListByCourseId(Long courseId);
 
-    List<CourseVideo> getListByLectureId(Long lectureId);
+    List<CourseVideoEntity> getListByLectureId(Long lectureId);
 
-    Optional<CourseVideo> findById(Long courseVideoId);
+    Optional<CourseVideoEntity> findById(Long courseVideoId);
+
+    CourseVideoEntity getByCourseIdAndIndex(Long courseId, int videoIndex);
 
     Integer countByCourseId(Long courseId);
 
@@ -28,7 +30,7 @@ public interface CourseVideoRepository {
 
     void deleteByCourseId(Long courseId);
 
-    Optional<CourseVideo> findByCourseIdAndPrevIndex(Long courseId, int videoIndex);
+    Optional<CourseVideoEntity> findByCourseIdAndPrevIndex(Long courseId, int videoIndex);
 
     LastVideoInfo getLastInfoByCourseId(Long courseId);
 

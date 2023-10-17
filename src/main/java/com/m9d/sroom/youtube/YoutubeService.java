@@ -1,20 +1,20 @@
 package com.m9d.sroom.youtube;
 
-import com.m9d.sroom.common.dto.Playlist;
-import com.m9d.sroom.common.dto.Video;
+import com.m9d.sroom.common.entity.PlaylistEntity;
+import com.m9d.sroom.common.entity.VideoEntity;
 import com.m9d.sroom.common.repository.video.VideoRepository;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.youtube.api.YoutubeApi;
 import com.m9d.sroom.youtube.resource.PlaylistItemReq;
 import com.m9d.sroom.youtube.resource.PlaylistReq;
 import com.m9d.sroom.youtube.resource.VideoReq;
-import com.m9d.sroom.youtube.vo.global.ThumbnailVo;
-import com.m9d.sroom.youtube.vo.playlist.PlaylistItemVo;
-import com.m9d.sroom.youtube.vo.playlist.PlaylistVo;
-import com.m9d.sroom.youtube.vo.playlistitem.PlaylistVideoItemVo;
-import com.m9d.sroom.youtube.vo.playlistitem.PlaylistVideoVo;
-import com.m9d.sroom.youtube.vo.video.VideoItemVo;
-import com.m9d.sroom.youtube.vo.video.VideoVo;
+import com.m9d.sroom.youtube.dto.global.ThumbnailDto;
+import com.m9d.sroom.youtube.dto.playlist.PlaylistItemDto;
+import com.m9d.sroom.youtube.dto.playlist.PlaylistDto;
+import com.m9d.sroom.youtube.dto.playlistitem.PlaylistVideoItemDto;
+import com.m9d.sroom.youtube.dto.playlistitem.PlaylistVideoDto;
+import com.m9d.sroom.youtube.dto.video.VideoItemDto;
+import com.m9d.sroom.youtube.dto.video.VideoDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
@@ -77,23 +77,23 @@ public class YoutubeService {
     public static final String JSONNODE_TYPE_PLAYLIST = "youtube#playlist";
     public static final String JSONNODE_TYPE_VIDEO = "youtube#video";
 
-    public Playlist getPlaylistWithBlocking(String playlistCode) {
-        Mono<PlaylistVo> playlistVoMono = youtubeApi.getPlaylistVo(PlaylistReq.builder()
+    public PlaylistEntity getPlaylistWithBlocking(String playlistCode) {
+        Mono<PlaylistDto> playlistVoMono = youtubeApi.getPlaylistVo(PlaylistReq.builder()
                 .playlistCode(playlistCode)
                 .build());
 
         return getPlaylistFromMono(playlistVoMono);
     }
 
-    public Video getVideoWithBlocking(String videoCode) {
-        Mono<VideoVo> videoVoMono = youtubeApi.getVideoVo(VideoReq.builder()
+    public VideoEntity getVideoWithBlocking(String videoCode) {
+        Mono<VideoDto> videoVoMono = youtubeApi.getVideoVo(VideoReq.builder()
                 .videoCode(videoCode)
                 .build());
         return getVideoFromMono(videoVoMono);
     }
 
-    public PlaylistVideoVo getPlaylistItemWithBlocking(String playlistCode, String nextToken, int limit) {
-        Mono<PlaylistVideoVo> playlistVideoVoMono = youtubeApi.getPlaylistVideoVo(PlaylistItemReq.builder()
+    public PlaylistVideoDto getPlaylistItemWithBlocking(String playlistCode, String nextToken, int limit) {
+        Mono<PlaylistVideoDto> playlistVideoVoMono = youtubeApi.getPlaylistVideoVo(PlaylistItemReq.builder()
                 .playlistCode(playlistCode)
                 .nextPageToken(nextToken)
                 .limit(limit)
@@ -101,22 +101,22 @@ public class YoutubeService {
         return safeGetVo(playlistVideoVoMono);
     }
 
-    public Playlist getPlaylistFromMono(Mono<PlaylistVo> playlistVoMono) {
-        PlaylistItemVo itemVo = safeGetVo(playlistVoMono).getItems().get(FIRST_INDEX);
+    public PlaylistEntity getPlaylistFromMono(Mono<PlaylistDto> playlistVoMono) {
+        PlaylistItemDto itemVo = safeGetVo(playlistVoMono).getItems().get(FIRST_INDEX);
 
-        return Playlist.builder()
+        return PlaylistEntity.builder()
                 .playlistCode(itemVo.getId())
                 .thumbnail(selectThumbnailInVo(itemVo.getSnippet().getThumbnails()))
                 .title(itemVo.getSnippet().getTitle())
                 .channel(itemVo.getSnippet().getChannelTitle())
                 .description(itemVo.getSnippet().getDescription())
-                .publishedAt(dateUtil.convertISOToTimestamp(itemVo.getSnippet().getPublishedAt()))
+                .publishedAt(DateUtil.convertISOToTimestamp(itemVo.getSnippet().getPublishedAt()))
                 .videoCount(itemVo.getContentDetails().getItemCount())
                 .build();
     }
 
-    public Video getVideoFromMono(Mono<VideoVo> videoVoMono) throws IndexOutOfBoundsException {
-        VideoItemVo itemVo = safeGetVo(videoVoMono).getItems().get(FIRST_INDEX);
+    public VideoEntity getVideoFromMono(Mono<VideoDto> videoVoMono) throws IndexOutOfBoundsException {
+        VideoItemDto itemVo = safeGetVo(videoVoMono).getItems().get(FIRST_INDEX);
 
         String language;
         if (itemVo.getSnippet().getDefaultAudioLanguage() != null) {
@@ -130,7 +130,7 @@ public class YoutubeService {
             membership = true;
         }
 
-        return Video.builder()
+        return VideoEntity.builder()
                 .videoCode(itemVo.getId())
                 .title(itemVo.getSnippet().getTitle())
                 .channel(itemVo.getSnippet().getChannelTitle())
@@ -160,31 +160,31 @@ public class YoutubeService {
         return firstTwoCharacters.equals(PLAYLIST_CODE_INDICATOR);
     }
 
-    public String selectThumbnailInVo(ThumbnailVo thumbnailVo) {
+    public String selectThumbnailInVo(ThumbnailDto thumbnailDto) {
         String selectedThumbnailUrl = "";
 
 
-        if (thumbnailVo.getMedium() != null) {
-            selectedThumbnailUrl = thumbnailVo.getMedium().getUrl();
+        if (thumbnailDto.getMedium() != null) {
+            selectedThumbnailUrl = thumbnailDto.getMedium().getUrl();
         }
 
-        if (thumbnailVo.getMaxres() != null) {
-            return thumbnailVo.getMaxres().getUrl();
+        if (thumbnailDto.getMaxres() != null) {
+            return thumbnailDto.getMaxres().getUrl();
         }
 
         return selectedThumbnailUrl;
     }
 
-    public boolean isPrivacyStatusUnusable(PlaylistVideoItemVo itemVo) {
+    public boolean isPrivacyStatusUnusable(PlaylistVideoItemDto itemVo) {
         String privacyStatus = itemVo.getStatus().getPrivacyStatus();
         return privacyStatus.equals(JSONNODE_PRIVATE) || privacyStatus.equals(JSONNODE_UNSPECIFIED);
     }
 
     @Transactional
-    public Video saveOrUpdateVideo(String videoCode, Video video) {
-        Optional<Video> videoOptional = videoRepository.findByCode(videoCode);
+    public VideoEntity saveOrUpdateVideo(String videoCode, VideoEntity video) {
+        Optional<VideoEntity> videoOptional = videoRepository.findByCode(videoCode);
         if (videoOptional.isPresent()) {
-            Video videoOriginal = videoOptional.get();
+            VideoEntity videoOriginal = videoOptional.get();
             video.setAccumulatedRating(videoOriginal.getAccumulatedRating());
             video.setSummaryId(videoOriginal.getSummaryId());
             video.setReviewCount(videoOriginal.getReviewCount());

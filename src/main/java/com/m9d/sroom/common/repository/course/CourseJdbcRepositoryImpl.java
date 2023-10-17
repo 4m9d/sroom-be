@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.course;
 
-import com.m9d.sroom.common.dto.Course;
+import com.m9d.sroom.common.entity.CourseEntity;
 import com.m9d.sroom.lecture.dto.response.CourseBrief;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -18,7 +18,7 @@ public class CourseJdbcRepositoryImpl implements CourseRepository {
     }
 
     @Override
-    public Course save(Course course) {
+    public CourseEntity save(CourseEntity course) {
         jdbcTemplate.update(CourseRepositorySql.SAVE,
                 course.getMemberId(),
                 course.getCourseTitle(),
@@ -33,12 +33,12 @@ public class CourseJdbcRepositoryImpl implements CourseRepository {
     }
 
     @Override
-    public Course getById(Long courseId) {
-        return jdbcTemplate.queryForObject(CourseRepositorySql.GET_BY_ID, Course.getRowMapper(), courseId);
+    public CourseEntity getById(Long courseId) {
+        return jdbcTemplate.queryForObject(CourseRepositorySql.GET_BY_ID, CourseEntity.getRowMapper(), courseId);
     }
 
     @Override
-    public Course updateById(Long courseId, Course course) {
+    public CourseEntity updateById(Long courseId, CourseEntity course) {
         jdbcTemplate.update(CourseRepositorySql.UPDATE_BY_ID,
                 course.getMemberId(),
                 course.getCourseTitle(),
@@ -62,8 +62,8 @@ public class CourseJdbcRepositoryImpl implements CourseRepository {
     }
 
     @Override
-    public List<Course> getLatestOrderByMemberId(Long memberId) {
-        return jdbcTemplate.query(CourseRepositorySql.GET_LATEST_ORDER_BY_MEMBER_ID, Course.getRowMapper(), memberId);
+    public List<CourseEntity> getLatestOrderByMemberId(Long memberId) {
+        return jdbcTemplate.query(CourseRepositorySql.GET_LATEST_ORDER_BY_MEMBER_ID, CourseEntity.getRowMapper(), memberId);
     }
 
     @Override

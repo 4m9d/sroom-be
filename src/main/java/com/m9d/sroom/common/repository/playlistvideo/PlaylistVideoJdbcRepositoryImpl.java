@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.playlistvideo;
 
-import com.m9d.sroom.common.dto.PlaylistVideo;
+import com.m9d.sroom.common.entity.PlaylistVideoEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -14,7 +14,7 @@ public class PlaylistVideoJdbcRepositoryImpl implements PlaylistVideoRepository 
     }
 
     @Override
-    public PlaylistVideo save(PlaylistVideo playlistVideo) {
+    public PlaylistVideoEntity save(PlaylistVideoEntity playlistVideo) {
         jdbcTemplate.update(PlaylistVideoRepositorySql.SAVE,
                 playlistVideo.getPlaylistId(),
                 playlistVideo.getVideoId(),
@@ -22,8 +22,8 @@ public class PlaylistVideoJdbcRepositoryImpl implements PlaylistVideoRepository 
         return getById(jdbcTemplate.queryForObject(PlaylistVideoRepositorySql.GET_LAST_ID, Long.class));
     }
 
-    private PlaylistVideo getById(Long playlistVideoId) {
-        return jdbcTemplate.queryForObject(PlaylistVideoRepositorySql.GET_BY_ID, PlaylistVideo.getMapper(), playlistVideoId);
+    private PlaylistVideoEntity getById(Long playlistVideoId) {
+        return jdbcTemplate.queryForObject(PlaylistVideoRepositorySql.GET_BY_ID, PlaylistVideoEntity.getMapper(), playlistVideoId);
     }
 
     @Override

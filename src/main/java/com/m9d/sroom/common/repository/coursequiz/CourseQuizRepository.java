@@ -1,21 +1,21 @@
 package com.m9d.sroom.common.repository.coursequiz;
 
 
-import com.m9d.sroom.common.dto.CourseQuiz;
+import com.m9d.sroom.common.entity.CourseQuizEntity;
 
 import java.util.Optional;
 
 public interface CourseQuizRepository {
 
-    CourseQuiz save(CourseQuiz courseQuiz);
+    CourseQuizEntity save(CourseQuizEntity courseQuiz);
 
-    CourseQuiz getById(Long courseQuizId);
+    CourseQuizEntity getById(Long courseQuizId);
 
-    Optional<CourseQuiz> findById(Long courseQuizId);
+    Optional<CourseQuizEntity> findById(Long courseQuizId);
 
-    CourseQuiz updateById(Long courseQuizId, CourseQuiz courseQuiz);
+    CourseQuizEntity updateById(Long courseQuizId, CourseQuizEntity courseQuiz);
 
-    Optional<CourseQuiz> findByQuizIdAndCourseVideoId(Long quizId, Long courseVideoId);
+    Optional<CourseQuizEntity> findByQuizIdAndCourseVideoId(Long quizId, Long courseVideoId);
 
     void deleteByCourseId(Long courseId);
 }

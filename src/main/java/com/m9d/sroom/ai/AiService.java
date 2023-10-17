@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.m9d.sroom.ai.vo.MaterialResultsVo;
 import com.m9d.sroom.ai.vo.MaterialVo;
-import com.m9d.sroom.material.service.MaterialService;
+import com.m9d.sroom.material.MaterialService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

@@ -1,26 +1,28 @@
 package com.m9d.sroom.common.repository.playlist;
-import com.m9d.sroom.common.dto.Playlist;
+import com.m9d.sroom.common.entity.PlaylistEntity;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
 public interface PlaylistRepository {
 
-    Playlist save(Playlist playlist);
+    PlaylistEntity save(PlaylistEntity playlist);
 
-    Playlist getById(Long playlistId);
+    PlaylistEntity getById(Long playlistId);
 
-    Optional<Playlist> findByCode(String code);
+    Optional<PlaylistEntity> findByCode(String code);
 
-    Playlist updateById(Long playlistId, Playlist playlist);
+    PlaylistEntity getByCode(String code);
 
-    List<Playlist> getTopRatedOrder(int limit);
+    PlaylistEntity updateById(Long playlistId, PlaylistEntity playlist);
+
+    List<PlaylistEntity> getTopRatedOrder(int limit);
 
     HashSet<String> getCodeSetByMemberId(Long memberId);
 
-    List<Playlist> getRandomByChannel(String channel, int limit);
+    List<PlaylistEntity> getRandomByChannel(String channel, int limit);
 
-    List<Playlist> getViewCountOrderByChannel(String channel, int limit);
+    List<PlaylistEntity> getViewCountOrderByChannel(String channel, int limit);
 
-    List<Playlist> getLatestOrderByChannel(String channel, int limit);
+    List<PlaylistEntity> getLatestOrderByChannel(String channel, int limit);
 }

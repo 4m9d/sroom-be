@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.review;
 
-import com.m9d.sroom.common.dto.Review;
+import com.m9d.sroom.common.entity.ReviewEntity;
 import com.m9d.sroom.common.repository.lecture.LectureRepositorySql;
 import com.m9d.sroom.lecture.dto.response.ReviewBrief;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -18,7 +18,7 @@ public class ReviewJdbcRepositoryImpl implements ReviewRepository {
     }
 
     @Override
-    public Review save(Review review) {
+    public ReviewEntity save(ReviewEntity review) {
         jdbcTemplate.update(ReviewRepositorySql.SAVE,
                 review.getSourceCode(),
                 review.getMemberId(),
@@ -30,13 +30,13 @@ public class ReviewJdbcRepositoryImpl implements ReviewRepository {
     }
 
     @Override
-    public Review getById(Long reviewId) {
-        return jdbcTemplate.queryForObject(ReviewRepositorySql.GET_BY_ID, Review.getRowmapper(), reviewId);
+    public ReviewEntity getById(Long reviewId) {
+        return jdbcTemplate.queryForObject(ReviewRepositorySql.GET_BY_ID, ReviewEntity.getRowmapper(), reviewId);
     }
 
     @Override
-    public Review getByLectureId(Long lectureId) {
-        return jdbcTemplate.queryForObject(ReviewRepositorySql.GET_BY_LECTURE_ID, Review.getRowmapper(), lectureId);
+    public ReviewEntity getByLectureId(Long lectureId) {
+        return jdbcTemplate.queryForObject(ReviewRepositorySql.GET_BY_LECTURE_ID, ReviewEntity.getRowmapper(), lectureId);
     }
 
     @Override

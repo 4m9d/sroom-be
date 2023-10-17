@@ -1,6 +1,6 @@
 package com.m9d.sroom.course;
 
-import com.m9d.sroom.common.dto.*;
+import com.m9d.sroom.common.entity.*;
 import com.m9d.sroom.course.dto.VideoInfoForSchedule;
 import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.course.dto.response.CourseDetail;
@@ -24,8 +24,8 @@ import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.youtube.api.YoutubeApi;
 import com.m9d.sroom.youtube.YoutubeService;
 import com.m9d.sroom.youtube.resource.PlaylistItemReq;
-import com.m9d.sroom.youtube.vo.playlistitem.PlaylistVideoItemVo;
-import com.m9d.sroom.youtube.vo.playlistitem.PlaylistVideoVo;
+import com.m9d.sroom.youtube.dto.playlistitem.PlaylistVideoItemDto;
+import com.m9d.sroom.youtube.dto.playlistitem.PlaylistVideoDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -77,7 +77,7 @@ public class CourseService {
 
 
     public MyCourses getMyCourses(Long memberId) {
-        List<Course> latestCourseList = courseRepository.getLatestOrderByMemberId(memberId);
+        List<CourseEntity> latestCourseList = courseRepository.getLatestOrderByMemberId(memberId);
         List<CourseInfo> courseInfoList = getCourseInfoList(latestCourseList);
         int unfinishedCourseCount = getUnfinishedCourseCount(latestCourseList);
         int courseCount = latestCourseList.size();
@@ -90,23 +90,23 @@ public class CourseService {
                 .build();
     }
 
-    public List<CourseInfo> getCourseInfoList(List<Course> latestCourseList) {
+    public List<CourseInfo> getCourseInfoList(List<CourseEntity> latestCourseList) {
         List<CourseInfo> courseInfoList = new ArrayList<>();
 
-        for (Course course : latestCourseList) {
+        for (CourseEntity course : latestCourseList) {
             Long courseId = course.getCourseId();
-            List<CourseVideo> courseVideoList = courseVideoRepository.getListByCourseId(courseId);
+            List<CourseVideoEntity> courseVideoList = courseVideoRepository.getListByCourseId(courseId);
             int progress;
             int videoCount = courseVideoList.size();
             int completedVideoCount = (int) courseVideoList.stream()
-                    .filter(CourseVideo::isComplete)
+                    .filter(CourseVideoEntity::isComplete)
                     .count();
 
             if (videoCount > 1) {
                 progress = (int) ((double) completedVideoCount / videoCount * 100);
             }
             else {
-                CourseVideo courseVideo = courseVideoList.get(0);
+                CourseVideoEntity courseVideo = courseVideoList.get(0);
                 progress = (courseVideo.getMaxDuration() * 100) /
                         videoRepository.getById(courseVideo.getVideoId()).getDuration();
             }
@@ -128,7 +128,7 @@ public class CourseService {
         return courseInfoList;
     }
 
-    public int getUnfinishedCourseCount(List<Course> courseInfoList) {
+    public int getUnfinishedCourseCount(List<CourseEntity> courseInfoList) {
 
         int unfinishedCourseCount = 0;
 
@@ -141,7 +141,7 @@ public class CourseService {
         return unfinishedCourseCount;
     }
 
-    public void requestToFastApi(Video video) {
+    public void requestToFastApi(VideoEntity video) {
         log.info("request to AI server successfully. videoCode = {}, title = {}", video.getVideoCode(), video.getTitle());
 
         if (video.getMaterialStatus() == null || video.getMaterialStatus() == MaterialStatus.NO_REQUEST.getValue()) {
@@ -152,11 +152,11 @@ public class CourseService {
     }
 
     @Transactional
-    public EnrolledCourseInfo saveCourseWithPlaylist(Long memberId, NewLecture newLecture, boolean useSchedule, Playlist playlist) {
+    public EnrolledCourseInfo saveCourseWithPlaylist(Long memberId, NewLecture newLecture, boolean useSchedule, PlaylistEntity playlist) {
         log.info("course inserted. member = {}, lectureCode = {}", memberId, newLecture.getLectureCode());
-        Course course = saveCourse(memberId, newLecture, useSchedule, playlist);
+        CourseEntity course = saveCourse(memberId, newLecture, useSchedule, playlist);
 
-        Lecture lecture = lectureRepository.save(Lecture.builder()
+        LectureEntity lecture = lectureRepository.save(LectureEntity.builder()
                 .memberId(memberId)
                 .courseId(course.getCourseId())
                 .sourceId(playlist.getPlaylistId())
@@ -174,7 +174,7 @@ public class CourseService {
                 .build();
     }
 
-    private Course saveCourse(Long memberId, NewLecture newLecture, boolean useSchedule, Playlist playlist) {
+    private CourseEntity saveCourse(Long memberId, NewLecture newLecture, boolean useSchedule, PlaylistEntity playlist) {
         Integer weeks = null;
         Integer dailyTargetTime = null;
         Date expectedEndDate = null;
@@ -186,7 +186,7 @@ public class CourseService {
             dailyTargetTime = newLecture.getDailyTargetTime();
         }
 
-        return courseRepository.save(Course.builder()
+        return courseRepository.save(CourseEntity.builder()
                 .memberId(memberId)
                 .courseTitle(playlist.getTitle())
                 .weeks(weeks)
@@ -207,13 +207,13 @@ public class CourseService {
         }
 
         int videoIndex = 1;
-        for (Video video : videoRepository.getListByPlaylistId(playlistId)) {
+        for (VideoEntity video : videoRepository.getListByPlaylistId(playlistId)) {
             if (useSchedule && videoCount > newLecture.getScheduling().get(week)) {
                 week++;
                 section++;
                 videoCount = 1;
             }
-            courseVideoRepository.save(CourseVideo.builder()
+            courseVideoRepository.save(CourseVideoEntity.builder()
                     .memberId(memberId)
                     .courseId(courseId)
                     .lectureId(lectureId)
@@ -230,7 +230,7 @@ public class CourseService {
     @Transactional
     public EnrolledCourseInfo saveCourseWithVideo(Long memberId, NewLecture newLecture, boolean useSchedule) {
         log.info("course inserted. member = {}, lectureCode = {}", memberId, newLecture.getLectureCode());
-        Video video = getVideoAndRequestToAiServer(newLecture.getLectureCode());
+        VideoEntity video = getVideoAndRequestToAiServer(newLecture.getLectureCode());
 
         Date expectedEndDate = null;
         Integer dailyTargetTime = null;
@@ -245,7 +245,7 @@ public class CourseService {
             section = ENROLL_DEFAULT_SECTION_SCHEDULE;
         }
 
-        Course course = courseRepository.save(Course.builder()
+        CourseEntity course = courseRepository.save(CourseEntity.builder()
                 .memberId(memberId)
                 .courseTitle(video.getTitle())
                 .duration(video.getDuration())
@@ -256,7 +256,7 @@ public class CourseService {
                 .dailyTargetTime(dailyTargetTime)
                 .build());
 
-        Lecture lecture = lectureRepository.save(Lecture.builder()
+        LectureEntity lecture = lectureRepository.save(LectureEntity.builder()
                 .memberId(memberId)
                 .courseId(course.getCourseId())
                 .sourceId(video.getVideoId())
@@ -265,7 +265,7 @@ public class CourseService {
                 .lectureIndex(ENROLL_LECTURE_INDEX)
                 .build());
 
-        courseVideoRepository.save(CourseVideo.builder()
+        courseVideoRepository.save(CourseVideoEntity.builder()
                 .memberId(memberId)
                 .courseId(course.getCourseId())
                 .videoId(video.getVideoId())
@@ -290,14 +290,14 @@ public class CourseService {
         }
     }
 
-    public Playlist getPlaylistWithUpdate(String playlistCode) {
-        Optional<Playlist> playlistOptional = playlistRepository.findByCode(playlistCode);
+    public PlaylistEntity getPlaylistWithUpdate(String playlistCode) {
+        Optional<PlaylistEntity> playlistOptional = playlistRepository.findByCode(playlistCode);
 
         if (playlistOptional.isPresent() &&
                 dateUtil.validateExpiration(playlistOptional.get().getUpdatedAt(), PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
             return playlistOptional.get();
         } else {
-            Playlist playlist = youtubeService.getPlaylistWithBlocking(playlistCode);
+            PlaylistEntity playlist = youtubeService.getPlaylistWithBlocking(playlistCode);
             if (playlistOptional.isEmpty()) {
                 playlist = playlistRepository.save(playlist);
             } else {
@@ -312,7 +312,7 @@ public class CourseService {
 
     }
 
-    public int putPlaylistItemAndGetPlaylistDuration(Playlist playlist) {
+    public int putPlaylistItemAndGetPlaylistDuration(PlaylistEntity playlist) {
         String nextPageToken = null;
         int playlistDuration = 0;
         int pageCount = (int) Math.ceil((double) playlist.getVideoCount() / DEFAULT_INDEX_COUNT);
@@ -326,27 +326,27 @@ public class CourseService {
     }
 
     private PlaylistPageResult putPlaylistItemPerPage(String lectureCode, Long playlistId, String nextPageToken) {
-        Mono<PlaylistVideoVo> playlistVideoVoMono = youtubeApi.getPlaylistVideoVo(PlaylistItemReq.builder()
+        Mono<PlaylistVideoDto> playlistVideoVoMono = youtubeApi.getPlaylistVideoVo(PlaylistItemReq.builder()
                 .playlistCode(lectureCode)
                 .limit(DEFAULT_INDEX_COUNT)
                 .nextPageToken(nextPageToken)
                 .build());
-        PlaylistVideoVo playlistVideoVo = youtubeService.safeGetVo(playlistVideoVoMono);
+        PlaylistVideoDto playlistVideoVo = youtubeService.safeGetVo(playlistVideoVoMono);
 
-        List<Video> videoList = getVideoList(playlistVideoVo);
-        int totalDurationPerPage = videoList.stream().mapToInt(Video::getDuration).sum();
+        List<VideoEntity> videoList = getVideoList(playlistVideoVo);
+        int totalDurationPerPage = videoList.stream().mapToInt(VideoEntity::getDuration).sum();
         savePlaylistVideoList(playlistId, videoList, playlistVideoVo.getItems());
 
         return new PlaylistPageResult(playlistVideoVo.getNextPageToken(), totalDurationPerPage);
     }
 
-    private List<Video> getVideoList(PlaylistVideoVo playlistVideoVo) {
-        List<CompletableFuture<Video>> futureVideos = new ArrayList<>();
-        for (PlaylistVideoItemVo itemVo : playlistVideoVo.getItems()) {
+    private List<VideoEntity> getVideoList(PlaylistVideoDto playlistVideoVo) {
+        List<CompletableFuture<VideoEntity>> futureVideos = new ArrayList<>();
+        for (PlaylistVideoItemDto itemVo : playlistVideoVo.getItems()) {
             if (youtubeService.isPrivacyStatusUnusable(itemVo)) {
                 continue;
             }
-            CompletableFuture<Video> videoFuture = getVideoWithUpdateAsync(itemVo.getSnippet().getResourceId().getVideoId())
+            CompletableFuture<VideoEntity> videoFuture = getVideoWithUpdateAsync(itemVo.getSnippet().getResourceId().getVideoId())
                     .thenApply(video -> {
                         requestToFastApi(video);
                         return video;
@@ -354,16 +354,16 @@ public class CourseService {
             futureVideos.add(videoFuture);
         }
         CompletableFuture<Void> allFutures = CompletableFuture.allOf(futureVideos.toArray(new CompletableFuture[0]));
-        CompletableFuture<List<Video>> allVideoFuture = allFutures.thenApply(v ->
+        CompletableFuture<List<VideoEntity>> allVideoFuture = allFutures.thenApply(v ->
                 futureVideos.stream()
                         .map(CompletableFuture::join)
                         .collect(Collectors.toList()));
         return allVideoFuture.join();
     }
 
-    public void savePlaylistVideoList(Long playlistId, List<Video> videos, List<PlaylistVideoItemVo> items) {
+    public void savePlaylistVideoList(Long playlistId, List<VideoEntity> videos, List<PlaylistVideoItemDto> items) {
         for (int i = 0; i < videos.size(); i++) {
-            playlistVideoRepository.save(PlaylistVideo.builder()
+            playlistVideoRepository.save(PlaylistVideoEntity.builder()
                     .playlistId(playlistId)
                     .videoId(videos
                             .get(i)
@@ -377,15 +377,15 @@ public class CourseService {
     }
 
     @Transactional
-    public EnrolledCourseInfo addPlaylistInCourse(Long courseId, Playlist playlist) {
-        Course course = courseRepository.getById(courseId);
+    public EnrolledCourseInfo addPlaylistInCourse(Long courseId, PlaylistEntity playlist) {
+        CourseEntity course = courseRepository.getById(courseId);
         int lastLectureIndex = lectureRepository.getListByCourseId(course.getCourseId())
                 .stream()
-                .mapToInt(Lecture::getLectureIndex)
+                .mapToInt(LectureEntity::getLectureIndex)
                 .max()
                 .orElse(0);
 
-        Lecture lecture = lectureRepository.save(Lecture.builder()
+        LectureEntity lecture = lectureRepository.save(LectureEntity.builder()
                 .courseId(course.getCourseId())
                 .memberId(course.getMemberId())
                 .sourceId(playlist.getPlaylistId())
@@ -408,14 +408,14 @@ public class CourseService {
                 .build();
     }
 
-    private void saveCourseVideoList(Course course, Long playlistId, Long lectureId, int lectureIndex) {
+    private void saveCourseVideoList(CourseEntity course, Long playlistId, Long lectureId, int lectureIndex) {
         int videoIndex = courseVideoRepository.getListByCourseId(course.getCourseId()).stream()
-                .mapToInt(CourseVideo::getVideoIndex)
+                .mapToInt(CourseVideoEntity::getVideoIndex)
                 .max()
                 .orElse(0) + 1;
 
-        for (Video video : videoRepository.getListByPlaylistId(playlistId)) {
-            courseVideoRepository.save(CourseVideo.builder()
+        for (VideoEntity video : videoRepository.getListByPlaylistId(playlistId)) {
+            courseVideoRepository.save(CourseVideoEntity.builder()
                     .memberId(course.getMemberId())
                     .courseId(course.getCourseId())
                     .videoId(video.getVideoId())
@@ -428,24 +428,24 @@ public class CourseService {
         }
     }
 
-    public Video getVideoAndRequestToAiServer(String videoCode) {
-        Video video = getVideoWithUpdateAsync(videoCode).join();
+    public VideoEntity getVideoAndRequestToAiServer(String videoCode) {
+        VideoEntity video = getVideoWithUpdateAsync(videoCode).join();
         requestToFastApi(video);
         return video;
     }
 
     @Async
-    public CompletableFuture<Video> getVideoWithUpdateAsync(String videoCode) {
-        Optional<Video> videoOptional = videoRepository.findByCode(videoCode);
+    public CompletableFuture<VideoEntity> getVideoWithUpdateAsync(String videoCode) {
+        Optional<VideoEntity> videoOptional = videoRepository.findByCode(videoCode);
         log.debug("optional status = {}, videoCode = {}", videoOptional.isPresent(), videoCode);
-        CompletableFuture<Video> result;
+        CompletableFuture<VideoEntity> result;
 
         if (videoOptional.isPresent() &&
                 dateUtil.validateExpiration(videoOptional.get().getUpdatedAt(), VIDEO_UPDATE_THRESHOLD_HOURS)) {
             return CompletableFuture.completedFuture(videoOptional.get());
         } else {
             result = CompletableFuture.supplyAsync(() -> {
-                Video video = youtubeService.getVideoWithBlocking(videoCode);
+                VideoEntity video = youtubeService.getVideoWithBlocking(videoCode);
                 return youtubeService.saveOrUpdateVideo(videoCode, video);
             });
         }
@@ -453,14 +453,14 @@ public class CourseService {
     }
 
     @Transactional
-    public EnrolledCourseInfo addVideoInCourse(Long courseId, Video video) {
-        Course course = courseRepository.getById(courseId);
+    public EnrolledCourseInfo addVideoInCourse(Long courseId, VideoEntity video) {
+        CourseEntity course = courseRepository.getById(courseId);
         int lastLectureIndex = lectureRepository.getListByCourseId(course.getCourseId()).stream()
-                .mapToInt(Lecture::getLectureIndex)
+                .mapToInt(LectureEntity::getLectureIndex)
                 .max()
                 .orElse(0);
 
-        Lecture lecture = lectureRepository.save(Lecture.builder()
+        LectureEntity lecture = lectureRepository.save(LectureEntity.builder()
                 .memberId(course.getMemberId())
                 .courseId(course.getCourseId())
                 .sourceId(video.getVideoId())
@@ -484,13 +484,13 @@ public class CourseService {
                 .build();
     }
 
-    private void saveCourseVideo(Course course, Video video, Long lectureId, int lectureIndex) {
+    private void saveCourseVideo(CourseEntity course, VideoEntity video, Long lectureId, int lectureIndex) {
         int lastVideoIndex = courseVideoRepository.getListByCourseId(course.getCourseId()).stream()
-                .mapToInt(CourseVideo::getVideoIndex)
+                .mapToInt(CourseVideoEntity::getVideoIndex)
                 .max()
                 .orElse(0);
 
-        courseVideoRepository.save(CourseVideo.builder()
+        courseVideoRepository.save(CourseVideoEntity.builder()
                 .memberId(course.getMemberId())
                 .courseId(course.getCourseId())
                 .videoId(video.getVideoId())
@@ -502,7 +502,7 @@ public class CourseService {
                 .build());
     }
 
-    private void scheduleVideos(Course course) {
+    private void scheduleVideos(CourseEntity course) {
         Date startDate = course.getStartDate();
         int dailyTargetTimeForSecond = course.getDailyTargetTime() * SECONDS_IN_MINUTE;
         int weeklyTargetTimeForSecond = dailyTargetTimeForSecond * DAYS_IN_WEEK;
@@ -544,9 +544,9 @@ public class CourseService {
             throw new CourseNotMatchException();
         }
 
-        Course course = courseRepository.getById(courseId);
+        CourseEntity course = courseRepository.getById(courseId);
         Set<String> channels = lectureRepository.getListByCourseId(courseId).stream()
-                .map(Lecture::getChannel)
+                .map(LectureEntity::getChannel)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
@@ -589,11 +589,11 @@ public class CourseService {
     }
 
     public boolean validateCourseId(Long memberId, Long courseId) {
-        Course course = courseRepository.getById(courseId);
+        CourseEntity course = courseRepository.getById(courseId);
         return memberId.equals(course.getMemberId());
     }
 
-    private List<Section> getSectionList(Course course) {
+    private List<Section> getSectionList(CourseEntity course) {
         List<Section> sectionList = new ArrayList<>();
         if (course.getWeeks() == 0) {
             sectionList.add(getSection(course.getCourseId(), 0));

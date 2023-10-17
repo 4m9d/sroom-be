@@ -27,6 +27,7 @@ class CourseVideoRepositorySql {
         member_id, last_view_time, max_duration, lecture_id
         FROM COURSEVIDEO
         WHERE course_id = ?
+        ORDER BY video_index;
     """
 
     public static final String GET_LIST_BY_LECTURE_ID = """
@@ -35,6 +36,14 @@ class CourseVideoRepositorySql {
         member_id, last_view_time, max_duration, lecture_id
         FROM COURSEVIDEO
         WHERE lecture_id = ?
+    """
+
+    public static final String GET_BY_COURSE_ID_AND_INDEX = """
+        SELECT
+        course_video_id, course_id, video_id, section, video_index, start_time, is_complete, summary_id, lecture_index,
+        member_id, last_view_time, max_duration, lecture_id
+        FROM COURSEVIDEO
+        WHERE course_id = ? AND video_index = ?
     """
 
     public static final String COOUNT_BY_COURSE_ID = """

@@ -4,10 +4,10 @@ import com.google.gson.Gson;
 import com.m9d.sroom.lecture.exception.LectureNotFoundException;
 import com.m9d.sroom.youtube.YoutubeService;
 import com.m9d.sroom.youtube.resource.YoutubeReq;
-import com.m9d.sroom.youtube.vo.playlist.PlaylistVo;
-import com.m9d.sroom.youtube.vo.playlistitem.PlaylistVideoVo;
-import com.m9d.sroom.youtube.vo.search.SearchVo;
-import com.m9d.sroom.youtube.vo.video.VideoVo;
+import com.m9d.sroom.youtube.dto.playlist.PlaylistDto;
+import com.m9d.sroom.youtube.dto.playlistitem.PlaylistVideoDto;
+import com.m9d.sroom.youtube.dto.search.SearchDto;
+import com.m9d.sroom.youtube.dto.video.VideoDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -39,23 +39,23 @@ public class HttpUrlConnectionService implements YoutubeApi {
     }
 
     @Override
-    public Mono<SearchVo> getSearchVo(YoutubeReq resource) {
-        return getYoutubeVo(resource, SearchVo.class);
+    public Mono<SearchDto> getSearchVo(YoutubeReq resource) {
+        return getYoutubeVo(resource, SearchDto.class);
     }
 
     @Override
-    public Mono<VideoVo> getVideoVo(YoutubeReq resource) {
-        return getYoutubeVo(resource, VideoVo.class);
+    public Mono<VideoDto> getVideoVo(YoutubeReq resource) {
+        return getYoutubeVo(resource, VideoDto.class);
     }
 
     @Override
-    public Mono<PlaylistVo> getPlaylistVo(YoutubeReq resource) {
-        return getYoutubeVo(resource, PlaylistVo.class);
+    public Mono<PlaylistDto> getPlaylistVo(YoutubeReq resource) {
+        return getYoutubeVo(resource, PlaylistDto.class);
     }
 
     @Override
-    public Mono<PlaylistVideoVo> getPlaylistVideoVo(YoutubeReq resource) {
-        return getYoutubeVo(resource, PlaylistVideoVo.class);
+    public Mono<PlaylistVideoDto> getPlaylistVideoVo(YoutubeReq resource) {
+        return getYoutubeVo(resource, PlaylistVideoDto.class);
     }
 
     @Override

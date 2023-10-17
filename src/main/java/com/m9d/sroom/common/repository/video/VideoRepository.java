@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.video;
 
-import com.m9d.sroom.common.dto.Video;
+import com.m9d.sroom.common.entity.VideoEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -8,27 +8,27 @@ import java.util.Set;
 
 public interface VideoRepository {
 
-    Video save(Video video);
+    VideoEntity save(VideoEntity video);
 
-    Video getByCode(String videoCode);
+    VideoEntity getByCode(String videoCode);
 
-    Video getById(Long videoId);
+    VideoEntity getById(Long videoId);
 
-    Optional<Video> findByCode(String videoCode);
+    Optional<VideoEntity> findByCode(String videoCode);
 
-    List<Video> getTopRatedOrder(int limit);
+    List<VideoEntity> getTopRatedOrder(int limit);
 
-    Optional<Video> findById(Long videoId);
+    Optional<VideoEntity> findById(Long videoId);
 
-    Video updateById(Long videoId, Video video);
+    VideoEntity updateById(Long videoId, VideoEntity video);
 
-    List<Video> getListByPlaylistId(Long playlistId);
+    List<VideoEntity> getListByPlaylistId(Long playlistId);
 
     Set<String> getCodeSetByMemberId(Long memberId);
 
-    List<Video> getRandomByChannel(String channel, int limit);
+    List<VideoEntity> getRandomByChannel(String channel, int limit);
 
-    List<Video> getViewCountOrderByChannel(String channel, int limit);
+    List<VideoEntity> getViewCountOrderByChannel(String channel, int limit);
 
-    List<Video> getLatestOrderByChannel(String channel, int limit);
+    List<VideoEntity> getLatestOrderByChannel(String channel, int limit);
 }

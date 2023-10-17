@@ -1,6 +1,6 @@
 package com.m9d.sroom.review.service;
 
-import com.m9d.sroom.common.dto.*;
+import com.m9d.sroom.common.entity.*;
 import com.m9d.sroom.common.repository.coursevideo.CourseVideoRepository;
 import com.m9d.sroom.common.repository.lecture.LectureRepository;
 import com.m9d.sroom.common.repository.playlist.PlaylistRepository;
@@ -38,10 +38,10 @@ public class ReviewService {
 
     public LectureBriefList4Review getLectureList(Long memberId, Long courseId) {
 
-        List<Lecture> lectureList = lectureRepository.getListByCourseId(courseId);
+        List<LectureEntity> lectureList = lectureRepository.getListByCourseId(courseId);
         List<LectureBrief4Review> lectures = new ArrayList<>();
 
-        for(Lecture lecture : lectureList) {
+        for(LectureEntity lecture : lectureList) {
             if(lecture.getPlaylist()) {
                 lectures.add(getPlaylistLectureBrief4Review(lecture));
             }
@@ -58,12 +58,12 @@ public class ReviewService {
     @Transactional
     public ReviewSubmitResponse submitReview(Long memberId, Long lectureId, ReviewSubmitRequest reviewSubmitRequest) {
 
-        Lecture lecture = lectureRepository.getById(lectureId);
+        LectureEntity lecture = lectureRepository.getById(lectureId);
         String lectureCode = "";
 
         lectureCode = applyReview(lecture, reviewSubmitRequest);
 
-        Review review = Review.builder()
+        ReviewEntity review = ReviewEntity.builder()
                 .lectureId(lectureId)
                 .sourceCode(lectureCode)
                 .memberId(memberId)
@@ -81,13 +81,13 @@ public class ReviewService {
                 .build();
     }
 
-    LectureBrief4Review getPlaylistLectureBrief4Review(Lecture lecture) {
+    LectureBrief4Review getPlaylistLectureBrief4Review(LectureEntity lecture) {
 
         LectureBrief4Review videoCountData = getVideoCountData(lecture.getId());
-        Playlist playlist = playlistRepository.getById(lecture.getSourceId());
+        PlaylistEntity playlist = playlistRepository.getById(lecture.getSourceId());
         int progress = (videoCountData.getCompletedVideoCount() * 100) / videoCountData.getTotalVideoCount();
 
-        Review review = getReview(lecture);
+        ReviewEntity review = getReview(lecture);
         String submittedDate;
 
         if (review.getSubmittedDate() != null) {
@@ -114,17 +114,17 @@ public class ReviewService {
                 .build();
     }
 
-    LectureBrief4Review getVideoLectureBrief4Review(Lecture lecture) {
+    LectureBrief4Review getVideoLectureBrief4Review(LectureEntity lecture) {
 
-        CourseVideo courseVideo = courseVideoRepository.getListByLectureId(lecture.getId())
+        CourseVideoEntity courseVideo = courseVideoRepository.getListByLectureId(lecture.getId())
                 .get(0);
-        Video video = videoRepository.getById(lecture.getSourceId());
+        VideoEntity video = videoRepository.getById(lecture.getSourceId());
         int progress = (courseVideo.getMaxDuration() * 100) / video.getDuration();
 
         if(progress < 70 && courseVideo.isComplete())
             progress = 100;
 
-        Review review = getReview(lecture);
+        ReviewEntity review = getReview(lecture);
         String submittedDate;
 
         if (review.getSubmittedDate() != null) {
@@ -152,17 +152,17 @@ public class ReviewService {
 
     }
 
-    String applyReview(Lecture lecture, ReviewSubmitRequest reviewSubmitRequest) {
+    String applyReview(LectureEntity lecture, ReviewSubmitRequest reviewSubmitRequest) {
 
         String lectureCode = "";
 
         if (lecture.getPlaylist()) {
-            Playlist playlist = playlistRepository.getById(lecture.getSourceId());
+            PlaylistEntity playlist = playlistRepository.getById(lecture.getSourceId());
             lectureCode = playlist.getPlaylistCode();
             applyReviewToPlaylist(reviewSubmitRequest, playlist);
         }
         else {
-            Video video = videoRepository.getById(lecture.getSourceId());
+            VideoEntity video = videoRepository.getById(lecture.getSourceId());
             lectureCode = video.getVideoCode();
             applyReviewToVideo(reviewSubmitRequest, video);
         }
@@ -174,7 +174,7 @@ public class ReviewService {
         return lectureCode;
     }
 
-    void applyReviewToPlaylist(ReviewSubmitRequest reviewSubmitRequest, Playlist playlist) {
+    void applyReviewToPlaylist(ReviewSubmitRequest reviewSubmitRequest, PlaylistEntity playlist) {
 
         playlist.setReviewCount(playlist.getReviewCount() + 1);
         playlist.setAccumulatedRating(playlist.getAccumulatedRating() + reviewSubmitRequest.getSubmittedRating());
@@ -182,7 +182,7 @@ public class ReviewService {
         playlistRepository.updateById(playlist.getPlaylistId(), playlist);
     }
 
-    void applyReviewToVideo(ReviewSubmitRequest reviewSubmitRequest, Video video) {
+    void applyReviewToVideo(ReviewSubmitRequest reviewSubmitRequest, VideoEntity video) {
 
         video.setReviewCount(video.getReviewCount() + 1);
         video.setAccumulatedRating(video.getAccumulatedRating() + reviewSubmitRequest.getSubmittedRating());
@@ -190,8 +190,8 @@ public class ReviewService {
         videoRepository.updateById(video.getVideoId(), video);
     }
 
-    Review getReview(Lecture lecture) {
-        Review review = Review.builder().build();
+    ReviewEntity getReview(LectureEntity lecture) {
+        ReviewEntity review = ReviewEntity.builder().build();
 
         review.setSubmittedRating(null);
         review.setContent(null);
@@ -208,9 +208,9 @@ public class ReviewService {
     }
 
     LectureBrief4Review getVideoCountData(Long lectureId) {
-        List<CourseVideo> courseVideoList = courseVideoRepository.getListByLectureId(lectureId);
+        List<CourseVideoEntity> courseVideoList = courseVideoRepository.getListByLectureId(lectureId);
         int completedVideoCount = (int) courseVideoList.stream()
-                .filter(CourseVideo::isComplete)
+                .filter(CourseVideoEntity::isComplete)
                 .count();
 
         return LectureBrief4Review.builder()

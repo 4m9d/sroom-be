@@ -40,35 +40,35 @@ public class CourseController {
         return myCourses;
     }
 
-    @Auth
-    @PostMapping("")
-    @Tag(name = "강의 등록")
-    @Operation(summary = "강의 신규 등록", description = "강의코드를 입력받아 코스를 생성합니다.")
-    @ApiResponse(responseCode = "200", description = "성공적으로 강의 코스를 등록하였습니다.", content = @Content(schema = @Schema(implementation = EnrolledCourseInfo.class)))
-    public EnrolledCourseInfo enrollCourse(@Valid @RequestBody NewLecture newLecture, @RequestParam("use_schedule") boolean useSchedule) {
-        if (YoutubeService.checkIfPlaylist(newLecture.getLectureCode())) {
-            return courseService.saveCourseWithPlaylist(jwtUtil.getMemberIdFromRequest(), newLecture, useSchedule,
-                    courseService.getPlaylistWithUpdate(newLecture.getLectureCode()));
-        } else {
-            return courseService.saveCourseWithVideo(jwtUtil.getMemberIdFromRequest(), newLecture, useSchedule);
-        }
-    }
-
-    @Auth
-    @PostMapping("/{courseId}")
-    @Tag(name = "강의 등록")
-    @Operation(summary = "기존 코스 강의 등록", description = "강의코드와 코스ID를 받아 코스에 추가합니다.")
-    @ApiResponse(responseCode = "200", description = "성공적으로 코스에 강의를 추가하였습니다.", content = @Content(schema = @Schema(implementation = EnrolledCourseInfo.class)))
-    public EnrolledCourseInfo addLectureInCourse(@PathVariable("courseId") Long courseId, @Valid @RequestBody NewLecture newLecture){
-        if (!courseService.validateCourseId(jwtUtil.getMemberIdFromRequest(), courseId)) {
-            throw new CourseNotMatchException();
-        }
-        if (YoutubeService.checkIfPlaylist(newLecture.getLectureCode())) {
-            return courseService.addPlaylistInCourse(courseId, courseService.getPlaylistWithUpdate(newLecture.getLectureCode()));
-        } else {
-            return courseService.addVideoInCourse(courseId, courseService.getVideoAndRequestToAiServer(newLecture.getLectureCode()));
-        }
-    }
+//    @Auth
+//    @PostMapping("")
+//    @Tag(name = "강의 등록")
+//    @Operation(summary = "강의 신규 등록", description = "강의코드를 입력받아 코스를 생성합니다.")
+//    @ApiResponse(responseCode = "200", description = "성공적으로 강의 코스를 등록하였습니다.", content = @Content(schema = @Schema(implementation = EnrolledCourseInfo.class)))
+//    public EnrolledCourseInfo enrollCourse(@Valid @RequestBody NewLecture newLecture, @RequestParam("use_schedule") boolean useSchedule) {
+//        if (YoutubeService.checkIfPlaylist(newLecture.getLectureCode())) {
+//            return courseService.saveCourseWithPlaylist(jwtUtil.getMemberIdFromRequest(), newLecture, useSchedule,
+//                    courseService.getPlaylistWithUpdate(newLecture.getLectureCode()));
+//        } else {
+//            return courseService.saveCourseWithVideo(jwtUtil.getMemberIdFromRequest(), newLecture, useSchedule);
+//        }
+//    }
+//
+//    @Auth
+//    @PostMapping("/{courseId}")
+//    @Tag(name = "강의 등록")
+//    @Operation(summary = "기존 코스 강의 등록", description = "강의코드와 코스ID를 받아 코스에 추가합니다.")
+//    @ApiResponse(responseCode = "200", description = "성공적으로 코스에 강의를 추가하였습니다.", content = @Content(schema = @Schema(implementation = EnrolledCourseInfo.class)))
+//    public EnrolledCourseInfo addLectureInCourse(@PathVariable("courseId") Long courseId, @Valid @RequestBody NewLecture newLecture){
+//        if (!courseService.validateCourseId(jwtUtil.getMemberIdFromRequest(), courseId)) {
+//            throw new CourseNotMatchException();
+//        }
+//        if (YoutubeService.checkIfPlaylist(newLecture.getLectureCode())) {
+//            return courseService.addPlaylistInCourse(courseId, courseService.getPlaylistWithUpdate(newLecture.getLectureCode()));
+//        } else {
+//            return courseService.addVideoInCourse(courseId, courseService.getVideoAndRequestToAiServer(newLecture.getLectureCode()));
+//        }
+//    }
 
     @Auth
     @GetMapping("/{courseId}")

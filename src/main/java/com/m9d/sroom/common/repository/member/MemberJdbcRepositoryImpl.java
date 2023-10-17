@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.member;
 
-import com.m9d.sroom.common.dto.Member;
+import com.m9d.sroom.common.entity.MemberEntity;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -17,7 +17,7 @@ public class MemberJdbcRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public Member save(Member member) {
+    public MemberEntity save(MemberEntity member) {
         jdbcTemplate.update(MemberRepositorySql.SAVE,
                 member.getMemberCode(),
                 member.getMemberName());
@@ -25,19 +25,19 @@ public class MemberJdbcRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public Member getById(Long memberId) {
-        return jdbcTemplate.queryForObject(MemberRepositorySql.GET_BY_ID, Member.getRowMapper(), memberId);
+    public MemberEntity getById(Long memberId) {
+        return jdbcTemplate.queryForObject(MemberRepositorySql.GET_BY_ID, MemberEntity.getRowMapper(), memberId);
     }
 
     @Override
-    public Member getByCode(String memberCode) {
-        return jdbcTemplate.queryForObject(MemberRepositorySql.GET_BY_CODE, Member.getRowMapper(), memberCode);
+    public MemberEntity getByCode(String memberCode) {
+        return jdbcTemplate.queryForObject(MemberRepositorySql.GET_BY_CODE, MemberEntity.getRowMapper(), memberCode);
     }
 
     @Override
-    public Optional<Member> findByCode(String memberCode) {
+    public Optional<MemberEntity> findByCode(String memberCode) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(MemberRepositorySql.GET_BY_CODE, Member.getRowMapper(),
+            return Optional.ofNullable(jdbcTemplate.queryForObject(MemberRepositorySql.GET_BY_CODE, MemberEntity.getRowMapper(),
                     memberCode));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -45,9 +45,9 @@ public class MemberJdbcRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public Optional<Member> findById(Long memberId) {
+    public Optional<MemberEntity> findById(Long memberId) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(MemberRepositorySql.GET_BY_ID, Member.getRowMapper(),
+            return Optional.ofNullable(jdbcTemplate.queryForObject(MemberRepositorySql.GET_BY_ID, MemberEntity.getRowMapper(),
                     memberId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
@@ -55,7 +55,7 @@ public class MemberJdbcRepositoryImpl implements MemberRepository {
     }
 
     @Override
-    public Member updateById(Long memberId, Member member) {
+    public MemberEntity updateById(Long memberId, MemberEntity member) {
         jdbcTemplate.update(MemberRepositorySql.UPDATE_BY_ID,
                 member.getMemberName(),
                 member.getRefreshToken(),

@@ -5,7 +5,7 @@ import com.m9d.sroom.course.dto.response.CourseDetail;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.lecture.dto.response.KeywordSearch;
 import com.m9d.sroom.lecture.dto.response.PlaylistDetail;
-import com.m9d.sroom.common.dto.Member;
+import com.m9d.sroom.common.entity.MemberEntity;
 import com.m9d.sroom.member.dto.response.Login;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -21,15 +21,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ControllerTest extends SroomTest {
 
     protected Login getNewLogin() {
-        Member member = getNewMember();
+        MemberEntity member = getNewMember();
         return memberService.generateLogin(member, (String) idToken.getPayload().get("picture"));
     }
 
-    protected Login getNewLogin(Member member) {
+    protected Login getNewLogin(MemberEntity member) {
         return memberService.generateLogin(member, (String) idToken.getPayload().get("picture"));
     }
 
-    protected Member getNewMember() {
+    protected MemberEntity getNewMember() {
         UUID uuid = UUID.randomUUID();
 
         String memberCode = uuid.toString();

@@ -1,14 +1,14 @@
 package com.m9d.sroom.common.repository.quizoption;
 
-import com.m9d.sroom.common.dto.QuizOption;
+import com.m9d.sroom.common.entity.QuizOptionEntity;
 
 import java.util.List;
 
 public interface QuizOptionRepository {
 
-    QuizOption save(QuizOption quizOption);
+    QuizOptionEntity save(QuizOptionEntity quizOption);
 
-    QuizOption getById(Long quizOptionId);
+    QuizOptionEntity getById(Long quizOptionId);
 
-    List<QuizOption> getListByQuizId(Long quizId);
+    List<QuizOptionEntity> getListByQuizId(Long quizId);
 }

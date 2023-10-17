@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.coursedailylog;
 
-import com.m9d.sroom.common.dto.CourseDailyLog;
+import com.m9d.sroom.common.entity.CourseDailyLogEntity;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -19,7 +19,7 @@ public class CourseDailyLogJdbcRepositoryImpl implements CourseDailyLogRepositor
     }
 
     @Override
-    public CourseDailyLog save(CourseDailyLog dailyLog) {
+    public CourseDailyLogEntity save(CourseDailyLogEntity dailyLog) {
         jdbcTemplate.update(CourseDailyLogRepositorySql.SAVE,
                 dailyLog.getMemberId(),
                 dailyLog.getCourseId(),
@@ -31,23 +31,23 @@ public class CourseDailyLogJdbcRepositoryImpl implements CourseDailyLogRepositor
     }
 
     @Override
-    public CourseDailyLog getById(Long dailyLogId) {
+    public CourseDailyLogEntity getById(Long dailyLogId) {
         return jdbcTemplate.queryForObject(CourseDailyLogRepositorySql.GET_BY_ID,
-                CourseDailyLog.getRowMapper(), dailyLogId);
+                CourseDailyLogEntity.getRowMapper(), dailyLogId);
     }
 
     @Override
-    public Optional<CourseDailyLog> findByCourseIdAndDate(Long courseId, Date date) {
+    public Optional<CourseDailyLogEntity> findByCourseIdAndDate(Long courseId, Date date) {
         try {
             return Optional.ofNullable(jdbcTemplate.queryForObject(CourseDailyLogRepositorySql.GET_BY_COURSE_ID_AND_DATE,
-                    CourseDailyLog.getRowMapper(), courseId, date));
+                    CourseDailyLogEntity.getRowMapper(), courseId, date));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
     }
 
     @Override
-    public CourseDailyLog updateById(Long dailyLogId, CourseDailyLog dailyLog) {
+    public CourseDailyLogEntity updateById(Long dailyLogId, CourseDailyLogEntity dailyLog) {
         jdbcTemplate.update(CourseDailyLogRepositorySql.UPDATE_BY_ID,
                 dailyLog.getLearningTime(),
                 dailyLog.getQuizCount(),
@@ -57,10 +57,10 @@ public class CourseDailyLogJdbcRepositoryImpl implements CourseDailyLogRepositor
     }
 
     @Override
-    public List<CourseDailyLog> getDateDataByMemberId(Long memberId) {
+    public List<CourseDailyLogEntity> getDateDataByMemberId(Long memberId) {
 
         return jdbcTemplate.query(CourseDailyLogRepositorySql.GET_DATE_GROUP_DATA_BY_MEMBER_ID,
-                CourseDailyLog.getRowMapper(), memberId);
+                CourseDailyLogEntity.getRowMapper(), memberId);
 
     }
 }

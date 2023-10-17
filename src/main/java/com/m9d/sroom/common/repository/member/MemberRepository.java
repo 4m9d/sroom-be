@@ -1,22 +1,22 @@
 package com.m9d.sroom.common.repository.member;
 
-import com.m9d.sroom.common.dto.Member;
+import com.m9d.sroom.common.entity.MemberEntity;
 
 import java.util.Optional;
 
 public interface MemberRepository {
 
-    Member save(Member member);
+    MemberEntity save(MemberEntity member);
 
-    Member getById(Long memberId);
+    MemberEntity getById(Long memberId);
 
-    Member getByCode(String memberCode);
+    MemberEntity getByCode(String memberCode);
 
-    Optional<Member> findByCode(String memberCode);
+    Optional<MemberEntity> findByCode(String memberCode);
 
-    Optional<Member> findById(Long memberId);
+    Optional<MemberEntity> findById(Long memberId);
 
-    Member updateById(Long memberId, Member member);
+    MemberEntity updateById(Long memberId, MemberEntity member);
 
     Integer countCompletedCourseById(Long memberId);
 

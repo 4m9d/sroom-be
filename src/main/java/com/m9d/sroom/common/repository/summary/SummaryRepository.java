@@ -1,16 +1,16 @@
 package com.m9d.sroom.common.repository.summary;
 
-import com.m9d.sroom.common.dto.Summary;
+import com.m9d.sroom.common.entity.SummaryEntity;
 
 import java.util.Optional;
 
 public interface SummaryRepository {
 
-    Summary save(Summary summary);
+    SummaryEntity save(SummaryEntity summary);
 
-    Summary getById(Long summaryId);
+    SummaryEntity getById(Long summaryId);
 
-    Optional<Summary> findById(Long summaryId);
+    Optional<SummaryEntity> findById(Long summaryId);
 
-    Summary updateById(Long summaryId, Summary summary);
+    SummaryEntity updateById(Long summaryId, SummaryEntity summary);
 }

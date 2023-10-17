@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.quizoption;
 
-import com.m9d.sroom.common.dto.QuizOption;
+import com.m9d.sroom.common.entity.QuizOptionEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -16,7 +16,7 @@ public class QuizOptionJdbcRepositoryImpl implements QuizOptionRepository {
     }
 
     @Override
-    public QuizOption save(QuizOption quizOption) {
+    public QuizOptionEntity save(QuizOptionEntity quizOption) {
         jdbcTemplate.update(QuizOptionRepositorySql.SAVE,
                 quizOption.getQuizId(),
                 quizOption.getOptionText(),
@@ -25,12 +25,12 @@ public class QuizOptionJdbcRepositoryImpl implements QuizOptionRepository {
     }
 
     @Override
-    public QuizOption getById(Long quizOptionId) {
-        return jdbcTemplate.queryForObject(QuizOptionRepositorySql.GET_BY_ID, QuizOption.getRowMapper(), quizOptionId);
+    public QuizOptionEntity getById(Long quizOptionId) {
+        return jdbcTemplate.queryForObject(QuizOptionRepositorySql.GET_BY_ID, QuizOptionEntity.getRowMapper(), quizOptionId);
     }
 
     @Override
-    public List<QuizOption> getListByQuizId(Long quizId) {
-        return jdbcTemplate.query(QuizOptionRepositorySql.GET_LIST_BY_QUIZ_ID, QuizOption.getRowMapper(), quizId);
+    public List<QuizOptionEntity> getListByQuizId(Long quizId) {
+        return jdbcTemplate.query(QuizOptionRepositorySql.GET_LIST_BY_QUIZ_ID, QuizOptionEntity.getRowMapper(), quizId);
     }
 }

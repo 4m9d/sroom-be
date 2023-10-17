@@ -1,7 +1,7 @@
 package com.m9d.sroom.lecture.service;
 
 import com.m9d.sroom.lecture.dto.response.RecommendLecture;
-import com.m9d.sroom.common.dto.Member;
+import com.m9d.sroom.common.entity.MemberEntity;
 import com.m9d.sroom.util.ServiceTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -64,7 +64,7 @@ public class LectureResponseServiceTest extends ServiceTest {
     @DisplayName("유저가 가장 많이 등록한 강의 채널리스트를 불러옵니다.")
     void getMostEnrolledChannelTest() {
         //given
-        Member member = getNewMember();
+        MemberEntity member = getNewMember();
         Long memberId = member.getMemberId();
 
         courseRepository.saveLecture(memberId, 1L, 1L, "channel1", false, 1);

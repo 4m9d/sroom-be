@@ -3,7 +3,7 @@ package com.m9d.sroom.global;
 import com.google.gson.Gson;
 import com.m9d.sroom.util.SroomTest;
 import com.m9d.sroom.youtube.resource.SearchReq;
-import com.m9d.sroom.youtube.vo.search.SearchVo;
+import com.m9d.sroom.youtube.dto.search.SearchDto;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -342,7 +342,7 @@ public class UtilTest extends SroomTest {
         Gson gson = new Gson();
 
 
-        SearchVo searchVo = gson.fromJson(jsonStr, SearchVo.class);
+        SearchDto searchVo = gson.fromJson(jsonStr, SearchDto.class);
 
         System.out.println(searchVo.toString());
 
@@ -358,9 +358,9 @@ public class UtilTest extends SroomTest {
                 .pageToken(null)
                 .build();
         System.out.println(System.currentTimeMillis());
-        Mono<SearchVo> test = youtubeApi.getSearchVo(lectureListReq);
+        Mono<SearchDto> test = youtubeApi.getSearchVo(lectureListReq);
         System.out.println(System.currentTimeMillis());
-        SearchVo searchVo = youtubeService.safeGetVo(test);
+        SearchDto searchVo = youtubeService.safeGetVo(test);
         System.out.println(System.currentTimeMillis());
         System.out.println(searchVo.toString());
         System.out.println(System.currentTimeMillis());

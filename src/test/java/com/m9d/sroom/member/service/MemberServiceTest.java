@@ -1,6 +1,6 @@
 package com.m9d.sroom.member.service;
 
-import com.m9d.sroom.common.dto.Member;
+import com.m9d.sroom.common.entity.MemberEntity;
 import com.m9d.sroom.member.dto.request.RefreshToken;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.member.exception.MemberNotMatchException;
@@ -46,7 +46,7 @@ public class MemberServiceTest extends ServiceTest {
     @DisplayName("로그인 성공 시 회원정보에 맞는 Login 객체를 반환합니다.")
     void returnLoginResponse200() {
         //given
-        Member member = getNewMember();
+        MemberEntity member = getNewMember();
 
         //when
         Login login = memberService.generateLogin(member, (String) idToken.getPayload().get("picture"));
@@ -62,7 +62,7 @@ public class MemberServiceTest extends ServiceTest {
     @DisplayName("올바른 refresh token을 입력하면 갱신에 성공합니다.")
     void renewRefreshToken200() {
         //given
-        Member member = getNewMember();
+        MemberEntity member = getNewMember();
         Login login = memberService.generateLogin(member, (String) idToken.getPayload().get("picture"));
 
         //when
@@ -78,7 +78,7 @@ public class MemberServiceTest extends ServiceTest {
     @DisplayName("재로그인되면 access token이 갱신됩니다.")
     void verifyRefreshToken200() throws InterruptedException {
         //given
-        Member member = getNewMember();
+        MemberEntity member = getNewMember();
         Login login = memberService.generateLogin(member, (String) idToken.getPayload().get("picture"));
         RefreshToken refreshToken = RefreshToken.builder()
                 .refreshToken(login.getRefreshToken())
@@ -96,9 +96,9 @@ public class MemberServiceTest extends ServiceTest {
     @DisplayName("refreshToken과 accessToken의 member정보가 다르면 400에러가 발생합니다.")
     void memberNotMatchAccessAndRefresh400() {
         //given
-        Member member1 = getNewMember();
+        MemberEntity member1 = getNewMember();
 
-        Member member2 = getNewMember();
+        MemberEntity member2 = getNewMember();
         Login login2 = memberService.generateLogin(member2, (String) idToken.getPayload().get("picture"));
 
         //when
@@ -122,7 +122,7 @@ public class MemberServiceTest extends ServiceTest {
     @DisplayName("저장된 refresh token이 아니라면 401에러가 발생합니다.")
     void refreshRenew401() throws InterruptedException {
         //given
-        Member member = getNewMember();
+        MemberEntity member = getNewMember();
         Login loginFirst = memberService.generateLogin(member, (String) idToken.getPayload().get("picture"));
 
         //when

@@ -4,9 +4,9 @@ import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.CourseService;
 import com.m9d.sroom.dashboard.dto.response.Dashboard;
 import com.m9d.sroom.dashboard.dto.response.LearningHistory;
-import com.m9d.sroom.common.dto.Course;
-import com.m9d.sroom.common.dto.CourseDailyLog;
-import com.m9d.sroom.common.dto.Member;
+import com.m9d.sroom.common.entity.CourseEntity;
+import com.m9d.sroom.common.entity.CourseDailyLogEntity;
+import com.m9d.sroom.common.entity.MemberEntity;
 import com.m9d.sroom.common.repository.course.CourseRepository;
 import com.m9d.sroom.common.repository.coursedailylog.CourseDailyLogRepository;
 import com.m9d.sroom.common.repository.member.MemberRepository;
@@ -44,7 +44,7 @@ public class DashboardService {
 
     public Dashboard getDashboard(Long memberId) {
 
-        List<Course> courseList = courseRepository.getLatestOrderByMemberId(memberId);
+        List<CourseEntity> courseList = courseRepository.getLatestOrderByMemberId(memberId);
         List<CourseInfo> latestCourses = courseService.getCourseInfoList(courseList);
         List<CourseInfo> latestLectures = new ArrayList<>();
 
@@ -54,14 +54,14 @@ public class DashboardService {
             latestLectures.addAll(latestCourses);
         }
 
-        List<CourseDailyLog> courseDailyLogList = courseDailyLogRepository.getDateDataByMemberId(memberId);
-        Member member = memberRepository.getById(memberId);
+        List<CourseDailyLogEntity> courseDailyLogList = courseDailyLogRepository.getDateDataByMemberId(memberId);
+        MemberEntity member = memberRepository.getById(memberId);
         String motivation = getMotivation(courseDailyLogList, member);
 
         int correctnessRate = (int)(((float) member.getTotalCorrectCount() / member.getTotalSolvedCount()) * 100);
 
         List<LearningHistory> learningHistoryList = new ArrayList<>();
-        for(CourseDailyLog courseDailyLog : courseDailyLogList) {
+        for(CourseDailyLogEntity courseDailyLog : courseDailyLogList) {
             learningHistoryList.add(LearningHistory.builder()
                     .date(new SimpleDateFormat("yyyy-MM-dd").format(courseDailyLog.getDailyLogDate()))
                     .lectureCount(courseDailyLog.getLectureCount())
@@ -83,7 +83,7 @@ public class DashboardService {
         return dashboardInfo;
     }
 
-    public String getMotivation(List<CourseDailyLog> learningHistories, Member member) {
+    public String getMotivation(List<CourseDailyLogEntity> learningHistories, MemberEntity member) {
         List<String> motivationList = new ArrayList<>();
         motivationList.addAll(MOTIVATION_GENERAL);
 
@@ -108,7 +108,7 @@ public class DashboardService {
         return motivationList.get(0);
     }
 
-    public int getConsecutiveLearningDay(List<CourseDailyLog> courseDailyLogList) {
+    public int getConsecutiveLearningDay(List<CourseDailyLogEntity> courseDailyLogList) {
 
         int consecutiveCount = 0;
         LocalDate beforeDate = LocalDate.now();

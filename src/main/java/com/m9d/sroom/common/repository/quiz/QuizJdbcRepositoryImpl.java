@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.quiz;
 
-import com.m9d.sroom.common.dto.Quiz;
+import com.m9d.sroom.common.entity.QuizEntity;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -18,7 +18,7 @@ public class QuizJdbcRepositoryImpl implements QuizRepository {
     }
 
     @Override
-    public Quiz save(Quiz quiz) {
+    public QuizEntity save(QuizEntity quiz) {
         jdbcTemplate.update(QuizRepositorySql.SAVE,
                 quiz.getVideoId(),
                 quiz.getType(),
@@ -29,19 +29,19 @@ public class QuizJdbcRepositoryImpl implements QuizRepository {
     }
 
     @Override
-    public List<Quiz> getListByVideoId(Long videoId) {
-        return jdbcTemplate.query(QuizRepositorySql.GET_LIST_BY_VIDEO_ID, Quiz.getRowMapper(), videoId);
+    public List<QuizEntity> getListByVideoId(Long videoId) {
+        return jdbcTemplate.query(QuizRepositorySql.GET_LIST_BY_VIDEO_ID, QuizEntity.getRowMapper(), videoId);
     }
 
     @Override
-    public Quiz getById(Long quizId) {
-        return jdbcTemplate.queryForObject(QuizRepositorySql.GET_BY_ID, Quiz.getRowMapper(), quizId);
+    public QuizEntity getById(Long quizId) {
+        return jdbcTemplate.queryForObject(QuizRepositorySql.GET_BY_ID, QuizEntity.getRowMapper(), quizId);
     }
 
     @Override
-    public Optional<Quiz> findById(Long quizId) {
+    public Optional<QuizEntity> findById(Long quizId) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(QuizRepositorySql.GET_BY_ID, Quiz.getRowMapper(), quizId));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(QuizRepositorySql.GET_BY_ID, QuizEntity.getRowMapper(), quizId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }

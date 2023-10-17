@@ -1,21 +1,21 @@
 package com.m9d.sroom.common.repository.course;
 
-import com.m9d.sroom.common.dto.Course;
+import com.m9d.sroom.common.entity.CourseEntity;
 import com.m9d.sroom.lecture.dto.response.CourseBrief;
 
 import java.util.List;
 
 public interface CourseRepository {
 
-    Course save(Course course);
+    CourseEntity save(CourseEntity course);
 
-    Course getById(Long courseId);
+    CourseEntity getById(Long courseId);
 
-    Course updateById(Long courseId, Course course);
+    CourseEntity updateById(Long courseId, CourseEntity course);
 
     void deleteById(Long courseId);
 
-    List<Course> getLatestOrderByMemberId(Long memberId);
+    List<CourseEntity> getLatestOrderByMemberId(Long memberId);
 
     List<CourseBrief> getBriefListByMemberId(Long memberId);
 }

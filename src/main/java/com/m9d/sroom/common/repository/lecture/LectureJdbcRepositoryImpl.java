@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.lecture;
 
-import com.m9d.sroom.common.dto.Lecture;
+import com.m9d.sroom.common.entity.LectureEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +18,7 @@ public class LectureJdbcRepositoryImpl implements LectureRepository {
     }
 
     @Override
-    public Lecture save(Lecture lecture) {
+    public LectureEntity save(LectureEntity lecture) {
         jdbcTemplate.update(LectureRepositorySql.SAVE,
                 lecture.getCourseId(),
                 lecture.getSourceId(),
@@ -29,13 +29,13 @@ public class LectureJdbcRepositoryImpl implements LectureRepository {
         return getById(jdbcTemplate.queryForObject(LectureRepositorySql.GET_LAST_ID, Long.class));
     }
 
-    public Lecture getById(Long lectureId) {
-        return jdbcTemplate.queryForObject(LectureRepositorySql.GET_BY_ID, Lecture.getRowMapper(), lectureId);
+    public LectureEntity getById(Long lectureId) {
+        return jdbcTemplate.queryForObject(LectureRepositorySql.GET_BY_ID, LectureEntity.getRowMapper(), lectureId);
     }
 
     @Override
     @Transactional
-    public Lecture updateById(Long lectureId, Lecture lecture) {
+    public LectureEntity updateById(Long lectureId, LectureEntity lecture) {
         jdbcTemplate.update(LectureRepositorySql.UPDATE_BY_ID,
                 lecture.getCourseId(),
                 lecture.getSourceId(),
@@ -62,8 +62,8 @@ public class LectureJdbcRepositoryImpl implements LectureRepository {
     }
 
     @Override
-    public List<Lecture> getListByCourseId(Long courseId) {
-        return jdbcTemplate.query(LectureRepositorySql.GET_LIST_BY_COURSE_ID, Lecture.getRowMapper(), courseId);
+    public List<LectureEntity> getListByCourseId(Long courseId) {
+        return jdbcTemplate.query(LectureRepositorySql.GET_LIST_BY_COURSE_ID, LectureEntity.getRowMapper(), courseId);
     }
 
     @Override
