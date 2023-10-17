@@ -7,12 +7,15 @@ import com.m9d.sroom.common.repository.lecture.LectureRepository;
 import com.m9d.sroom.course.constant.CourseConstant;
 import com.m9d.sroom.course.dto.EnrollContentInfo;
 import com.m9d.sroom.course.dto.request.NewLecture;
+import com.m9d.sroom.course.dto.response.CourseDetail;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
+import com.m9d.sroom.lecture.dto.response.Section;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -22,14 +25,16 @@ public class CourseServiceV2 {
     private final LectureRepository lectureRepository;
     private final CourseVideoService courseVideoService;
 
-    public CourseServiceV2(CourseRepository courseRepository, LectureRepository lectureRepository, CourseVideoService courseVideoService) {
+    public CourseServiceV2(CourseRepository courseRepository, LectureRepository lectureRepository,
+                           CourseVideoService courseVideoService) {
         this.courseRepository = courseRepository;
         this.lectureRepository = lectureRepository;
         this.courseVideoService = courseVideoService;
     }
 
     @Transactional
-    public EnrolledCourseInfo enroll(Long memberId, NewLecture newLecture, boolean useSchedule, EnrollContentInfo contentInfo) {
+    public EnrolledCourseInfo enroll(Long memberId, NewLecture newLecture, boolean useSchedule,
+                                     EnrollContentInfo contentInfo) {
         Course course = new EnrollCondition(newLecture, useSchedule).createCourse(contentInfo);
         CourseEntity courseEntity = courseRepository.save(new CourseEntity(memberId, course));
 
@@ -42,7 +47,8 @@ public class CourseServiceV2 {
                 .lectureIndex(CourseConstant.ENROLL_LECTURE_INDEX)
                 .build());
 
-        courseVideoService.saveCourseVideoList(memberId, courseEntity.getCourseId(), lectureEntity.getId(), course.getCourseVideoList());
+        courseVideoService.saveCourseVideoList(memberId, courseEntity.getCourseId(), lectureEntity.getId(),
+                course.getCourseVideoList());
 
         return EnrolledCourseInfo.builder()
                 .title(contentInfo.getTitle())
@@ -52,7 +58,7 @@ public class CourseServiceV2 {
     }
 
     public boolean validateCourseForMember(Long memberIdFromRequest, Long courseId) {
-        return courseRepository.getById(courseId).getMemberId().equals(memberIdFromRequest);
+        return memberIdFromRequest.equals(courseRepository.getById(courseId).getMemberId());
     }
 
     @Transactional
@@ -69,7 +75,6 @@ public class CourseServiceV2 {
                 .lectureIndex(course.getLastLectureIndex())
                 .build());
 
-        log.debug("last lecture index = {}", course.getLastLectureIndex());
         courseVideoService.saveCourseVideoList(memberId, courseId, lectureEntity.getId(),
                 course.getCourseVideoListByLectureIndex(course.getLastLectureIndex()));
 
@@ -78,7 +83,7 @@ public class CourseServiceV2 {
             courseVideoService.updateSections(courseId, course.getCourseVideoList());
         }
 
-        updateCourse(courseId, course);
+        updateCourseEntity(courseId, course);
 
         return EnrolledCourseInfo.builder()
                 .title(course.getTitle())
@@ -87,7 +92,7 @@ public class CourseServiceV2 {
                 .build();
     }
 
-    private void updateCourse(Long courseId, Course course) {
+    private void updateCourseEntity(Long courseId, Course course) {
         CourseEntity courseEntity = courseRepository.getById(courseId);
         courseEntity.setCourseTitle(course.getTitle());
         courseEntity.setThumbnail(course.getThumbnail());
@@ -96,5 +101,33 @@ public class CourseServiceV2 {
         courseEntity.setWeeks(course.getWeeks());
         courseEntity.setExpectedEndDate(course.getExpectedEndDate());
         courseRepository.updateById(courseId, courseEntity);
+    }
+
+    @Transactional
+    public CourseDetail getCourseDetail(Long courseId) {
+        CourseEntity courseEntity = courseRepository.getById(courseId);
+        Course course = courseEntity.toCourse(courseVideoService.getCourseVideoList(courseId));
+
+        Set<String> channels = lectureRepository.getListByCourseId(courseId).stream()
+                .map(LectureEntity::getChannel)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        return new CourseDetail(courseId, course, channels, getSectionList(courseEntity),
+                courseVideoService.getLastVideoInfo(courseId));
+    }
+
+    private List<Section> getSectionList(CourseEntity courseEntity) {
+        List<Section> sectionList = new ArrayList<>();
+        if (courseEntity.getWeeks() == 0) {
+            sectionList.add(
+                    new Section(courseVideoService.getWatchInfoList(courseEntity.getCourseId(), 0), 0));
+        } else {
+            for (int section = 1; section <= courseEntity.getWeeks(); section++) {
+                sectionList.add(
+                        new Section(courseVideoService.getWatchInfoList(courseEntity.getCourseId(), section), section));
+            }
+        }
+        return sectionList;
     }
 }

@@ -2,6 +2,8 @@ package com.m9d.sroom.course;
 
 import com.m9d.sroom.common.entity.CourseVideoEntity;
 import com.m9d.sroom.common.repository.coursevideo.CourseVideoRepository;
+import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
+import com.m9d.sroom.lecture.dto.response.VideoWatchInfo;
 import com.m9d.sroom.video.VideoService;
 import org.springframework.stereotype.Service;
 
@@ -54,5 +56,13 @@ public class CourseVideoService {
             durationList[courseVideoEntity.getVideoIndex()] = videoService.getVideoDuration(courseVideoEntity.getVideoId());
         }
         return durationList;
+    }
+
+    public LastVideoInfo getLastVideoInfo(Long courseId) {
+        return courseVideoRepository.getLastInfoByCourseId(courseId);
+    }
+
+    public List<VideoWatchInfo> getWatchInfoList(Long courseId, int section) {
+        return courseVideoRepository.getWatchInfoListByCourseIdAndSection(courseId,section);
     }
 }

@@ -33,7 +33,7 @@ public class LectureServiceV2 {
                 .map(SearchInfo::getNextPageToken)
                 .orElse(null);
 
-        List<LectureResponse> contentDetailList = getLectureDetailListAsync(searchInfo).stream()
+        List<LectureResponse> contentDetailList = getLectureResponseListAsync(searchInfo).stream()
                 .peek(lecture -> {
                     if (enrolledLectureCodeSet.contains(lecture.getLectureCode())) {
                         lecture.setEnrolled(true);
@@ -49,7 +49,7 @@ public class LectureServiceV2 {
 
     }
 
-    private List<LectureResponse> getLectureDetailListAsync(SearchInfo searchInfo) {
+    private List<LectureResponse> getLectureResponseListAsync(SearchInfo searchInfo) {
         List<CompletableFuture<LectureResponse>> futures = searchInfo
                 .getSearchItemInfoList().stream()
                 .map(item -> CompletableFuture.supplyAsync(() -> getLectureResponse(item)))

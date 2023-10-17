@@ -1,7 +1,9 @@
 package com.m9d.sroom.course.dto.response;
 
+import com.m9d.sroom.course.Course;
 import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
 import com.m9d.sroom.lecture.dto.response.Section;
+import com.m9d.sroom.lecture.dto.response.VideoWatchInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +11,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Set;
 
 @Schema(description = "수강페이지에 쓰이는 강의에 대한 상세 정보")
 @Data
@@ -52,4 +55,28 @@ public class CourseDetail {
 
     @Schema(description = "강의 일정의 주 리스트")
     private List<Section> sections;
+
+    public CourseDetail(Long courseId, Course course, Set<String> channels, List<Section> sectionList,
+                        LastVideoInfo lastVideoInfo) {
+        this.courseId = courseId;
+        this.courseTitle = course.getTitle();
+        this.useSchedule = course.isScheduled();
+        this.channels = String.join(", ", channels);
+        this.courseDuration = course.getDuration();
+        this.currentDuration = sectionList.stream()
+                .mapToInt(Section::getCurrentWeekDuration)
+                .sum();
+        this.totalVideoCount = sectionList.stream()
+                .mapToInt(section -> section.getVideos().size())
+                .sum();
+        this.thumbnail = course.getThumbnail();
+        this.completedVideoCount = sectionList.stream()
+                .mapToInt(section -> (int) section.getVideos().stream()
+                        .filter(VideoWatchInfo::isCompleted)
+                        .count())
+                .sum();
+        this.progress = (int) ((double) currentDuration / course.getDuration() * 100);
+        this.lastViewVideo = lastVideoInfo;
+        this.sections = sectionList;
+    }
 }

@@ -1,6 +1,7 @@
 package com.m9d.sroom.course;
 
 import com.m9d.sroom.course.dto.request.NewLecture;
+import com.m9d.sroom.course.dto.response.CourseDetail;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.course.exception.CourseNotMatchException;
 import com.m9d.sroom.playlist.PlaylistService;
@@ -72,5 +73,17 @@ public class CourseControllerV2 {
             );
             return courseService.addLecture(memberId, courseId, videoService.getEnrollContentInfo(newLecture.getLectureCode()));
         }
+    }
+
+    @Auth
+    @GetMapping("/{courseId}")
+    @Tag(name = "강의 수강")
+    @Operation(summary = "수강페이지 코스정보", description = "코스 ID를 받아 해당 코스 정보와 수강할 영상 리스트를 반환합니다.")
+    @ApiResponse(responseCode = "200", description = "성공적으로 수강 정보를 반환하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CourseDetail.class))})
+    public CourseDetail getCourseDetail(@PathVariable(name = "courseId") Long courseId) {
+        if (!courseService.validateCourseForMember(jwtUtil.getMemberIdFromRequest(), courseId)) {
+            throw new CourseNotMatchException();
+        }
+        return courseService.getCourseDetail(courseId);
     }
 }
