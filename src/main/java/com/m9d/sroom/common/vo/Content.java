@@ -1,4 +1,12 @@
 package com.m9d.sroom.common.vo;
 
-public class Content {
+public abstract class Content {
+
+    public abstract String getDescription();
+
+    public abstract Integer getVideoCount();
+
+    public abstract Long getViewCount();
+
+    public abstract String getThumbnail();
 }

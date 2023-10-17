@@ -33,4 +33,8 @@ public class Video extends Content {
 
     private final Boolean membership;
 
+    @Override
+    public Integer getVideoCount() {
+        return 1;
+    }
 }

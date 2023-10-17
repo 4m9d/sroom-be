@@ -1,11 +1,18 @@
 package com.m9d.sroom.lecture.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.m9d.sroom.common.vo.Content;
+import com.m9d.sroom.common.vo.Playlist;
+import com.m9d.sroom.util.DateUtil;
+import com.m9d.sroom.youtube.vo.SearchItemInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.util.HtmlUtils;
+
+import java.text.SimpleDateFormat;
 
 @Schema(description = "검색된 개별 강의 정보")
 @Data
@@ -25,14 +32,14 @@ public class LectureResponse {
 
     @Schema(description = "강의 등록 여부", example = "false")
     @JsonProperty("is_enrolled")
-    private boolean enrolled;
+    private Boolean enrolled;
 
     @Schema(description = "강의 ID", example = "PL0d8NnikouEWcF1jJueLdjRIC4HsUlULi")
     private String lectureCode;
 
     @Schema(description = "플레이리스트 여부", example = "true")
     @JsonProperty("is_playlist")
-    private boolean playlist;
+    private Boolean isPlaylist;
 
     @Schema(description = "강의 평점", example = "4.3")
     private double rating;
@@ -51,4 +58,17 @@ public class LectureResponse {
 
     @Schema(description = "생성일", example = "2022-05-23 10:30:21")
     private String publishedAt;
+
+    public LectureResponse(SearchItemInfo item, Content content) {
+        this.isPlaylist = item.isPlaylist();
+        this.lectureTitle = HtmlUtils.htmlUnescape(item.getTitle());
+        this.description = HtmlUtils.htmlUnescape(content.getDescription());
+        this.channel = HtmlUtils.htmlUnescape(item.getChannel());
+        this.lectureCode = item.getCode();
+        this.enrolled = false;
+        this.publishedAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(item.getPublishedAt());
+        this.lectureCount = content.getVideoCount();
+        this.viewCount = content.getViewCount();
+        this.thumbnail = content.getThumbnail();
+    }
 }

@@ -1,4 +1,4 @@
-package com.m9d.sroom.lecture.service;
+package com.m9d.sroom.lecture;
 
 import com.m9d.sroom.common.entity.*;
 import com.m9d.sroom.course.exception.CourseNotMatchException;
@@ -91,7 +91,7 @@ public class LectureService {
 
 
     @Transactional
-    public KeywordSearch searchByKeyword(Long memberId, KeywordSearchParam keywordSearchParam) {
+    public KeywordSearchResponse searchByKeyword(Long memberId, KeywordSearchParam keywordSearchParam) {
         log.info("lecture keyword search. memberId = {}, keyword : {}", memberId, keywordSearchParam.getKeyword());
         Mono<SearchDto> searchVoMono = getSearchVoMono(keywordSearchParam);
         Set<String> enrolledLectureSet = getEnrolledLectures(memberId);
@@ -101,7 +101,7 @@ public class LectureService {
                 .map(SearchDto::getNextPageToken)
                 .orElse(null);
 
-        return KeywordSearch.builder()
+        return KeywordSearchResponse.builder()
                 .nextPageToken(nextPageToken)
                 .resultPerPage(searchVo.getPageInfo().getResultsPerPage())
                 .lectures(getSearchedLectureList(searchVo, enrolledLectureSet))
@@ -156,7 +156,7 @@ public class LectureService {
                 .lectureCode(lectureCode)
                 .enrolled(enrolledLectureSet.contains(lectureCode))
                 .publishedAt(dateUtil.convertISOToString(snippetVo.getPublishTime()))
-                .playlist(isPlaylist)
+                .isPlaylist(isPlaylist)
                 .lectureCount(videoCount)
                 .viewCount(viewCount)
                 .thumbnail(youtubeService.selectThumbnailInVo(snippetVo.getThumbnails()))

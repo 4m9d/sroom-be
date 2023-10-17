@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -104,5 +105,9 @@ public class VideoService {
 
     public Integer getVideoDuration(Long videoId) {
         return videoRepository.getById(videoId).getDuration();
+    }
+
+    public Collection<String> getEnrolledCodeSet(Long memberId) {
+        return videoRepository.getCodeSetByMemberId(memberId);
     }
 }

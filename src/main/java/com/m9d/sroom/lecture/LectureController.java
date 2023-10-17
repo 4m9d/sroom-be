@@ -1,10 +1,9 @@
-package com.m9d.sroom.lecture.controller;
+package com.m9d.sroom.lecture;
 
 import com.m9d.sroom.lecture.dto.request.KeywordSearchParam;
 import com.m9d.sroom.lecture.dto.request.LectureDetailParam;
 import com.m9d.sroom.lecture.dto.request.LectureTimeRecord;
 import com.m9d.sroom.lecture.dto.response.*;
-import com.m9d.sroom.lecture.service.LectureService;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
 import com.m9d.sroom.youtube.YoutubeService;
@@ -31,22 +30,22 @@ public class LectureController {
     private final LectureService lectureService;
     private final JwtUtil jwtUtil;
 
-    @Auth
-    @GetMapping("")
-    @Tag(name = "강의 검색")
-    @Operation(summary = "강의 키워드 검색", description = "키워드를 입력받아 유튜브 강의를 검색한다.")
-    @Parameters({
-            @Parameter(in = ParameterIn.QUERY, name = "keyword", description = "검색할 키워드", required = true, example = "네트워크"),
-            @Parameter(in = ParameterIn.QUERY, name = "limit", description = "결과의 최대 개수", required = false, example = "5"),
-            @Parameter(in = ParameterIn.QUERY, name = "filter", description = "검색 종류 필터, all, playlist, video", required = false, example = "all"),
-            @Parameter(in = ParameterIn.QUERY, name = "nextPageToken", description = "다음 페이지 토큰", required = false, example = "QAUQAA"),
-            @Parameter(in = ParameterIn.QUERY, name = "prevPageToken", description = "이전 페이지 토큰", required = false, example = "CAUQAA")
-    })
-    @ApiResponse(responseCode = "200", description = "성공적으로 검색 결과를 반환하였습니다.", content = @Content(schema = @Schema(implementation = KeywordSearch.class)))
-    public KeywordSearch getLecturesByKeyword(@Valid @ModelAttribute KeywordSearchParam keywordSearchParam) {
-        Long memberId = jwtUtil.getMemberIdFromRequest();
-        return lectureService.searchByKeyword(memberId, keywordSearchParam);
-    }
+//    @Auth
+//    @GetMapping("")
+//    @Tag(name = "강의 검색")
+//    @Operation(summary = "강의 키워드 검색", description = "키워드를 입력받아 유튜브 강의를 검색한다.")
+//    @Parameters({
+//            @Parameter(in = ParameterIn.QUERY, name = "keyword", description = "검색할 키워드", required = true, example = "네트워크"),
+//            @Parameter(in = ParameterIn.QUERY, name = "limit", description = "결과의 최대 개수", required = false, example = "5"),
+//            @Parameter(in = ParameterIn.QUERY, name = "filter", description = "검색 종류 필터, all, playlist, video", required = false, example = "all"),
+//            @Parameter(in = ParameterIn.QUERY, name = "nextPageToken", description = "다음 페이지 토큰", required = false, example = "QAUQAA"),
+//            @Parameter(in = ParameterIn.QUERY, name = "prevPageToken", description = "이전 페이지 토큰", required = false, example = "CAUQAA")
+//    })
+//    @ApiResponse(responseCode = "200", description = "성공적으로 검색 결과를 반환하였습니다.", content = @Content(schema = @Schema(implementation = KeywordSearchResponse.class)))
+//    public KeywordSearchResponse getLecturesByKeyword(@Valid @ModelAttribute KeywordSearchParam keywordSearchParam) {
+//        Long memberId = jwtUtil.getMemberIdFromRequest();
+//        return lectureService.searchByKeyword(memberId, keywordSearchParam);
+//    }
 
     @Auth
     @GetMapping("/recommendations")

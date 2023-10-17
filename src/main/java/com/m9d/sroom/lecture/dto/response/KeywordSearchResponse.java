@@ -13,7 +13,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class KeywordSearch {
+public class KeywordSearchResponse {
 
     @Schema(description = "응답 개수", example = "5")
     private int resultPerPage;

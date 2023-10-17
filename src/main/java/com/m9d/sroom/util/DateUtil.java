@@ -75,7 +75,7 @@ public class DateUtil {
         }
     }
 
-    public String convertISOToString(String publishTime) {
+    public static String convertISOToString(String publishTime) {
         return ZonedDateTime.parse(publishTime).format(dateTimeFormatter);
     }
 }

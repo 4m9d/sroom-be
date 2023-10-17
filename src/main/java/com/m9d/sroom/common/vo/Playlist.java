@@ -24,4 +24,9 @@ public class Playlist extends Content {
     private final Timestamp publishedAt;
 
     private final Integer videoCount;
+
+    @Override
+    public Long getViewCount() {
+        return -1L;
+    }
 }

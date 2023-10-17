@@ -4,7 +4,7 @@ package com.m9d.sroom.util;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.m9d.sroom.course.CourseService;
 import com.m9d.sroom.dashboard.DashboardService;
-import com.m9d.sroom.lecture.service.LectureService;
+import com.m9d.sroom.lecture.LectureService;
 import com.m9d.sroom.member.service.MemberService;
 import com.m9d.sroom.youtube.api.YoutubeApi;
 import com.m9d.sroom.youtube.YoutubeService;

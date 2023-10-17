@@ -16,10 +16,7 @@ import com.m9d.sroom.youtube.vo.PlaylistItemInfo;
 import com.m9d.sroom.youtube.vo.PlaylistVideoInfo;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -127,5 +124,9 @@ public class PlaylistService {
         return new EnrollContentInfo(true, playlistEntity.getPlaylistId(), playlistEntity.getTitle(),
                 playlistEntity.getDuration(), playlistEntity.getThumbnail(), playlistEntity.getChannel(),
                 videoService.getEnrollInnerContentList(playlistEntity.getPlaylistId()));
+    }
+
+    public Set<String> getEnrolledCodeSet(Long memberId) {
+        return playlistRepository.getCodeSetByMemberId(memberId);
     }
 }

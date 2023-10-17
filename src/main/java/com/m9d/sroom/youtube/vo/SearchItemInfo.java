@@ -2,11 +2,13 @@ package com.m9d.sroom.youtube.vo;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.sql.Timestamp;
 
 @AllArgsConstructor
 @Builder
+@Getter
 public class SearchItemInfo {
 
     private final String kind;
