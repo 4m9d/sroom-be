@@ -98,7 +98,7 @@ public class PlaylistService {
             isUpdated = true;
         } else if (!DateUtil.hasRecentUpdate(playlistEntityOptional.get().getUpdatedAt(), VideoConstant.VIDEO_UPDATE_THRESHOLD_HOURS)) {
             playlistRepository.updateById(playlistEntityOptional.get().getPlaylistId(),
-                    new PlaylistEntity(playlist, playlistDuration));
+                    playlistEntityOptional.get().updateByYoutube(playlist, playlistDuration));
             isUpdated = true;
         } else {
             isUpdated = false;

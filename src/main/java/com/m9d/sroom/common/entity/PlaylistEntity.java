@@ -81,4 +81,14 @@ public class PlaylistEntity {
         this.videoCount = playlist.getVideoCount();
         this.duration = playlistDuration;
     }
+
+    public PlaylistEntity updateByYoutube(Playlist playlist, int playlistDuration) {
+        this.channel = playlist.getChannel();
+        this.thumbnail = playlist.getThumbnail();
+        this.description = playlist.getDescription();
+        this.duration = playlistDuration;
+        this.title = playlist.getTitle();
+        this.videoCount = playlist.getVideoCount();
+        return this;
+    }
 }

@@ -3,6 +3,7 @@ package com.m9d.sroom.course;
 import com.m9d.sroom.common.entity.VideoEntity;
 import com.m9d.sroom.lecture.dto.VideoCompletionStatus;
 import com.m9d.sroom.lecture.exception.VideoNotFoundException;
+import com.m9d.sroom.material.model.MaterialStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -76,5 +77,9 @@ public class CourseVideo {
         status.setTimeGap(videoDuration - viewDuration);
 
         return status;
+    }
+
+    public MaterialStatus getMaterialStatus() {
+        return MaterialStatus.from(summaryId);
     }
 }

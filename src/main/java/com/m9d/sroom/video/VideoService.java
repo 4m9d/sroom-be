@@ -58,7 +58,8 @@ public class VideoService {
         if (videoEntityOptional.isEmpty()) {
             videoEntity = videoRepository.save(new VideoEntity(video, (long) MaterialStatus.CREATING.getValue()));
         } else if (!DateUtil.hasRecentUpdate(videoEntityOptional.get().getUpdatedAt(), VideoConstant.VIDEO_UPDATE_THRESHOLD_HOURS)) {
-            videoEntity = videoRepository.updateById(videoEntityOptional.get().getVideoId(), new VideoEntity(video, (long) MaterialStatus.CREATING.getValue()));
+            videoEntity = videoRepository.updateById(videoEntityOptional.get().getVideoId(), videoEntityOptional.get()
+                    .updateByYoutube(video, MaterialStatus.CREATING.getValue()));
         } else {
             videoEntity = videoEntityOptional.get();
         }

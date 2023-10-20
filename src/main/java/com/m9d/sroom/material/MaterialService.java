@@ -67,87 +67,87 @@ public class MaterialService {
         this.videoRepository = videoRepository;
     }
 
-    @Transactional
-    public Material getMaterials(Long memberId, Long courseVideoId) {
-        CourseVideoEntity courseVideo = validateCourseVideoForMember(memberId, courseVideoId);
+//    @Transactional
+//    public Material getMaterials(Long memberId, Long courseVideoId) {
+//        CourseVideoEntity courseVideo = validateCourseVideoForMember(memberId, courseVideoId);
+//
+//        if (courseVideo.getSummaryId() == MaterialStatus.CREATING.getValue()) {
+//            return Material.builder()
+//                    .status(MaterialStatus.CREATING.getValue())
+//                    .build();
+//        } else if (courseVideo.getSummaryId() == MaterialStatus.CREATION_FAILED.getValue()) {
+//            return Material.builder()
+//                    .status(MaterialStatus.CREATION_FAILED.getValue())
+//                    .build();
+//        } else {
+//            List<QuizRes> quizResList = getQuizResList(courseVideo.getVideoId(), courseVideoId);
+//            return Material.builder()
+//                    .status(MaterialStatus.CREATED.getValue())
+//                    .summaryBrief(new SummaryBrief(summaryRepository.getById(courseVideo.getSummaryId())))
+//                    .quizzes(quizResList)
+//                    .totalQuizCount(quizResList.size())
+//                    .build();
+//        }
+//    }
+//
+//    private List<QuizRes> getQuizResList(Long videoId, Long courseVideoId) {
+//        List<QuizRes> quizResList = new ArrayList<>();
+//        for (QuizEntity quiz : quizRepository.getListByVideoId(videoId)) {
+//            quizResList.add(getQuizRes(courseVideoId, quiz));
+//        }
+//
+//        return quizResList;
+//    }
+//
+//    private QuizRes getQuizRes(Long courseVideoId, QuizEntity quiz) {
+//        QuizRes quizRes = QuizRes.builder()
+//                .id(quiz.getId())
+//                .type(quiz.getType())
+//                .question(quiz.getQuestion())
+//                .options(getOptionsStr(quiz.getId()))
+//                .answer(getQuizAnswer(quiz))
+//                .build();
+//
+//        courseQuizRepository.findByQuizIdAndCourseVideoId(quiz.getId(), courseVideoId)
+//                .ifPresentOrElse(
+//                        courseQuiz -> setQuizResWithCourseQuiz(quizRes, courseQuiz),
+//                        () -> quizRes.setSubmitted(false)
+//                );
+//        return quizRes;
+//    }
+//
+//    private List<String> getOptionsStr(Long quizId) {
+//        return quizOptionRepository.getListByQuizId(quizId).stream()
+//                .sorted(Comparator.comparingInt(QuizOptionEntity::getOptionIndex))
+//                .map(QuizOptionEntity::getOptionText)
+//                .collect(Collectors.toList());
+//    }
+//
+//    private String getQuizAnswer(QuizEntity quiz) {
+//        switch (QuizType.fromValue(quiz.getType())) {
+//            case MULTIPLE_CHOICE:
+//                return String.valueOf(quiz.getChoiceAnswer());
+//            case SUBJECTIVE:
+//                return quiz.getSubjectiveAnswer();
+//            case TRUE_FALSE:
+//                return quiz.getChoiceAnswer().equals(0) ? "false" : "true";
+//            default:
+//                throw new QuizTypeNotMatchException(quiz.getType());
+//        }
+//    }
 
-        if (courseVideo.getSummaryId() == MaterialStatus.CREATING.getValue()) {
-            return Material.builder()
-                    .status(MaterialStatus.CREATING.getValue())
-                    .build();
-        } else if (courseVideo.getSummaryId() == MaterialStatus.CREATION_FAILED.getValue()) {
-            return Material.builder()
-                    .status(MaterialStatus.CREATION_FAILED.getValue())
-                    .build();
-        } else {
-            List<QuizRes> quizResList = getQuizResList(courseVideo.getVideoId(), courseVideoId);
-            return Material.builder()
-                    .status(MaterialStatus.CREATED.getValue())
-                    .summaryBrief(new SummaryBrief(summaryRepository.getById(courseVideo.getSummaryId())))
-                    .quizzes(quizResList)
-                    .totalQuizCount(quizResList.size())
-                    .build();
-        }
-    }
-
-    private List<QuizRes> getQuizResList(Long videoId, Long courseVideoId) {
-        List<QuizRes> quizResList = new ArrayList<>();
-        for (QuizEntity quiz : quizRepository.getListByVideoId(videoId)) {
-            quizResList.add(getQuizRes(courseVideoId, quiz));
-        }
-
-        return quizResList;
-    }
-
-    private QuizRes getQuizRes(Long courseVideoId, QuizEntity quiz) {
-        QuizRes quizRes = QuizRes.builder()
-                .id(quiz.getId())
-                .type(quiz.getType())
-                .question(quiz.getQuestion())
-                .options(getOptionsStr(quiz.getId()))
-                .answer(getQuizAnswer(quiz))
-                .build();
-
-        courseQuizRepository.findByQuizIdAndCourseVideoId(quiz.getId(), courseVideoId)
-                .ifPresentOrElse(
-                        courseQuiz -> setQuizResWithCourseQuiz(quizRes, courseQuiz),
-                        () -> quizRes.setSubmitted(false)
-                );
-        return quizRes;
-    }
-
-    private List<String> getOptionsStr(Long quizId) {
-        return quizOptionRepository.getListByQuizId(quizId).stream()
-                .sorted(Comparator.comparingInt(QuizOptionEntity::getOptionIndex))
-                .map(QuizOptionEntity::getOptionText)
-                .collect(Collectors.toList());
-    }
-
-    private String getQuizAnswer(QuizEntity quiz) {
-        switch (QuizType.fromValue(quiz.getType())) {
-            case MULTIPLE_CHOICE:
-                return String.valueOf(quiz.getChoiceAnswer());
-            case SUBJECTIVE:
-                return quiz.getSubjectiveAnswer();
-            case TRUE_FALSE:
-                return quiz.getChoiceAnswer().equals(0) ? "false" : "true";
-            default:
-                throw new QuizTypeNotMatchException(quiz.getType());
-        }
-    }
-
-    private void setQuizResWithCourseQuiz(QuizRes quizRes, CourseQuizEntity courseQuiz) {
-        quizRes.setSubmitted(true);
-        quizRes.setCorrect(courseQuiz.getCorrect());
-        quizRes.setScrapped(courseQuiz.getScrapped());
-        quizRes.setSubmittedAt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(courseQuiz.getSubmittedTime()));
-
-        if (quizRes.getType() == QuizType.TRUE_FALSE.getValue()) {
-            quizRes.setSubmittedAnswer(courseQuiz.getSubmittedAnswer().equals("0") ? "false" : "true");
-        } else {
-            quizRes.setSubmittedAnswer(courseQuiz.getSubmittedAnswer());
-        }
-    }
+//    private void setQuizResWithCourseQuiz(QuizRes quizRes, CourseQuizEntity courseQuiz) {
+//        quizRes.setSubmitted(true);
+//        quizRes.setCorrect(courseQuiz.getCorrect());
+//        quizRes.setScrapped(courseQuiz.getScrapped());
+//        quizRes.setSubmittedAt(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(courseQuiz.getSubmittedTime()));
+//
+//        if (quizRes.getType() == QuizType.TRUE_FALSE.getValue()) {
+//            quizRes.setSubmittedAnswer(courseQuiz.getSubmittedAnswer().equals("0") ? "false" : "true");
+//        } else {
+//            quizRes.setSubmittedAnswer(courseQuiz.getSubmittedAnswer());
+//        }
+//    }
 
     @Transactional
     public SummaryId updateSummary(Long memberId, Long courseVideoId, String content) {

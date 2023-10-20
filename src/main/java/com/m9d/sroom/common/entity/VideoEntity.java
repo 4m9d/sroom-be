@@ -110,4 +110,17 @@ public class VideoEntity {
         this.summaryId = summaryId;
     }
 
+    public VideoEntity updateByYoutube(Video video, long summaryId) {
+        this.title = video.getTitle();
+        this.channel = video.getChannel();
+        this.thumbnail = video.getThumbnail();
+        this.description = video.getDescription();
+        this.duration = video.getDuration();
+        this.viewCount = video.getViewCount();
+        this.publishedAt = video.getPublishedAt();
+        this.language = video.getLanguage();
+        this.membership = video.getMembership();
+        this.summaryId = summaryId;
+        return this;
+    }
 }
