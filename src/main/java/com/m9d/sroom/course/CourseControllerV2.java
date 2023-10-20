@@ -4,6 +4,8 @@ import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.course.dto.response.CourseDetail;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.course.exception.CourseNotMatchException;
+import com.m9d.sroom.lecture.dto.request.LectureTimeRecord;
+import com.m9d.sroom.lecture.dto.response.LectureStatus;
 import com.m9d.sroom.playlist.PlaylistService;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.ValidateUtil;
@@ -22,7 +24,7 @@ import javax.validation.Valid;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/courses")
+@RequestMapping("")
 @Slf4j
 public class CourseControllerV2 {
 
@@ -32,7 +34,7 @@ public class CourseControllerV2 {
     private final JwtUtil jwtUtil;
 
     @Auth
-    @PostMapping("")
+    @PostMapping("/courses")
     @Tag(name = "강의 등록")
     @Operation(summary = "강의 신규 등록", description = "강의코드를 입력받아 코스를 생성합니다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 강의 코스를 등록하였습니다.", content = @Content(schema = @Schema(implementation = EnrolledCourseInfo.class)))
@@ -52,7 +54,7 @@ public class CourseControllerV2 {
     }
 
     @Auth
-    @PostMapping("/{courseId}")
+    @PostMapping("/courses/{courseId}")
     @Tag(name = "강의 등록")
     @Operation(summary = "기존 코스 강의 등록", description = "강의코드와 코스ID를 받아 코스에 추가합니다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 코스에 강의를 추가하였습니다.", content = @Content(schema = @Schema(implementation = EnrolledCourseInfo.class)))
@@ -76,7 +78,7 @@ public class CourseControllerV2 {
     }
 
     @Auth
-    @GetMapping("/{courseId}")
+    @GetMapping("/courses/{courseId}")
     @Tag(name = "강의 수강")
     @Operation(summary = "수강페이지 코스정보", description = "코스 ID를 받아 해당 코스 정보와 수강할 영상 리스트를 반환합니다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 수강 정보를 반환하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CourseDetail.class))})
@@ -85,5 +87,15 @@ public class CourseControllerV2 {
             throw new CourseNotMatchException();
         }
         return courseService.getCourseDetail(courseId);
+    }
+
+    @Auth
+    @PutMapping("/lectures/{courseVideoId}/time")
+    @Tag(name = "강의 수강")
+    @Operation(summary = "시청중인 강의 학습시간 저장하기", description = "duration을 입력받아 업데이트하고, 70%가 넘었다면 수강완료 처리한다.")
+    @ApiResponse(responseCode = "200", description = "성공적으로 학습시간을 저장 하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = LectureStatus.class))})
+    public LectureStatus updateLectureTime(@PathVariable(name = "courseVideoId") Long courseVideoId, @Valid @RequestBody LectureTimeRecord record, @RequestParam(name = "isCompletedManually", required = false, defaultValue = "false") boolean isCompletedManually) {
+        Long memberId = jwtUtil.getMemberIdFromRequest();
+        return courseService.updateLectureTime(memberId, courseVideoId, record.getViewDuration(), isCompletedManually);
     }
 }

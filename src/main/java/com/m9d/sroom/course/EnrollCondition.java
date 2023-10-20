@@ -53,7 +53,8 @@ public class EnrollCondition {
 
     private ArrayList<CourseVideo> createCourseVideoWithVideo(InnerContent innerContent) {
         return new ArrayList<>(List.of(new CourseVideo(innerContent.getContentId(), innerContent.getSummaryId(),
-                CourseConstant.ENROLL_DEFAULT_SECTION_NO_SCHEDULE, CourseConstant.ENROLL_VIDEO_INDEX, CourseConstant.ENROLL_LECTURE_INDEX)));
+                CourseConstant.ENROLL_DEFAULT_SECTION_NO_SCHEDULE, CourseConstant.ENROLL_VIDEO_INDEX,
+                CourseConstant.ENROLL_LECTURE_INDEX)));
     }
 
     private List<CourseVideo> createCourseVideoListWithPlaylist(List<InnerContent> contentList) {

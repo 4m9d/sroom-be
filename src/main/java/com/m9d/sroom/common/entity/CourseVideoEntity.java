@@ -71,6 +71,6 @@ public class CourseVideoEntity {
     }
 
     public CourseVideo toCourseVideo() {
-        return new CourseVideo(videoId, summaryId, section, videoIndex, lectureIndex);
+        return new CourseVideo(videoId, summaryId, section, videoIndex, lectureIndex, complete, maxDuration);
     }
 }

@@ -90,287 +90,287 @@ public class LectureService {
     }
 
 
-    @Transactional
-    public KeywordSearchResponse searchByKeyword(Long memberId, KeywordSearchParam keywordSearchParam) {
-        log.info("lecture keyword search. memberId = {}, keyword : {}", memberId, keywordSearchParam.getKeyword());
-        Mono<SearchDto> searchVoMono = getSearchVoMono(keywordSearchParam);
-        Set<String> enrolledLectureSet = getEnrolledLectures(memberId);
+//    @Transactional
+//    public KeywordSearchResponse searchByKeyword(Long memberId, KeywordSearchParam keywordSearchParam) {
+//        log.info("lecture keyword search. memberId = {}, keyword : {}", memberId, keywordSearchParam.getKeyword());
+//        Mono<SearchDto> searchVoMono = getSearchVoMono(keywordSearchParam);
+//        Set<String> enrolledLectureSet = getEnrolledLectures(memberId);
+//
+//        SearchDto searchVo = youtubeService.safeGetVo(searchVoMono);
+//        String nextPageToken = Optional.of(searchVo)
+//                .map(SearchDto::getNextPageToken)
+//                .orElse(null);
+//
+//        return KeywordSearchResponse.builder()
+//                .nextPageToken(nextPageToken)
+//                .resultPerPage(searchVo.getPageInfo().getResultsPerPage())
+//                .lectures(getSearchedLectureList(searchVo, enrolledLectureSet))
+//                .build();
+//    }
 
-        SearchDto searchVo = youtubeService.safeGetVo(searchVoMono);
-        String nextPageToken = Optional.of(searchVo)
-                .map(SearchDto::getNextPageToken)
-                .orElse(null);
+//    private Mono<SearchDto> getSearchVoMono(KeywordSearchParam keywordSearchParam) {
+//        return youtubeApi.getSearchVo(SearchReq.builder()
+//                .keyword(URLEncoder.encode(keywordSearchParam.getKeyword(), StandardCharsets.UTF_8))
+//                .filter(keywordSearchParam.getFilter())
+//                .limit(keywordSearchParam.getLimit())
+//                .pageToken(keywordSearchParam.getNext_page_token())
+//                .build());
+//    }
 
-        return KeywordSearchResponse.builder()
-                .nextPageToken(nextPageToken)
-                .resultPerPage(searchVo.getPageInfo().getResultsPerPage())
-                .lectures(getSearchedLectureList(searchVo, enrolledLectureSet))
-                .build();
-    }
+//    public List<LectureResponse> getSearchedLectureList(SearchDto searchVo, Set<String> enrolledLectureSet) {
+//        List<CompletableFuture<LectureResponse>> futures = searchVo
+//                .getItems().stream()
+//                .map(item -> CompletableFuture.supplyAsync(() -> getLecture(enrolledLectureSet, item)))
+//                .collect(Collectors.toList());
+//        return futures.stream()
+//                .map(CompletableFuture::join)
+//                .collect(Collectors.toList());
+//    }
 
-    private Mono<SearchDto> getSearchVoMono(KeywordSearchParam keywordSearchParam) {
-        return youtubeApi.getSearchVo(SearchReq.builder()
-                .keyword(URLEncoder.encode(keywordSearchParam.getKeyword(), StandardCharsets.UTF_8))
-                .filter(keywordSearchParam.getFilter())
-                .limit(keywordSearchParam.getLimit())
-                .pageToken(keywordSearchParam.getNext_page_token())
-                .build());
-    }
+//    private LectureResponse getLecture(Set<String> enrolledLectureSet, SearchItemDto item) {
+//        SearchSnippetDto snippetVo = item.getSnippet();
+//        String lectureCode;
+//        String description;
+//        long viewCount = -1L;
+//        int videoCount = 1;
+//
+//        boolean isPlaylist = item.getId().getKind().equals(JSONNODE_TYPE_PLAYLIST);
+//        if (isPlaylist) {
+//            lectureCode = item.getId().getPlaylistId();
+//            PlaylistEntity playlist = getSearchedPlaylistLast(lectureCode);
+//            videoCount = playlist.getVideoCount();
+//            description = playlist.getDescription();
+//        } else {
+//            lectureCode = item.getId().getVideoId();
+//            VideoEntity video = getSearchedVideoLast(lectureCode);
+//            if (video.getViewCount() != null) {
+//                viewCount = video.getViewCount();
+//            }
+//            description = video.getDescription();
+//        }
+//
+//        return LectureResponse.builder()
+//                .lectureTitle(unescapeHtml(snippetVo.getTitle()))
+//                .description(unescapeHtml(description))
+//                .channel(unescapeHtml(snippetVo.getChannelTitle()))
+//                .lectureCode(lectureCode)
+//                .enrolled(enrolledLectureSet.contains(lectureCode))
+//                .publishedAt(dateUtil.convertISOToString(snippetVo.getPublishTime()))
+//                .isPlaylist(isPlaylist)
+//                .lectureCount(videoCount)
+//                .viewCount(viewCount)
+//                .thumbnail(youtubeService.selectThumbnailInVo(snippetVo.getThumbnails()))
+//                .build();
+//    }
 
-    public List<LectureResponse> getSearchedLectureList(SearchDto searchVo, Set<String> enrolledLectureSet) {
-        List<CompletableFuture<LectureResponse>> futures = searchVo
-                .getItems().stream()
-                .map(item -> CompletableFuture.supplyAsync(() -> getLecture(enrolledLectureSet, item)))
-                .collect(Collectors.toList());
-        return futures.stream()
-                .map(CompletableFuture::join)
-                .collect(Collectors.toList());
-    }
+//    private PlaylistEntity getSearchedPlaylistLast(String playlistCode) {
+//        Optional<PlaylistEntity> playlistOptional = playlistRepository.findByCode(playlistCode);
+//
+//        if (playlistOptional.isPresent() &&
+//                dateUtil.validateExpiration(playlistOptional.get().getUpdatedAt(), PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
+//            return playlistOptional.get();
+//        } else {
+//            return youtubeService.getPlaylistWithBlocking(playlistCode);
+//        }
+//    }
 
-    private LectureResponse getLecture(Set<String> enrolledLectureSet, SearchItemDto item) {
-        SearchSnippetDto snippetVo = item.getSnippet();
-        String lectureCode;
-        String description;
-        long viewCount = -1L;
-        int videoCount = 1;
+//    @Transactional
+//    public Object getLectureDetail(Long memberId, boolean isPlaylist, String lectureCode, LectureDetailParam lectureDetailParam) {
+//        validateLectureDetailParam(isPlaylist, lectureDetailParam);
+//        log.info("lecture detail request. memberId = {}, lectureCode = {}", memberId, lectureCode);
+//
+//        if (!isPlaylist && !lectureDetailParam.isReview_only()) {
+//            return getVideoDetail(memberId, lectureCode, lectureDetailParam.getReview_limit());
+//        }
+//
+//        if (isPlaylist && !lectureDetailParam.isIndex_only() && !lectureDetailParam.isReview_only()) {
+//            return getPlaylistDetail(memberId, lectureCode, lectureDetailParam.getReview_limit());
+//        }
+//
+//        if (lectureDetailParam.isIndex_only()) {
+//            return getPlaylistItemList(lectureCode);
+//        }
+//
+//        return reviewRepository.getBriefListByCode(lectureCode, lectureDetailParam.getReview_offset(),
+//                lectureDetailParam.getReview_limit());
+//    }
 
-        boolean isPlaylist = item.getId().getKind().equals(JSONNODE_TYPE_PLAYLIST);
-        if (isPlaylist) {
-            lectureCode = item.getId().getPlaylistId();
-            PlaylistEntity playlist = getSearchedPlaylistLast(lectureCode);
-            videoCount = playlist.getVideoCount();
-            description = playlist.getDescription();
-        } else {
-            lectureCode = item.getId().getVideoId();
-            VideoEntity video = getSearchedVideoLast(lectureCode);
-            if (video.getViewCount() != null) {
-                viewCount = video.getViewCount();
-            }
-            description = video.getDescription();
-        }
+//    public void validateLectureDetailParam(boolean isPlaylist, LectureDetailParam lectureDetailParam) {
+//        if (lectureDetailParam.isIndex_only() && lectureDetailParam.isReview_only()) {
+//            throw new TwoOnlyParamTrueException();
+//        }
+//        if (!isPlaylist && lectureDetailParam.isIndex_only()) {
+//            throw new VideoIndexParamException();
+//        }
+//    }
 
-        return LectureResponse.builder()
-                .lectureTitle(unescapeHtml(snippetVo.getTitle()))
-                .description(unescapeHtml(description))
-                .channel(unescapeHtml(snippetVo.getChannelTitle()))
-                .lectureCode(lectureCode)
-                .enrolled(enrolledLectureSet.contains(lectureCode))
-                .publishedAt(dateUtil.convertISOToString(snippetVo.getPublishTime()))
-                .isPlaylist(isPlaylist)
-                .lectureCount(videoCount)
-                .viewCount(viewCount)
-                .thumbnail(youtubeService.selectThumbnailInVo(snippetVo.getThumbnails()))
-                .build();
-    }
+//    private IndexInfo getPlaylistItemList(String playlistCode) {
+//        AtomicInteger totalDurationSeconds = new AtomicInteger(0);
+//        List<Index> indexList = new ArrayList<>();
+//
+//        String nextPageToken = null;
+//        int pageCount = MAX_PLAYLIST_ITEM / DEFAULT_INDEX_COUNT;
+//
+//
+//        for (int i = 0; i < pageCount; i++) {
+//            PlaylistVideoDto playlistVideoVo = youtubeService.getPlaylistItemWithBlocking(playlistCode, nextPageToken, DEFAULT_INDEX_COUNT);
+//            pageCount = playlistVideoVo.getPageInfo().getTotalResults() / DEFAULT_INDEX_COUNT + 1;
+//            nextPageToken = Optional.of(playlistVideoVo)
+//                    .map(PlaylistVideoDto::getNextPageToken)
+//                    .orElse(null);
+//            indexList.addAll(getIndexList(playlistVideoVo));
+//
+//            if (nextPageToken == null) {
+//                break;
+//            }
+//        }
+//
+//        for (Index index : indexList) {
+//            totalDurationSeconds.addAndGet(index.getDuration());
+//        }
+//
+//        return IndexInfo.builder()
+//                .indexList(indexList)
+//                .duration(totalDurationSeconds.get())
+//                .lectureCount(indexList.size())
+//                .build();
+//    }
 
-    private PlaylistEntity getSearchedPlaylistLast(String playlistCode) {
-        Optional<PlaylistEntity> playlistOptional = playlistRepository.findByCode(playlistCode);
+//    public PlaylistDetail getPlaylistDetail(Long memberId, String playlistCode, int reviewLimit) {
+//        Mono<PlaylistDto> playlistVoMono = youtubeApi.getPlaylistVo(PlaylistReq.builder()
+//                .playlistCode(playlistCode)
+//                .build());
+//
+//        Set<String> enrolledPlaylistSet = playlistRepository.getCodeSetByMemberId(memberId);
+//        List<CourseBrief> courseBriefList = courseRepository.getBriefListByMemberId(memberId);
+//        List<ReviewBrief> reviewList = reviewRepository.getBriefListByCode(playlistCode, DEFAULT_REVIEW_OFFSET, reviewLimit);
+//        PlaylistEntity playlist = youtubeService.getPlaylistFromMono(playlistVoMono);
+//
+//        return PlaylistDetail.builder()
+//                .lectureCode(playlistCode)
+//                .lectureTitle(playlist.getTitle())
+//                .channel(playlist.getChannel())
+//                .description(playlist.getDescription())
+//                .playlist(true)
+//                .publishedAt(playlist.getPublishedAt().toLocalDateTime().toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE))
+//                .enrolled(enrolledPlaylistSet.contains(playlistCode))
+//                .thumbnail(playlist.getThumbnail())
+//                .reviews(reviewList)
+//                .reviewCount(reviewList.size())
+//                .rating(calculateAverageRating(reviewList))
+//                .courses(courseBriefList)
+//                .build();
+//    }
+//
+//    private List<Index> getIndexList(PlaylistVideoDto playlistVideoVo) {
+//        List<CompletableFuture<Index>> futureList = new ArrayList<>();
+//
+//        for (PlaylistVideoItemDto itemVo : playlistVideoVo.getItems()) {
+//            if (youtubeService.isPrivacyStatusUnusable(itemVo)) {
+//                continue;
+//            }
+//            futureList.add(CompletableFuture.supplyAsync(() ->
+//                    getIndex(itemVo
+//                                    .getSnippet()
+//                                    .getPosition(),
+//                            itemVo.getSnippet()
+//                                    .getResourceId()
+//                                    .getVideoId())));
+//        }
+//
+//        return futureList.stream()
+//                .map(CompletableFuture::join)
+//                .filter(Objects::nonNull)
+//                .collect(Collectors.toList());
+//    }
 
-        if (playlistOptional.isPresent() &&
-                dateUtil.validateExpiration(playlistOptional.get().getUpdatedAt(), PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
-            return playlistOptional.get();
-        } else {
-            return youtubeService.getPlaylistWithBlocking(playlistCode);
-        }
-    }
+//    private Index getIndex(int index, String videoCode) {
+//        VideoEntity video = getSearchedVideoLast(videoCode);
+//
+//        return Index.builder()
+//                .index(index)
+//                .lectureTitle(unescapeHtml(video.getTitle()))
+//                .thumbnail(video.getThumbnail())
+//                .duration(video.getDuration())
+//                .membership(video.isMembership())
+//                .build();
+//    }
 
-    @Transactional
-    public Object getLectureDetail(Long memberId, boolean isPlaylist, String lectureCode, LectureDetailParam lectureDetailParam) {
-        validateLectureDetailParam(isPlaylist, lectureDetailParam);
-        log.info("lecture detail request. memberId = {}, lectureCode = {}", memberId, lectureCode);
+//    private VideoEntity getSearchedVideoLast(String videoCode) {
+//        Optional<VideoEntity> videoOptional = videoRepository.findByCode(videoCode);
+//
+//        if (videoOptional.isPresent() &&
+//                dateUtil.validateExpiration(videoOptional.get().getUpdatedAt(), VIDEO_UPDATE_THRESHOLD_HOURS)) {
+//            return videoOptional.get();
+//        } else {
+//            return youtubeService.getVideoWithBlocking(videoCode);
+//        }
+//    }
 
-        if (!isPlaylist && !lectureDetailParam.isReview_only()) {
-            return getVideoDetail(memberId, lectureCode, lectureDetailParam.getReview_limit());
-        }
+//    public VideoDetail getVideoDetail(Long memberId, String videoCode, int reviewLimit) {
+//        Mono<VideoDto> videoVoMono = youtubeApi.getVideoVo(VideoReq.builder()
+//                .videoCode(videoCode)
+//                .build());
+//
+//        Set<String> enrolledVideoSet = videoRepository.getCodeSetByMemberId(memberId);
+//        List<ReviewBrief> reviewList = reviewRepository.getBriefListByCode(videoCode, DEFAULT_REVIEW_OFFSET, reviewLimit);
+//        List<CourseBrief> courseBriefList = courseRepository.getBriefListByMemberId(memberId);
+//
+//        VideoEntity video;
+//        try {
+//            video = youtubeService.getVideoFromMono(videoVoMono);
+//        } catch (IndexOutOfBoundsException e) {
+//            log.warn("존재하지 않는 영상입니다. video code = {}", videoCode);
+//            throw new VideoNotFoundException();
+//        }
+//
+//        boolean isMembership = false;
+//        long viewCount = -1;
+//
+//        if (video.getViewCount() == null) {
+//            isMembership = true;
+//        } else {
+//            viewCount = video.getViewCount();
+//        }
+//
+//        IndexInfo indexInfo = IndexInfo.builder()
+//                .indexList(List.of(new Index(0, video.getThumbnail(), video.getTitle(), video.getDuration(), isMembership)))
+//                .build();
+//
+//        return VideoDetail.builder()
+//                .lectureCode(videoCode)
+//                .lectureTitle(unescapeHtml(video.getTitle()))
+//                .channel(video.getChannel())
+//                .description(unescapeHtml(video.getDescription()))
+//                .duration(video.getDuration())
+//                .playlist(false)
+//                .enrolled(enrolledVideoSet.contains(videoCode))
+//                .viewCount(viewCount)
+//                .publishedAt(video.getPublishedAt().toLocalDateTime().toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE))
+//                .thumbnail(video.getThumbnail())
+//                .reviews(reviewList)
+//                .reviewCount(reviewList.size())
+//                .rating(calculateAverageRating(reviewList))
+//                .courses(courseBriefList)
+//                .membership(isMembership)
+//                .indexes(indexInfo)
+//                .build();
+//    }
 
-        if (isPlaylist && !lectureDetailParam.isIndex_only() && !lectureDetailParam.isReview_only()) {
-            return getPlaylistDetail(memberId, lectureCode, lectureDetailParam.getReview_limit());
-        }
-
-        if (lectureDetailParam.isIndex_only()) {
-            return getPlaylistItemList(lectureCode);
-        }
-
-        return reviewRepository.getBriefListByCode(lectureCode, lectureDetailParam.getReview_offset(),
-                lectureDetailParam.getReview_limit());
-    }
-
-    public void validateLectureDetailParam(boolean isPlaylist, LectureDetailParam lectureDetailParam) {
-        if (lectureDetailParam.isIndex_only() && lectureDetailParam.isReview_only()) {
-            throw new TwoOnlyParamTrueException();
-        }
-        if (!isPlaylist && lectureDetailParam.isIndex_only()) {
-            throw new VideoIndexParamException();
-        }
-    }
-
-    private IndexInfo getPlaylistItemList(String playlistCode) {
-        AtomicInteger totalDurationSeconds = new AtomicInteger(0);
-        List<Index> indexList = new ArrayList<>();
-
-        String nextPageToken = null;
-        int pageCount = MAX_PLAYLIST_ITEM / DEFAULT_INDEX_COUNT;
-
-
-        for (int i = 0; i < pageCount; i++) {
-            PlaylistVideoDto playlistVideoVo = youtubeService.getPlaylistItemWithBlocking(playlistCode, nextPageToken, DEFAULT_INDEX_COUNT);
-            pageCount = playlistVideoVo.getPageInfo().getTotalResults() / DEFAULT_INDEX_COUNT + 1;
-            nextPageToken = Optional.of(playlistVideoVo)
-                    .map(PlaylistVideoDto::getNextPageToken)
-                    .orElse(null);
-            indexList.addAll(getIndexList(playlistVideoVo));
-
-            if (nextPageToken == null) {
-                break;
-            }
-        }
-
-        for (Index index : indexList) {
-            totalDurationSeconds.addAndGet(index.getDuration());
-        }
-
-        return IndexInfo.builder()
-                .indexList(indexList)
-                .duration(totalDurationSeconds.get())
-                .lectureCount(indexList.size())
-                .build();
-    }
-
-    public PlaylistDetail getPlaylistDetail(Long memberId, String playlistCode, int reviewLimit) {
-        Mono<PlaylistDto> playlistVoMono = youtubeApi.getPlaylistVo(PlaylistReq.builder()
-                .playlistCode(playlistCode)
-                .build());
-
-        Set<String> enrolledPlaylistSet = playlistRepository.getCodeSetByMemberId(memberId);
-        List<CourseBrief> courseBriefList = courseRepository.getBriefListByMemberId(memberId);
-        List<ReviewBrief> reviewList = reviewRepository.getBriefListByCode(playlistCode, DEFAULT_REVIEW_OFFSET, reviewLimit);
-        PlaylistEntity playlist = youtubeService.getPlaylistFromMono(playlistVoMono);
-
-        return PlaylistDetail.builder()
-                .lectureCode(playlistCode)
-                .lectureTitle(playlist.getTitle())
-                .channel(playlist.getChannel())
-                .description(playlist.getDescription())
-                .playlist(true)
-                .publishedAt(playlist.getPublishedAt().toLocalDateTime().toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE))
-                .enrolled(enrolledPlaylistSet.contains(playlistCode))
-                .thumbnail(playlist.getThumbnail())
-                .reviews(reviewList)
-                .reviewCount(reviewList.size())
-                .rating(calculateAverageRating(reviewList))
-                .courses(courseBriefList)
-                .build();
-    }
-
-    private List<Index> getIndexList(PlaylistVideoDto playlistVideoVo) {
-        List<CompletableFuture<Index>> futureList = new ArrayList<>();
-
-        for (PlaylistVideoItemDto itemVo : playlistVideoVo.getItems()) {
-            if (youtubeService.isPrivacyStatusUnusable(itemVo)) {
-                continue;
-            }
-            futureList.add(CompletableFuture.supplyAsync(() ->
-                    getIndex(itemVo
-                                    .getSnippet()
-                                    .getPosition(),
-                            itemVo.getSnippet()
-                                    .getResourceId()
-                                    .getVideoId())));
-        }
-
-        return futureList.stream()
-                .map(CompletableFuture::join)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-    }
-
-    private Index getIndex(int index, String videoCode) {
-        VideoEntity video = getSearchedVideoLast(videoCode);
-
-        return Index.builder()
-                .index(index)
-                .lectureTitle(unescapeHtml(video.getTitle()))
-                .thumbnail(video.getThumbnail())
-                .duration(video.getDuration())
-                .membership(video.isMembership())
-                .build();
-    }
-
-    private VideoEntity getSearchedVideoLast(String videoCode) {
-        Optional<VideoEntity> videoOptional = videoRepository.findByCode(videoCode);
-
-        if (videoOptional.isPresent() &&
-                dateUtil.validateExpiration(videoOptional.get().getUpdatedAt(), VIDEO_UPDATE_THRESHOLD_HOURS)) {
-            return videoOptional.get();
-        } else {
-            return youtubeService.getVideoWithBlocking(videoCode);
-        }
-    }
-
-    public VideoDetail getVideoDetail(Long memberId, String videoCode, int reviewLimit) {
-        Mono<VideoDto> videoVoMono = youtubeApi.getVideoVo(VideoReq.builder()
-                .videoCode(videoCode)
-                .build());
-
-        Set<String> enrolledVideoSet = videoRepository.getCodeSetByMemberId(memberId);
-        List<ReviewBrief> reviewList = reviewRepository.getBriefListByCode(videoCode, DEFAULT_REVIEW_OFFSET, reviewLimit);
-        List<CourseBrief> courseBriefList = courseRepository.getBriefListByMemberId(memberId);
-
-        VideoEntity video;
-        try {
-            video = youtubeService.getVideoFromMono(videoVoMono);
-        } catch (IndexOutOfBoundsException e) {
-            log.warn("존재하지 않는 영상입니다. video code = {}", videoCode);
-            throw new VideoNotFoundException();
-        }
-
-        boolean isMembership = false;
-        long viewCount = -1;
-
-        if (video.getViewCount() == null) {
-            isMembership = true;
-        } else {
-            viewCount = video.getViewCount();
-        }
-
-        IndexInfo indexInfo = IndexInfo.builder()
-                .indexList(List.of(new Index(0, video.getThumbnail(), video.getTitle(), video.getDuration(), isMembership)))
-                .build();
-
-        return VideoDetail.builder()
-                .lectureCode(videoCode)
-                .lectureTitle(unescapeHtml(video.getTitle()))
-                .channel(video.getChannel())
-                .description(unescapeHtml(video.getDescription()))
-                .duration(video.getDuration())
-                .playlist(false)
-                .enrolled(enrolledVideoSet.contains(videoCode))
-                .viewCount(viewCount)
-                .publishedAt(video.getPublishedAt().toLocalDateTime().toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE))
-                .thumbnail(video.getThumbnail())
-                .reviews(reviewList)
-                .reviewCount(reviewList.size())
-                .rating(calculateAverageRating(reviewList))
-                .courses(courseBriefList)
-                .membership(isMembership)
-                .indexes(indexInfo)
-                .build();
-    }
-
-    private double calculateAverageRating(List<ReviewBrief> reviews) {
-        if (reviews == null || reviews.isEmpty()) {
-            return 0.0;
-        }
-
-        return reviews.stream()
-                .mapToInt(ReviewBrief::getSubmittedRating)
-                .average()
-                .orElse(0.0);
-    }
-
-    public String unescapeHtml(String input) {
-        return HtmlUtils.htmlUnescape(input);
-    }
+//    private double calculateAverageRating(List<ReviewBrief> reviews) {
+//        if (reviews == null || reviews.isEmpty()) {
+//            return 0.0;
+//        }
+//
+//        return reviews.stream()
+//                .mapToInt(ReviewBrief::getSubmittedRating)
+//                .average()
+//                .orElse(0.0);
+//    }
+//
+//    public String unescapeHtml(String input) {
+//        return HtmlUtils.htmlUnescape(input);
+//    }
 
     @Transactional
     public Recommendations getRecommendations(Long memberId) {
@@ -488,7 +488,7 @@ public class LectureService {
 
         VideoCompletionStatus status = getVideoCompletionStatus(record.getViewDuration(), timeGap, courseVideo, isMarkedAsCompleted);
 
-        if (!status.getRewound()) {
+        if (!status.isRewound()) {
             updateCourseDailyLog(memberId, courseVideo.getCourseId(), timeGap, status);
             MemberEntity member = memberRepository.getById(memberId);
             member.setTotalLearningTime(Math.max(timeGap, 0) + member.getTotalLearningTime());
@@ -496,24 +496,24 @@ public class LectureService {
             updateCourseLastViewTime(courseVideo.getCourseId());
         }
 
-        if (status.getCompletedNow()) {
+        if (status.isCompletedNow()) {
             updateCourseProgress(memberId, courseVideo.getCourseId(), 1);
         }
 
-        if (status.getFullyWatched()) {
+        if (status.isFullyWatched()) {
             updateLastViewVideoToNext(courseVideo.getCourseId(), courseVideo.getVideoIndex());
         }
 
         courseVideo.setMaxDuration(Math.max(record.getViewDuration(), courseVideo.getMaxDuration()));
         courseVideo.setStartTime(record.getViewDuration());
-        courseVideo.setComplete(status.getCompleted());
+        courseVideo.setComplete(status.isCompleted());
         courseVideo.setLastViewTime(new Timestamp(System.currentTimeMillis()));
         courseVideoRepository.updateById(courseVideoId, courseVideo);
 
         return LectureStatus.builder()
                 .courseVideoId(courseVideoId)
                 .viewDuration(record.getViewDuration())
-                .complete(status.getCompleted())
+                .complete(status.isCompleted())
                 .build();
     }
 
@@ -578,7 +578,7 @@ public class LectureService {
         Optional<CourseDailyLogEntity> dailyLogOptional = courseDailyLogRepository.findByCourseIdAndDate(courseId,
                 Date.valueOf(LocalDate.now()));
         int learningTimeToAdd = Math.max(timeGap, 0);
-        int lectureCountToAdd = videoStatus.getCompletedNow() ? 1 : 0;
+        int lectureCountToAdd = videoStatus.isCompletedNow() ? 1 : 0;
 
         if (dailyLogOptional.isEmpty()) {
             CourseDailyLogEntity initialDailyLog = CourseDailyLogEntity.builder()

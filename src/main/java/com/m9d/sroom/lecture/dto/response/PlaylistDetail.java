@@ -1,13 +1,17 @@
 package com.m9d.sroom.lecture.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.m9d.sroom.common.vo.Playlist;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.util.HtmlUtils;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Set;
 
 @Schema(description = "재생목록 상세 정보")
 @Data
@@ -53,4 +57,28 @@ public class PlaylistDetail {
 
     @Schema(description = "멤버의 코스 리스트")
     private List<CourseBrief> courses;
+
+    public PlaylistDetail(Playlist playlist, Set<String> enrolledLectureSet, List<CourseBrief> courseBriefList,
+                          List<ReviewBrief> reviewList) {
+        this.lectureCode = playlist.getCode();
+        this.lectureTitle = playlist.getTitle();
+        this.channel = playlist.getChannel();
+        this.description = HtmlUtils.htmlUnescape(playlist.getDescription());
+        this.playlist = true;
+        this.publishedAt = playlist.getPublishedAt().toLocalDateTime().toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        this.enrolled = enrolledLectureSet.contains(playlist.getCode());
+        this.thumbnail = playlist.getThumbnail();
+        this.reviews = reviewList;
+        this.reviewCount = reviewList.size();
+
+        if (reviewList == null || reviewList.isEmpty()) {
+            this.rating = 0.0;
+        } else {
+            this.rating = reviewList.stream()
+                    .mapToInt(ReviewBrief::getSubmittedRating)
+                    .average()
+                    .orElse(0.0);
+        }
+        this.courses = courseBriefList;
+    }
 }

@@ -5,11 +5,13 @@ import lombok.Data;
 @Data
 public class VideoCompletionStatus {
 
-    private Boolean completed;
+    private boolean completed;
 
-    private Boolean fullyWatched;
+    private boolean fullyWatched;
 
-    private Boolean completedNow;
+    private boolean completedNow;
 
-    private Boolean rewound;
+    private boolean rewound;
+
+    private int timeGap;
 }

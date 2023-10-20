@@ -9,4 +9,8 @@ public abstract class Content {
     public abstract Long getViewCount();
 
     public abstract String getThumbnail();
+
+    public abstract Boolean isPlaylist();
+
+    public abstract String getCode();
 }

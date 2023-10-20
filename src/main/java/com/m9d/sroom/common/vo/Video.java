@@ -37,4 +37,11 @@ public class Video extends Content {
     public Integer getVideoCount() {
         return 1;
     }
+
+    @Override
+    public Boolean isPlaylist() {
+        return false;
+    }
+
+
 }

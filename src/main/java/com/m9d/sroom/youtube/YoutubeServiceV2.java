@@ -15,6 +15,9 @@ import com.m9d.sroom.youtube.dto.search.SearchDto;
 import com.m9d.sroom.youtube.dto.video.VideoDto;
 import org.springframework.stereotype.Service;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 @Service
 public class YoutubeServiceV2 {
 
@@ -52,7 +55,7 @@ public class YoutubeServiceV2 {
 
     public SearchInfo getSearchInfo(String keyword, String nextPageToken, int limit, String filter) {
         SearchDto searchVo = youtubeApi.getSearchVo(SearchReq.builder()
-                .keyword(keyword)
+                .keyword(URLEncoder.encode(keyword, StandardCharsets.UTF_8))
                 .filter(filter)
                 .limit(limit)
                 .pageToken(nextPageToken)

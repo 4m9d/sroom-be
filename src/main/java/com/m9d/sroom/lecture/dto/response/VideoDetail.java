@@ -1,13 +1,18 @@
 package com.m9d.sroom.lecture.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.m9d.sroom.common.vo.Content;
+import com.m9d.sroom.common.vo.Video;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.util.HtmlUtils;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Set;
 
 @Schema(description = "동영상 상세 정보")
 @Data
@@ -66,4 +71,34 @@ public class VideoDetail {
 
     @Schema(description = "목차 정보")
     private IndexInfo indexes;
+
+    public VideoDetail(Video video, Set<String> enrolledLectureSet, List<CourseBrief> courseBriefList,
+                       List<ReviewBrief> reviewList) {
+        this.lectureCode = video.getCode();
+        this.lectureTitle = HtmlUtils.htmlUnescape(video.getTitle());
+        this.channel = video.getChannel();
+        this.description = HtmlUtils.htmlUnescape(video.getDescription());
+        this.duration = video.getDuration();
+        this.playlist = false;
+        this.enrolled = enrolledLectureSet.contains(video.getCode());
+        this.publishedAt = video.getPublishedAt().toLocalDateTime().toLocalDate().format(DateTimeFormatter.ISO_LOCAL_DATE);
+        this.thumbnail = video.getThumbnail();
+        this.reviews = reviewList;
+        this.reviewCount = reviewList.size();
+        if (reviewList == null || reviews.isEmpty()) {
+            this.rating = 0.0;
+        } else {
+            this.rating = reviews.stream()
+                    .mapToInt(ReviewBrief::getSubmittedRating)
+                    .average()
+                    .orElse(0.0);
+        }
+        this.courses = courseBriefList;
+        this.viewCount = video.getViewCount();
+        this.membership = video.getMembership();
+        this.indexes = IndexInfo.builder().
+                indexList(List.of(new Index(0, video.getThumbnail(), video.getTitle(), video.getDuration(),
+                        video.getMembership())))
+                .build();
+    }
 }

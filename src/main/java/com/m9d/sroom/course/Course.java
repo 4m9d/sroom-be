@@ -3,13 +3,11 @@ package com.m9d.sroom.course;
 import com.m9d.sroom.course.constant.CourseConstant;
 import com.m9d.sroom.course.dto.EnrollContentInfo;
 import com.m9d.sroom.course.dto.InnerContent;
-import com.m9d.sroom.course.dto.VideoInfoForSchedule;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Timestamp;
 import java.util.Calendar;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,6 +36,7 @@ public class Course {
 
     private final Integer dailyTargetTime;
 
+    @Getter
     private final List<CourseVideo> courseVideoList;
 
 
@@ -132,5 +131,12 @@ public class Course {
         return courseVideoList.stream()
                 .filter(video -> video.getLectureIndex() == lectureIndex)
                 .collect(Collectors.toList());
+    }
+
+    public int getCompletionRatio() {
+        int completedVideoCount = (int) courseVideoList.stream()
+                .filter(CourseVideo::isComplete)
+                .count();
+        return (int) ((double) completedVideoCount / courseVideoList.size() * 100);
     }
 }

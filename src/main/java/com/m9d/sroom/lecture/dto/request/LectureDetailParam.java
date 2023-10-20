@@ -15,4 +15,24 @@ public class LectureDetailParam {
     private int review_offset = 0;
 
     private int review_limit = 10;
+
+    public boolean isIndexOnly() {
+        return index_only;
+    }
+
+    public int getIndexLimit() {
+        return index_limit;
+    }
+
+    public boolean isReviewOnly() {
+        return review_only;
+    }
+
+    public int getReviewOffset() {
+        return review_offset;
+    }
+
+    public int getReviewLimit() {
+        return review_limit;
+    }
 }

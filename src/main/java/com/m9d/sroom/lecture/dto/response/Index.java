@@ -1,6 +1,7 @@
 package com.m9d.sroom.lecture.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.m9d.sroom.common.vo.PlaylistItem;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,4 +30,12 @@ public class Index {
     @Schema(description = "회원 전용 강의 표시", example = "false")
     @JsonProperty("is_members_only")
     private boolean membership;
+
+    public Index(PlaylistItem playlistItem) {
+        this.index = playlistItem.getIndex();
+        this.thumbnail = playlistItem.getThumbnail();
+        this.lectureTitle = playlistItem.getTitle();
+        this.duration = playlistItem.getDuration();
+        this.membership = playlistItem.getMembership();
+    }
 }

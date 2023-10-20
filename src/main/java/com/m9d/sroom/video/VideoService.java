@@ -103,10 +103,6 @@ public class VideoService {
         return innerContentList;
     }
 
-    public Integer getVideoDuration(Long videoId) {
-        return videoRepository.getById(videoId).getDuration();
-    }
-
     public Collection<String> getEnrolledCodeSet(Long memberId) {
         return videoRepository.getCodeSetByMemberId(memberId);
     }

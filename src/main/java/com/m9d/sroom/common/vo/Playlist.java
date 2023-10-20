@@ -29,4 +29,9 @@ public class Playlist extends Content {
     public Long getViewCount() {
         return -1L;
     }
+
+    @Override
+    public Boolean isPlaylist() {
+        return true;
+    }
 }

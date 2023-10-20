@@ -1,10 +1,15 @@
 package com.m9d.sroom.lecture;
 
 
+import com.m9d.sroom.course.CourseService;
+import com.m9d.sroom.course.CourseServiceV2;
 import com.m9d.sroom.lecture.dto.request.KeywordSearchParam;
-import com.m9d.sroom.lecture.dto.response.KeywordSearchResponse;
+import com.m9d.sroom.lecture.dto.request.LectureDetailParam;
+import com.m9d.sroom.lecture.dto.request.LectureTimeRecord;
+import com.m9d.sroom.lecture.dto.response.*;
 import com.m9d.sroom.playlist.PlaylistService;
 import com.m9d.sroom.util.JwtUtil;
+import com.m9d.sroom.util.ValidateUtil;
 import com.m9d.sroom.util.annotation.Auth;
 import com.m9d.sroom.video.VideoService;
 import com.m9d.sroom.youtube.YoutubeServiceV2;
@@ -13,12 +18,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.HashSet;
@@ -33,13 +38,17 @@ public class LectureControllerV2 {
     private final YoutubeServiceV2 youtubeService;
     private final PlaylistService playlistService;
     private final VideoService videoService;
+    private final CourseServiceV2 courseService;
     private final JwtUtil jwtUtil;
 
-    public LectureControllerV2(LectureServiceV2 lectureService, YoutubeServiceV2 youtubeService, PlaylistService playlistService, VideoService videoService, JwtUtil jwtUtil) {
+    public LectureControllerV2(LectureServiceV2 lectureService, YoutubeServiceV2 youtubeService,
+                               PlaylistService playlistService, VideoService videoService,
+                               CourseServiceV2 courseService, JwtUtil jwtUtil) {
         this.lectureService = lectureService;
         this.youtubeService = youtubeService;
         this.playlistService = playlistService;
         this.videoService = videoService;
+        this.courseService = courseService;
         this.jwtUtil = jwtUtil;
     }
 
@@ -59,10 +68,40 @@ public class LectureControllerV2 {
         SearchInfo searchInfo = youtubeService.getSearchInfo(keywordSearchParam.getKeyword(),
                 keywordSearchParam.getNextPageToken(), keywordSearchParam.getLimit(), keywordSearchParam.getFilter());
 
-        Set<String> enrolledLectureSet = new HashSet<>();
-        enrolledLectureSet.addAll(playlistService.getEnrolledCodeSet(memberId));
+        Set<String> enrolledLectureSet = new HashSet<>(playlistService.getEnrolledCodeSet(memberId));
         enrolledLectureSet.addAll(videoService.getEnrolledCodeSet(memberId));
 
         return lectureService.searchByKeyword(searchInfo, enrolledLectureSet);
+    }
+
+    @Auth
+    @GetMapping("/{lectureCode}")
+    @Tag(name = "강의 검색")
+    @Operation(summary = "강의 상세 정보 조회", description = "강의 ID를 이용하여 강의의 상세 정보를 조회한다.")
+    @Parameters({
+            @Parameter(in = ParameterIn.PATH, name = "lectureCode", description = "강의 코드", required = true, example = "OEV8gMkCHXQ"),
+            @Parameter(in = ParameterIn.QUERY, name = "index_only", description = "목차만 응답 여부", required = false, example = "false"),
+            @Parameter(in = ParameterIn.QUERY, name = "review_only", description = "후기만 응답 여부", required = false, example = "false"),
+            @Parameter(in = ParameterIn.QUERY, name = "index_limit", description = "결과의 최대 개수", required = false, example = "50"),
+            @Parameter(in = ParameterIn.QUERY, name = "review_limit", description = "후기의 최대 개수", required = false, example = "10"),
+            @Parameter(in = ParameterIn.QUERY, name = "index_next_token", description = "목차 다음 페이지 토큰", required = false, example = "EAAaBlBUOkNESQ")
+    })
+    @ApiResponse(responseCode = "200", description = "성공적으로 강의 상세 정보를 반환하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(oneOf = {PlaylistDetail.class, VideoDetail.class, IndexInfo.class}))})
+    public Object getLectureDetail(@PathVariable(name = "lectureCode") String lectureCode, @ModelAttribute LectureDetailParam lectureDetailParam) {
+        Long memberId = jwtUtil.getMemberIdFromRequest();
+
+        Set<String> enrolledLectureSet = new HashSet<>(playlistService.getEnrolledCodeSet(memberId));
+        enrolledLectureSet.addAll(videoService.getEnrolledCodeSet(memberId));
+
+        if (ValidateUtil.checkIfPlaylist(lectureCode) && !lectureDetailParam.isIndexOnly()) {
+            return lectureService.getContentDetail(playlistService.getRecentPlaylist(lectureCode),
+                    lectureDetailParam, enrolledLectureSet, courseService.getCourseBriedList(memberId));
+        } else if (ValidateUtil.checkIfPlaylist(lectureCode)) {
+            return lectureService.getContentDetail(playlistService.getRecentPlaylistWithItemList(lectureCode),
+                    lectureDetailParam, enrolledLectureSet, courseService.getCourseBriedList(memberId));
+        } else {
+            return lectureService.getContentDetail(videoService.getRecentVideo(lectureCode),
+                    lectureDetailParam, enrolledLectureSet, courseService.getCourseBriedList(memberId));
+        }
     }
 }

@@ -58,33 +58,32 @@ public class LectureController {
         return lectureService.getRecommendations(memberId);
     }
 
-    @Auth
-    @GetMapping("/{lectureCode}")
-    @Tag(name = "강의 검색")
-    @Operation(summary = "강의 상세 정보 조회", description = "강의 ID를 이용하여 강의의 상세 정보를 조회한다.")
-    @Parameters({
-            @Parameter(in = ParameterIn.PATH, name = "lectureCode", description = "강의 코드", required = true, example = "OEV8gMkCHXQ"),
-            @Parameter(in = ParameterIn.QUERY, name = "index_only", description = "목차만 응답 여부", required = false, example = "false"),
-            @Parameter(in = ParameterIn.QUERY, name = "review_only", description = "후기만 응답 여부", required = false, example = "false"),
-            @Parameter(in = ParameterIn.QUERY, name = "index_limit", description = "결과의 최대 개수", required = false, example = "50"),
-            @Parameter(in = ParameterIn.QUERY, name = "review_limit", description = "후기의 최대 개수", required = false, example = "10"),
-            @Parameter(in = ParameterIn.QUERY, name = "index_next_token", description = "목차 다음 페이지 토큰", required = false, example = "EAAaBlBUOkNESQ")
-    })
-    @ApiResponse(responseCode = "200", description = "성공적으로 강의 상세 정보를 반환하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(oneOf = {PlaylistDetail.class, VideoDetail.class, IndexInfo.class}))})
-    public Object getLectureDetail(@PathVariable(name = "lectureCode") String lectureCode, @ModelAttribute LectureDetailParam lectureDetailParam) {
-        Long memberId = jwtUtil.getMemberIdFromRequest();
-        boolean isPlaylist = YoutubeService.checkIfPlaylist(lectureCode);
-        return lectureService.getLectureDetail(memberId, isPlaylist, lectureCode, lectureDetailParam);
-    }
+//    @Auth
+//    @GetMapping("/{lectureCode}")
+//    @Tag(name = "강의 검색")
+//    @Operation(summary = "강의 상세 정보 조회", description = "강의 ID를 이용하여 강의의 상세 정보를 조회한다.")
+//    @Parameters({
+//            @Parameter(in = ParameterIn.PATH, name = "lectureCode", description = "강의 코드", required = true, example = "OEV8gMkCHXQ"),
+//            @Parameter(in = ParameterIn.QUERY, name = "index_only", description = "목차만 응답 여부", required = false, example = "false"),
+//            @Parameter(in = ParameterIn.QUERY, name = "review_only", description = "후기만 응답 여부", required = false, example = "false"),
+//            @Parameter(in = ParameterIn.QUERY, name = "index_limit", description = "결과의 최대 개수", required = false, example = "50"),
+//            @Parameter(in = ParameterIn.QUERY, name = "review_limit", description = "후기의 최대 개수", required = false, example = "10"),
+//            @Parameter(in = ParameterIn.QUERY, name = "index_next_token", description = "목차 다음 페이지 토큰", required = false, example = "EAAaBlBUOkNESQ")
+//    })
+//    @ApiResponse(responseCode = "200", description = "성공적으로 강의 상세 정보를 반환하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(oneOf = {PlaylistDetail.class, VideoDetail.class, IndexInfo.class}))})
+//    public Object getLectureDetail(@PathVariable(name = "lectureCode") String lectureCode, @ModelAttribute LectureDetailParam lectureDetailParam) {
+//        Long memberId = jwtUtil.getMemberIdFromRequest();
+//        boolean isPlaylist = YoutubeService.checkIfPlaylist(lectureCode);
+//        return lectureService.getLectureDetail(memberId, isPlaylist, lectureCode, lectureDetailParam);
+//    }
 
-    @Auth
-    @PutMapping("/{courseVideoId}/time")
-    @Tag(name = "강의 수강")
-    @Operation(summary = "시청중인 강의 학습시간 저장하기", description = "duration을 입력받아 업데이트하고, 70%가 넘었다면 수강완료 처리한다.")
-    @ApiResponse(responseCode = "200", description = "성공적으로 학습시간을 저장 하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = LectureStatus.class))})
-    public LectureStatus updateLectureTime(@PathVariable(name = "courseVideoId") Long courseVideoId, @Valid @RequestBody LectureTimeRecord record, @RequestParam(name = "isCompletedManually", required = false, defaultValue = "false") boolean isCompletedManually) {
-        Long memberId = jwtUtil.getMemberIdFromRequest();
-        return lectureService.updateLectureTime(memberId, courseVideoId, record, isCompletedManually);
-    }
-
+//    @Auth
+//    @PutMapping("/{courseVideoId}/time")
+//    @Tag(name = "강의 수강")
+//    @Operation(summary = "시청중인 강의 학습시간 저장하기", description = "duration을 입력받아 업데이트하고, 70%가 넘었다면 수강완료 처리한다.")
+//    @ApiResponse(responseCode = "200", description = "성공적으로 학습시간을 저장 하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = LectureStatus.class))})
+//    public LectureStatus updateLectureTime(@PathVariable(name = "courseVideoId") Long courseVideoId, @Valid @RequestBody LectureTimeRecord record, @RequestParam(name = "isCompletedManually", required = false, defaultValue = "false") boolean isCompletedManually) {
+//        Long memberId = jwtUtil.getMemberIdFromRequest();
+//        return lectureService.updateLectureTime(memberId, courseVideoId, record, isCompletedManually);
+//    }
 }
