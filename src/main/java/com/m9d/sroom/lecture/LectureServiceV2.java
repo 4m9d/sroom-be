@@ -9,6 +9,7 @@ import com.m9d.sroom.lecture.dto.response.*;
 import com.m9d.sroom.lecture.exception.TwoOnlyParamTrueException;
 import com.m9d.sroom.lecture.exception.VideoIndexParamException;
 import com.m9d.sroom.playlist.PlaylistService;
+import com.m9d.sroom.review.service.ReviewService;
 import com.m9d.sroom.video.VideoService;
 import com.m9d.sroom.youtube.vo.SearchInfo;
 import com.m9d.sroom.youtube.vo.SearchItemInfo;
@@ -32,13 +33,14 @@ public class LectureServiceV2 {
     private final PlaylistService playlistService;
     private final VideoService videoService;
 
-    private final LectureServiceHelper lectureServiceHelper;
+    private final ReviewService reviewService;
 
-    public LectureServiceV2(PlaylistService playlistService, VideoService videoService, LectureServiceHelper lectureServiceHelper) {
+    public LectureServiceV2(PlaylistService playlistService, VideoService videoService, ReviewService reviewService) {
         this.playlistService = playlistService;
         this.videoService = videoService;
-        this.lectureServiceHelper = lectureServiceHelper;
+        this.reviewService = reviewService;
     }
+
 
     public KeywordSearchResponse searchByKeyword(SearchInfo searchInfo, Set<String> enrolledLectureCodeSet) {
         String nextPageToken = Optional.of(searchInfo)
@@ -85,12 +87,12 @@ public class LectureServiceV2 {
         validateLectureDetailParam(content.isPlaylist(), lectureDetailParam);
 
         if (!content.isPlaylist() && !lectureDetailParam.isReviewOnly()) {
-            return new VideoDetail((Video) content, enrolledLectureSet, courseBriefList, lectureServiceHelper
+            return new VideoDetail((Video) content, enrolledLectureSet, courseBriefList, reviewService
                     .getReviewInfo(content.getCode(), DEFAULT_REVIEW_OFFSET, lectureDetailParam.getReviewLimit()));
         }
 
         if (content.isPlaylist() && !lectureDetailParam.isIndexOnly() && !lectureDetailParam.isReviewOnly()) {
-            return new PlaylistDetail((Playlist) content, enrolledLectureSet, courseBriefList, lectureServiceHelper
+            return new PlaylistDetail((Playlist) content, enrolledLectureSet, courseBriefList, reviewService
                     .getReviewInfo(content.getCode(), DEFAULT_REVIEW_OFFSET, lectureDetailParam.getReviewLimit()));
         }
 
@@ -98,7 +100,7 @@ public class LectureServiceV2 {
             return new IndexInfo((PlaylistWithItemList) content);
         }
 
-        return lectureServiceHelper.getReviewInfo(content.getCode(), lectureDetailParam.getReviewOffset(),
+        return reviewService.getReviewInfo(content.getCode(), lectureDetailParam.getReviewOffset(),
                 lectureDetailParam.getReviewLimit());
 
     }

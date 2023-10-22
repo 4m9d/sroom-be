@@ -1,9 +1,12 @@
 package com.m9d.sroom.material.dto.request;
 
+import com.m9d.sroom.quiz.QuizSubmittedInfo;
 import lombok.Setter;
 
+import java.sql.Timestamp;
+
 @Setter
-public class SubmittedQuiz {
+public class SubmittedQuizRequest {
 
     private Long id;
 
@@ -21,5 +24,10 @@ public class SubmittedQuiz {
 
     public Boolean getIsCorrect() {
         return is_correct;
+    }
+
+    public QuizSubmittedInfo toVo() {
+        return new QuizSubmittedInfo(true, this.getIsCorrect(), this.getSubmittedAnswer(),
+                new Timestamp(System.currentTimeMillis()), false);
     }
 }

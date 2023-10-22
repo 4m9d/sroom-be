@@ -1,15 +1,11 @@
 package com.m9d.sroom.material;
 
-import com.m9d.sroom.ai.AiService;
 import com.m9d.sroom.common.entity.*;
-import com.m9d.sroom.common.vo.Video;
 import com.m9d.sroom.course.exception.CourseNotMatchException;
-import com.m9d.sroom.course.exception.CourseVideoNotFoundException;
 import com.m9d.sroom.ai.exception.QuizTypeNotMatchException;
 import com.m9d.sroom.ai.model.MaterialVaildStatus;
 import com.m9d.sroom.ai.vo.MaterialResultsVo;
 import com.m9d.sroom.ai.vo.QuizVo;
-import com.m9d.sroom.material.dto.request.SubmittedQuiz;
 import com.m9d.sroom.material.dto.response.*;
 import com.m9d.sroom.material.exception.*;
 import com.m9d.sroom.material.model.*;
@@ -22,18 +18,12 @@ import com.m9d.sroom.common.repository.quiz.QuizRepository;
 import com.m9d.sroom.common.repository.quizoption.QuizOptionRepository;
 import com.m9d.sroom.common.repository.summary.SummaryRepository;
 import com.m9d.sroom.common.repository.video.VideoRepository;
+import com.m9d.sroom.quiz.QuizType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static com.m9d.sroom.material.constant.MaterialConstant.DEFAULT_QUIZ_OPTION_COUNT;
 
@@ -149,149 +139,149 @@ public class MaterialService {
 //        }
 //    }
 
-    @Transactional
-    public SummaryId updateSummary(Long memberId, Long courseVideoId, String content) {
-        CourseVideoEntity courseVideo = validateCourseVideoForMember(memberId, courseVideoId);
+//    @Transactional
+//    public SummaryId updateSummary(Long memberId, Long courseVideoId, String content) {
+//        CourseVideoEntity courseVideo = validateCourseVideoForMember(memberId, courseVideoId);
+//
+//        SummaryEntity summary = summaryRepository.findById(courseVideo.getSummaryId())
+//                .orElseThrow(SummaryNotFoundException::new);
+//
+//        if (summary.isModified()) {
+//            summary.setContent(content);
+//            summaryRepository.updateById(summary.getId(), summary);
+//        } else {
+//            summary = summaryRepository.save(SummaryEntity.builder()
+//                    .videoId(courseVideo.getVideoId())
+//                    .content(content)
+//                    .modified(true)
+//                    .build());
+//
+//            courseVideo.setSummaryId(summary.getId());
+//            courseVideoRepository.updateById(courseVideoId, courseVideo);
+//        }
+//
+//        return SummaryId.builder()
+//                .summaryId(summary.getId())
+//                .build();
+//    }
 
-        SummaryEntity summary = summaryRepository.findById(courseVideo.getSummaryId())
-                .orElseThrow(SummaryNotFoundException::new);
+//    private CourseVideoEntity validateCourseVideoForMember(Long memberId, Long courseVideoId) {
+//        CourseVideoEntity courseVideo = courseVideoRepository.findById(courseVideoId)
+//                .orElseThrow(CourseVideoNotFoundException::new);
+//
+//        if (!courseVideo.getMemberId().equals(memberId)) {
+//            throw new CourseNotMatchException();
+//        }
+//        return courseVideo;
+//    }
 
-        if (summary.isModified()) {
-            summary.setContent(content);
-            summaryRepository.updateById(summary.getId(), summary);
-        } else {
-            summary = summaryRepository.save(SummaryEntity.builder()
-                    .videoId(courseVideo.getVideoId())
-                    .content(content)
-                    .modified(true)
-                    .build());
-
-            courseVideo.setSummaryId(summary.getId());
-            courseVideoRepository.updateById(courseVideoId, courseVideo);
-        }
-
-        return SummaryId.builder()
-                .summaryId(summary.getId())
-                .build();
-    }
-
-    private CourseVideoEntity validateCourseVideoForMember(Long memberId, Long courseVideoId) {
-        CourseVideoEntity courseVideo = courseVideoRepository.findById(courseVideoId)
-                .orElseThrow(CourseVideoNotFoundException::new);
-
-        if (!courseVideo.getMemberId().equals(memberId)) {
-            throw new CourseNotMatchException();
-        }
-        return courseVideo;
-    }
-
-    @Transactional
-    public List<SubmittedQuizInfo> submitQuizResults(Long memberId, Long courseVideoId, List<SubmittedQuiz> submittedQuizList) {
-        CourseVideoEntity courseVideo = validateCourseVideoForMember(memberId, courseVideoId);
-
-        validateSubmittedQuizzes(courseVideo.getVideoId(), courseVideoId, submittedQuizList);
-
-        updateDailyLogQuizCount(memberId, courseVideo.getCourseId(), submittedQuizList.size());
-        updateMemberQuizCount(memberRepository.getById(memberId), submittedQuizList);
-
-        List<SubmittedQuizInfo> quizInfoList = new ArrayList<>();
-        for (SubmittedQuiz submittedQuiz : submittedQuizList) {
-            QuizEntity quiz = quizRepository.getById(submittedQuiz.getQuizId());
-
-            CourseQuizEntity courseQuiz = courseQuizRepository.save(CourseQuizEntity.builder()
-                    .courseId(courseVideo.getCourseId())
-                    .quizId(quiz.getId())
-                    .videoId(courseVideo.getVideoId())
-                    .submittedAnswer(alterSubmittedAnswer(quiz.getType(), submittedQuiz.getSubmittedAnswer()))
-                    .correct(submittedQuiz.getIsCorrect())
-                    .courseVideoId(courseVideoId)
-                    .build());
-
-            quizInfoList.add(new SubmittedQuizInfo(quiz.getId(), courseQuiz.getId()));
-        }
-        return quizInfoList;
-    }
-
-    private void validateSubmittedQuizzes(Long videoId, Long courseVideoId, List<SubmittedQuiz> submittedQuizList) {
-        QuizEntity quiz = quizRepository.findById(submittedQuizList.get(0).getQuizId())
-                .orElseThrow(QuizNotFoundException::new);
-
-        if (!quiz.getVideoId().equals(videoId)) {
-            throw new QuizIdNotMatchException();
-        }
-
-        for (SubmittedQuiz submittedQuiz : submittedQuizList) {
-            if (courseQuizRepository.findByQuizIdAndCourseVideoId(submittedQuiz.getQuizId(), courseVideoId).isPresent()) {
-                throw new CourseQuizDuplicationException();
-            }
-
-            if (submittedQuiz.getIsCorrect() == null) {
-                throw new QuizAnswerFormatNotValidException();
-            }
-        }
-    }
-
-    private void updateDailyLogQuizCount(Long memberId, Long courseId, int submittedQuizCount) {
-        Optional<CourseDailyLogEntity> courseDailyLogOptional = courseDailyLogRepository.findByCourseIdAndDate(courseId, Date.valueOf(LocalDate.now()));
-        if (courseDailyLogOptional.isEmpty()) {
-            courseDailyLogRepository.save(CourseDailyLogEntity.builder()
-                    .memberId(memberId)
-                    .courseId(courseId)
-                    .dailyLogDate(Date.valueOf(LocalDate.now()))
-                    .learningTime(0)
-                    .quizCount(submittedQuizCount)
-                    .lectureCount(0)
-                    .build());
-        } else {
-            CourseDailyLogEntity dailyLog = courseDailyLogOptional.get();
-            dailyLog.setQuizCount(dailyLog.getQuizCount() + submittedQuizCount);
-            courseDailyLogRepository.updateById(dailyLog.getCourseDailyLogId(), dailyLog);
-        }
-    }
-
-    private void updateMemberQuizCount(MemberEntity member, List<SubmittedQuiz> quizList) {
-        member.setTotalSolvedCount(quizList.size() + member.getTotalSolvedCount());
-        member.setTotalCorrectCount((int) quizList.stream()
-                .filter(SubmittedQuiz::getIsCorrect)
-                .count() + member.getTotalCorrectCount());
-        memberRepository.updateById(member.getMemberId(), member);
-    }
-
-    private String alterSubmittedAnswer(int quizType, String submittedAnswerReq) {
-        switch (QuizType.fromValue(quizType)) {
-            case MULTIPLE_CHOICE:
-                validateSubmittedAnswerTypeOne(submittedAnswerReq);
-                return submittedAnswerReq;
-            case SUBJECTIVE:
-                return submittedAnswerReq;
-            case TRUE_FALSE:
-                return alterTrueOrFalseToInt(submittedAnswerReq);
-            default:
-                throw new QuizTypeNotMatchException(quizType);
-        }
-    }
-
-    private void validateSubmittedAnswerTypeOne(String submittedAnswerReq) {
-        try {
-            int submittedAnswerInt = Integer.parseInt(submittedAnswerReq);
-            if (submittedAnswerInt <= 0 || submittedAnswerInt > DEFAULT_QUIZ_OPTION_COUNT) {
-                throw new QuizAnswerFormatNotValidException();
-            }
-        } catch (NumberFormatException e) {
-            throw new QuizAnswerFormatNotValidException();
-        }
-    }
-
-    private String alterTrueOrFalseToInt(String submittedAnswerReq) {
-        switch (submittedAnswerReq) {
-            case "true":
-                return String.valueOf(1);
-            case "false":
-                return String.valueOf(0);
-            default:
-                throw new QuizAnswerFormatNotValidException();
-        }
-    }
+//    @Transactional
+//    public List<SubmittedQuizInfoResponse> submitQuizResults(Long memberId, Long courseVideoId, List<SubmittedQuizRequest> submittedQuizList) {
+//        CourseVideoEntity courseVideo = validateCourseVideoForMember(memberId, courseVideoId);
+//
+//        validateSubmittedQuizzes(courseVideo.getVideoId(), courseVideoId, submittedQuizList);
+//
+//        updateDailyLogQuizCount(memberId, courseVideo.getCourseId(), submittedQuizList.size());
+//        updateMemberQuizCount(memberRepository.getById(memberId), submittedQuizList);
+//
+//        List<SubmittedQuizInfoResponse> quizInfoList = new ArrayList<>();
+//        for (SubmittedQuizRequest submittedQuiz : submittedQuizList) {
+//            QuizEntity quiz = quizRepository.getById(submittedQuiz.getQuizId());
+//
+//            CourseQuizEntity courseQuiz = courseQuizRepository.save(CourseQuizEntity.builder()
+//                    .courseId(courseVideo.getCourseId())
+//                    .quizId(quiz.getId())
+//                    .videoId(courseVideo.getVideoId())
+//                    .submittedAnswer(alterSubmittedAnswer(quiz.getType(), submittedQuiz.getSubmittedAnswer()))
+//                    .correct(submittedQuiz.getIsCorrect())
+//                    .courseVideoId(courseVideoId)
+//                    .build());
+//
+//            quizInfoList.add(new SubmittedQuizInfoResponse(quiz.getId(), courseQuiz.getId()));
+//        }
+//        return quizInfoList;
+//    }
+//
+//    private void validateSubmittedQuizzes(Long videoId, Long courseVideoId, List<SubmittedQuizRequest> submittedQuizList) {
+//        QuizEntity quiz = quizRepository.findById(submittedQuizList.get(0).getQuizId())
+//                .orElseThrow(QuizNotFoundException::new);
+//
+//        if (!quiz.getVideoId().equals(videoId)) {
+//            throw new QuizIdNotMatchException();
+//        }
+//
+//        for (SubmittedQuizRequest submittedQuiz : submittedQuizList) {
+//            if (courseQuizRepository.findByQuizIdAndCourseVideoId(submittedQuiz.getQuizId(), courseVideoId).isPresent()) {
+//                throw new CourseQuizDuplicationException();
+//            }
+//
+//            if (submittedQuiz.getIsCorrect() == null) {
+//                throw new QuizAnswerFormatNotValidException();
+//            }
+//        }
+//    }
+//
+//    private void updateDailyLogQuizCount(Long memberId, Long courseId, int submittedQuizCount) {
+//        Optional<CourseDailyLogEntity> courseDailyLogOptional = courseDailyLogRepository.findByCourseIdAndDate(courseId, Date.valueOf(LocalDate.now()));
+//        if (courseDailyLogOptional.isEmpty()) {
+//            courseDailyLogRepository.save(CourseDailyLogEntity.builder()
+//                    .memberId(memberId)
+//                    .courseId(courseId)
+//                    .dailyLogDate(Date.valueOf(LocalDate.now()))
+//                    .learningTime(0)
+//                    .quizCount(submittedQuizCount)
+//                    .lectureCount(0)
+//                    .build());
+//        } else {
+//            CourseDailyLogEntity dailyLog = courseDailyLogOptional.get();
+//            dailyLog.setQuizCount(dailyLog.getQuizCount() + submittedQuizCount);
+//            courseDailyLogRepository.updateById(dailyLog.getCourseDailyLogId(), dailyLog);
+//        }
+//    }
+//
+//    private void updateMemberQuizCount(MemberEntity member, List<SubmittedQuizRequest> quizList) {
+//        member.setTotalSolvedCount(quizList.size() + member.getTotalSolvedCount());
+//        member.setTotalCorrectCount((int) quizList.stream()
+//                .filter(SubmittedQuizRequest::getIsCorrect)
+//                .count() + member.getTotalCorrectCount());
+//        memberRepository.updateById(member.getMemberId(), member);
+//    }
+//
+//    private String alterSubmittedAnswer(int quizType, String submittedAnswerReq) {
+//        switch (QuizType.fromValue(quizType)) {
+//            case MULTIPLE_CHOICE:
+//                validateSubmittedAnswerTypeOne(submittedAnswerReq);
+//                return submittedAnswerReq;
+//            case SUBJECTIVE:
+//                return submittedAnswerReq;
+//            case TRUE_FALSE:
+//                return alterTrueOrFalseToInt(submittedAnswerReq);
+//            default:
+//                throw new QuizTypeNotMatchException(quizType);
+//        }
+//    }
+//
+//    private void validateSubmittedAnswerTypeOne(String submittedAnswerReq) {
+//        try {
+//            int submittedAnswerInt = Integer.parseInt(submittedAnswerReq);
+//            if (submittedAnswerInt <= 0 || submittedAnswerInt > DEFAULT_QUIZ_OPTION_COUNT) {
+//                throw new QuizAnswerFormatNotValidException();
+//            }
+//        } catch (NumberFormatException e) {
+//            throw new QuizAnswerFormatNotValidException();
+//        }
+//    }
+//
+//    private String alterTrueOrFalseToInt(String submittedAnswerReq) {
+//        switch (submittedAnswerReq) {
+//            case "true":
+//                return String.valueOf(1);
+//            case "false":
+//                return String.valueOf(0);
+//            default:
+//                throw new QuizAnswerFormatNotValidException();
+//        }
+//    }
 
     @Transactional
     public ScrapResult switchScrapFlag(Long memberId, Long courseQuizId) {

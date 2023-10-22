@@ -1,4 +1,4 @@
-package com.m9d.sroom.course;
+package com.m9d.sroom.common;
 
 import com.m9d.sroom.common.entity.CourseDailyLogEntity;
 import com.m9d.sroom.common.entity.CourseEntity;
@@ -8,6 +8,7 @@ import com.m9d.sroom.common.repository.course.CourseRepository;
 import com.m9d.sroom.common.repository.coursedailylog.CourseDailyLogRepository;
 import com.m9d.sroom.common.repository.coursevideo.CourseVideoRepository;
 import com.m9d.sroom.common.repository.member.MemberRepository;
+import com.m9d.sroom.course.CourseServiceHelper;
 import com.m9d.sroom.lecture.dto.VideoCompletionStatus;
 import org.springframework.stereotype.Service;
 
@@ -20,15 +21,16 @@ import java.util.Optional;
 import static com.m9d.sroom.lecture.constant.LectureConstant.LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS;
 
 @Service
-public class CourseInfoUpdater {
+public class LearningActivityUpdater {
     private final CourseRepository courseRepository;
     private final CourseDailyLogRepository courseDailyLogRepository;
     private final MemberRepository memberRepository;
     private final CourseVideoRepository courseVideoRepository;
     private final CourseServiceHelper courseServiceHelper;
 
-    public CourseInfoUpdater(CourseRepository courseRepository, CourseDailyLogRepository courseDailyLogRepository,
-                             MemberRepository memberRepository, CourseVideoRepository courseVideoRepository, CourseServiceHelper courseServiceHelper) {
+    public LearningActivityUpdater(CourseRepository courseRepository, CourseDailyLogRepository courseDailyLogRepository,
+                                   MemberRepository memberRepository, CourseVideoRepository courseVideoRepository,
+                                   CourseServiceHelper courseServiceHelper) {
         this.courseRepository = courseRepository;
         this.courseDailyLogRepository = courseDailyLogRepository;
         this.memberRepository = memberRepository;
@@ -95,7 +97,8 @@ public class CourseInfoUpdater {
     }
 
     public void updateLastViewVideoToNext(Long courseId, int videoIndex) {
-        Optional<CourseVideoEntity> courseVideoOptional = courseVideoRepository.findByCourseIdAndPrevIndex(courseId, videoIndex);
+        Optional<CourseVideoEntity> courseVideoOptional = courseVideoRepository
+                .findByCourseIdAndPrevIndex(courseId, videoIndex);
 
         if (courseVideoOptional.isPresent()) {
             CourseVideoEntity courseVideo = courseVideoOptional.get();
@@ -103,5 +106,31 @@ public class CourseInfoUpdater {
                     Timestamp.valueOf(LocalDateTime.now().plusSeconds(LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS)));
             courseVideoRepository.updateById(courseVideo.getCourseVideoId(), courseVideo);
         }
+    }
+
+    public void updateDailyLogQuizCount(Long memberId, Long courseId, int submittedQuizCount) {
+        Optional<CourseDailyLogEntity> courseDailyLogOptional = courseDailyLogRepository
+                .findByCourseIdAndDate(courseId, Date.valueOf(LocalDate.now()));
+        if (courseDailyLogOptional.isEmpty()) {
+            courseDailyLogRepository.save(CourseDailyLogEntity.builder()
+                    .memberId(memberId)
+                    .courseId(courseId)
+                    .dailyLogDate(Date.valueOf(LocalDate.now()))
+                    .learningTime(0)
+                    .quizCount(submittedQuizCount)
+                    .lectureCount(0)
+                    .build());
+        } else {
+            CourseDailyLogEntity dailyLog = courseDailyLogOptional.get();
+            dailyLog.setQuizCount(dailyLog.getQuizCount() + submittedQuizCount);
+            courseDailyLogRepository.updateById(dailyLog.getCourseDailyLogId(), dailyLog);
+        }
+    }
+
+    public void updateMemberQuizCount(Long memberId, int submittedQuizCount, int submittedCorrectQuizCount) {
+        MemberEntity memberEntity = memberRepository.getById(memberId);
+        memberEntity.setTotalSolvedCount(submittedQuizCount + memberEntity.getTotalSolvedCount());
+        memberEntity.setTotalCorrectCount(submittedCorrectQuizCount + memberEntity.getTotalCorrectCount());
+        memberRepository.updateById(memberEntity.getMemberId(), memberEntity);
     }
 }

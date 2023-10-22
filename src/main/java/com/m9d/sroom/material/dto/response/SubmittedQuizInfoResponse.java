@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 @Builder
 @AllArgsConstructor
-public class SubmittedQuizInfo {
+public class SubmittedQuizInfoResponse {
 
     private Long id;
 

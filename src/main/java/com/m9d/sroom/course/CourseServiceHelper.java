@@ -1,23 +1,20 @@
 package com.m9d.sroom.course;
 
-import com.m9d.sroom.common.entity.CourseDailyLogEntity;
 import com.m9d.sroom.common.entity.CourseEntity;
+import com.m9d.sroom.common.entity.CourseQuizEntity;
 import com.m9d.sroom.common.entity.CourseVideoEntity;
-import com.m9d.sroom.common.entity.MemberEntity;
 import com.m9d.sroom.common.repository.course.CourseRepository;
-import com.m9d.sroom.common.repository.coursedailylog.CourseDailyLogRepository;
+import com.m9d.sroom.common.repository.coursequiz.CourseQuizRepository;
 import com.m9d.sroom.common.repository.coursevideo.CourseVideoRepository;
 import com.m9d.sroom.common.repository.video.VideoRepository;
 import com.m9d.sroom.course.exception.CourseNotMatchException;
 import com.m9d.sroom.course.exception.CourseVideoNotFoundException;
 import com.m9d.sroom.lecture.dto.VideoCompletionStatus;
+import com.m9d.sroom.material.exception.CourseQuizNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CourseServiceHelper {
@@ -25,11 +22,17 @@ public class CourseServiceHelper {
     private final CourseRepository courseRepository;
     private final CourseVideoRepository courseVideoRepository;
     private final VideoRepository videoRepository;
+    private final CourseQuizRepository courseQuizRepository;
 
-    public CourseServiceHelper(CourseRepository courseRepository, CourseVideoRepository courseVideoRepository, VideoRepository videoRepository) {
+    public CourseServiceHelper(CourseRepository courseRepository, CourseVideoRepository courseVideoRepository, VideoRepository videoRepository, CourseQuizRepository courseQuizRepository) {
         this.courseRepository = courseRepository;
         this.courseVideoRepository = courseVideoRepository;
         this.videoRepository = videoRepository;
+        this.courseQuizRepository = courseQuizRepository;
+    }
+
+    public Course getCourse(Long courseId) {
+        return courseRepository.getById(courseId).toCourse(getCourseVideoList(courseId));
     }
 
     public List<CourseVideo> getCourseVideoList(Long courseId) {
@@ -41,7 +44,23 @@ public class CourseServiceHelper {
         return courseVideoList;
     }
 
-    public Integer[] getDurationList(Long courseId) {
+    public boolean validateCourseForMember(Long memberIdFromRequest, Long courseId) {
+        return memberIdFromRequest.equals(courseRepository.getById(courseId).getMemberId());
+    }
+
+    public void validateCourseQuizForMember(Long memberId, Long courseQuizId) {
+        CourseQuizEntity courseQuiz = courseQuizRepository.findById(courseQuizId)
+                .orElseThrow(CourseQuizNotFoundException::new);
+
+        Long memberIdByCourse = courseRepository.getById(courseQuiz
+                        .getCourseId())
+                .getMemberId();
+        if (!memberId.equals(memberIdByCourse)) {
+            throw new CourseNotMatchException();
+        }
+    }
+
+    public Integer[] getDurationArray(Long courseId) {
         List<CourseVideoEntity> courseVideoEntityList = courseVideoRepository.getListByCourseId(courseId);
         int lastVideoIndex = courseVideoEntityList.stream()
                 .mapToInt(CourseVideoEntity::getVideoIndex)
@@ -56,15 +75,13 @@ public class CourseServiceHelper {
         return durationList;
     }
 
-    public void updateSections(Long courseId, List<CourseVideo> courseVideoList) {
-        for (CourseVideo courseVideo : courseVideoList) {
-            CourseVideoEntity courseVideoEntity = courseVideoRepository.getByCourseIdAndIndex(courseId, courseVideo.getVideoIndex());
-            courseVideoEntity.setSection(courseVideo.getSection());
-            courseVideoRepository.updateById(courseVideoEntity.getCourseVideoId(), courseVideoEntity);
-        }
+    public void updateCourseVideoSection(Long courseId, int videoIndex, int section) {
+        CourseVideoEntity courseVideoEntity = courseVideoRepository.getByCourseIdAndIndex(courseId, videoIndex);
+        courseVideoEntity.setSection(section);
+        courseVideoRepository.updateById(courseVideoEntity.getCourseVideoId(), courseVideoEntity);
     }
 
-    private int getCourseProgress(Course course) {
+    public int getCourseProgress(Course course) {
         if (course.getCourseVideoList().size() == 1) {
             return (course.getDuration() * 100) /
                     videoRepository.getById(course.getCourseVideoList().get(0).getVideoId()).getDuration();
@@ -99,5 +116,11 @@ public class CourseServiceHelper {
                                                           boolean isMarkedAsCompleted) {
         return courseVideo.getCompletionStatus(viewDuration,
                 videoRepository.getById(courseVideo.getVideoId()).getDuration(), isMarkedAsCompleted);
+    }
+
+    public void updateCourseVideoSummaryId(Long courseVideoId, Long summaryId) {
+        CourseVideoEntity courseVideoEntity = courseVideoRepository.getById(courseVideoId);
+        courseVideoEntity.setSummaryId(summaryId);
+        courseVideoRepository.updateById(courseVideoId, courseVideoEntity);
     }
 }

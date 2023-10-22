@@ -1,5 +1,6 @@
 package com.m9d.sroom.course;
 
+import com.m9d.sroom.common.LearningActivityUpdater;
 import com.m9d.sroom.common.entity.CourseEntity;
 import com.m9d.sroom.common.entity.CourseVideoEntity;
 import com.m9d.sroom.common.entity.LectureEntity;
@@ -19,12 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.m9d.sroom.lecture.constant.LectureConstant.LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS;
 
 @Service
 @Slf4j
@@ -34,14 +31,14 @@ public class CourseServiceV2 {
     private final LectureRepository lectureRepository;
     private final CourseVideoRepository courseVideoRepository;
     private final CourseServiceHelper courseServiceHelper;
-    private final CourseInfoUpdater courseInfoUpdater;
+    private final LearningActivityUpdater learningActivityUpdater;
 
-    public CourseServiceV2(CourseRepository courseRepository, LectureRepository lectureRepository, CourseVideoRepository courseVideoRepository, CourseServiceHelper courseServiceHelper, CourseInfoUpdater courseInfoUpdater) {
+    public CourseServiceV2(CourseRepository courseRepository, LectureRepository lectureRepository, CourseVideoRepository courseVideoRepository, CourseServiceHelper courseServiceHelper, LearningActivityUpdater learningActivityUpdater) {
         this.courseRepository = courseRepository;
         this.lectureRepository = lectureRepository;
         this.courseVideoRepository = courseVideoRepository;
         this.courseServiceHelper = courseServiceHelper;
-        this.courseInfoUpdater = courseInfoUpdater;
+        this.learningActivityUpdater = learningActivityUpdater;
     }
 
     @Transactional
@@ -71,13 +68,9 @@ public class CourseServiceV2 {
                 .build();
     }
 
-    public boolean validateCourseForMember(Long memberIdFromRequest, Long courseId) {
-        return memberIdFromRequest.equals(courseRepository.getById(courseId).getMemberId());
-    }
-
     @Transactional
     public EnrolledCourseInfo addLecture(Long memberId, Long courseId, EnrollContentInfo contentInfo) {
-        Course course = courseRepository.getById(courseId).toCourse(courseServiceHelper.getCourseVideoList(courseId));
+        Course course = courseServiceHelper.getCourse(courseId);
         course.addCourseVideo(contentInfo.getInnerContentList());
 
         LectureEntity lectureEntity = lectureRepository.save(LectureEntity.builder()
@@ -94,8 +87,11 @@ public class CourseServiceV2 {
         }
 
         if (course.isScheduled()) {
-            course.reschedule(courseServiceHelper.getDurationList(courseId));
-            courseServiceHelper.updateSections(courseId, course.getCourseVideoList());
+            course.reschedule(courseServiceHelper.getDurationArray(courseId));
+
+            for (CourseVideo courseVideo : course.getCourseVideoList()) {
+                courseServiceHelper.updateCourseVideoSection(courseId, courseVideo.getVideoIndex(), courseVideo.getSection());
+            }
         }
 
         courseServiceHelper.updateCourseEntity(courseId, course);
@@ -109,27 +105,26 @@ public class CourseServiceV2 {
 
     @Transactional
     public CourseDetail getCourseDetail(Long courseId) {
-        CourseEntity courseEntity = courseRepository.getById(courseId);
-        Course course = courseEntity.toCourse(courseServiceHelper.getCourseVideoList(courseId));
+        Course course = courseServiceHelper.getCourse(courseId);
 
         Set<String> channels = lectureRepository.getListByCourseId(courseId).stream()
                 .map(LectureEntity::getChannel)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
-        return new CourseDetail(courseId, course, channels, getSectionList(courseEntity),
-                courseVideoRepository.getLastInfoByCourseId(courseId));
+        return new CourseDetail(courseId, course, channels, getSectionList(courseId, course.getWeeks()),
+                courseServiceHelper.getCourseProgress(course), courseVideoRepository.getLastInfoByCourseId(courseId));
     }
 
-    private List<Section> getSectionList(CourseEntity courseEntity) {
+    private List<Section> getSectionList(Long courseId, int weeks) {
         List<Section> sectionList = new ArrayList<>();
-        if (courseEntity.getWeeks() == 0) {
+        if (weeks == 0) {
             sectionList.add(
-                    new Section(courseVideoRepository.getWatchInfoListByCourseIdAndSection(courseEntity.getCourseId(), 0), 0));
+                    new Section(courseVideoRepository.getWatchInfoListByCourseIdAndSection(courseId, 0), 0));
         } else {
-            for (int section = 1; section <= courseEntity.getWeeks(); section++) {
+            for (int section = 1; section <= weeks; section++) {
                 sectionList.add(
-                        new Section(courseVideoRepository.getWatchInfoListByCourseIdAndSection(courseEntity.getCourseId(), section), section));
+                        new Section(courseVideoRepository.getWatchInfoListByCourseIdAndSection(courseId, section), section));
             }
         }
         return sectionList;
@@ -142,20 +137,20 @@ public class CourseServiceV2 {
         VideoCompletionStatus status = courseServiceHelper
                 .getVideoCompletionStatus(courseVideoEntity.toCourseVideo(), viewDuration, isMarkedAsCompleted);
 
-        courseInfoUpdater.updateCourseVideoStatus(courseVideoEntity, viewDuration, status.isCompleted());
+        learningActivityUpdater.updateCourseVideoStatus(courseVideoEntity, viewDuration, status.isCompleted());
 
         if (!status.isRewound()) {
-            courseInfoUpdater.updateCourseDailyLog(memberId, courseVideoEntity.getCourseId(), status);
-            courseInfoUpdater.updateMemberLeaningTime(memberId, status);
-            courseInfoUpdater.updateCourseLastViewTime(courseVideoEntity.getCourseId());
+            learningActivityUpdater.updateCourseDailyLog(memberId, courseVideoEntity.getCourseId(), status);
+            learningActivityUpdater.updateMemberLeaningTime(memberId, status);
+            learningActivityUpdater.updateCourseLastViewTime(courseVideoEntity.getCourseId());
         }
 
         if (status.isCompletedNow()) {
-            courseInfoUpdater.updateCourseProgress(memberId, courseVideoEntity.getCourseId());
+            learningActivityUpdater.updateCourseProgress(memberId, courseVideoEntity.getCourseId());
         }
 
-        if(status.isFullyWatched()){
-            courseInfoUpdater.updateLastViewVideoToNext(courseVideoEntity.getCourseId(), viewDuration);
+        if (status.isFullyWatched()) {
+            learningActivityUpdater.updateLastViewVideoToNext(courseVideoEntity.getCourseId(), viewDuration);
         }
 
         return LectureStatus.builder()

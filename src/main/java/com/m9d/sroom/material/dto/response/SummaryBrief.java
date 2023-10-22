@@ -1,7 +1,7 @@
 package com.m9d.sroom.material.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.m9d.sroom.common.entity.SummaryEntity;
+import com.m9d.sroom.summary.Summary;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,9 +22,9 @@ public class SummaryBrief {
 
     private String modifiedAt;
 
-    public SummaryBrief(SummaryEntity summaryEntity) {
-        this.content = summaryEntity.getContent();
-        this.modified = summaryEntity.isModified();
-        this.modifiedAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(summaryEntity.getUpdatedAt());
+    public SummaryBrief(Summary summary) {
+        this.content = summary.getContent();
+        this.modified = summary.isModified();
+        this.modifiedAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(summary.getUpdateAt());
     }
 }

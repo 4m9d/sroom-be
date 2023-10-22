@@ -1,6 +1,8 @@
 package com.m9d.sroom.common.entity;
 
 
+import com.m9d.sroom.summary.Summary;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.jdbc.core.RowMapper;
@@ -9,19 +11,14 @@ import java.sql.Timestamp;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class SummaryEntity {
 
     private Long id;
 
-    private Long courseId;
-
     private Long videoId;
 
-    private Long courseVideoId;
-
     private String content;
-
-    private Timestamp createdAt;
 
     private Timestamp updatedAt;
 
@@ -35,5 +32,15 @@ public class SummaryEntity {
                 .updatedAt(rs.getTimestamp("updated_time"))
                 .modified(rs.getBoolean("is_modified"))
                 .build();
+    }
+
+    public Summary toSummary(){
+        return new Summary(videoId, content, updatedAt ,modified);
+    }
+
+    public SummaryEntity(Long videoId, String content, boolean modified) {
+        this.videoId = videoId;
+        this.content = content;
+        this.modified = modified;
     }
 }

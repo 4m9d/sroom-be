@@ -18,8 +18,8 @@ public class QuizSubmittedInfo {
 
     private final Boolean isScrapped;
 
-    public QuizSubmittedInfo(boolean isSubmitted, boolean isCorrect, String submittedAnswer, Timestamp submittedAt,
-                             boolean isScrapped) {
+    public QuizSubmittedInfo(boolean isSubmitted, Boolean isCorrect, String submittedAnswer, Timestamp submittedAt,
+                             Boolean isScrapped) {
         this.isSubmitted = isSubmitted;
         this.isCorrect = isCorrect;
         this.submittedAnswer = submittedAnswer;
@@ -35,8 +35,8 @@ public class QuizSubmittedInfo {
         this.isScrapped = courseQuizEntity.getScrapped();
     }
 
-    public static QuizSubmittedInfo notSubmitted() {
-        return new QuizSubmittedInfo(false, false, null, null,
+    public static QuizSubmittedInfo createNotSubmittedInfo() {
+        return new QuizSubmittedInfo(false, null, null, null,
                 false);
     }
 }

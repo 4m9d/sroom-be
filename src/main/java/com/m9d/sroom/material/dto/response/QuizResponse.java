@@ -1,8 +1,8 @@
 package com.m9d.sroom.material.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.m9d.sroom.material.model.QuizType;
 import com.m9d.sroom.quiz.Quiz;
+import com.m9d.sroom.quiz.QuizSubmittedInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @Builder
 @AllArgsConstructor
-public class QuizRes {
+public class QuizResponse {
 
     private Long id;
 
@@ -38,23 +38,20 @@ public class QuizRes {
     @JsonProperty("is_scrapped")
     private boolean scrapped;
 
-    public QuizRes(long quizId, Quiz quiz){
+    public QuizResponse (Long quizId, Quiz quiz, QuizSubmittedInfo submittedInfo) {
         this.id = quizId;
         this.type = quiz.getType();
         this.question = quiz.getQuestion();
-        this.options = quiz.getOptionList();
-        this.submitted = quiz.getSubmittedInfo().isSubmitted();
+        this.options = quiz.getOptionStrList();
+        this.submitted = submittedInfo.isSubmitted();
         this.answer = quiz.getAnswer();
         if(submitted){
-            this.submittedAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(quiz.getSubmittedInfo()
-                    .getSubmittedAt());
-            if (quiz.getType() == QuizType.TRUE_FALSE.getValue()) {
-                this.submittedAnswer = quiz.getSubmittedInfo().getSubmittedAnswer().equals("0") ? "false" : "true";
-            } else {
-                this.submittedAnswer = quiz.getSubmittedInfo().getSubmittedAnswer();
-            }
-            this.correct = quiz.getSubmittedInfo().getIsCorrect();
-            this.scrapped = quiz.getSubmittedInfo().getIsScrapped();
+            this.submittedAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(submittedInfo.getSubmittedAt());
+            this.submittedAnswer = submittedInfo.getSubmittedAnswer();
+        }else{
+            this.submittedAt = null;
+            this.submittedAnswer = null;
         }
+        this.scrapped = submittedInfo.getIsScrapped();
     }
 }

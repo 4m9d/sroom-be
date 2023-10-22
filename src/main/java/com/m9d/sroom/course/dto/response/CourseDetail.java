@@ -56,7 +56,7 @@ public class CourseDetail {
     @Schema(description = "강의 일정의 주 리스트")
     private List<Section> sections;
 
-    public CourseDetail(Long courseId, Course course, Set<String> channels, List<Section> sectionList,
+    public CourseDetail(Long courseId, Course course, Set<String> channels, List<Section> sectionList, int progress,
                         LastVideoInfo lastVideoInfo) {
         this.courseId = courseId;
         this.courseTitle = course.getTitle();
@@ -75,7 +75,7 @@ public class CourseDetail {
                         .filter(VideoWatchInfo::isCompleted)
                         .count())
                 .sum();
-        this.progress = (int) ((double) currentDuration / course.getDuration() * 100);
+        this.progress = progress;
         this.lastViewVideo = lastVideoInfo;
         this.sections = sectionList;
     }

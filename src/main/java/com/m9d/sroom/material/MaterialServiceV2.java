@@ -1,29 +1,36 @@
 package com.m9d.sroom.material;
 
-import com.m9d.sroom.common.entity.QuizEntity;
-import com.m9d.sroom.common.repository.summary.SummaryRepository;
+import com.m9d.sroom.common.LearningActivityUpdater;
+import com.m9d.sroom.common.entity.CourseQuizEntity;
+import com.m9d.sroom.common.entity.CourseVideoEntity;
 import com.m9d.sroom.course.CourseServiceHelper;
 import com.m9d.sroom.course.CourseVideo;
-import com.m9d.sroom.material.dto.response.Material;
-import com.m9d.sroom.material.dto.response.QuizRes;
-import com.m9d.sroom.material.dto.response.SummaryBrief;
+import com.m9d.sroom.material.dto.request.SubmittedQuizRequest;
+import com.m9d.sroom.material.dto.response.*;
+import com.m9d.sroom.material.exception.CourseQuizDuplicationException;
 import com.m9d.sroom.material.model.MaterialStatus;
 import com.m9d.sroom.quiz.QuizService;
+import com.m9d.sroom.summary.SummaryService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class MaterialServiceV2 {
 
     private final CourseServiceHelper courseServiceHelper;
-    private final SummaryRepository summaryRepository;
+    private final SummaryService summaryService;
     private final QuizService quizService;
+    private final LearningActivityUpdater activityUpdater;
 
-    public MaterialServiceV2(CourseServiceHelper courseServiceHelper, SummaryRepository summaryRepository, QuizService quizService) {
+    public MaterialServiceV2(CourseServiceHelper courseServiceHelper, SummaryService summaryService,
+                             QuizService quizService, LearningActivityUpdater activityUpdater) {
         this.courseServiceHelper = courseServiceHelper;
-        this.summaryRepository = summaryRepository;
+        this.summaryService = summaryService;
         this.quizService = quizService;
+        this.activityUpdater = activityUpdater;
     }
 
 
@@ -41,16 +48,60 @@ public class MaterialServiceV2 {
                     .status(MaterialStatus.CREATION_FAILED.getValue())
                     .build();
         } else {
-            List<QuizRes> quizResList = quizService.getQuizResList(courseVideo.getVideoId(), courseVideoId);
+            List<QuizResponse> quizResponseList = quizService
+                    .getQuizResponseList(courseVideo.getVideoId(), courseVideoId);
             return Material.builder()
                     .status(MaterialStatus.CREATED.getValue())
-                    .summaryBrief(new SummaryBrief(summaryRepository.getById(courseVideo.getSummaryId())))
-                    .quizzes(quizResList)
-                    .totalQuizCount(quizResList.size())
+                    .summaryBrief(new SummaryBrief(summaryService.getSummary(courseVideo.getSummaryId())))
+                    .quizzes(quizResponseList)
+                    .totalQuizCount(quizResponseList.size())
                     .build();
         }
     }
 
 
+    @Transactional
+    public SummaryId updateSummary(Long memberId, Long courseVideoId, String newContent) {
+        CourseVideo courseVideo = courseServiceHelper.getCourseVideo(memberId, courseVideoId).toCourseVideo();
 
+        long patchedSummaryId = summaryService.editSummary(courseVideo.getVideoId(), courseVideo.getSummaryId(),
+                newContent);
+        courseServiceHelper.updateCourseVideoSummaryId(courseVideoId, patchedSummaryId);
+        return new SummaryId(patchedSummaryId);
+    }
+
+    @Transactional
+    public List<SubmittedQuizInfoResponse> submitQuizResults(Long memberId, Long courseVideoId,
+                                                             List<SubmittedQuizRequest> submittedQuizList) {
+        CourseVideoEntity courseVideoEntity = courseServiceHelper.getCourseVideo(memberId, courseVideoId);
+        quizService.validateSubmittedQuizzes(courseVideoEntity.getVideoId(), courseVideoId, submittedQuizList);
+
+        activityUpdater.updateDailyLogQuizCount(memberId, courseVideoEntity.getCourseId(), submittedQuizList.size());
+        activityUpdater.updateMemberQuizCount(memberId, submittedQuizList.size(), (int) submittedQuizList.stream()
+                .filter(SubmittedQuizRequest::getIsCorrect)
+                .count());
+
+        List<SubmittedQuizInfoResponse> quizInfoResponseList = new ArrayList<>();
+        for (SubmittedQuizRequest submittedQuizRequest : submittedQuizList) {
+            if (quizService.isSubmittedAlready(courseVideoId, submittedQuizRequest.getQuizId())) {
+                throw new CourseQuizDuplicationException();
+            }
+
+            CourseQuizEntity courseQuizEntity = quizService.createCourseQuizEntity(courseVideoEntity.getCourseId(),
+                    courseVideoEntity.getVideoId(), courseVideoId, submittedQuizRequest.getQuizId(),
+                    submittedQuizRequest.toVo());
+            quizInfoResponseList.add(new SubmittedQuizInfoResponse(submittedQuizRequest.getQuizId(),
+                    courseQuizEntity.getId()));
+        }
+
+        return quizInfoResponseList;
+    }
+
+    @Transactional
+    public ScrapResult switchScrapFlag(Long courseQuizId) {
+        return ScrapResult.builder()
+                .courseQuizId(courseQuizId)
+                .scrapped(quizService.scrap(courseQuizId))
+                .build();
+    }
 }

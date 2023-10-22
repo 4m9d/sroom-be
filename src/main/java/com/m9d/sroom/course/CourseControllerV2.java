@@ -29,6 +29,7 @@ import javax.validation.Valid;
 public class CourseControllerV2 {
 
     private final CourseServiceV2 courseService;
+    private final CourseServiceHelper courseServiceHelper;
     private final PlaylistService playlistService;
     private final VideoService videoService;
     private final JwtUtil jwtUtil;
@@ -60,7 +61,7 @@ public class CourseControllerV2 {
     @ApiResponse(responseCode = "200", description = "성공적으로 코스에 강의를 추가하였습니다.", content = @Content(schema = @Schema(implementation = EnrolledCourseInfo.class)))
     public EnrolledCourseInfo addLectureInCourse(@PathVariable("courseId") Long courseId, @Valid @RequestBody NewLecture newLecture) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
-        if (!courseService.validateCourseForMember(memberId, courseId)) {
+        if (!courseServiceHelper.validateCourseForMember(memberId, courseId)) {
             throw new CourseNotMatchException();
         }
 
@@ -83,7 +84,7 @@ public class CourseControllerV2 {
     @Operation(summary = "수강페이지 코스정보", description = "코스 ID를 받아 해당 코스 정보와 수강할 영상 리스트를 반환합니다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 수강 정보를 반환하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(implementation = CourseDetail.class))})
     public CourseDetail getCourseDetail(@PathVariable(name = "courseId") Long courseId) {
-        if (!courseService.validateCourseForMember(jwtUtil.getMemberIdFromRequest(), courseId)) {
+        if (!courseServiceHelper.validateCourseForMember(jwtUtil.getMemberIdFromRequest(), courseId)) {
             throw new CourseNotMatchException();
         }
         return courseService.getCourseDetail(courseId);

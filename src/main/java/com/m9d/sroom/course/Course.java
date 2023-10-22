@@ -139,4 +139,10 @@ public class Course {
                 .count();
         return (int) ((double) completedVideoCount / courseVideoList.size() * 100);
     }
+
+    public int getSumOfMaxDuration() {
+        return courseVideoList.stream()
+                .mapToInt(CourseVideo::getMaxDuration)
+                .sum();
+    }
 }

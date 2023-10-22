@@ -6,6 +6,7 @@ import com.m9d.sroom.common.repository.lecture.LectureRepository;
 import com.m9d.sroom.common.repository.playlist.PlaylistRepository;
 import com.m9d.sroom.common.repository.review.ReviewRepository;
 import com.m9d.sroom.common.repository.video.VideoRepository;
+import com.m9d.sroom.lecture.dto.response.ReviewBrief;
 import com.m9d.sroom.review.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -217,5 +218,9 @@ public class ReviewService {
                 .totalVideoCount(courseVideoList.size())
                 .completedVideoCount(completedVideoCount)
                 .build();
+    }
+
+    public List<ReviewBrief> getReviewInfo(String videoCode, int offset, int limit) {
+        return reviewRepository.getBriefListByCode(videoCode, offset, limit);
     }
 }
