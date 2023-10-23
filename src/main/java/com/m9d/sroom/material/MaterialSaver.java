@@ -67,30 +67,25 @@ public class MaterialSaver {
         }
 
         videoEntity.setSummaryId(summaryId);
+        videoRepository.updateById(videoEntity.getVideoId(), videoEntity);
         courseVideoRepository.updateSummaryId(videoEntity.getVideoId(), summaryId);
     }
 
     private void saveQuiz(Long videoId, Quiz quiz) {
-        QuizEntity quizEntity = QuizEntity.builder()
-                .videoId(videoId)
-                .type(quiz.getType().getValue())
-                .question(quiz.getQuestion())
-                .build();
-
         switch (quiz.getType()) {
-            case MULTIPLE_CHOICE:
-                saveQuizOptions(quizEntity.getId(), quiz.getQuizOptionList());
             case TRUE_FALSE:
-                quizEntity.setChoiceAnswer(Integer.parseInt(quiz.getAnswer()));
+                quizRepository.save(QuizEntity.createMultipleChoiceQuizEntity(videoId, quiz));
+                break;
+            case MULTIPLE_CHOICE:
+                QuizEntity quizEntity = quizRepository.save(QuizEntity.createMultipleChoiceQuizEntity(videoId, quiz));
+                saveQuizOptions(quizEntity.getId(), quiz.getQuizOptionList());
                 break;
             case SUBJECTIVE:
-                quizEntity.setSubjectiveAnswer(quiz.getAnswer());
+                quizRepository.save(QuizEntity.createShortAnswerQuizEntity(videoId, quiz));
                 break;
             default:
                 throw new QuizTypeNotMatchException(quiz.getType().getValue());
         }
-
-        quizRepository.save(quizEntity);
     }
 
     private void saveQuizOptions(Long quizId, List<QuizOption> quizOptionList) {

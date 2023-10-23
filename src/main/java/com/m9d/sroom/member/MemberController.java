@@ -1,11 +1,10 @@
-package com.m9d.sroom.member.controller;
+package com.m9d.sroom.member;
 
 import com.m9d.sroom.member.dto.request.GoogleIdKey;
 import com.m9d.sroom.member.dto.request.NameUpdateRequest;
 import com.m9d.sroom.member.dto.request.RefreshToken;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.member.dto.response.NameUpdateResponse;
-import com.m9d.sroom.member.service.MemberService;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,21 +38,19 @@ public class MemberController {
         return memberService.authenticateMember(googleIdKey.getCredential());
     }
 
-    @Auth
     @PostMapping("/refresh")
     @Tag(name = "로그인")
     @Operation(summary = "access token 갱신", description = "refresh token을 사용하여 로그인을 유지합니다.")
     @ApiResponse(responseCode = "200", description = "토큰 갱신에 성공하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(allOf = Login.class))})
     public Login refresh(@RequestBody RefreshToken refreshToken) {
-        Long memberId = jwtUtil.getMemberIdFromRequest();
-        return memberService.verifyRefreshToken(memberId, refreshToken);
+        return memberService.verifyRefreshToken(refreshToken);
     }
 
     @Auth
     @PutMapping("/profile")
     @Tag(name = "로그인")
     @Operation(summary = "프로필 이름 수정", description = "name을 받아 멤버의 이름을 수정합니다.")
-    @ApiResponse(responseCode = "200", description = "멤버 이름 변경에 성공하였습니다.", content= {@Content(mediaType = "application/json", schema = @Schema(allOf = NameUpdateResponse.class))})
+    @ApiResponse(responseCode = "200", description = "멤버 이름 변경에 성공하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(allOf = NameUpdateResponse.class))})
     public NameUpdateResponse updateMemberName(@RequestBody NameUpdateRequest nameUpdateRequest) {
         Long memberId = jwtUtil.getMemberIdFromRequest();
         return memberService.updateMemberName(memberId, nameUpdateRequest.getName());

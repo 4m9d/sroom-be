@@ -1,4 +1,4 @@
-package com.m9d.sroom.member.service;
+package com.m9d.sroom.member;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
@@ -79,15 +79,14 @@ public class MemberService {
     }
 
     @Transactional
-    public Login verifyRefreshToken(Long memberId, RefreshToken refreshToken) {
+    public Login verifyRefreshToken(RefreshToken refreshToken) {
         Map<String, Object> refreshTokenDetail = jwtUtil.getDetailFromToken(refreshToken.getRefreshToken());
 
         if ((Long) refreshTokenDetail.get(EXPIRATION_TIME) <= System.currentTimeMillis() / MILLIS_TO_SECONDS) {
             throw new TokenExpiredException();
         }
-        if (!memberId.equals(Long.valueOf((String) refreshTokenDetail.get(MEMBER_ID_FIELD)))) {
-            throw new MemberNotMatchException();
-        }
+
+        Long memberId = (Long) refreshTokenDetail.get("memberId");
 
         String refreshTokenFromDB = memberRepository.getById(memberId)
                 .getRefreshToken();
@@ -112,11 +111,8 @@ public class MemberService {
 
         return Login.builder()
                 .accessToken(accessToken)
-                .refreshToken(member
-                        .getRefreshToken())
-                .expiresAt((Long) jwtUtil
-                        .getDetailFromToken(accessToken)
-                        .get(EXPIRATION_TIME))
+                .refreshToken(member.getRefreshToken())
+                .expiresAt((Long) jwtUtil.getDetailFromToken(accessToken).get(EXPIRATION_TIME))
                 .name(member.getMemberName())
                 .profile(picture)
                 .bio(member.getBio())

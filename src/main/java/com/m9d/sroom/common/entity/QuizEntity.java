@@ -1,5 +1,8 @@
 package com.m9d.sroom.common.entity;
 
+import com.m9d.sroom.quiz.MultipleChoice;
+import com.m9d.sroom.quiz.Quiz;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.jdbc.core.RowMapper;
@@ -28,6 +31,25 @@ public class QuizEntity {
                 .question(rs.getString("question"))
                 .subjectiveAnswer(rs.getString("subjective_answer"))
                 .choiceAnswer(rs.getInt("choice_answer"))
+                .build();
+    }
+
+    public static QuizEntity createMultipleChoiceQuizEntity(Long videoId, Quiz quiz){
+        return QuizEntity.builder()
+                .videoId(videoId)
+                .type(quiz.getType().getValue())
+                .question(quiz.getQuestion())
+                .choiceAnswer(Integer.parseInt(quiz.getAnswer()))
+                .build();
+
+    }
+
+    public static QuizEntity createShortAnswerQuizEntity(Long videoId, Quiz quiz){
+        return QuizEntity.builder()
+                .videoId(videoId)
+                .type(quiz.getType().getValue())
+                .question(quiz.getQuestion())
+                .subjectiveAnswer(quiz.getAnswer())
                 .build();
     }
 }

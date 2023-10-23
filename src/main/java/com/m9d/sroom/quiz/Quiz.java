@@ -42,7 +42,7 @@ public abstract class Quiz {
     private static List<QuizOption> toQuizOption(int answer, List<String> optionStrList) {
         List<QuizOption> optionList = new ArrayList<>();
         for (int i = 1; i < optionStrList.size() + 1; i++) {
-            optionList.add(new QuizOption(i, i == answer, optionStrList.get(i)));
+            optionList.add(new QuizOption(i, i == answer, optionStrList.get(i - 1)));
         }
         return optionList;
     }
