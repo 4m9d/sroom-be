@@ -283,96 +283,96 @@ public class MaterialService {
 //        }
 //    }
 
-    @Transactional
-    public ScrapResult switchScrapFlag(Long memberId, Long courseQuizId) {
-        CourseQuizEntity courseQuiz = validateCourseQuizForMember(memberId, courseQuizId);
+//    @Transactional
+//    public ScrapResult switchScrapFlag(Long memberId, Long courseQuizId) {
+//        CourseQuizEntity courseQuiz = validateCourseQuizForMember(memberId, courseQuizId);
+//
+//        courseQuiz.setScrapped(!courseQuiz.getScrapped());
+//        courseQuizRepository.updateById(courseQuiz.getId(), courseQuiz);
+//
+//        return ScrapResult.builder()
+//                .courseQuizId(courseQuizId)
+//                .scrapped(courseQuiz.getScrapped())
+//                .build();
+//    }
 
-        courseQuiz.setScrapped(!courseQuiz.getScrapped());
-        courseQuizRepository.updateById(courseQuiz.getId(), courseQuiz);
+//    private CourseQuizEntity validateCourseQuizForMember(Long memberId, Long courseQuizId) {
+//        CourseQuizEntity courseQuiz = courseQuizRepository.findById(courseQuizId)
+//                .orElseThrow(CourseQuizNotFoundException::new);
+//
+//        Long memberIdByCourse = courseRepository.getById(courseQuiz
+//                        .getCourseId())
+//                .getMemberId();
+//        if (!memberId.equals(memberIdByCourse)) {
+//            throw new CourseNotMatchException();
+//        }
+//        return courseQuiz;
+//    }
 
-        return ScrapResult.builder()
-                .courseQuizId(courseQuizId)
-                .scrapped(courseQuiz.getScrapped())
-                .build();
-    }
-
-    private CourseQuizEntity validateCourseQuizForMember(Long memberId, Long courseQuizId) {
-        CourseQuizEntity courseQuiz = courseQuizRepository.findById(courseQuizId)
-                .orElseThrow(CourseQuizNotFoundException::new);
-
-        Long memberIdByCourse = courseRepository.getById(courseQuiz
-                        .getCourseId())
-                .getMemberId();
-        if (!memberId.equals(memberIdByCourse)) {
-            throw new CourseNotMatchException();
-        }
-        return courseQuiz;
-    }
-
-    @Transactional
-    public void saveMaterials(MaterialResultsVo materialVo) throws Exception {
-        VideoEntity video = videoRepository.findByCode(materialVo.getVideoId())
-                .orElseThrow(() -> {
-                    log.warn("can't find video information from db. video code = {}", materialVo.getVideoId());
-                    return new VideoNotFoundFromDBException();
-                });
-
-        Long summaryId;
-        if (materialVo.getIsValid() == MaterialVaildStatus.IN_VALID.getValue()) {
-            video.setMaterialStatus(MaterialStatus.CREATION_FAILED.getValue());
-            summaryId = (long) MaterialStatus.CREATION_FAILED.getValue();
-        } else {
-            video.setMaterialStatus(MaterialStatus.CREATED.getValue());
-            summaryId = summaryRepository.save(SummaryEntity.builder()
-                            .videoId(video.getVideoId())
-                            .content(materialVo.getSummary())
-                            .modified(false)
-                            .build())
-                    .getId();
-        }
-        video.setSummaryId(summaryId);
-        videoRepository.updateById(video.getVideoId(), video);
-        courseVideoRepository.updateSummaryId(video.getVideoId(), summaryId);
-
-        for (QuizVo quizVo : materialVo.getQuizzes()) {
-            saveQuiz(video.getVideoId(), quizVo);
-        }
-    }
-
-    private void saveQuiz(Long videoId, QuizVo quizVo) throws NumberFormatException, QuizTypeNotMatchException {
-        QuizEntity quiz = QuizEntity.builder()
-                .videoId(videoId)
-                .type(quizVo.getQuizType())
-                .question(quizVo.getQuizQuestion())
-                .build();
-
-        switch (QuizType.fromValue(quizVo.getQuizType())) {
-            case MULTIPLE_CHOICE:
-            case TRUE_FALSE:
-                quiz.setChoiceAnswer(Integer.parseInt(quizVo.getAnswer()));
-                break;
-            case SUBJECTIVE:
-                quiz.setSubjectiveAnswer(quizVo.getAnswer());
-                break;
-            default:
-                throw new QuizTypeNotMatchException(quizVo.getQuizType());
-        }
-        quiz = quizRepository.save(quiz);
-
-        if (quizVo.getQuizType() == QuizType.MULTIPLE_CHOICE.getValue()) {
-            saveQuizOptions(quiz.getId(), quizVo.getOptions());
-        }
-    }
-
-    private void saveQuizOptions(Long quizId, List<String> quizOptionList) throws IndexOutOfBoundsException {
-        int optionCount = Math.min(DEFAULT_QUIZ_OPTION_COUNT, quizOptionList.size());
-
-        for (int optionIndex = 0; optionIndex < optionCount; optionIndex++) {
-            quizOptionRepository.save(QuizOptionEntity.builder()
-                    .quizId(quizId)
-                    .optionText(quizOptionList.get(optionIndex))
-                    .optionIndex(optionIndex + 1)
-                    .build());
-        }
-    }
+//    @Transactional
+//    public void saveMaterials(MaterialResultsVo materialVo) throws Exception {
+//        VideoEntity video = videoRepository.findByCode(materialVo.getVideoId())
+//                .orElseThrow(() -> {
+//                    log.warn("can't find video information from db. video code = {}", materialVo.getVideoId());
+//                    return new VideoNotFoundFromDBException();
+//                });
+//
+//        Long summaryId;
+//        if (materialVo.getIsValid() == MaterialVaildStatus.IN_VALID.getValue()) {
+//            video.setMaterialStatus(MaterialStatus.CREATION_FAILED.getValue());
+//            summaryId = (long) MaterialStatus.CREATION_FAILED.getValue();
+//        } else {
+//            video.setMaterialStatus(MaterialStatus.CREATED.getValue());
+//            summaryId = summaryRepository.save(SummaryEntity.builder()
+//                            .videoId(video.getVideoId())
+//                            .content(materialVo.getSummary())
+//                            .modified(false)
+//                            .build())
+//                    .getId();
+//        }
+//        video.setSummaryId(summaryId);
+//        videoRepository.updateById(video.getVideoId(), video);
+//        courseVideoRepository.updateSummaryId(video.getVideoId(), summaryId);
+//
+//        for (QuizVo quizVo : materialVo.getQuizzes()) {
+//            saveQuiz(video.getVideoId(), quizVo);
+//        }
+//    }
+//
+//    private void saveQuiz(Long videoId, QuizVo quizVo) throws NumberFormatException, QuizTypeNotMatchException {
+//        QuizEntity quiz = QuizEntity.builder()
+//                .videoId(videoId)
+//                .type(quizVo.getQuizType())
+//                .question(quizVo.getQuizQuestion())
+//                .build();
+//
+//        switch (QuizType.fromValue(quizVo.getQuizType())) {
+//            case MULTIPLE_CHOICE:
+//            case TRUE_FALSE:
+//                quiz.setChoiceAnswer(Integer.parseInt(quizVo.getAnswer()));
+//                break;
+//            case SUBJECTIVE:
+//                quiz.setSubjectiveAnswer(quizVo.getAnswer());
+//                break;
+//            default:
+//                throw new QuizTypeNotMatchException(quizVo.getQuizType());
+//        }
+//        quiz = quizRepository.save(quiz);
+//
+//        if (quizVo.getQuizType() == QuizType.MULTIPLE_CHOICE.getValue()) {
+//            saveQuizOptions(quiz.getId(), quizVo.getOptions());
+//        }
+//    }
+//
+//    private void saveQuizOptions(Long quizId, List<String> quizOptionList) throws IndexOutOfBoundsException {
+//        int optionCount = Math.min(DEFAULT_QUIZ_OPTION_COUNT, quizOptionList.size());
+//
+//        for (int optionIndex = 0; optionIndex < optionCount; optionIndex++) {
+//            quizOptionRepository.save(QuizOptionEntity.builder()
+//                    .quizId(quizId)
+//                    .optionText(quizOptionList.get(optionIndex))
+//                    .optionIndex(optionIndex + 1)
+//                    .build());
+//        }
+//    }
 }

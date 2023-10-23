@@ -1,7 +1,9 @@
 package com.m9d.sroom.quiz;
 
+import com.m9d.sroom.ai.exception.QuizTypeNotMatchException;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -15,7 +17,7 @@ public abstract class Quiz {
 
     public abstract String getAnswer();
 
-    public abstract int getType();
+    public abstract QuizType getType();
 
     public abstract List<QuizOption> getQuizOptionList();
 
@@ -23,29 +25,25 @@ public abstract class Quiz {
 
     public abstract String alterSubmittedAnswerFitInDB(String submittedAnswer);
 
+    public static Quiz toInheritor(QuizType type, String question, List<String> optionStrList, String answer) {
+        if (type.equals(QuizType.MULTIPLE_CHOICE)) {
+            return new MultipleChoice(question, toQuizOption(Integer.parseInt(answer), optionStrList),
+                    Integer.parseInt(answer));
+        } else if (type.equals(QuizType.SUBJECTIVE)) {
+            return new ShortAnswerQuestion(question, answer);
+        } else if (type.equals(QuizType.TRUE_FALSE)) {
+            return new TFQuestion(question, Integer.parseInt(answer),
+                    toQuizOption(Integer.parseInt(answer), optionStrList));
+        } else {
+            return null;
+        }
+    }
 
-//    public Quiz(QuizEntity quizEntity, Optional<CourseQuizEntity> courseQuizEntityOptional,
-//                List<QuizOptionEntity> quizOptionEntityList) {
-//        this.type = quizEntity.getType();
-//        this.question = quizEntity.getQuestion();
-//        this.optionList = quizOptionEntityList.stream()
-//                .sorted(Comparator.comparingInt(QuizOptionEntity::getOptionIndex))
-//                .map(QuizOptionEntity::getOptionText)
-//                .collect(Collectors.toList());
-//        switch (QuizType.fromValue(quizEntity.getType())) {
-//            case MULTIPLE_CHOICE:
-//                this.answer = String.valueOf(quizEntity.getChoiceAnswer());
-//                break;
-//            case SUBJECTIVE:
-//                this.answer = quizEntity.getSubjectiveAnswer();
-//                break;
-//            case TRUE_FALSE:
-//                this.answer = quizEntity.getChoiceAnswer().equals(0) ? "false" : "true";
-//                break;
-//            default:
-//                throw new QuizTypeNotMatchException(quizEntity.getType());
-//        }
-//        this.submittedInfo = courseQuizEntityOptional.map(QuizSubmittedInfo::new)
-//                .orElseGet(QuizSubmittedInfo::notSubmitted);
-//    }
+    private static List<QuizOption> toQuizOption(int answer, List<String> optionStrList) {
+        List<QuizOption> optionList = new ArrayList<>();
+        for (int i = 1; i < optionStrList.size() + 1; i++) {
+            optionList.add(new QuizOption(i, i == answer, optionStrList.get(i)));
+        }
+        return optionList;
+    }
 }

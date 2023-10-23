@@ -7,8 +7,6 @@ import java.sql.Timestamp;
 @Getter
 public class Summary {
 
-    private final long videoId;
-
     private String content;
 
     private Timestamp updateAt;
@@ -16,8 +14,7 @@ public class Summary {
     private boolean isModified;
 
 
-    public Summary(long videoId, String content, Timestamp updateAt, boolean isModified) {
-        this.videoId = videoId;
+    public Summary(String content, Timestamp updateAt, boolean isModified) {
         this.content = content;
         this.updateAt = updateAt;
         this.isModified = isModified;

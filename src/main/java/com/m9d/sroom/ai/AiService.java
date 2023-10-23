@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.m9d.sroom.ai.vo.MaterialResultsVo;
 import com.m9d.sroom.ai.vo.MaterialVo;
-import com.m9d.sroom.material.MaterialService;
+import com.m9d.sroom.material.MaterialSaver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +29,7 @@ public class AiService {
 
     private final WebClient webClient;
 
-    private final MaterialService materialService;
+    private final MaterialSaver materialSaver;
 
     private final Gson gson;
 
@@ -91,7 +91,7 @@ public class AiService {
 
     public void saveResultEach(MaterialResultsVo materialVo) {
         try {
-            materialService.saveMaterials(materialVo);
+            materialSaver.saveMaterials(materialVo);
         } catch (Exception e) {
             log.error("failed to save summary, quizzes from GPT. error message = {}", e.getMessage(), e);
         }

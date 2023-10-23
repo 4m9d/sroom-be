@@ -40,7 +40,7 @@ public class QuizResponse {
 
     public QuizResponse (Long quizId, Quiz quiz, QuizSubmittedInfo submittedInfo) {
         this.id = quizId;
-        this.type = quiz.getType();
+        this.type = quiz.getType().getValue();
         this.question = quiz.getQuestion();
         this.options = quiz.getOptionStrList();
         this.submitted = submittedInfo.isSubmitted();

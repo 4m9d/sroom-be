@@ -27,8 +27,8 @@ public class MultipleChoice extends Quiz {
     }
 
     @Override
-    public int getType() {
-        return QuizType.MULTIPLE_CHOICE.getValue();
+    public QuizType getType() {
+        return QuizType.MULTIPLE_CHOICE;
     }
 
     @Override

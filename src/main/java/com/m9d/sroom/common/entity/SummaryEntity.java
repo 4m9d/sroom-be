@@ -35,7 +35,7 @@ public class SummaryEntity {
     }
 
     public Summary toSummary(){
-        return new Summary(videoId, content, updatedAt ,modified);
+        return new Summary(content, updatedAt ,modified);
     }
 
     public SummaryEntity(Long videoId, String content, boolean modified) {

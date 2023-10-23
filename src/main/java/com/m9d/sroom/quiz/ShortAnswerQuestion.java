@@ -18,8 +18,8 @@ public class ShortAnswerQuestion extends Quiz{
     }
 
     @Override
-    public int getType() {
-        return QuizType.SUBJECTIVE.getValue();
+    public QuizType getType() {
+        return QuizType.SUBJECTIVE;
     }
 
     @Override

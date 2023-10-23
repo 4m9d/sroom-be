@@ -15,8 +15,8 @@ public class TFQuestion extends MultipleChoice {
     }
 
     @Override
-    public int getType(){
-        return QuizType.TRUE_FALSE.getValue();
+    public QuizType getType(){
+        return QuizType.TRUE_FALSE;
     }
 
     @Override

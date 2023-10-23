@@ -1,12 +1,14 @@
 package com.m9d.sroom.common.entity;
 
 import com.m9d.sroom.quiz.QuizOption;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.jdbc.core.RowMapper;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class QuizOptionEntity {
 
     private Long quizOptionId;
@@ -29,5 +31,11 @@ public class QuizOptionEntity {
 
     public QuizOption toQuizOption(int answer) {
         return new QuizOption(optionIndex, answer == optionIndex, optionText);
+    }
+
+    public QuizOptionEntity(Long quizId, QuizOption quizOption) {
+        this.quizId = quizId;
+        this.optionText = quizOption.getContent();
+        this.optionIndex = quizOption.getIndex();
     }
 }
