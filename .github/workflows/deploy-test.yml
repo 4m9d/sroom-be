@@ -21,8 +21,8 @@ jobs:
         run: chmod +x gradlew
 
       ## gradle build
-      - name: Build with Gradle
-        run: ./gradlew clean build -x test
+      - name: Build with Gradle using dev profile
+        run: ./gradlew clean build -x test -Dspring.profiles.active=dev
 
       ## AWS에 로그인
       - name: Configure AWS credentials
