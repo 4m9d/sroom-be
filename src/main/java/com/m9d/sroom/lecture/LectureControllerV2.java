@@ -1,18 +1,16 @@
 package com.m9d.sroom.lecture;
 
 
-import com.m9d.sroom.course.CourseService;
 import com.m9d.sroom.course.CourseServiceV2;
 import com.m9d.sroom.lecture.dto.request.KeywordSearchParam;
 import com.m9d.sroom.lecture.dto.request.LectureDetailParam;
-import com.m9d.sroom.lecture.dto.request.LectureTimeRecord;
 import com.m9d.sroom.lecture.dto.response.*;
 import com.m9d.sroom.playlist.PlaylistService;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.ValidateUtil;
 import com.m9d.sroom.util.annotation.Auth;
 import com.m9d.sroom.video.VideoService;
-import com.m9d.sroom.youtube.YoutubeServiceV2;
+import com.m9d.sroom.youtube.YoutubeMapper;
 import com.m9d.sroom.youtube.vo.SearchInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,13 +33,13 @@ import java.util.Set;
 public class LectureControllerV2 {
 
     private final LectureServiceV2 lectureService;
-    private final YoutubeServiceV2 youtubeService;
+    private final YoutubeMapper youtubeService;
     private final PlaylistService playlistService;
     private final VideoService videoService;
     private final CourseServiceV2 courseService;
     private final JwtUtil jwtUtil;
 
-    public LectureControllerV2(LectureServiceV2 lectureService, YoutubeServiceV2 youtubeService,
+    public LectureControllerV2(LectureServiceV2 lectureService, YoutubeMapper youtubeService,
                                PlaylistService playlistService, VideoService videoService,
                                CourseServiceV2 courseService, JwtUtil jwtUtil) {
         this.lectureService = lectureService;

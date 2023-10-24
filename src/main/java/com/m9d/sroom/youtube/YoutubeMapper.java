@@ -19,11 +19,11 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 @Service
-public class YoutubeServiceV2 {
+public class YoutubeMapper {
 
     private final YoutubeApiV2 youtubeApi;
 
-    public YoutubeServiceV2(YoutubeApiV2 youtubeApi) {
+    public YoutubeMapper(YoutubeApiV2 youtubeApi) {
         this.youtubeApi = youtubeApi;
     }
 

@@ -11,7 +11,7 @@ import com.m9d.sroom.playlist.constant.PlaylistConstant;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.video.VideoService;
 import com.m9d.sroom.video.constant.VideoConstant;
-import com.m9d.sroom.youtube.YoutubeServiceV2;
+import com.m9d.sroom.youtube.YoutubeMapper;
 import com.m9d.sroom.youtube.vo.PlaylistItemInfo;
 import com.m9d.sroom.youtube.vo.PlaylistVideoInfo;
 import org.springframework.stereotype.Service;
@@ -25,11 +25,11 @@ public class PlaylistService {
 
     private final PlaylistRepository playlistRepository;
 
-    private final YoutubeServiceV2 youtubeService;
+    private final YoutubeMapper youtubeService;
     private final VideoService videoService;
     private final PlaylistVideoRepository playlistVideoRepository;
 
-    public PlaylistService(PlaylistRepository playlistRepository, YoutubeServiceV2 youtubeService, VideoService videoService, PlaylistVideoRepository playlistVideoRepository) {
+    public PlaylistService(PlaylistRepository playlistRepository, YoutubeMapper youtubeService, VideoService videoService, PlaylistVideoRepository playlistVideoRepository) {
         this.playlistRepository = playlistRepository;
         this.youtubeService = youtubeService;
         this.videoService = videoService;

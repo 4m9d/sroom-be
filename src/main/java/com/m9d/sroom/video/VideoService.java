@@ -9,11 +9,10 @@ import com.m9d.sroom.common.vo.PlaylistItem;
 import com.m9d.sroom.common.vo.Video;
 import com.m9d.sroom.course.dto.EnrollContentInfo;
 import com.m9d.sroom.course.dto.InnerContent;
-import com.m9d.sroom.material.MaterialService;
 import com.m9d.sroom.material.model.MaterialStatus;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.video.constant.VideoConstant;
-import com.m9d.sroom.youtube.YoutubeServiceV2;
+import com.m9d.sroom.youtube.YoutubeMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -27,11 +26,11 @@ import java.util.Optional;
 public class VideoService {
 
     private final VideoRepository videoRepository;
-    private final YoutubeServiceV2 youtubeService;
+    private final YoutubeMapper youtubeService;
     private final PlaylistVideoRepository playlistVideoRepository;
     private final AiService aiService;
 
-    public VideoService(VideoRepository videoRepository, YoutubeServiceV2 youtubeService,
+    public VideoService(VideoRepository videoRepository, YoutubeMapper youtubeService,
                         PlaylistVideoRepository playlistVideoRepository, AiService aiService) {
         this.videoRepository = videoRepository;
         this.youtubeService = youtubeService;

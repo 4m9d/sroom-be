@@ -1,6 +1,5 @@
 package com.m9d.sroom.quiz;
 
-import com.m9d.sroom.ai.exception.QuizTypeNotMatchException;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -27,19 +26,19 @@ public abstract class Quiz {
 
     public static Quiz toInheritor(QuizType type, String question, List<String> optionStrList, String answer) {
         if (type.equals(QuizType.MULTIPLE_CHOICE)) {
-            return new MultipleChoice(question, toQuizOption(Integer.parseInt(answer), optionStrList),
+            return new MultipleChoice(question, getQuizOption(Integer.parseInt(answer), optionStrList),
                     Integer.parseInt(answer));
         } else if (type.equals(QuizType.SUBJECTIVE)) {
             return new ShortAnswerQuestion(question, answer);
         } else if (type.equals(QuizType.TRUE_FALSE)) {
             return new TFQuestion(question, Integer.parseInt(answer),
-                    toQuizOption(Integer.parseInt(answer), optionStrList));
+                    getQuizOption(Integer.parseInt(answer), optionStrList));
         } else {
             return null;
         }
     }
 
-    private static List<QuizOption> toQuizOption(int answer, List<String> optionStrList) {
+    private static List<QuizOption> getQuizOption(int answer, List<String> optionStrList) {
         List<QuizOption> optionList = new ArrayList<>();
         for (int i = 1; i < optionStrList.size() + 1; i++) {
             optionList.add(new QuizOption(i, i == answer, optionStrList.get(i - 1)));
