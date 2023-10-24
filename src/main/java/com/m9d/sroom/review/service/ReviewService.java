@@ -122,7 +122,7 @@ public class ReviewService {
         Video video = videoRepository.getById(lecture.getSourceId());
         int progress = (courseVideo.getMaxDuration() * 100) / video.getDuration();
 
-        if(progress < 70 && courseVideo.isComplete())
+        if(progress < 50 && courseVideo.isComplete())
             progress = 100;
 
         Review review = getReview(lecture);
@@ -205,7 +205,7 @@ public class ReviewService {
     }
 
     boolean isReviewAllowed(int progress, boolean isReviewed) {
-        return progress >= 70 && !isReviewed;
+        return progress >= 50 && !isReviewed;
     }
 
     LectureBrief4Review getVideoCountData(Long lectureId) {

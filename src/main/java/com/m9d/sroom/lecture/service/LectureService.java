@@ -374,27 +374,22 @@ public class LectureService {
 
     @Transactional
     public Recommendations getRecommendations(Long memberId) {
-        HashSet<RecommendLecture> recommendLectureHashSet = new HashSet<>();
-        List<RecommendLecture> recommendLectureList = new ArrayList<>();
-        List<RecommendLecture> topRatedVideos = getTopRatedVideos();
-        List<RecommendLecture> topRatedPlaylists = getTopRatedPlaylists();
-        List<RecommendLecture> recommendLecturesByChannel = getRecommendsByChannel(memberId);
+        List<RecommendLecture> generalRecommendLectureList = new ArrayList<>();
+        List<RecommendLecture> channelRecommendLectureList = getRecommendsByChannel(memberId);
+
+        generalRecommendLectureList.addAll(getTopRatedVideos());
+        generalRecommendLectureList.addAll(getTopRatedPlaylists());
 
         Set<String> enrolledLectureSet = getEnrolledLectures(memberId);
 
-        recommendLectureHashSet.addAll(topRatedVideos);
-        recommendLectureHashSet.addAll(topRatedPlaylists);
-        recommendLectureHashSet.addAll(recommendLecturesByChannel);
-
         for (String lectureCode : enrolledLectureSet) {
-            recommendLectureHashSet.removeIf(recommendLecture -> (recommendLecture.getLectureCode().equals(lectureCode)));
+            generalRecommendLectureList.removeIf(recommendLecture -> (recommendLecture.getLectureCode().equals(lectureCode)));
+            channelRecommendLectureList.removeIf(recommendLecture -> (recommendLecture.getLectureCode().equals(lectureCode)));
         }
 
-        recommendLectureList.addAll(recommendLectureHashSet);
-        Collections.shuffle(recommendLectureList);
-
         Recommendations recommendations = Recommendations.builder()
-                .recommendations(recommendLectureList)
+                .generalRecommendations(generalRecommendLectureList)
+                .channelRecommendations(channelRecommendLectureList)
                 .build();
 
         return recommendations;
