@@ -28,7 +28,7 @@ public class YoutubeServiceV2 {
     }
 
     public Playlist getPlaylist(String code) {
-        PlaylistDto playlistVo = youtubeApi.getPlaylistVo(PlaylistReq.builder()
+        PlaylistDto playlistVo = youtubeApi.getPlaylistDto(PlaylistReq.builder()
                 .playlistCode(code)
                 .build());
 
@@ -36,7 +36,7 @@ public class YoutubeServiceV2 {
     }
 
     public Video getVideo(String code) {
-        VideoDto videoVo = youtubeApi.getVideoVo(VideoReq.builder()
+        VideoDto videoVo = youtubeApi.getVideoDto(VideoReq.builder()
                 .videoCode(code)
                 .build());
 
@@ -44,7 +44,7 @@ public class YoutubeServiceV2 {
     }
 
     public PlaylistItemInfo getPlaylistItemInfo(String code, String nextPageToken, int limit) {
-        PlaylistVideoDto playlistVideoVo = youtubeApi.getPlaylistVideoVo(PlaylistItemReq.builder()
+        PlaylistVideoDto playlistVideoVo = youtubeApi.getPlaylistVideoDto(PlaylistItemReq.builder()
                 .playlistCode(code)
                 .nextPageToken(nextPageToken)
                 .limit(limit)
@@ -54,7 +54,7 @@ public class YoutubeServiceV2 {
     }
 
     public SearchInfo getSearchInfo(String keyword, String nextPageToken, int limit, String filter) {
-        SearchDto searchVo = youtubeApi.getSearchVo(SearchReq.builder()
+        SearchDto searchVo = youtubeApi.getSearchDto(SearchReq.builder()
                 .keyword(URLEncoder.encode(keyword, StandardCharsets.UTF_8))
                 .filter(filter)
                 .limit(limit)

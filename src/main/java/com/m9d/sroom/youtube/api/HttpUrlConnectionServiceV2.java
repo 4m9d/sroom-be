@@ -38,27 +38,27 @@ public class HttpUrlConnectionServiceV2 implements YoutubeApiV2 {
     }
 
     @Override
-    public SearchDto getSearchVo(YoutubeReq resource) {
-        return getYoutubeVo(resource, SearchDto.class);
+    public SearchDto getSearchDto(YoutubeReq resource) {
+        return getYoutubeDto(resource, SearchDto.class);
     }
 
     @Override
-    public VideoDto getVideoVo(YoutubeReq resource) {
-        return getYoutubeVo(resource, VideoDto.class);
+    public VideoDto getVideoDto(YoutubeReq resource) {
+        return getYoutubeDto(resource, VideoDto.class);
     }
 
     @Override
-    public PlaylistDto getPlaylistVo(YoutubeReq resource) {
-        return getYoutubeVo(resource, PlaylistDto.class);
+    public PlaylistDto getPlaylistDto(YoutubeReq resource) {
+        return getYoutubeDto(resource, PlaylistDto.class);
     }
 
     @Override
-    public PlaylistVideoDto getPlaylistVideoVo(YoutubeReq resource) {
-        return getYoutubeVo(resource, PlaylistVideoDto.class);
+    public PlaylistVideoDto getPlaylistVideoDto(YoutubeReq resource) {
+        return getYoutubeDto(resource, PlaylistVideoDto.class);
     }
 
     @Override
-    public <T> T getYoutubeVo(YoutubeReq resource, Class<T> resultClass) {
+    public <T> T getYoutubeDto(YoutubeReq resource, Class<T> resultClass) {
         String url = buildYoutubeApiRequest(resource.getEndPoint(), resource.getParameters());
 
         HttpURLConnection connection = establishConnection(url);

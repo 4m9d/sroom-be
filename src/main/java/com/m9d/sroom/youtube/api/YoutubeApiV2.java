@@ -8,10 +8,10 @@ import com.m9d.sroom.youtube.dto.video.VideoDto;
 
 public interface YoutubeApiV2 {
 
-    SearchDto getSearchVo(YoutubeReq resource);
-    VideoDto getVideoVo(YoutubeReq resource);
-    PlaylistDto getPlaylistVo(YoutubeReq resource);
-    PlaylistVideoDto getPlaylistVideoVo(YoutubeReq resource);
+    SearchDto getSearchDto(YoutubeReq resource);
+    VideoDto getVideoDto(YoutubeReq resource);
+    PlaylistDto getPlaylistDto(YoutubeReq resource);
+    PlaylistVideoDto getPlaylistVideoDto(YoutubeReq resource);
 
-    <T> T getYoutubeVo(YoutubeReq resource, Class<T> resultClass);
+    <T> T getYoutubeDto(YoutubeReq resource, Class<T> resultClass);
 }

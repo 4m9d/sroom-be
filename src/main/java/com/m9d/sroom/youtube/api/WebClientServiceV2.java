@@ -25,26 +25,26 @@ public class WebClientServiceV2 implements YoutubeApiV2 {
     private final WebClient webClient;
 
     @Override
-    public SearchDto getSearchVo(YoutubeReq resource) {
-        return getYoutubeVo(resource, SearchDto.class);
+    public SearchDto getSearchDto(YoutubeReq resource) {
+        return getYoutubeDto(resource, SearchDto.class);
     }
 
     @Override
-    public VideoDto getVideoVo(YoutubeReq resource) {
-        return getYoutubeVo(resource, VideoDto.class);
+    public VideoDto getVideoDto(YoutubeReq resource) {
+        return getYoutubeDto(resource, VideoDto.class);
     }
 
     @Override
-    public PlaylistDto getPlaylistVo(YoutubeReq resource) {
-        return getYoutubeVo(resource, PlaylistDto.class);
+    public PlaylistDto getPlaylistDto(YoutubeReq resource) {
+        return getYoutubeDto(resource, PlaylistDto.class);
     }
 
     @Override
-    public PlaylistVideoDto getPlaylistVideoVo(YoutubeReq resource) {
-        return getYoutubeVo(resource, PlaylistVideoDto.class);
+    public PlaylistVideoDto getPlaylistVideoDto(YoutubeReq resource) {
+        return getYoutubeDto(resource, PlaylistVideoDto.class);
     }
 
-    public <T> T getYoutubeVo(YoutubeReq req, Class<T> resultClass) {
+    public <T> T getYoutubeDto(YoutubeReq req, Class<T> resultClass) {
         return this.webClient
                 .get()
                 .uri(uriBuilder -> {
