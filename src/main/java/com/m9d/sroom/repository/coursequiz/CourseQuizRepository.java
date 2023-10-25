@@ -12,7 +12,7 @@ public interface CourseQuizRepository {
 
     CourseQuiz getById(Long courseQuizId);
 
-    List<CourseQuiz> getListByMemberId(Long memberId, int limit);
+    List<CourseQuiz> getWrongQuizListByMemberId(Long memberId, int limit);
 
     Optional<CourseQuiz> findById(Long courseQuizId);
 

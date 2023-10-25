@@ -99,7 +99,7 @@ public class DashboardService {
 
     public List<DashboardQuizData> getWrongQuizzes(Long memberId) {
         List<DashboardQuizData> wrongQuizzes = new ArrayList<>();
-        List<CourseQuiz> courseQuizzes = courseQuizRepository.getListByMemberId(memberId, WRONG_QUIZZES_COUNT);
+        List<CourseQuiz> courseQuizzes = courseQuizRepository.getWrongQuizListByMemberId(memberId, WRONG_QUIZZES_COUNT);
 
         for (CourseQuiz courseQuiz : courseQuizzes) {
             Video video = videoRepository.getById(courseQuiz.getVideoId());

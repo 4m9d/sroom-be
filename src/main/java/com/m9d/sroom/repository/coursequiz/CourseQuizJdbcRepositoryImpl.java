@@ -36,8 +36,8 @@ public class CourseQuizJdbcRepositoryImpl implements CourseQuizRepository {
     }
 
     @Override
-    public List<CourseQuiz> getListByMemberId(Long memberId, int limit) {
-        return jdbcTemplate.query(CourseQuizRepositorySql.GET_LIST_BY_MEMBER_ID, CourseQuiz.getRowMapper(), memberId, limit);
+    public List<CourseQuiz> getWrongQuizListByMemberId(Long memberId, int limit) {
+        return jdbcTemplate.query(CourseQuizRepositorySql.GET_WRONG_QUIZ_LIST_BY_MEMBER_ID, CourseQuiz.getRowMapper(), memberId, limit);
     }
 
     @Override
