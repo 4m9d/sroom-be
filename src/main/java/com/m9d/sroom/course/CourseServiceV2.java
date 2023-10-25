@@ -9,6 +9,7 @@ import com.m9d.sroom.common.repository.coursevideo.CourseVideoRepository;
 import com.m9d.sroom.common.repository.lecture.LectureRepository;
 import com.m9d.sroom.course.constant.CourseConstant;
 import com.m9d.sroom.course.dto.EnrollContentInfo;
+import com.m9d.sroom.course.dto.InnerContent;
 import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.course.dto.response.CourseDetail;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
@@ -31,20 +32,22 @@ public class CourseServiceV2 {
     private final LectureRepository lectureRepository;
     private final CourseVideoRepository courseVideoRepository;
     private final CourseServiceHelper courseServiceHelper;
+    private final CourseCreator courseCreator;
     private final LearningActivityUpdater learningActivityUpdater;
 
-    public CourseServiceV2(CourseRepository courseRepository, LectureRepository lectureRepository, CourseVideoRepository courseVideoRepository, CourseServiceHelper courseServiceHelper, LearningActivityUpdater learningActivityUpdater) {
+    public CourseServiceV2(CourseRepository courseRepository, LectureRepository lectureRepository, CourseVideoRepository courseVideoRepository, CourseServiceHelper courseServiceHelper, CourseCreator courseCreator, LearningActivityUpdater learningActivityUpdater) {
         this.courseRepository = courseRepository;
         this.lectureRepository = lectureRepository;
         this.courseVideoRepository = courseVideoRepository;
         this.courseServiceHelper = courseServiceHelper;
+        this.courseCreator = courseCreator;
         this.learningActivityUpdater = learningActivityUpdater;
     }
 
     @Transactional
     public EnrolledCourseInfo enroll(Long memberId, NewLecture newLecture, boolean useSchedule,
                                      EnrollContentInfo contentInfo) {
-        Course course = new EnrollCondition(newLecture, useSchedule).createCourse(contentInfo);
+        Course course = courseCreator.create(newLecture, useSchedule, contentInfo);
         CourseEntity courseEntity = courseRepository.save(new CourseEntity(memberId, course));
 
         LectureEntity lectureEntity = lectureRepository.save(LectureEntity.builder()
@@ -71,7 +74,7 @@ public class CourseServiceV2 {
     @Transactional
     public EnrolledCourseInfo addLecture(Long memberId, Long courseId, EnrollContentInfo contentInfo) {
         Course course = courseServiceHelper.getCourse(courseId);
-        course.addCourseVideo(contentInfo.getInnerContentList());
+        addCourseVideo(course, contentInfo.getInnerContentList());
 
         LectureEntity lectureEntity = lectureRepository.save(LectureEntity.builder()
                 .memberId(memberId)
@@ -82,7 +85,11 @@ public class CourseServiceV2 {
                 .lectureIndex(course.getLastLectureIndex())
                 .build());
 
-        for (CourseVideo courseVideo : course.getCourseVideoListByLectureIndex(lectureEntity.getLectureIndex())) {
+        List<CourseVideo> addedCourseVideoList = course.getCourseVideoList().stream()
+                .filter(video -> video.getLectureIndex() == lectureEntity.getLectureIndex())
+                .collect(Collectors.toList());
+
+        for (CourseVideo courseVideo : addedCourseVideoList) {
             courseVideoRepository.save(new CourseVideoEntity(memberId, courseId, lectureEntity.getId(), courseVideo));
         }
 
@@ -101,6 +108,23 @@ public class CourseServiceV2 {
                 .courseId(courseId)
                 .lectureId(lectureEntity.getId())
                 .build();
+    }
+
+    public void addCourseVideo(Course course, List<InnerContent> innerContentList) {
+        int videoIndex = course.getCourseVideoList().stream()
+                .mapToInt(CourseVideo::getVideoIndex)
+                .max()
+                .orElse(0) + 1;
+
+        int durationToAdd = 0;
+        int lastLectureIndex = course.getLastLectureIndex();
+
+        for (InnerContent innerContent : innerContentList) {
+            course.getCourseVideoList().add(new CourseVideo(innerContent.getContentId(), innerContent.getSummaryId(),
+                    CourseConstant.ENROLL_DEFAULT_SECTION_NO_SCHEDULE, videoIndex++, lastLectureIndex + 1));
+            durationToAdd += innerContent.getDuration();
+        }
+        course.addCourseDuration(durationToAdd);
     }
 
     @Transactional

@@ -36,21 +36,7 @@ public class Course {
 
     private final Integer dailyTargetTime;
 
-    @Getter
     private final List<CourseVideo> courseVideoList;
-
-
-    public Course(EnrollCondition enrollCondition, EnrollContentInfo contentInfo, List<CourseVideo> courseVideoList) {
-        this.title = contentInfo.getTitle();
-        this.duration = contentInfo.getTotalContentDuration();
-        this.thumbnail = contentInfo.getThumbnail();
-        this.scheduled = enrollCondition.getScheduled();
-        this.weeks = enrollCondition.getWeeks();
-        this.startDate = new Timestamp(System.currentTimeMillis());
-        this.expectedEndDate = enrollCondition.getExpectedEndDate();
-        this.dailyTargetTime = enrollCondition.getDailyTargetTime();
-        this.courseVideoList = courseVideoList;
-    }
 
     public Course(String title, int duration, String thumbnail, Boolean scheduled, Date expectedEndDate, Integer weeks,
                   Integer dailyTargetTime, Date startDate, List<CourseVideo> courseVideoList) {
@@ -65,28 +51,16 @@ public class Course {
         this.courseVideoList = courseVideoList;
     }
 
+    public static Course createNoScheduled(String title, int duration, String thumbnail, List<CourseVideo> courseVideoList){
+        return new Course(title, duration, thumbnail, false, null, null,
+                null, new Timestamp(System.currentTimeMillis()), courseVideoList);
+    }
+
     public int getLastLectureIndex() {
         return courseVideoList.stream()
                 .mapToInt(CourseVideo::getLectureIndex)
                 .max()
                 .orElse(0);
-    }
-
-    public void addCourseVideo(List<InnerContent> innerContentList) {
-        int videoIndex = courseVideoList.stream()
-                .mapToInt(CourseVideo::getVideoIndex)
-                .max()
-                .orElse(0) + 1;
-
-        int durationToAdd = 0;
-        int lastLectureIndex = getLastLectureIndex();
-
-        for (InnerContent innerContent : innerContentList) {
-            courseVideoList.add(new CourseVideo(innerContent.getContentId(), innerContent.getSummaryId(),
-                    CourseConstant.ENROLL_DEFAULT_SECTION_NO_SCHEDULE, videoIndex++, lastLectureIndex + 1));
-            durationToAdd += innerContent.getDuration();
-        }
-        addCourseDuration(durationToAdd);
     }
 
     public void reschedule(Integer[] durationList) {
@@ -123,14 +97,8 @@ public class Course {
         this.weeks = weeks;
     }
 
-    private void addCourseDuration(int secondToAdd) {
+    public void addCourseDuration(int secondToAdd) {
         this.duration += secondToAdd;
-    }
-
-    public List<CourseVideo> getCourseVideoListByLectureIndex(int lectureIndex) {
-        return courseVideoList.stream()
-                .filter(video -> video.getLectureIndex() == lectureIndex)
-                .collect(Collectors.toList());
     }
 
     public int getCompletionRatio() {
