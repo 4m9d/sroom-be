@@ -25,7 +25,7 @@ public class CourseCreator {
             return new Course(contentInfo.getTitle(), contentInfo.getTotalContentDuration(), contentInfo.getThumbnail(),
                     true, DateUtil.convertStringToDate(newLecture.getExpectedEndDate()),
                     newLecture.getScheduling().size(), newLecture.getDailyTargetTime()
-                    , new Timestamp(System.currentTimeMillis()),
+                    , new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()),
                     createCourseVideoList(contentInfo, true, newLecture.getScheduling()));
         }
     }

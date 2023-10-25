@@ -3,6 +3,7 @@ package com.m9d.sroom.course.vo;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
@@ -32,10 +33,12 @@ public class Course {
 
     private final Integer dailyTargetTime;
 
+    private final Timestamp lastViewTime;
+
     private final List<CourseVideo> courseVideoList;
 
     public Course(String title, int duration, String thumbnail, Boolean scheduled, Date expectedEndDate, Integer weeks,
-                  Integer dailyTargetTime, Date startDate, List<CourseVideo> courseVideoList) {
+                  Integer dailyTargetTime, Date startDate, Timestamp lastViewTime, List<CourseVideo> courseVideoList) {
         this.title = title;
         this.duration = duration;
         this.thumbnail = thumbnail;
@@ -44,12 +47,13 @@ public class Course {
         this.expectedEndDate = expectedEndDate;
         this.weeks = weeks;
         this.dailyTargetTime = dailyTargetTime;
+        this.lastViewTime = lastViewTime;
         this.courseVideoList = courseVideoList;
     }
 
     public static Course createNoScheduled(String title, int duration, String thumbnail, List<CourseVideo> courseVideoList){
         return new Course(title, duration, thumbnail, false, null, null,
-                null, new Timestamp(System.currentTimeMillis()), courseVideoList);
+                null, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()), courseVideoList);
     }
 
     public int getLastLectureIndex() {

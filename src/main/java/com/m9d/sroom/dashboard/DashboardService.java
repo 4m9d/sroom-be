@@ -1,7 +1,7 @@
 package com.m9d.sroom.dashboard;
 
+import com.m9d.sroom.course.CourseServiceHelper;
 import com.m9d.sroom.course.dto.response.CourseInfo;
-import com.m9d.sroom.course.CourseService;
 import com.m9d.sroom.dashboard.dto.response.Dashboard;
 import com.m9d.sroom.dashboard.dto.response.LearningHistory;
 import com.m9d.sroom.common.entity.CourseEntity;
@@ -29,23 +29,23 @@ public class DashboardService {
 
     private final MemberRepository memberRepository;
     private final CourseRepository courseRepository;
-    private final CourseService courseService;
+    private final CourseServiceHelper courseServiceHelper;
     private final CourseDailyLogRepository courseDailyLogRepository;
 
 
     public DashboardService(CourseRepository courseRepository,
-                              MemberRepository memberRepository, CourseService courseService,
+                              MemberRepository memberRepository, CourseServiceHelper courseServiceHelper,
                               CourseDailyLogRepository courseDailyLogRepository, DateUtil dateUtil) {
         this.courseRepository = courseRepository;
         this.memberRepository = memberRepository;
-        this.courseService = courseService;
+        this.courseServiceHelper = courseServiceHelper;
         this.courseDailyLogRepository = courseDailyLogRepository;
     }
 
     public Dashboard getDashboard(Long memberId) {
 
         List<CourseEntity> courseList = courseRepository.getLatestOrderByMemberId(memberId);
-        List<CourseInfo> latestCourses = courseService.getCourseInfoList(courseList);
+        List<CourseInfo> latestCourses = courseServiceHelper.getCourseInfoList(courseList);
         List<CourseInfo> latestLectures = new ArrayList<>();
 
         if (latestCourses.size() >= 2) {

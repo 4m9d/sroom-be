@@ -6,7 +6,9 @@ import com.m9d.sroom.common.entity.CourseVideoEntity;
 import com.m9d.sroom.common.repository.course.CourseRepository;
 import com.m9d.sroom.common.repository.coursequiz.CourseQuizRepository;
 import com.m9d.sroom.common.repository.coursevideo.CourseVideoRepository;
+import com.m9d.sroom.common.repository.lecture.LectureRepository;
 import com.m9d.sroom.common.repository.video.VideoRepository;
+import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.exception.CourseNotMatchException;
 import com.m9d.sroom.course.exception.CourseVideoNotFoundException;
 import com.m9d.sroom.course.vo.Course;
@@ -15,6 +17,7 @@ import com.m9d.sroom.search.dto.VideoCompletionStatus;
 import com.m9d.sroom.material.exception.CourseQuizNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,12 +28,16 @@ public class CourseServiceHelper {
     private final CourseVideoRepository courseVideoRepository;
     private final VideoRepository videoRepository;
     private final CourseQuizRepository courseQuizRepository;
+    private final LectureRepository lectureRepository;
 
-    public CourseServiceHelper(CourseRepository courseRepository, CourseVideoRepository courseVideoRepository, VideoRepository videoRepository, CourseQuizRepository courseQuizRepository) {
+    public CourseServiceHelper(CourseRepository courseRepository, CourseVideoRepository courseVideoRepository,
+                               VideoRepository videoRepository, CourseQuizRepository courseQuizRepository,
+                               LectureRepository lectureRepository) {
         this.courseRepository = courseRepository;
         this.courseVideoRepository = courseVideoRepository;
         this.videoRepository = videoRepository;
         this.courseQuizRepository = courseQuizRepository;
+        this.lectureRepository = lectureRepository;
     }
 
     public Course getCourse(Long courseId) {
@@ -85,7 +92,7 @@ public class CourseServiceHelper {
 
     public int getCourseProgress(Course course) {
         if (course.getCourseVideoList().size() == 1) {
-            return (course.getDuration() * 100) /
+            return (course.getSumOfMaxDuration() * 100) /
                     videoRepository.getById(course.getCourseVideoList().get(0).getVideoId()).getDuration();
         } else {
             return course.getCompletionRatio();
@@ -124,5 +131,48 @@ public class CourseServiceHelper {
         CourseVideoEntity courseVideoEntity = courseVideoRepository.getById(courseVideoId);
         courseVideoEntity.setSummaryId(summaryId);
         courseVideoRepository.updateById(courseVideoId, courseVideoEntity);
+    }
+
+    public List<CourseInfo> getCourseInfoList(List<CourseEntity> latestCourseList) {
+        List<CourseInfo> courseInfoList = new ArrayList<>();
+
+        for (CourseEntity courseEntity : latestCourseList) {
+            Long courseId = courseEntity.getCourseId();
+            Course course = getCourse(courseId);
+
+            int videoCount = course.getCourseVideoList().size();
+            int completedVideoCount = (int)course.getCourseVideoList().stream()
+                    .filter(CourseVideo::isComplete)
+                    .count();
+
+
+            CourseInfo courseInfo = CourseInfo.builder()
+                    .courseId(courseId)
+                    .courseTitle(course.getTitle())
+                    .thumbnail(course.getThumbnail())
+                    .channels(String.join(", ", lectureRepository.getChannelSetByCourseId(courseId)))
+                    .lastViewTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(course.getLastViewTime()))
+                    .totalVideoCount(videoCount)
+                    .completedVideoCount(completedVideoCount)
+                    .progress(getCourseProgress(course))
+                    .build();
+
+            courseInfoList.add(courseInfo);
+        }
+
+        return courseInfoList;
+    }
+
+    public int getUnfinishedCourseCount(List<CourseEntity> courseInfoList) {
+
+        int unfinishedCourseCount = 0;
+
+        for (int i = 0; i < courseInfoList.size(); i++) {
+            if (courseInfoList.get(i).getProgress() < 100) {
+                unfinishedCourseCount++;
+            }
+        }
+
+        return unfinishedCourseCount;
     }
 }

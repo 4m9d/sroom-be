@@ -1,7 +1,7 @@
 package com.m9d.sroom.search;
 
 
-import com.m9d.sroom.course.CourseServiceV2;
+import com.m9d.sroom.course.CourseService;
 import com.m9d.sroom.search.dto.request.KeywordSearchParam;
 import com.m9d.sroom.search.dto.request.LectureDetailParam;
 import com.m9d.sroom.playlist.PlaylistService;
@@ -39,12 +39,12 @@ public class SearchController {
     private final YoutubeMapper youtubeService;
     private final PlaylistService playlistService;
     private final VideoService videoService;
-    private final CourseServiceV2 courseService;
+    private final CourseService courseService;
     private final JwtUtil jwtUtil;
 
     public SearchController(SearchService searchService, YoutubeMapper youtubeService,
                             PlaylistService playlistService, VideoService videoService,
-                            CourseServiceV2 courseService, JwtUtil jwtUtil) {
+                            CourseService courseService, JwtUtil jwtUtil) {
         this.searchService = searchService;
         this.youtubeService = youtubeService;
         this.playlistService = playlistService;

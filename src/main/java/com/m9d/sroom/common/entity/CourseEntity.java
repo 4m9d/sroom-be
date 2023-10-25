@@ -70,6 +70,6 @@ public class CourseEntity {
 
     public Course toCourse(List<CourseVideo> courseVideoList) {
         return new Course(courseTitle, duration, thumbnail, scheduled, expectedEndDate, weeks,
-                dailyTargetTime, startDate, courseVideoList);
+                dailyTargetTime, startDate, lastViewTime, courseVideoList);
     }
 }
