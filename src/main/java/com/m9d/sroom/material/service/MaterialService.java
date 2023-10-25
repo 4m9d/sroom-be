@@ -199,6 +199,7 @@ public class MaterialService {
                     .submittedAnswer(alterSubmittedAnswer(quiz.getType(), submittedQuiz.getSubmittedAnswer()))
                     .correct(submittedQuiz.getIsCorrect())
                     .courseVideoId(courseVideoId)
+                    .memberId(memberId)
                     .build());
 
             quizInfoList.add(new SubmittedQuizInfo(quiz.getId(), courseQuiz.getId()));
