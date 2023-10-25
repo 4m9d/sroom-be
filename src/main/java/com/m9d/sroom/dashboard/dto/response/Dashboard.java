@@ -33,4 +33,7 @@ public class Dashboard {
 
     @Schema(description = "일별 수강 로그")
     private List<LearningHistory> learningHistories;
+
+    @Schema(description = "틀린 퀴즈 리스트")
+    private List<DashboardQuizData> wrongQuizzes;
 }

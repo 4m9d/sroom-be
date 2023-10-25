@@ -3,13 +3,16 @@ package com.m9d.sroom.dashboard.service;
 import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.course.service.CourseService;
 import com.m9d.sroom.dashboard.dto.response.Dashboard;
+import com.m9d.sroom.dashboard.dto.response.DashboardQuizData;
 import com.m9d.sroom.dashboard.dto.response.LearningHistory;
-import com.m9d.sroom.global.mapper.Course;
-import com.m9d.sroom.global.mapper.CourseDailyLog;
-import com.m9d.sroom.global.mapper.Member;
+import com.m9d.sroom.global.mapper.*;
 import com.m9d.sroom.repository.course.CourseRepository;
 import com.m9d.sroom.repository.coursedailylog.CourseDailyLogRepository;
+import com.m9d.sroom.repository.coursequiz.CourseQuizRepository;
 import com.m9d.sroom.repository.member.MemberRepository;
+import com.m9d.sroom.repository.quiz.QuizRepository;
+import com.m9d.sroom.repository.quizoption.QuizOptionRepository;
+import com.m9d.sroom.repository.video.VideoRepository;
 import com.m9d.sroom.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,15 +34,25 @@ public class DashboardService {
     private final CourseRepository courseRepository;
     private final CourseService courseService;
     private final CourseDailyLogRepository courseDailyLogRepository;
+    private final CourseQuizRepository courseQuizRepository;
+    private final QuizRepository quizRepository;
+    private final QuizOptionRepository quizOptionRepository;
+    private final VideoRepository videoRepository;
 
 
     public DashboardService(CourseRepository courseRepository,
                               MemberRepository memberRepository, CourseService courseService,
-                              CourseDailyLogRepository courseDailyLogRepository, DateUtil dateUtil) {
+                              CourseDailyLogRepository courseDailyLogRepository,
+                            CourseQuizRepository courseQuizRepository, QuizRepository quizRepository,
+                            QuizOptionRepository quizOptionRepository, VideoRepository videoRepository) {
         this.courseRepository = courseRepository;
         this.memberRepository = memberRepository;
         this.courseService = courseService;
         this.courseDailyLogRepository = courseDailyLogRepository;
+        this.courseQuizRepository = courseQuizRepository;
+        this.quizRepository = quizRepository;
+        this.quizOptionRepository = quizOptionRepository;
+        this.videoRepository = videoRepository;
     }
 
     public Dashboard getDashboard(Long memberId) {
@@ -78,10 +91,31 @@ public class DashboardService {
                 .motivation(motivation)
                 .latestLectures(latestLectures)
                 .learningHistories(learningHistoryList)
+                .wrongQuizzes(getWrongQuizzes(memberId))
                 .build();
 
         return dashboardInfo;
     }
+
+    public List<DashboardQuizData> getWrongQuizzes(Long memberId) {
+        List<DashboardQuizData> wrongQuizzes = new ArrayList<>();
+        List<CourseQuiz> courseQuizzes = courseQuizRepository.getListByMemberId(memberId, WRONG_QUIZZES_COUNT);
+
+        for (CourseQuiz courseQuiz : courseQuizzes) {
+            Video video = videoRepository.getById(courseQuiz.getVideoId());
+            Quiz quiz = quizRepository.getById(courseQuiz.getQuizId());
+            List<QuizOption> quizOptions = quizOptionRepository.getListByQuizId(courseQuiz.getQuizId());
+
+            wrongQuizzes.add(DashboardQuizData.builder()
+                            .quizQuestion(quiz.getQuestion())
+                            .quizAnswer(quizOptions.get(quiz.getChoiceAnswer()-1).getOptionText())
+                            .videoTitle(video.getTitle())
+                            .submittedAt(new SimpleDateFormat("yyyy-MM-dd").format(courseQuiz.getSubmittedTime()))
+                    .build());
+        }
+        return wrongQuizzes;
+    }
+
 
     public String getMotivation(List<CourseDailyLog> learningHistories, Member member) {
         List<String> motivationList = new ArrayList<>();
