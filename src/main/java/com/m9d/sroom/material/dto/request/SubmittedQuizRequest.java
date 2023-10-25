@@ -1,6 +1,6 @@
 package com.m9d.sroom.material.dto.request;
 
-import com.m9d.sroom.quiz.QuizSubmittedInfo;
+import com.m9d.sroom.quiz.vo.QuizSubmittedInfo;
 import lombok.Setter;
 
 import java.sql.Timestamp;

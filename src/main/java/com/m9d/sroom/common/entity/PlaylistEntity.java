@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.entity;
 
-import com.m9d.sroom.common.vo.Playlist;
+import com.m9d.sroom.playlist.vo.Playlist;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

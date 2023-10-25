@@ -1,15 +1,16 @@
-package com.m9d.sroom.common.vo;
+package com.m9d.sroom.video.vo;
 
+import com.m9d.sroom.common.vo.Content;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.sql.Timestamp;
 
-@Builder
 @AllArgsConstructor
+@Builder
 @Getter
-public class Playlist extends Content {
+public class Video extends Content {
 
     private final String code;
 
@@ -21,17 +22,27 @@ public class Playlist extends Content {
 
     private final String description;
 
+    private final Integer duration;
+
+    private final Long viewCount;
+
     private final Timestamp publishedAt;
 
-    private final Integer videoCount;
+    private final String language;
+
+    private final String license;
+
+    private final Boolean membership;
 
     @Override
-    public Long getViewCount() {
-        return -1L;
+    public Integer getVideoCount() {
+        return 1;
     }
 
     @Override
     public Boolean isPlaylist() {
-        return true;
+        return false;
     }
+
+
 }

@@ -1,6 +1,6 @@
 package com.m9d.sroom.ai.vo;
 
-import com.m9d.sroom.quiz.Quiz;
+import com.m9d.sroom.quiz.vo.Quiz;
 import com.m9d.sroom.summary.Summary;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

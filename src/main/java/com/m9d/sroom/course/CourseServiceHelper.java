@@ -9,7 +9,9 @@ import com.m9d.sroom.common.repository.coursevideo.CourseVideoRepository;
 import com.m9d.sroom.common.repository.video.VideoRepository;
 import com.m9d.sroom.course.exception.CourseNotMatchException;
 import com.m9d.sroom.course.exception.CourseVideoNotFoundException;
-import com.m9d.sroom.lecture.dto.VideoCompletionStatus;
+import com.m9d.sroom.course.vo.Course;
+import com.m9d.sroom.course.vo.CourseVideo;
+import com.m9d.sroom.search.dto.VideoCompletionStatus;
 import com.m9d.sroom.material.exception.CourseQuizNotFoundException;
 import org.springframework.stereotype.Service;
 

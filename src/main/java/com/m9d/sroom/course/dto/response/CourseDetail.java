@@ -1,9 +1,9 @@
 package com.m9d.sroom.course.dto.response;
 
-import com.m9d.sroom.course.Course;
-import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
-import com.m9d.sroom.lecture.dto.response.Section;
-import com.m9d.sroom.lecture.dto.response.VideoWatchInfo;
+import com.m9d.sroom.course.vo.Course;
+import com.m9d.sroom.search.dto.response.LastVideoInfo;
+import com.m9d.sroom.search.dto.response.Section;
+import com.m9d.sroom.search.dto.response.VideoWatchInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

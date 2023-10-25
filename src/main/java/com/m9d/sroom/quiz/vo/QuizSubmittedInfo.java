@@ -1,4 +1,4 @@
-package com.m9d.sroom.quiz;
+package com.m9d.sroom.quiz.vo;
 
 import com.m9d.sroom.common.entity.CourseQuizEntity;
 import lombok.Getter;

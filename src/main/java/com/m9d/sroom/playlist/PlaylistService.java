@@ -3,9 +3,9 @@ package com.m9d.sroom.playlist;
 import com.m9d.sroom.common.entity.PlaylistEntity;
 import com.m9d.sroom.common.repository.playlist.PlaylistRepository;
 import com.m9d.sroom.common.repository.playlistvideo.PlaylistVideoRepository;
-import com.m9d.sroom.common.vo.Playlist;
-import com.m9d.sroom.common.vo.PlaylistItem;
-import com.m9d.sroom.common.vo.PlaylistWithItemList;
+import com.m9d.sroom.playlist.vo.Playlist;
+import com.m9d.sroom.video.vo.PlaylistItem;
+import com.m9d.sroom.playlist.vo.PlaylistWithItemList;
 import com.m9d.sroom.course.dto.EnrollContentInfo;
 import com.m9d.sroom.playlist.constant.PlaylistConstant;
 import com.m9d.sroom.util.DateUtil;
@@ -128,5 +128,9 @@ public class PlaylistService {
 
     public Set<String> getEnrolledCodeSet(Long memberId) {
         return playlistRepository.getCodeSetByMemberId(memberId);
+    }
+
+    public List<PlaylistEntity> getTopRatedPlaylists(int limit) {
+        return playlistRepository.getTopRatedOrder(limit);
     }
 }

@@ -1,14 +1,12 @@
-package com.m9d.sroom.course;
+package com.m9d.sroom.course.vo;
 
-import com.m9d.sroom.common.entity.VideoEntity;
-import com.m9d.sroom.lecture.dto.VideoCompletionStatus;
-import com.m9d.sroom.lecture.exception.VideoNotFoundException;
+import com.m9d.sroom.search.dto.VideoCompletionStatus;
 import com.m9d.sroom.material.model.MaterialStatus;
 import lombok.Getter;
 import lombok.Setter;
 
-import static com.m9d.sroom.lecture.constant.LectureConstant.LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS;
-import static com.m9d.sroom.lecture.constant.LectureConstant.MINIMUM_VIEW_PERCENT_FOR_COMPLETION;
+import static com.m9d.sroom.search.constant.SearchConstant.LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS;
+import static com.m9d.sroom.search.constant.SearchConstant.MINIMUM_VIEW_PERCENT_FOR_COMPLETION;
 
 @Getter
 public class CourseVideo {

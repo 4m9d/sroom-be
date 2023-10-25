@@ -1,8 +1,5 @@
-package com.m9d.sroom.course;
+package com.m9d.sroom.course.vo;
 
-import com.m9d.sroom.course.constant.CourseConstant;
-import com.m9d.sroom.course.dto.EnrollContentInfo;
-import com.m9d.sroom.course.dto.InnerContent;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
@@ -10,7 +7,6 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.m9d.sroom.course.constant.CourseConstant.ENROLL_DEFAULT_SECTION_SCHEDULE;
 import static com.m9d.sroom.util.DateUtil.DAYS_IN_WEEK;

@@ -1,7 +1,7 @@
 package com.m9d.sroom.youtube;
 
-import com.m9d.sroom.common.vo.Playlist;
-import com.m9d.sroom.common.vo.Video;
+import com.m9d.sroom.playlist.vo.Playlist;
+import com.m9d.sroom.video.vo.Video;
 import com.m9d.sroom.youtube.api.YoutubeApiV2;
 import com.m9d.sroom.youtube.vo.PlaylistItemInfo;
 import com.m9d.sroom.youtube.vo.SearchInfo;

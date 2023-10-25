@@ -1,6 +1,9 @@
-package com.m9d.sroom.quiz;
+package com.m9d.sroom.quiz.vo;
 
 import com.m9d.sroom.material.exception.QuizAnswerFormatNotValidException;
+import com.m9d.sroom.quiz.QuizType;
+import com.m9d.sroom.quiz.vo.Quiz;
+import com.m9d.sroom.quiz.vo.QuizOption;
 import lombok.Getter;
 
 import java.util.ArrayList;

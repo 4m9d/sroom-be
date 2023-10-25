@@ -1,8 +1,6 @@
 package com.m9d.sroom.common.entity;
 
-import com.m9d.sroom.quiz.MultipleChoice;
-import com.m9d.sroom.quiz.Quiz;
-import lombok.AllArgsConstructor;
+import com.m9d.sroom.quiz.vo.Quiz;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.jdbc.core.RowMapper;

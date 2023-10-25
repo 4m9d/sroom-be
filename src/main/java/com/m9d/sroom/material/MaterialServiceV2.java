@@ -4,7 +4,7 @@ import com.m9d.sroom.common.LearningActivityUpdater;
 import com.m9d.sroom.common.entity.CourseQuizEntity;
 import com.m9d.sroom.common.entity.CourseVideoEntity;
 import com.m9d.sroom.course.CourseServiceHelper;
-import com.m9d.sroom.course.CourseVideo;
+import com.m9d.sroom.course.vo.CourseVideo;
 import com.m9d.sroom.material.dto.request.SubmittedQuizRequest;
 import com.m9d.sroom.material.dto.response.*;
 import com.m9d.sroom.material.exception.CourseQuizDuplicationException;

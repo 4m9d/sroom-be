@@ -5,8 +5,8 @@ import com.m9d.sroom.common.entity.PlaylistVideoEntity;
 import com.m9d.sroom.common.entity.VideoEntity;
 import com.m9d.sroom.common.repository.playlistvideo.PlaylistVideoRepository;
 import com.m9d.sroom.common.repository.video.VideoRepository;
-import com.m9d.sroom.common.vo.PlaylistItem;
-import com.m9d.sroom.common.vo.Video;
+import com.m9d.sroom.video.vo.PlaylistItem;
+import com.m9d.sroom.video.vo.Video;
 import com.m9d.sroom.course.dto.EnrollContentInfo;
 import com.m9d.sroom.course.dto.InnerContent;
 import com.m9d.sroom.material.model.MaterialStatus;
@@ -106,4 +106,8 @@ public class VideoService {
     public Collection<String> getEnrolledCodeSet(Long memberId) {
         return videoRepository.getCodeSetByMemberId(memberId);
     }
+
+    public List<VideoEntity> getTopRatedVideos(int limit) {
+        return videoRepository.getTopRatedOrder(limit);
+    } // video service 로 이동
 }

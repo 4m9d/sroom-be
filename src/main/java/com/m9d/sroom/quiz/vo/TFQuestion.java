@@ -1,5 +1,7 @@
-package com.m9d.sroom.quiz;
+package com.m9d.sroom.quiz.vo;
 
+
+import com.m9d.sroom.quiz.QuizType;
 
 import java.util.List;
 

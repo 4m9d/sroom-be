@@ -1,7 +1,7 @@
 package com.m9d.sroom.common.entity;
 
-import com.m9d.sroom.course.Course;
-import com.m9d.sroom.course.CourseVideo;
+import com.m9d.sroom.course.vo.Course;
+import com.m9d.sroom.course.vo.CourseVideo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

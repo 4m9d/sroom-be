@@ -12,6 +12,7 @@ import com.m9d.sroom.material.exception.CourseQuizDuplicationException;
 import com.m9d.sroom.material.exception.QuizAnswerFormatNotValidException;
 import com.m9d.sroom.material.exception.QuizIdNotMatchException;
 import com.m9d.sroom.material.exception.QuizNotFoundException;
+import com.m9d.sroom.quiz.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static com.m9d.sroom.material.constant.MaterialConstant.DEFAULT_QUIZ_OPTION_COUNT;
 
 @Service
 @Slf4j

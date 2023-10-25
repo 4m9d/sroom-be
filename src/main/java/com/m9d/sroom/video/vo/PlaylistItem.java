@@ -1,4 +1,4 @@
-package com.m9d.sroom.common.vo;
+package com.m9d.sroom.video.vo;
 
 import lombok.Getter;
 

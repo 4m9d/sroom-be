@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.entity;
 
-import com.m9d.sroom.quiz.QuizOption;
+import com.m9d.sroom.quiz.vo.QuizOption;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

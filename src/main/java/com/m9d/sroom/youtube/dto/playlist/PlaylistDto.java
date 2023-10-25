@@ -1,6 +1,6 @@
 package com.m9d.sroom.youtube.dto.playlist;
 
-import com.m9d.sroom.common.vo.Playlist;
+import com.m9d.sroom.playlist.vo.Playlist;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.youtube.dto.global.ContentDto;
 import com.m9d.sroom.youtube.dto.global.PageInfoDto;

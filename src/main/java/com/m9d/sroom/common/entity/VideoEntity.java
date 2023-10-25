@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.entity;
 
-import com.m9d.sroom.common.vo.Video;
+import com.m9d.sroom.video.vo.Video;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

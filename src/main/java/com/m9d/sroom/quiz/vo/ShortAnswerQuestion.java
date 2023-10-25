@@ -1,8 +1,12 @@
-package com.m9d.sroom.quiz;
+package com.m9d.sroom.quiz.vo;
+
+import com.m9d.sroom.quiz.QuizType;
+import com.m9d.sroom.quiz.vo.Quiz;
+import com.m9d.sroom.quiz.vo.QuizOption;
 
 import java.util.List;
 
-public class ShortAnswerQuestion extends Quiz{
+public class ShortAnswerQuestion extends Quiz {
 
     private final String answer;
 

@@ -1,5 +1,6 @@
-package com.m9d.sroom.common.vo;
+package com.m9d.sroom.playlist.vo;
 
+import com.m9d.sroom.video.vo.PlaylistItem;
 import lombok.Getter;
 
 import java.util.List;

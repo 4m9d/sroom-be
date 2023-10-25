@@ -6,6 +6,9 @@ import com.m9d.sroom.course.CourseService;
 import com.m9d.sroom.dashboard.DashboardService;
 import com.m9d.sroom.lecture.LectureService;
 import com.m9d.sroom.member.MemberService;
+import com.m9d.sroom.playlist.PlaylistService;
+import com.m9d.sroom.search.SearchService;
+import com.m9d.sroom.video.VideoService;
 import com.m9d.sroom.youtube.api.YoutubeApi;
 import com.m9d.sroom.youtube.YoutubeService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +46,16 @@ public class SroomTest {
     protected JdbcTemplate jdbcTemplate;
 
     @Autowired
+    protected SearchService searchService;
+
+    @Autowired
     protected LectureService lectureService;
+
+    @Autowired
+    protected VideoService videoService;
+
+    @Autowired
+    protected PlaylistService playlistService;
 
     @Autowired
     protected DateUtil dateUtil;

@@ -1,6 +1,6 @@
 package com.m9d.sroom.youtube.dto.video;
 
-import com.m9d.sroom.common.vo.Video;
+import com.m9d.sroom.video.vo.Video;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.youtube.dto.global.ContentDto;
 import com.m9d.sroom.youtube.dto.global.PageInfoDto;

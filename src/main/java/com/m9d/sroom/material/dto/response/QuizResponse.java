@@ -1,8 +1,8 @@
 package com.m9d.sroom.material.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.m9d.sroom.quiz.Quiz;
-import com.m9d.sroom.quiz.QuizSubmittedInfo;
+import com.m9d.sroom.quiz.vo.Quiz;
+import com.m9d.sroom.quiz.vo.QuizSubmittedInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

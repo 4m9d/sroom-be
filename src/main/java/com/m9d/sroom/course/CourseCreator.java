@@ -4,6 +4,8 @@ import com.m9d.sroom.course.constant.CourseConstant;
 import com.m9d.sroom.course.dto.EnrollContentInfo;
 import com.m9d.sroom.course.dto.InnerContent;
 import com.m9d.sroom.course.dto.request.NewLecture;
+import com.m9d.sroom.course.vo.Course;
+import com.m9d.sroom.course.vo.CourseVideo;
 import com.m9d.sroom.util.DateUtil;
 import org.springframework.stereotype.Service;
 

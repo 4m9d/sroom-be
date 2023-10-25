@@ -1,19 +1,10 @@
 package com.m9d.sroom.course;
 
 import com.m9d.sroom.common.entity.*;
-import com.m9d.sroom.course.dto.VideoInfoForSchedule;
 import com.m9d.sroom.course.dto.request.NewLecture;
-import com.m9d.sroom.course.dto.response.CourseDetail;
 import com.m9d.sroom.course.dto.response.CourseInfo;
-import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.course.dto.response.MyCourses;
-import com.m9d.sroom.course.exception.CourseNotMatchException;
-import com.m9d.sroom.course.dto.PlaylistPageResult;
 import com.m9d.sroom.ai.AiService;
-import com.m9d.sroom.lecture.dto.response.CourseBrief;
-import com.m9d.sroom.lecture.dto.response.Section;
-import com.m9d.sroom.lecture.dto.response.VideoWatchInfo;
-import com.m9d.sroom.material.model.MaterialStatus;
 import com.m9d.sroom.common.repository.course.CourseRepository;
 import com.m9d.sroom.common.repository.coursequiz.CourseQuizRepository;
 import com.m9d.sroom.common.repository.coursevideo.CourseVideoRepository;
@@ -24,24 +15,13 @@ import com.m9d.sroom.common.repository.video.VideoRepository;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.youtube.api.YoutubeApi;
 import com.m9d.sroom.youtube.YoutubeService;
-import com.m9d.sroom.youtube.resource.PlaylistItemReq;
-import com.m9d.sroom.youtube.dto.playlistitem.PlaylistVideoItemDto;
-import com.m9d.sroom.youtube.dto.playlistitem.PlaylistVideoDto;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Mono;
 
 import java.security.InvalidParameterException;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
-
-import static com.m9d.sroom.course.constant.CourseConstant.*;
-import static com.m9d.sroom.util.DateUtil.*;
-import static com.m9d.sroom.youtube.YoutubeService.DEFAULT_INDEX_COUNT;
 
 @Slf4j
 @Service

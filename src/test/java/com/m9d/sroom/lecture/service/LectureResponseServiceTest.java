@@ -1,6 +1,8 @@
 package com.m9d.sroom.lecture.service;
 
-import com.m9d.sroom.lecture.dto.response.RecommendLecture;
+import com.m9d.sroom.common.entity.PlaylistEntity;
+import com.m9d.sroom.common.entity.VideoEntity;
+import com.m9d.sroom.recommendation.dto.RecommendLecture;
 import com.m9d.sroom.common.entity.MemberEntity;
 import com.m9d.sroom.util.ServiceTest;
 import org.junit.jupiter.api.Assertions;
@@ -15,18 +17,6 @@ import static org.junit.Assert.assertTrue;
 public class LectureResponseServiceTest extends ServiceTest {
 
     @Test
-    void shouldReturnUnescapeHtml() {
-        //given
-        String escapeHtml = "Blaze Transformations &amp; Rescues! w/ AJ | 90 Minute Compilation | B";
-
-        //when
-        String unescapeHtml = lectureService.unescapeHtml(escapeHtml);
-
-        //when
-        assertTrue(unescapeHtml.equals("Blaze Transformations & Rescues! w/ AJ | 90 Minute Compilation | B"));
-    }
-
-    @Test
     @DisplayName("평점이 높은 순으로 비디오를 불러옵니다.")
     void getTopRatedVideoTest() {
         //given
@@ -35,12 +25,12 @@ public class LectureResponseServiceTest extends ServiceTest {
         saveVideo("code3", 12, "channel2", "thumbnail url", 900, 200, "title3", " ", 300000);
 
         //when
-        List<RecommendLecture> topRatedVideos = lectureService.getTopRatedVideos();
+        List<VideoEntity> topRatedVideos = videoService.getTopRatedVideos(3);
 
         //then
-        Assertions.assertEquals("title2", topRatedVideos.get(0).getLectureTitle());
-        Assertions.assertEquals("title3", topRatedVideos.get(1).getLectureTitle());
-        Assertions.assertEquals("title1", topRatedVideos.get(2).getLectureTitle());
+        Assertions.assertEquals("title2", topRatedVideos.get(0).getTitle());
+        Assertions.assertEquals("title3", topRatedVideos.get(1).getTitle());
+        Assertions.assertEquals("title1", topRatedVideos.get(2).getTitle());
     }
 
     @Test
@@ -52,12 +42,12 @@ public class LectureResponseServiceTest extends ServiceTest {
         savePlaylist("code3", 100, "channel1", "thumbnail url", 600, 150, "title3");
 
         //when
-        List<RecommendLecture> topRatedPlaylists = lectureService.getTopRatedPlaylists();
+        List<PlaylistEntity> topRatedPlaylists = playlistService.getTopRatedPlaylists(3);
 
         //then
-        Assertions.assertEquals("title2", topRatedPlaylists.get(0).getLectureTitle());
-        Assertions.assertEquals("title3", topRatedPlaylists.get(1).getLectureTitle());
-        Assertions.assertEquals("title1", topRatedPlaylists.get(2).getLectureTitle());
+        Assertions.assertEquals("title2", topRatedPlaylists.get(0).getTitle());
+        Assertions.assertEquals("title3", topRatedPlaylists.get(1).getTitle());
+        Assertions.assertEquals("title1", topRatedPlaylists.get(2).getTitle());
     }
 
     @Test
