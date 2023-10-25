@@ -36,27 +36,22 @@ public class RecommendationService {
 
     @Transactional
     public Recommendations getRecommendations(Long memberId) {
-        HashSet<RecommendLecture> recommendLectureHashSet = new HashSet<>();
-        List<RecommendLecture> recommendLectureList = new ArrayList<>();
-        List<RecommendLecture> topRatedVideos = getRecommendLectures(videoService.getTopRatedVideos(5));
-        List<RecommendLecture> topRatedPlaylists = getRecommendLectures(playlistService.getTopRatedPlaylists(5));
-        List<RecommendLecture> recommendLecturesByChannel = getRecommendsByChannel(memberId);
+        List<RecommendLecture> generalRecommendLectureList = new ArrayList<>();
+        List<RecommendLecture> channelRecommendLectureList = getRecommendsByChannel(memberId);
+
+        generalRecommendLectureList.addAll(getRecommendLectures(videoService.getTopRatedVideos(5)));
+        generalRecommendLectureList.addAll(getRecommendLectures(playlistService.getTopRatedPlaylists(5)));
 
         Set<String> enrolledLectureSet = lectureService.getEnrolledLectures(memberId);
 
-        recommendLectureHashSet.addAll(topRatedVideos);
-        recommendLectureHashSet.addAll(topRatedPlaylists);
-        recommendLectureHashSet.addAll(recommendLecturesByChannel);
-
         for (String lectureCode : enrolledLectureSet) {
-            recommendLectureHashSet.removeIf(recommendLecture -> (recommendLecture.getLectureCode().equals(lectureCode)));
+            generalRecommendLectureList.removeIf(recommendLecture -> (recommendLecture.getLectureCode().equals(lectureCode)));
+            channelRecommendLectureList.removeIf(recommendLecture -> (recommendLecture.getLectureCode().equals(lectureCode)));
         }
 
-        recommendLectureList.addAll(recommendLectureHashSet);
-        Collections.shuffle(recommendLectureList);
-
         Recommendations recommendations = Recommendations.builder()
-                .recommendations(recommendLectureList)
+                .generalRecommendations(generalRecommendLectureList)
+                .channelRecommendations(channelRecommendLectureList)
                 .build();
 
         return recommendations;

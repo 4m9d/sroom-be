@@ -12,5 +12,8 @@ import java.util.*;
 public class Recommendations {
 
     @Schema(description = "추천 강의 리스트")
-    private List<RecommendLecture> recommendations;
+    private List<RecommendLecture> generalRecommendations;
+
+    @Schema(description = "추천 강의 리스트")
+    private List<RecommendLecture> channelRecommendations;
 }
