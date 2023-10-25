@@ -6,7 +6,7 @@ import com.m9d.sroom.common.repository.lecture.LectureRepository;
 import com.m9d.sroom.common.repository.playlist.PlaylistRepository;
 import com.m9d.sroom.common.repository.review.ReviewRepository;
 import com.m9d.sroom.common.repository.video.VideoRepository;
-import com.m9d.sroom.lecture.dto.response.ReviewBrief;
+import com.m9d.sroom.search.dto.response.ReviewBrief;
 import com.m9d.sroom.review.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

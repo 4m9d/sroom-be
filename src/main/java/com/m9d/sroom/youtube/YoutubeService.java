@@ -3,6 +3,7 @@ package com.m9d.sroom.youtube;
 import com.m9d.sroom.common.entity.PlaylistEntity;
 import com.m9d.sroom.common.entity.VideoEntity;
 import com.m9d.sroom.common.repository.video.VideoRepository;
+import com.m9d.sroom.search.constant.SearchConstant.*;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.youtube.api.YoutubeApi;
 import com.m9d.sroom.youtube.resource.PlaylistItemReq;
@@ -25,7 +26,7 @@ import java.sql.Timestamp;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.m9d.sroom.lecture.constant.LectureConstant.*;
+import static com.m9d.sroom.search.constant.SearchConstant.*;
 
 @Service
 @Slf4j

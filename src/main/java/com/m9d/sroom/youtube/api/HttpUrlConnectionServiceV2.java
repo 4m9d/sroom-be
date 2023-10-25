@@ -1,7 +1,7 @@
 package com.m9d.sroom.youtube.api;
 
 import com.google.gson.Gson;
-import com.m9d.sroom.lecture.exception.LectureNotFoundException;
+import com.m9d.sroom.search.exception.LectureNotFoundException;
 import com.m9d.sroom.youtube.YoutubeService;
 import com.m9d.sroom.youtube.resource.YoutubeReq;
 import com.m9d.sroom.youtube.dto.playlist.PlaylistDto;

@@ -1,7 +1,7 @@
 package com.m9d.sroom.common.repository.review;
 
 import com.m9d.sroom.common.entity.ReviewEntity;
-import com.m9d.sroom.lecture.dto.response.ReviewBrief;
+import com.m9d.sroom.search.dto.response.ReviewBrief;
 
 import java.util.List;
 

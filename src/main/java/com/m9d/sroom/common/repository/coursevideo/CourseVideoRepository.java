@@ -2,8 +2,8 @@ package com.m9d.sroom.common.repository.coursevideo;
 
 import com.m9d.sroom.course.dto.VideoInfoForSchedule;
 import com.m9d.sroom.common.entity.CourseVideoEntity;
-import com.m9d.sroom.lecture.dto.response.LastVideoInfo;
-import com.m9d.sroom.lecture.dto.response.VideoWatchInfo;
+import com.m9d.sroom.search.dto.response.LastVideoInfo;
+import com.m9d.sroom.search.dto.response.VideoWatchInfo;
 
 import java.util.List;
 import java.util.Optional;

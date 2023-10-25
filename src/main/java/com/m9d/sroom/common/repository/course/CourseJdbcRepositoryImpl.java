@@ -1,7 +1,7 @@
 package com.m9d.sroom.common.repository.course;
 
 import com.m9d.sroom.common.entity.CourseEntity;
-import com.m9d.sroom.lecture.dto.response.CourseBrief;
+import com.m9d.sroom.search.dto.response.CourseBrief;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;

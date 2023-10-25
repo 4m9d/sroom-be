@@ -9,7 +9,7 @@ import com.m9d.sroom.common.repository.coursedailylog.CourseDailyLogRepository;
 import com.m9d.sroom.common.repository.coursevideo.CourseVideoRepository;
 import com.m9d.sroom.common.repository.member.MemberRepository;
 import com.m9d.sroom.course.CourseServiceHelper;
-import com.m9d.sroom.lecture.dto.VideoCompletionStatus;
+import com.m9d.sroom.search.dto.VideoCompletionStatus;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
@@ -18,7 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static com.m9d.sroom.lecture.constant.LectureConstant.LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS;
+import static com.m9d.sroom.search.constant.SearchConstant.LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS;
 
 @Service
 public class LearningActivityUpdater {

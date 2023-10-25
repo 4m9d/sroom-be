@@ -1,6 +1,6 @@
 package com.m9d.sroom.lecture.controller;
 
-import com.m9d.sroom.lecture.dto.response.KeywordSearchResponse;
+import com.m9d.sroom.search.dto.response.KeywordSearchResponse;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.util.ControllerTest;
 import org.junit.jupiter.api.DisplayName;
