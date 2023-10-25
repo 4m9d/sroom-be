@@ -154,6 +154,7 @@ public class CourseServiceHelper {
                     .lastViewTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(course.getLastViewTime()))
                     .totalVideoCount(videoCount)
                     .completedVideoCount(completedVideoCount)
+                    .duration(course.getSumOfMaxDuration())
                     .progress(getCourseProgress(course))
                     .build();
 
