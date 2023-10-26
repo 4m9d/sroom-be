@@ -27,4 +27,6 @@ public class DashboardConstant {
 
     public static final int SECONDS_PER_HOUR = 3600;
 
+    public static final int WRONG_QUIZZES_COUNT = 10;
+
 }
