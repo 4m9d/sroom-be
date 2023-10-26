@@ -79,19 +79,22 @@ public class MemberService {
     }
 
     @Transactional
-    public Login verifyRefreshToken(Long memberId, RefreshToken refreshToken) {
-        Map<String, Object> refreshTokenDetail = jwtUtil.getDetailFromToken(refreshToken.getRefreshToken());
+    public Login verifyRefreshToken(String refreshToken) {
+        Map<String, Object> refreshTokenDetail = jwtUtil.getDetailFromToken(refreshToken);
 
         if ((Long) refreshTokenDetail.get(EXPIRATION_TIME) <= System.currentTimeMillis() / MILLIS_TO_SECONDS) {
             throw new TokenExpiredException();
         }
+
+        Long memberId = Long.valueOf((String) refreshTokenDetail.get("memberId"));
+
         if (!memberId.equals(Long.valueOf((String) refreshTokenDetail.get(MEMBER_ID_FIELD)))) {
             throw new MemberNotMatchException();
         }
 
         String refreshTokenFromDB = memberRepository.getById(memberId)
                 .getRefreshToken();
-        if (!refreshTokenFromDB.equals(refreshToken.getRefreshToken())) {
+        if (!refreshTokenFromDB.equals(refreshToken)) {
             throw new RefreshRenewedException();
         }
 
