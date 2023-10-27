@@ -117,7 +117,7 @@ public class MemberService {
                 .accessToken(accessToken)
                 .refreshToken(member
                         .getRefreshToken())
-                .expiresAt((Long) jwtUtil
+                .accessExpiresAt((Long) jwtUtil
                         .getDetailFromToken(accessToken)
                         .get(EXPIRATION_TIME))
                 .name(member.getMemberName())
