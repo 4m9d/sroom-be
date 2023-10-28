@@ -9,6 +9,7 @@ import com.m9d.sroom.common.repository.coursevideo.CourseVideoRepository;
 import com.m9d.sroom.common.repository.lecture.LectureRepository;
 import com.m9d.sroom.common.repository.video.VideoRepository;
 import com.m9d.sroom.course.dto.response.CourseInfo;
+import com.m9d.sroom.course.exception.CourseNotFoundException;
 import com.m9d.sroom.course.exception.CourseNotMatchException;
 import com.m9d.sroom.course.exception.CourseVideoNotFoundException;
 import com.m9d.sroom.course.vo.Course;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CourseServiceHelper {
@@ -53,8 +55,13 @@ public class CourseServiceHelper {
         return courseVideoList;
     }
 
-    public boolean validateCourseForMember(Long memberIdFromRequest, Long courseId) {
-        return memberIdFromRequest.equals(courseRepository.getById(courseId).getMemberId());
+    public void validateCourseForMember(Long memberIdFromRequest, Long courseId) {
+        CourseEntity courseEntity = courseRepository.findById(courseId)
+                .orElseThrow(CourseNotFoundException::new);
+
+        if (!memberIdFromRequest.equals(courseEntity.getMemberId())) {
+            throw new CourseNotMatchException();
+        }
     }
 
     public void validateCourseQuizForMember(Long memberId, Long courseQuizId) {

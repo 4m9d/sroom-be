@@ -86,7 +86,7 @@ public class MemberService {
             throw new TokenExpiredException();
         }
 
-        Long memberId = (Long) refreshTokenDetail.get("memberId");
+        Long memberId = Long.valueOf((String) refreshTokenDetail.get("memberId"));
 
         String refreshTokenFromDB = memberRepository.getById(memberId)
                 .getRefreshToken();

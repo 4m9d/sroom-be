@@ -2,11 +2,13 @@ package com.m9d.sroom.common.repository.course;
 
 import com.m9d.sroom.common.entity.CourseEntity;
 import com.m9d.sroom.search.dto.response.CourseBrief;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class CourseJdbcRepositoryImpl implements CourseRepository {
@@ -35,6 +37,15 @@ public class CourseJdbcRepositoryImpl implements CourseRepository {
     @Override
     public CourseEntity getById(Long courseId) {
         return jdbcTemplate.queryForObject(CourseRepositorySql.GET_BY_ID, CourseEntity.getRowMapper(), courseId);
+    }
+
+    @Override
+    public Optional<CourseEntity> findById(Long courseId) {
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(CourseRepositorySql.GET_BY_ID, CourseEntity.getRowMapper(), courseId));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
