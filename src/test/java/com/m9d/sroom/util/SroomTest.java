@@ -9,8 +9,6 @@ import com.m9d.sroom.member.MemberService;
 import com.m9d.sroom.playlist.PlaylistService;
 import com.m9d.sroom.search.SearchService;
 import com.m9d.sroom.video.VideoService;
-import com.m9d.sroom.youtube.api.YoutubeApi;
-import com.m9d.sroom.youtube.YoutubeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

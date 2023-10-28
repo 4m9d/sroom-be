@@ -14,6 +14,8 @@ public class CourseQuizEntity {
 
     private Long courseId;
 
+    private Long memberId;
+
     private Long courseVideoId;
 
     private Long quizId;
@@ -32,6 +34,7 @@ public class CourseQuizEntity {
         return (rs, rowNum) -> CourseQuizEntity.builder()
                 .id(rs.getLong("course_quiz_id"))
                 .courseId(rs.getLong("course_id"))
+                .memberId(rs.getLong("member_id"))
                 .quizId(rs.getLong("quiz_id"))
                 .videoId(rs.getLong("video_id"))
                 .submittedAnswer(rs.getString("submitted_answer"))

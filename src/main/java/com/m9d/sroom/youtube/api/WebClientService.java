@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
-import reactor.core.publisher.Mono;
 
 //@Service
 @Slf4j
@@ -26,26 +25,26 @@ public class WebClientService implements YoutubeApi {
     private final WebClient webClient;
 
     @Override
-    public Mono<SearchDto> getSearchVo(YoutubeReq resource) {
-        return getYoutubeVo(resource, SearchDto.class);
+    public SearchDto getSearchDto(YoutubeReq resource) {
+        return getYoutubeDto(resource, SearchDto.class);
     }
 
     @Override
-    public Mono<VideoDto> getVideoVo(YoutubeReq resource) {
-        return getYoutubeVo(resource, VideoDto.class);
+    public VideoDto getVideoDto(YoutubeReq resource) {
+        return getYoutubeDto(resource, VideoDto.class);
     }
 
     @Override
-    public Mono<PlaylistDto> getPlaylistVo(YoutubeReq resource) {
-        return getYoutubeVo(resource, PlaylistDto.class);
+    public PlaylistDto getPlaylistDto(YoutubeReq resource) {
+        return getYoutubeDto(resource, PlaylistDto.class);
     }
 
     @Override
-    public Mono<PlaylistVideoDto> getPlaylistVideoVo(YoutubeReq resource) {
-        return getYoutubeVo(resource, PlaylistVideoDto.class);
+    public PlaylistVideoDto getPlaylistVideoDto(YoutubeReq resource) {
+        return getYoutubeDto(resource, PlaylistVideoDto.class);
     }
 
-    public <T> Mono<T> getYoutubeVo(YoutubeReq req, Class<T> resultClass) {
+    public <T> T getYoutubeDto(YoutubeReq req, Class<T> resultClass) {
         return this.webClient
                 .get()
                 .uri(uriBuilder -> {
@@ -58,6 +57,7 @@ public class WebClientService implements YoutubeApi {
                     return uriComponentsBuilder.build().toUri();
                 })
                 .retrieve()
-                .bodyToMono(resultClass);
+                .bodyToMono(resultClass)
+                .block();
     }
 }

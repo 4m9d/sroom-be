@@ -1,16 +1,18 @@
 package com.m9d.sroom.dashboard;
 
+import com.m9d.sroom.common.entity.*;
+import com.m9d.sroom.common.repository.coursequiz.CourseQuizRepository;
+import com.m9d.sroom.common.repository.quiz.QuizRepository;
+import com.m9d.sroom.common.repository.quizoption.QuizOptionRepository;
+import com.m9d.sroom.common.repository.video.VideoRepository;
 import com.m9d.sroom.course.CourseServiceHelper;
 import com.m9d.sroom.course.dto.response.CourseInfo;
 import com.m9d.sroom.dashboard.dto.response.Dashboard;
+import com.m9d.sroom.dashboard.dto.response.DashboardQuizData;
 import com.m9d.sroom.dashboard.dto.response.LearningHistory;
-import com.m9d.sroom.common.entity.CourseEntity;
-import com.m9d.sroom.common.entity.CourseDailyLogEntity;
-import com.m9d.sroom.common.entity.MemberEntity;
 import com.m9d.sroom.common.repository.course.CourseRepository;
 import com.m9d.sroom.common.repository.coursedailylog.CourseDailyLogRepository;
 import com.m9d.sroom.common.repository.member.MemberRepository;
-import com.m9d.sroom.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -31,15 +33,25 @@ public class DashboardService {
     private final CourseRepository courseRepository;
     private final CourseServiceHelper courseServiceHelper;
     private final CourseDailyLogRepository courseDailyLogRepository;
+    private final CourseQuizRepository courseQuizRepository;
+    private final QuizRepository quizRepository;
+    private final QuizOptionRepository quizOptionRepository;
+    private final VideoRepository videoRepository;
 
 
     public DashboardService(CourseRepository courseRepository,
-                              MemberRepository memberRepository, CourseServiceHelper courseServiceHelper,
-                              CourseDailyLogRepository courseDailyLogRepository, DateUtil dateUtil) {
+                            MemberRepository memberRepository, CourseServiceHelper courseServiceHelper,
+                            CourseDailyLogRepository courseDailyLogRepository,
+                            CourseQuizRepository courseQuizRepository, QuizRepository quizRepository,
+                            QuizOptionRepository quizOptionRepository, VideoRepository videoRepository) {
         this.courseRepository = courseRepository;
         this.memberRepository = memberRepository;
         this.courseServiceHelper = courseServiceHelper;
         this.courseDailyLogRepository = courseDailyLogRepository;
+        this.courseQuizRepository = courseQuizRepository;
+        this.quizRepository = quizRepository;
+        this.quizOptionRepository = quizOptionRepository;
+        this.videoRepository = videoRepository;
     }
 
     public Dashboard getDashboard(Long memberId) {
@@ -58,10 +70,10 @@ public class DashboardService {
         MemberEntity member = memberRepository.getById(memberId);
         String motivation = getMotivation(courseDailyLogList, member);
 
-        int correctnessRate = (int)(((float) member.getTotalCorrectCount() / member.getTotalSolvedCount()) * 100);
+        int correctnessRate = (int) (((float) member.getTotalCorrectCount() / member.getTotalSolvedCount()) * 100);
 
         List<LearningHistory> learningHistoryList = new ArrayList<>();
-        for(CourseDailyLogEntity courseDailyLog : courseDailyLogList) {
+        for (CourseDailyLogEntity courseDailyLog : courseDailyLogList) {
             learningHistoryList.add(LearningHistory.builder()
                     .date(new SimpleDateFormat("yyyy-MM-dd").format(courseDailyLog.getDailyLogDate()))
                     .lectureCount(courseDailyLog.getLectureCount())
@@ -78,10 +90,32 @@ public class DashboardService {
                 .motivation(motivation)
                 .latestLectures(latestLectures)
                 .learningHistories(learningHistoryList)
+                .wrongQuizzes(getWrongQuizzes(memberId))
                 .build();
 
         return dashboardInfo;
     }
+
+
+    public List<DashboardQuizData> getWrongQuizzes(Long memberId) {
+        List<DashboardQuizData> wrongQuizzes = new ArrayList<>();
+        List<CourseQuizEntity> courseQuizzes = courseQuizRepository.getWrongQuizListByMemberId(memberId, WRONG_QUIZZES_COUNT);
+
+        for (CourseQuizEntity courseQuiz : courseQuizzes) {
+            VideoEntity video = videoRepository.getById(courseQuiz.getVideoId());
+            QuizEntity quiz = quizRepository.getById(courseQuiz.getQuizId());
+            List<QuizOptionEntity> quizOptions = quizOptionRepository.getListByQuizId(courseQuiz.getQuizId());
+
+            wrongQuizzes.add(DashboardQuizData.builder()
+                    .quizQuestion(quiz.getQuestion())
+                    .quizAnswer(quizOptions.get(quiz.getChoiceAnswer() - 1).getOptionText())
+                    .videoTitle(video.getTitle())
+                    .submittedAt(new SimpleDateFormat("yyyy-MM-dd").format(courseQuiz.getSubmittedTime()))
+                    .build());
+        }
+        return wrongQuizzes;
+    }
+
 
     public String getMotivation(List<CourseDailyLogEntity> learningHistories, MemberEntity member) {
         List<String> motivationList = new ArrayList<>();
@@ -96,10 +130,9 @@ public class DashboardService {
 
         motivationList.add(leftTargetTime + MOTIVATION_TOTAL_LEARNING_TIME_PREFIX + targetTime + MOTIVATION_TOTAL_LEARNING_TIME_SUFFIX);
 
-        if(consecutiveLearningDays > 0) {
+        if (consecutiveLearningDays > 0) {
             motivationList.add(consecutiveLearningDays + MOTIVATION_CONSECUTIVE_LEARNING);
-        }
-        else {
+        } else {
             motivationList.add(MOTIVATION_RESTART_LEARNING);
         }
 
@@ -113,15 +146,14 @@ public class DashboardService {
         int consecutiveCount = 0;
         LocalDate beforeDate = LocalDate.now();
 
-        for(int i = 0; i < courseDailyLogList.size(); i++) {
+        for (int i = 0; i < courseDailyLogList.size(); i++) {
 
             LocalDate nowDate = LocalDate.parse(new SimpleDateFormat("yyyy-MM-dd").format(courseDailyLogList.get(i).getDailyLogDate()));
 
-            if(isConsecutive(beforeDate, nowDate)) {
+            if (isConsecutive(beforeDate, nowDate)) {
                 consecutiveCount++;
                 beforeDate = nowDate;
-            }
-            else {
+            } else {
                 break;
             }
 

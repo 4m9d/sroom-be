@@ -5,6 +5,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -24,13 +25,19 @@ public class CourseQuizJdbcRepositoryImpl implements CourseQuizRepository {
                 courseQuiz.getVideoId(),
                 courseQuiz.getSubmittedAnswer(),
                 courseQuiz.getCorrect(),
-                courseQuiz.getCourseVideoId());
+                courseQuiz.getCourseVideoId(),
+                courseQuiz.getMemberId());
         return getById(jdbcTemplate.queryForObject(CourseQuizRepositorySql.GET_LAST_ID, Long.class));
     }
 
     @Override
     public CourseQuizEntity getById(Long courseQuizId) {
         return jdbcTemplate.queryForObject(CourseQuizRepositorySql.GET_BY_ID, CourseQuizEntity.getRowMapper(), courseQuizId);
+    }
+
+    @Override
+    public List<CourseQuizEntity> getWrongQuizListByMemberId(Long memberId, int limit) {
+        return jdbcTemplate.query(CourseQuizRepositorySql.GET_WRONG_QUIZ_LIST_BY_MEMBER_ID, CourseQuizEntity.getRowMapper(), memberId, limit);
     }
 
     @Override

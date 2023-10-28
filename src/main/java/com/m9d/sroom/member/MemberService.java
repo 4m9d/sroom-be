@@ -5,7 +5,6 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.m9d.sroom.common.entity.MemberEntity;
-import com.m9d.sroom.member.dto.request.RefreshToken;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.member.dto.response.NameUpdateResponse;
 import com.m9d.sroom.member.exception.*;
@@ -79,8 +78,9 @@ public class MemberService {
     }
 
     @Transactional
-    public Login verifyRefreshToken(RefreshToken refreshToken) {
-        Map<String, Object> refreshTokenDetail = jwtUtil.getDetailFromToken(refreshToken.getRefreshToken());
+
+    public Login verifyRefreshToken(String refreshToken) {
+        Map<String, Object> refreshTokenDetail = jwtUtil.getDetailFromToken(refreshToken);
 
         if ((Long) refreshTokenDetail.get(EXPIRATION_TIME) <= System.currentTimeMillis() / MILLIS_TO_SECONDS) {
             throw new TokenExpiredException();
@@ -88,9 +88,13 @@ public class MemberService {
 
         Long memberId = Long.valueOf((String) refreshTokenDetail.get("memberId"));
 
+        if (!memberId.equals(Long.valueOf((String) refreshTokenDetail.get(MEMBER_ID_FIELD)))) {
+            throw new MemberNotMatchException();
+        }
+
         String refreshTokenFromDB = memberRepository.getById(memberId)
                 .getRefreshToken();
-        if (!refreshTokenFromDB.equals(refreshToken.getRefreshToken())) {
+        if (!refreshTokenFromDB.equals(refreshToken)) {
             throw new RefreshRenewedException();
         }
 

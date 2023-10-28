@@ -43,7 +43,7 @@ public class MemberController {
     @Operation(summary = "access token 갱신", description = "refresh token을 사용하여 로그인을 유지합니다.")
     @ApiResponse(responseCode = "200", description = "토큰 갱신에 성공하였습니다.", content = {@Content(mediaType = "application/json", schema = @Schema(allOf = Login.class))})
     public Login refresh(@RequestBody RefreshToken refreshToken) {
-        return memberService.verifyRefreshToken(refreshToken);
+        return memberService.verifyRefreshToken(refreshToken.getRefreshToken());
     }
 
     @Auth

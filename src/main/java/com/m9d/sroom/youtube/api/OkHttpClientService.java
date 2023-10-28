@@ -11,7 +11,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.springframework.beans.factory.annotation.Value;
-import reactor.core.publisher.Mono;
 
 import java.io.IOException;
 import java.util.Map;
@@ -45,26 +44,26 @@ public class OkHttpClientService implements YoutubeApi {
     }
 
     @Override
-    public Mono<SearchDto> getSearchVo(YoutubeReq resource) {
-        return getYoutubeVo(resource, SearchDto.class);
+    public SearchDto getSearchDto(YoutubeReq resource) {
+        return getYoutubeDto(resource, SearchDto.class);
     }
 
     @Override
-    public Mono<VideoDto> getVideoVo(YoutubeReq resource) {
-        return getYoutubeVo(resource, VideoDto.class);
+    public VideoDto getVideoDto(YoutubeReq resource) {
+        return getYoutubeDto(resource, VideoDto.class);
     }
 
     @Override
-    public Mono<PlaylistDto> getPlaylistVo(YoutubeReq resource) {
-        return getYoutubeVo(resource, PlaylistDto.class);
+    public PlaylistDto getPlaylistDto(YoutubeReq resource) {
+        return getYoutubeDto(resource, PlaylistDto.class);
     }
 
     @Override
-    public Mono<PlaylistVideoDto> getPlaylistVideoVo(YoutubeReq resource) {
-        return getYoutubeVo(resource, PlaylistVideoDto.class);
+    public PlaylistVideoDto getPlaylistVideoDto(YoutubeReq resource) {
+        return getYoutubeDto(resource, PlaylistVideoDto.class);
     }
 
-    public <T> Mono<T> getYoutubeVo(YoutubeReq resource, Class<T> resultClass) {
+    public <T> T getYoutubeDto(YoutubeReq resource, Class<T> resultClass) {
         OkHttpClient client = new OkHttpClient();
         String url = buildYoutubeApiRequest(resource.getEndPoint(), resource.getParameters());
 
@@ -75,7 +74,7 @@ public class OkHttpClientService implements YoutubeApi {
 
         try (Response response = client.newCall(request).execute()) {
             T resultVo = gson.fromJson(response.body().string(), resultClass);
-            return Mono.just(resultVo);
+            return resultVo;
         } catch (IOException e) {
             log.error(e.getMessage(), e);
             throw new RuntimeException(e);
