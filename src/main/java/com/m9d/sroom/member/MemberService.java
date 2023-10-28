@@ -115,7 +115,7 @@ public class MemberService {
         return Login.builder()
                 .accessToken(accessToken)
                 .refreshToken(member.getRefreshToken())
-                .expiresAt((Long) jwtUtil.getDetailFromToken(accessToken).get(EXPIRATION_TIME))
+                .accessExpiresAt((Long) jwtUtil.getDetailFromToken(accessToken).get(EXPIRATION_TIME))
                 .name(member.getMemberName())
                 .profile(picture)
                 .bio(member.getBio())

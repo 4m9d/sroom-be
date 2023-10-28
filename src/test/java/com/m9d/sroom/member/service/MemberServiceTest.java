@@ -52,7 +52,7 @@ public class MemberServiceTest extends ServiceTest {
         //when
         Login login = memberService.generateLogin(member, (String) idToken.getPayload().get("picture"));
         Long expectedExpirationTime = System.currentTimeMillis() / 1000 + jwtUtil.ACCESS_TOKEN_EXPIRATION_PERIOD / 1000;
-        Long delta = Math.abs(expectedExpirationTime - login.getExpiresAt());
+        Long delta = Math.abs(expectedExpirationTime - login.getAccessExpiresAt());
 
         //then
         assertTrue(delta < 5);
