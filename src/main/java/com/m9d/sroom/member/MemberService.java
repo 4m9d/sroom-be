@@ -78,7 +78,6 @@ public class MemberService {
     }
 
     @Transactional
-
     public Login verifyRefreshToken(String refreshToken) {
         Map<String, Object> refreshTokenDetail = jwtUtil.getDetailFromToken(refreshToken);
 

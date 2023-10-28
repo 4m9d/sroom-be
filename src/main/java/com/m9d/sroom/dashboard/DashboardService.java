@@ -38,14 +38,12 @@ public class DashboardService {
     private final QuizOptionRepository quizOptionRepository;
     private final VideoRepository videoRepository;
 
-
-    public DashboardService(CourseRepository courseRepository,
-                            MemberRepository memberRepository, CourseServiceHelper courseServiceHelper,
-                            CourseDailyLogRepository courseDailyLogRepository,
+    public DashboardService(MemberRepository memberRepository, CourseRepository courseRepository,
+                            CourseServiceHelper courseServiceHelper, CourseDailyLogRepository courseDailyLogRepository,
                             CourseQuizRepository courseQuizRepository, QuizRepository quizRepository,
                             QuizOptionRepository quizOptionRepository, VideoRepository videoRepository) {
-        this.courseRepository = courseRepository;
         this.memberRepository = memberRepository;
+        this.courseRepository = courseRepository;
         this.courseServiceHelper = courseServiceHelper;
         this.courseDailyLogRepository = courseDailyLogRepository;
         this.courseQuizRepository = courseQuizRepository;
@@ -53,6 +51,7 @@ public class DashboardService {
         this.quizOptionRepository = quizOptionRepository;
         this.videoRepository = videoRepository;
     }
+
 
     public Dashboard getDashboard(Long memberId) {
 
@@ -96,7 +95,6 @@ public class DashboardService {
         return dashboardInfo;
     }
 
-
     public List<DashboardQuizData> getWrongQuizzes(Long memberId) {
         List<DashboardQuizData> wrongQuizzes = new ArrayList<>();
         List<CourseQuizEntity> courseQuizzes = courseQuizRepository.getWrongQuizListByMemberId(memberId, WRONG_QUIZZES_COUNT);
@@ -115,7 +113,6 @@ public class DashboardService {
         }
         return wrongQuizzes;
     }
-
 
     public String getMotivation(List<CourseDailyLogEntity> learningHistories, MemberEntity member) {
         List<String> motivationList = new ArrayList<>();
