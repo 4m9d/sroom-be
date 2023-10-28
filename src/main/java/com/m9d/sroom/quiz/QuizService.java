@@ -99,7 +99,7 @@ public class QuizService {
     }
 
     public CourseQuizEntity createCourseQuizEntity(Long courseId, Long videoId, Long courseVideoId, Long quizId,
-                                                   QuizSubmittedInfo submittedInfo) {
+                                                   QuizSubmittedInfo submittedInfo, Long memberId) {
         return courseQuizRepository.save(CourseQuizEntity.builder()
                 .courseId(courseId)
                 .quizId(quizId)
@@ -107,6 +107,7 @@ public class QuizService {
                 .submittedAnswer(getQuiz(quizId).alterSubmittedAnswerFitInDB(submittedInfo.getSubmittedAnswer()))
                 .correct(submittedInfo.getIsCorrect())
                 .courseVideoId(courseVideoId)
+                .memberId(memberId)
                 .build());
     }
 

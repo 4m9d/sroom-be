@@ -89,7 +89,7 @@ public class MaterialService {
 
             CourseQuizEntity courseQuizEntity = quizService.createCourseQuizEntity(courseVideoEntity.getCourseId(),
                     courseVideoEntity.getVideoId(), courseVideoId, submittedQuizRequest.getQuizId(),
-                    submittedQuizRequest.toVo());
+                    submittedQuizRequest.toVo(), memberId);
             quizInfoResponseList.add(new SubmittedQuizInfoResponse(submittedQuizRequest.getQuizId(),
                     courseQuizEntity.getId()));
         }
