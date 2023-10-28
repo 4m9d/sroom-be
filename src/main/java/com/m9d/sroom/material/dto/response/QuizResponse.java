@@ -48,9 +48,11 @@ public class QuizResponse {
         if(submitted){
             this.submittedAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(submittedInfo.getSubmittedAt());
             this.submittedAnswer = submittedInfo.getSubmittedAnswer();
+            this.correct = submittedAnswer.equals(quiz.getAnswer());
         }else{
             this.submittedAt = null;
             this.submittedAnswer = null;
+            this.correct = false;
         }
         this.scrapped = submittedInfo.getIsScrapped();
     }
