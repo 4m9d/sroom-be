@@ -16,7 +16,7 @@ public class Login {
     private String refreshToken;
 
     @Schema(description = "만료 시간(초)", example = "1688398507")
-    private Long expiresAt;
+    private Long accessExpiresAt;
 
     @Schema(description = "멤버 이름", example = "user_978538")
     private String name;

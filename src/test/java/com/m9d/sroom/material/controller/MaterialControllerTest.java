@@ -1,7 +1,7 @@
 package com.m9d.sroom.material.controller;
 
 import com.m9d.sroom.course.dto.response.CourseDetail;
-import com.m9d.sroom.global.mapper.Member;
+import com.m9d.sroom.common.entity.MemberEntity;
 import com.m9d.sroom.util.ControllerTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ public class MaterialControllerTest extends ControllerTest {
     @DisplayName("생성이 완료된 강의자료를 받아오는데 성공합니다.")
     void getMaterials200() throws Exception {
         //given
-        Member member = getNewMember();
+        MemberEntity member = getNewMember();
         CourseDetail courseDetail = registerNewVideo(member.getMemberId(), VIDEO_CODE);
         Long videoId = courseDetail.getLastViewVideo().getVideoId();
         insertSummaryAndQuizzes(courseDetail.getCourseId(), videoId);
@@ -44,7 +44,7 @@ public class MaterialControllerTest extends ControllerTest {
     @DisplayName("생성이 미완료된 강의자료의 경우 status = 0 입니다.")
     void getMaterials202() throws Exception {
         //given
-        Member member = getNewMember();
+        MemberEntity member = getNewMember();
         CourseDetail courseDetail = registerNewVideo(member.getMemberId(), VIDEO_CODE);
         Long videoId = courseDetail.getLastViewVideo().getVideoId();
 

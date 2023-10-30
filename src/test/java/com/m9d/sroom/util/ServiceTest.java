@@ -1,13 +1,13 @@
 package com.m9d.sroom.util;
 
-import com.m9d.sroom.global.mapper.Member;
+import com.m9d.sroom.common.entity.MemberEntity;
 
 import java.sql.Timestamp;
 import java.util.UUID;
 
 public class ServiceTest extends SroomTest{
 
-    protected Member getNewMember() {
+    protected MemberEntity getNewMember() {
         UUID uuid = UUID.randomUUID();
 
         String memberCode = uuid.toString();

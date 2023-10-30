@@ -1,6 +1,6 @@
 package com.m9d.sroom.member.exception;
 
-import com.m9d.sroom.global.error.UnauthorizedException;
+import com.m9d.sroom.common.error.UnauthorizedException;
 
 public class InvalidAccessTokenException extends UnauthorizedException {
 

@@ -6,5 +6,10 @@ import lombok.Data;
 @Data
 @Builder
 public class SummaryId {
+
     private Long summaryId;
+
+    public SummaryId(Long summaryId) {
+        this.summaryId = summaryId;
+    }
 }

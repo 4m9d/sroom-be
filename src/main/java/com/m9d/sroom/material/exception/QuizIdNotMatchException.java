@@ -1,6 +1,6 @@
 package com.m9d.sroom.material.exception;
 
-import com.m9d.sroom.global.error.NotMatchException;
+import com.m9d.sroom.common.error.NotMatchException;
 
 public class QuizIdNotMatchException extends NotMatchException {
 

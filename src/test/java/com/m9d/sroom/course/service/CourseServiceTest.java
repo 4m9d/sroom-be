@@ -3,7 +3,7 @@ package com.m9d.sroom.course.service;
 import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.course.dto.response.MyCourses;
-import com.m9d.sroom.global.mapper.Member;
+import com.m9d.sroom.common.entity.MemberEntity;
 import com.m9d.sroom.util.ServiceTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
@@ -17,7 +17,7 @@ public class CourseServiceTest extends ServiceTest {
     @DisplayName("유저가 등록한 강의 코스들의 정보를 불러옵니다.")
     void getCourseListTest() {
         //given
-        Member member = getNewMember();
+        MemberEntity member = getNewMember();
         Long memberId = member.getMemberId();
 
         String courseInsertSql = "INSERT INTO COURSE(member_id, course_title, thumbnail, last_view_time, progress) values(?, ?, ?, ?, ?)";
@@ -51,7 +51,7 @@ public class CourseServiceTest extends ServiceTest {
     @DisplayName("신규 코스 등록에 성공합니다.")
     void createNewCourse() {
         //given
-        Member member = getNewMember();
+        MemberEntity member = getNewMember();
 
         //when
         NewLecture newLecture = NewLecture.builder()

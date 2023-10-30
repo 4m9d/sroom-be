@@ -8,4 +8,6 @@ public class CourseConstant {
 
     public static final int PLAYLIST_UPDATE_THRESHOLD_HOURS = 1;
     public static final int VIDEO_UPDATE_THRESHOLD_HOURS = 1;
+
+    public static final int VIDEO_THRESHOLD_SECONDS_BEFORE_END = 3;
 }

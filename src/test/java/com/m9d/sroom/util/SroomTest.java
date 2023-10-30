@@ -2,12 +2,13 @@ package com.m9d.sroom.util;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.m9d.sroom.course.service.CourseService;
-import com.m9d.sroom.dashboard.service.DashboardService;
-import com.m9d.sroom.lecture.service.LectureService;
-import com.m9d.sroom.member.service.MemberService;
-import com.m9d.sroom.util.youtube.YoutubeApi;
-import com.m9d.sroom.util.youtube.YoutubeUtil;
+import com.m9d.sroom.course.CourseService;
+import com.m9d.sroom.dashboard.DashboardService;
+import com.m9d.sroom.lecture.LectureService;
+import com.m9d.sroom.member.MemberService;
+import com.m9d.sroom.playlist.PlaylistService;
+import com.m9d.sroom.search.SearchService;
+import com.m9d.sroom.video.VideoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -43,7 +44,16 @@ public class SroomTest {
     protected JdbcTemplate jdbcTemplate;
 
     @Autowired
+    protected SearchService searchService;
+
+    @Autowired
     protected LectureService lectureService;
+
+    @Autowired
+    protected VideoService videoService;
+
+    @Autowired
+    protected PlaylistService playlistService;
 
     @Autowired
     protected DateUtil dateUtil;
@@ -52,7 +62,7 @@ public class SroomTest {
     protected YoutubeApi youtubeApi;
 
     @Autowired
-    protected YoutubeUtil youtubeUtil;
+    protected YoutubeService youtubeService;
 
     protected static final String VIDEO_CODE = "Z9dvM7qgN9s";
     protected static final String PLAYLIST_CODE = "PLv2d7VI9OotQUUsgcTBHuy5vJkSgzVHL0";

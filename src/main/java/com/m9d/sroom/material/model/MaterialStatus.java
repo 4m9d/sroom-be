@@ -15,4 +15,14 @@ public enum MaterialStatus {
     public int getValue() {
         return value;
     }
+
+    public static MaterialStatus from(long summaryId) {
+        if (summaryId == CREATING.getValue()) {
+            return MaterialStatus.CREATING;
+        } else if (summaryId == CREATION_FAILED.getValue()) {
+            return MaterialStatus.CREATION_FAILED;
+        } else {
+            return MaterialStatus.CREATED;
+        }
+    }
 }

@@ -1,6 +1,6 @@
 package com.m9d.sroom.lecture.controller;
 
-import com.m9d.sroom.lecture.dto.response.KeywordSearch;
+import com.m9d.sroom.search.dto.response.KeywordSearchResponse;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.util.ControllerTest;
 import org.junit.jupiter.api.DisplayName;
@@ -53,7 +53,7 @@ public class LectureResponseControllerTest extends ControllerTest {
         //given
         Login login = getNewLogin();
         String keyword = "네트워크";
-        KeywordSearch keywordSearch = getKeywordSearch(login, keyword);
+        KeywordSearchResponse keywordSearch = getKeywordSearch(login, keyword);
 
         //expected
         mockMvc.perform(get("/lectures")
