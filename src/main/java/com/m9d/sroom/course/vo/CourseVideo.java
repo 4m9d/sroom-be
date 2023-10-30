@@ -26,6 +26,10 @@ public class CourseVideo {
 
     private final int maxDuration;
 
+    public int getProgress(int videoDuration) {
+        return (int) (((long) maxDuration * 100) / videoDuration);
+    }
+
     public CourseVideo(Long videoId, Long summaryId, int section, int videoIndex, int lectureIndex) {
         this.videoId = videoId;
         this.section = section;
@@ -72,7 +76,7 @@ public class CourseVideo {
             status.setFullyWatched(false);
         }
 
-        status.setTimeGap(videoDuration - viewDuration);
+        status.setTimeGap(Math.max(viewDuration - maxDuration, 0));
 
         return status;
     }

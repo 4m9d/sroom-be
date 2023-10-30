@@ -1,5 +1,6 @@
 package com.m9d.sroom.course.dto.response;
 
+import com.m9d.sroom.common.entity.CourseEntity;
 import com.m9d.sroom.course.vo.Course;
 import com.m9d.sroom.search.dto.response.LastVideoInfo;
 import com.m9d.sroom.search.dto.response.Section;
@@ -38,7 +39,7 @@ public class CourseDetail {
     @Schema(description = "강의의 총 기간 (분 단위)", example = "120")
     private int courseDuration;
 
-    @Schema(description = "현재 시청 완료된 강의 기간 (분 단위)", example = "60")
+    @Schema(description = "현재 시청 완료된 강의 기간 (초 단위)", example = "60")
     private int currentDuration;
 
     @Schema(description = "강의의 총 비디오 개수", example = "10")
@@ -56,26 +57,26 @@ public class CourseDetail {
     @Schema(description = "강의 일정의 주 리스트")
     private List<Section> sections;
 
-    public CourseDetail(Long courseId, Course course, Set<String> channels, List<Section> sectionList, int progress,
+    public CourseDetail(CourseEntity courseEntity, Set<String> channels, List<Section> sectionList,
                         LastVideoInfo lastVideoInfo) {
-        this.courseId = courseId;
-        this.courseTitle = course.getTitle();
-        this.useSchedule = course.isScheduled();
+        this.courseId = courseEntity.getCourseId();
+        this.courseTitle = courseEntity.getCourseTitle();
+        this.useSchedule = courseEntity.isScheduled();
         this.channels = String.join(", ", channels);
-        this.courseDuration = course.getDuration();
+        this.courseDuration = courseEntity.getDuration();
         this.currentDuration = sectionList.stream()
                 .mapToInt(Section::getCurrentWeekDuration)
                 .sum();
         this.totalVideoCount = sectionList.stream()
                 .mapToInt(section -> section.getVideos().size())
                 .sum();
-        this.thumbnail = course.getThumbnail();
+        this.thumbnail = courseEntity.getThumbnail();
         this.completedVideoCount = sectionList.stream()
                 .mapToInt(section -> (int) section.getVideos().stream()
                         .filter(VideoWatchInfo::isCompleted)
                         .count())
                 .sum();
-        this.progress = progress;
+        this.progress = courseEntity.getProgress();
         this.lastViewVideo = lastVideoInfo;
         this.sections = sectionList;
     }

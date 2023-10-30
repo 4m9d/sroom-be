@@ -1,14 +1,13 @@
 package com.m9d.sroom.common;
 
-import com.m9d.sroom.common.entity.CourseDailyLogEntity;
-import com.m9d.sroom.common.entity.CourseEntity;
-import com.m9d.sroom.common.entity.CourseVideoEntity;
-import com.m9d.sroom.common.entity.MemberEntity;
+import com.m9d.sroom.common.entity.*;
 import com.m9d.sroom.common.repository.course.CourseRepository;
 import com.m9d.sroom.common.repository.coursedailylog.CourseDailyLogRepository;
 import com.m9d.sroom.common.repository.coursevideo.CourseVideoRepository;
 import com.m9d.sroom.common.repository.member.MemberRepository;
+import com.m9d.sroom.common.repository.video.VideoRepository;
 import com.m9d.sroom.course.CourseServiceHelper;
+import com.m9d.sroom.course.vo.CourseVideo;
 import com.m9d.sroom.search.dto.VideoCompletionStatus;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +15,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import static com.m9d.sroom.search.constant.SearchConstant.LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS;
@@ -27,15 +27,17 @@ public class LearningActivityUpdater {
     private final MemberRepository memberRepository;
     private final CourseVideoRepository courseVideoRepository;
     private final CourseServiceHelper courseServiceHelper;
+    private final VideoRepository videoRepository;
 
     public LearningActivityUpdater(CourseRepository courseRepository, CourseDailyLogRepository courseDailyLogRepository,
                                    MemberRepository memberRepository, CourseVideoRepository courseVideoRepository,
-                                   CourseServiceHelper courseServiceHelper) {
+                                   CourseServiceHelper courseServiceHelper, VideoRepository videoRepository) {
         this.courseRepository = courseRepository;
         this.courseDailyLogRepository = courseDailyLogRepository;
         this.memberRepository = memberRepository;
         this.courseVideoRepository = courseVideoRepository;
         this.courseServiceHelper = courseServiceHelper;
+        this.videoRepository = videoRepository;
     }
 
     public void updateCourseDailyLog(Long memberId, Long courseId, VideoCompletionStatus status) {
@@ -68,11 +70,18 @@ public class LearningActivityUpdater {
         memberRepository.updateById(memberId, member);
     }
 
-    public void updateCourseProgress(Long memberId, Long courseId) {
-        CourseEntity courseEntity = courseRepository.getById(courseId);
-        courseEntity.setProgress(courseEntity.toCourse(courseServiceHelper.getCourseVideoList(courseId))
-                .getCompletionRatio());
-        courseRepository.updateById(courseId, courseEntity);
+    public void updateCourseProgress(Long memberId, CourseEntity courseEntity) {
+        List<CourseVideo> courseVideoList = courseServiceHelper.getCourseVideoList(courseEntity.getCourseId());
+
+        if (courseVideoList.size() == 1) {
+            VideoEntity videoEntity = videoRepository.getById(courseVideoList.get(0).getVideoId());
+            courseEntity.setProgress(courseVideoList.get(0).getProgress(videoEntity.getDuration()));
+        } else if (courseVideoList.size() > 1) {
+            courseEntity.setProgress(courseEntity.toCourse(courseVideoList).getCompletionRatio());
+        } else {
+            courseEntity.setProgress(0);
+        }
+        courseRepository.updateById(courseEntity.getCourseId(), courseEntity);
 
         if (courseEntity.getProgress() == 100) {
             MemberEntity member = memberRepository.getById(memberId);
@@ -90,10 +99,9 @@ public class LearningActivityUpdater {
         courseVideoRepository.updateById(courseVideoEntity.getCourseVideoId(), courseVideoEntity);
     }
 
-    public void updateCourseLastViewTime(Long courseId) {
-        CourseEntity course = courseRepository.getById(courseId);
-        course.setLastViewTime(new Timestamp(System.currentTimeMillis()));
-        courseRepository.updateById(courseId, course);
+    public void updateCourseLastViewTime(CourseEntity courseEntity) {
+        courseEntity.setLastViewTime(new Timestamp(System.currentTimeMillis()));
+        courseRepository.updateById(courseEntity.getCourseId(), courseEntity);
     }
 
     public void updateLastViewVideoToNext(Long courseId, int videoIndex) {

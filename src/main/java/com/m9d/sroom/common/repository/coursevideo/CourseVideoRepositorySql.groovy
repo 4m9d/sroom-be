@@ -70,7 +70,7 @@ class CourseVideoRepositorySql {
     public static final String GET_WATCH_INFO_LIST_BY_COURSE_ID_AND_SECTION = """
         SELECT 
         v.video_id, v.video_code, v.channel, v.title, cv.video_index, cv.is_complete, 
-        cv.start_time, v.duration, cv.course_video_id
+        cv.start_time, v.duration, cv.course_video_id, cv.max_duration
         FROM COURSEVIDEO cv
         JOIN VIDEO v ON cv.video_id = v.video_id
         WHERE cv.course_id = ? AND cv.section = ?

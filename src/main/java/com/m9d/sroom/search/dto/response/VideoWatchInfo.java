@@ -37,4 +37,6 @@ public class VideoWatchInfo {
 
     @Schema(description = "영상 재생시간", example = "1000")
     private int videoDuration;
+
+    private int maxDuration;
 }

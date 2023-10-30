@@ -33,7 +33,7 @@ public class Section {
     public Section(List<VideoWatchInfo> videoWatchInfoList, int section) {
         this.section = section;
         this.currentWeekDuration = videoWatchInfoList.stream()
-                .mapToInt(vb -> vb.isCompleted() ? vb.getVideoDuration() : vb.getLastViewDuration())
+                .mapToInt(VideoWatchInfo::getMaxDuration)
                 .sum();
         this.completed = videoWatchInfoList.stream()
                 .allMatch(VideoWatchInfo::isCompleted);

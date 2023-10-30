@@ -139,6 +139,7 @@ public class CourseVideoJdbcRepositoryImpl implements CourseVideoRepository {
                         .lastViewDuration(rs.getInt("start_time"))
                         .videoDuration(rs.getInt("duration"))
                         .courseVideoId(rs.getLong("course_video_id"))
+                        .maxDuration(rs.getInt("max_duration"))
                         .build(),
                 courseId, section);
     }

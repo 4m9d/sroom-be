@@ -97,15 +97,6 @@ public class CourseServiceHelper {
         courseVideoRepository.updateById(courseVideoEntity.getCourseVideoId(), courseVideoEntity);
     }
 
-    public int getCourseProgress(Course course) {
-        if (course.getCourseVideoList().size() == 1) {
-            return (course.getSumOfMaxDuration() * 100) /
-                    videoRepository.getById(course.getCourseVideoList().get(0).getVideoId()).getDuration();
-        } else {
-            return course.getCompletionRatio();
-        }
-    }
-
     public void updateCourseEntity(Long courseId, Course course) {
         CourseEntity courseEntity = courseRepository.getById(courseId);
         courseEntity.setCourseTitle(course.getTitle());
@@ -162,7 +153,7 @@ public class CourseServiceHelper {
                     .totalVideoCount(videoCount)
                     .completedVideoCount(completedVideoCount)
                     .duration(course.getSumOfMaxDuration())
-                    .progress(getCourseProgress(course))
+                    .progress(courseEntity.getProgress())
                     .build();
 
             courseInfoList.add(courseInfo);

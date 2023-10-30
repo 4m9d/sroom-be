@@ -125,6 +125,7 @@ public class CourseService {
         }
 
         courseServiceHelper.updateCourseEntity(courseId, course);
+        learningActivityUpdater.updateCourseProgress(memberId, courseRepository.getById(courseId));
 
         return EnrolledCourseInfo.builder()
                 .title(course.getTitle())
@@ -152,15 +153,15 @@ public class CourseService {
 
     @Transactional
     public CourseDetail getCourseDetail(Long courseId) {
-        Course course = courseServiceHelper.getCourse(courseId);
+        CourseEntity courseEntity = courseRepository.getById(courseId);
 
         Set<String> channels = lectureRepository.getListByCourseId(courseId).stream()
                 .map(LectureEntity::getChannel)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
-        return new CourseDetail(courseId, course, channels, getSectionList(courseId, course.getWeeks()),
-                courseServiceHelper.getCourseProgress(course), courseVideoRepository.getLastInfoByCourseId(courseId));
+        return new CourseDetail(courseEntity, channels, getSectionList(courseId, courseEntity.getWeeks()),
+                courseVideoRepository.getLastInfoByCourseId(courseId));
     }
 
     private List<Section> getSectionList(Long courseId, int weeks) {
@@ -189,11 +190,12 @@ public class CourseService {
         if (!status.isRewound()) {
             learningActivityUpdater.updateCourseDailyLog(memberId, courseVideoEntity.getCourseId(), status);
             learningActivityUpdater.updateMemberLeaningTime(memberId, status);
-            learningActivityUpdater.updateCourseLastViewTime(courseVideoEntity.getCourseId());
         }
 
-        if (status.isCompletedNow()) {
-            learningActivityUpdater.updateCourseProgress(memberId, courseVideoEntity.getCourseId());
+        if (status.isCompletedNow() || !status.isRewound()) {
+            CourseEntity courseEntity = courseRepository.getById(courseVideoEntity.getCourseId());
+            learningActivityUpdater.updateCourseLastViewTime(courseEntity);
+            learningActivityUpdater.updateCourseProgress(memberId, courseEntity);
         }
 
         if (status.isFullyWatched()) {
