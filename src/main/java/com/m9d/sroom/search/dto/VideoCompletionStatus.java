@@ -14,4 +14,6 @@ public class VideoCompletionStatus {
     private boolean rewound;
 
     private int timeGap;
+
+    private int viewDuration;
 }

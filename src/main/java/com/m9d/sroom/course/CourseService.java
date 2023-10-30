@@ -185,7 +185,8 @@ public class CourseService {
         VideoCompletionStatus status = courseServiceHelper
                 .getVideoCompletionStatus(courseVideoEntity.toCourseVideo(), viewDuration, isMarkedAsCompleted);
 
-        learningActivityUpdater.updateCourseVideoStatus(courseVideoEntity, viewDuration, status.isCompleted());
+        learningActivityUpdater.updateCourseVideoStatus(courseVideoEntity, status.getViewDuration(),
+                status.isCompleted());
 
         if (!status.isRewound()) {
             learningActivityUpdater.updateCourseDailyLog(memberId, courseVideoEntity.getCourseId(), status);
