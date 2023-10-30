@@ -1,5 +1,6 @@
 package com.m9d.sroom.course.vo;
 
+import com.m9d.sroom.course.constant.CourseConstant;
 import com.m9d.sroom.search.dto.VideoCompletionStatus;
 import com.m9d.sroom.material.model.MaterialStatus;
 import lombok.Getter;
@@ -27,6 +28,10 @@ public class CourseVideo {
     private final int maxDuration;
 
     public int getProgress(int videoDuration) {
+        if (videoDuration - CourseConstant.VIDEO_THRESHOLD_SECONDS_BEFORE_END < maxDuration) {
+            return 100;
+        }
+
         return (int) (((long) maxDuration * 100) / videoDuration);
     }
 
