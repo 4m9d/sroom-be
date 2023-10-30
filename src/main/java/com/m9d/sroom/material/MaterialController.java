@@ -3,10 +3,7 @@ package com.m9d.sroom.material;
 import com.m9d.sroom.course.CourseServiceHelper;
 import com.m9d.sroom.material.dto.request.SubmittedQuizRequest;
 import com.m9d.sroom.material.dto.request.SummaryEditRequest;
-import com.m9d.sroom.material.dto.response.Material;
-import com.m9d.sroom.material.dto.response.ScrapResult;
-import com.m9d.sroom.material.dto.response.SubmittedQuizInfoResponse;
-import com.m9d.sroom.material.dto.response.SummaryId;
+import com.m9d.sroom.material.dto.response.*;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,7 +19,6 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/materials")
 @Slf4j
 public class MaterialController {
 
@@ -31,7 +27,7 @@ public class MaterialController {
     private final CourseServiceHelper courseServiceHelper;
 
     @Auth
-    @GetMapping("/{courseVideoId}")
+    @GetMapping("/materials/{courseVideoId}")
     @Tag(name = "강의 수강")
     @Operation(summary = "강의자료 불러오기", description = "영상 ID를 사용해 저장된 강의노트, 퀴즈를 불러옵니다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 강의 자료를 불러왔습니다.", content = @Content(schema = @Schema(implementation = Material.class)))
@@ -40,7 +36,7 @@ public class MaterialController {
     }
 
     @Auth
-    @PutMapping("/summaries/{courseVideoId}")
+    @PutMapping("/materials/summaries/{courseVideoId}")
     @Tag(name = "강의 수강")
     @Operation(summary = "강의 노트 수정하기", description = "영상 ID를 사용해 저장된 강의노트를 수정합니다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 강의 노트를 업데이트 했습니다.", content = @Content(schema = @Schema(implementation = SummaryId.class)))
@@ -49,7 +45,7 @@ public class MaterialController {
     }
 
     @Auth
-    @PostMapping("/quizzes/{courseVideoId}")
+    @PostMapping("/materials/quizzes/{courseVideoId}")
     @Tag(name = "강의 수강")
     @Operation(summary = "퀴즈 채점 결과 저장", description = "courseVideoId 를 받아 채점 결과를 courseQuiz 테이블에 저장합니다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 채점 결과를 저장했습니다.", content = @Content(schema = @Schema(implementation = SubmittedQuizInfoResponse.class)))
@@ -59,7 +55,7 @@ public class MaterialController {
     }
 
     @Auth
-    @PutMapping("/quizzes/{courseQuizId}/scrap")
+    @PutMapping("/materials/quizzes/{courseQuizId}/scrap")
     @Tag(name = "강의 수강")
     @Operation(summary = "퀴즈 오답노트 등록, 취소", description = "courseQuizId 를 받아 해당 퀴즈를 오답노트에 등록하거나 취소합니다.")
     @ApiResponse(responseCode = "200", description = "성공적으로 오답노트에 등록/취소하였습니다.", content = @Content(schema = @Schema(implementation = ScrapResult.class)))
@@ -67,5 +63,15 @@ public class MaterialController {
         Long memberId = jwtUtil.getMemberIdFromRequest();
         courseServiceHelper.validateCourseQuizForMember(memberId, courseQuizId);
         return materialService.switchScrapFlag(courseQuizId);
+    }
+
+    @Auth
+    @GetMapping("/courses/materials/{courseId}")
+    @Tag(name = "내 강의실")
+    @Operation(summary = "pdf 변환을 위한 강의자료 불러오기", description = "코스의 모든 강의자료를 pdf 변환하기 위해 해당 자료를 불러옵니다.")
+    @ApiResponse(responseCode = "200", description = "성공적으로 강의자료를 불러왔습니다.", content = @Content(schema = @Schema(implementation = Material4PdfResponse.class)))
+    public Material4PdfResponse getMaterialsForConvertingPdf(@PathVariable("courseId") Long courseId) {
+        courseServiceHelper.validateCourseForMember(jwtUtil.getMemberIdFromRequest(), courseId);
+        return materialService.getCourseMaterials(courseId);
     }
 }

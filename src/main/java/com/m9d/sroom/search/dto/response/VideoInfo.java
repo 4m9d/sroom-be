@@ -7,7 +7,7 @@ import lombok.Data;
 @Schema(description = "마지막으로 시청한 비디오에 대한 정보")
 @Data
 @Builder
-public class LastVideoInfo {
+public class VideoInfo {
 
     @Schema(description = "비디오의 고유 식별자", example = "20")
     private Long videoId;

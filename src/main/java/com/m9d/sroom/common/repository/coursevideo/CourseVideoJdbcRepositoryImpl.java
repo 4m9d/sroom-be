@@ -2,7 +2,7 @@ package com.m9d.sroom.common.repository.coursevideo;
 
 import com.m9d.sroom.course.dto.VideoInfoForSchedule;
 import com.m9d.sroom.common.entity.CourseVideoEntity;
-import com.m9d.sroom.search.dto.response.LastVideoInfo;
+import com.m9d.sroom.search.dto.response.VideoInfo;
 import com.m9d.sroom.search.dto.response.VideoWatchInfo;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -115,8 +115,8 @@ public class CourseVideoJdbcRepositoryImpl implements CourseVideoRepository {
     }
 
     @Override
-    public LastVideoInfo getLastInfoByCourseId(Long courseId) {
-        return jdbcTemplate.queryForObject(CourseVideoRepositorySql.GET_LAST_INFO_BY_COURSE_ID, (rs, rowNum) -> LastVideoInfo.builder()
+    public VideoInfo getLastInfoByCourseId(Long courseId) {
+        return jdbcTemplate.queryForObject(CourseVideoRepositorySql.GET_LAST_INFO_BY_COURSE_ID, (rs, rowNum) -> VideoInfo.builder()
                         .videoId(rs.getLong("video_id"))
                         .videoTitle(rs.getString("title"))
                         .videoCode(rs.getString("video_code"))

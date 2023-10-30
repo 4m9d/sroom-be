@@ -40,24 +40,28 @@ public class QuizService {
         List<QuizResponse> quizResponseList = new ArrayList<>();
 
         for (QuizEntity quizEntity : quizRepository.getListByVideoId(videoId)) {
-            quizResponseList.add(new QuizResponse(quizEntity.getId(), getQuiz(quizEntity.getId()),
+            quizResponseList.add(new QuizResponse(quizEntity.getId(), getQuiz(quizEntity),
                     getSubmittedInfo(quizEntity.getId(), courseVideoId)));
         }
         return quizResponseList;
     }
 
-    public Quiz getQuiz(Long quizId) {
-        QuizEntity quizEntity = quizRepository.getById(quizId);
+    public List<Quiz> getQuizList(Long videoId) {
+        return quizRepository.getListByVideoId(videoId).stream()
+                .map(this::getQuiz)
+                .collect(Collectors.toList());
+    }
 
+    public Quiz getQuiz(QuizEntity quizEntity) {
         switch (QuizType.fromValue(quizEntity.getType())) {
             case MULTIPLE_CHOICE:
-                return new MultipleChoice(quizEntity.getQuestion(),
-                        getQuizOptionList(quizId, quizEntity.getChoiceAnswer()), quizEntity.getChoiceAnswer());
+                return new MultipleChoice(quizEntity.getQuestion(), getQuizOptionList(quizEntity.getId(),
+                        quizEntity.getChoiceAnswer()), quizEntity.getChoiceAnswer());
             case SUBJECTIVE:
                 return new ShortAnswerQuestion(quizEntity.getQuestion(), quizEntity.getSubjectiveAnswer());
             case TRUE_FALSE:
-                return new TFQuestion(quizEntity.getQuestion(),
-                        quizEntity.getChoiceAnswer(), getQuizOptionList(quizId, quizEntity.getChoiceAnswer()));
+                return new TFQuestion(quizEntity.getQuestion(), quizEntity.getChoiceAnswer(),
+                        getQuizOptionList(quizEntity.getId(), quizEntity.getChoiceAnswer()));
             default:
                 throw new QuizTypeNotMatchException(quizEntity.getType());
         }
@@ -104,7 +108,8 @@ public class QuizService {
                 .courseId(courseId)
                 .quizId(quizId)
                 .videoId(videoId)
-                .submittedAnswer(getQuiz(quizId).alterSubmittedAnswerFitInDB(submittedInfo.getSubmittedAnswer()))
+                .submittedAnswer(getQuiz(quizRepository.getById(quizId))
+                        .alterSubmittedAnswerFitInDB(submittedInfo.getSubmittedAnswer()))
                 .correct(submittedInfo.getIsCorrect())
                 .courseVideoId(courseVideoId)
                 .memberId(memberId)
