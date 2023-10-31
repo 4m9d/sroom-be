@@ -15,7 +15,7 @@ public class ReviewScheduler {
     private final ReviewService reviewService;
 
     @Scheduled(cron = PERIOD_OF_RATING_UPDATE)
-    public void requestToGptRepeat() {
+    public void temporalUpdateRating() {
         reviewService.updateRating();
     }
 }
