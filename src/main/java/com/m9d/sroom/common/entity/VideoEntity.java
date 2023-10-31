@@ -55,7 +55,7 @@ public class VideoEntity {
 
     private Integer materialStatus;
 
-    private Float average_rating;
+    private Float averageRating;
 
     public static RowMapper<VideoEntity> getRowMapper() {
         return (rs, rowNum) -> VideoEntity.builder()
@@ -78,7 +78,7 @@ public class VideoEntity {
                 .publishedAt(rs.getTimestamp("published_at"))
                 .membership(rs.getBoolean("membership"))
                 .materialStatus(rs.getInt("material_status"))
-                .average_rating(rs.getFloat("average_rating"))
+                .averageRating(rs.getFloat("average_rating"))
                 .build();
     }
 
