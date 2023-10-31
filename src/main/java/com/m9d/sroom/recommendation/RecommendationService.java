@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -39,8 +40,8 @@ public class RecommendationService {
         List<RecommendLecture> generalRecommendLectureList = new ArrayList<>();
         List<RecommendLecture> channelRecommendLectureList = getRecommendsByChannel(memberId);
 
-        generalRecommendLectureList.addAll(getRecommendLectures(videoService.getTopRatedVideos(5)));
-        generalRecommendLectureList.addAll(getRecommendLectures(playlistService.getTopRatedPlaylists(5)));
+        generalRecommendLectureList.addAll(getRecommendLectures(videoService.getTopRatedVideos(10)));
+        generalRecommendLectureList.addAll(getRecommendLectures(playlistService.getTopRatedPlaylists(10)));
 
         Set<String> enrolledLectureSet = lectureService.getEnrolledLectures(memberId);
 
@@ -49,9 +50,13 @@ public class RecommendationService {
             channelRecommendLectureList.removeIf(recommendLecture -> (recommendLecture.getLectureCode().equals(lectureCode)));
         }
 
+        Collections.shuffle(generalRecommendLectureList);
+        Collections.shuffle(channelRecommendLectureList);
         Recommendations recommendations = Recommendations.builder()
                 .generalRecommendations(generalRecommendLectureList)
-                .channelRecommendations(channelRecommendLectureList)
+                .channelRecommendations(channelRecommendLectureList.stream()
+                        .limit(20)
+                        .collect(Collectors.toList()))
                 .build();
 
         return recommendations;
@@ -59,12 +64,12 @@ public class RecommendationService {
 
 
     public List<RecommendLecture> getRecommendsByChannel(Long memberId) {
-        List<RecommendLecture> recommendLecturesByChannel = new ArrayList<>();
+        HashSet<RecommendLecture> recommendLectureSetByChannel = new HashSet<>();
         List<String> channels = lectureService.getMostEnrolledChannels(memberId);
 
-        final int SELECT_BY_RANDOM_LIMIT = 1;
-        final int SELECT_BY_PUBLISH_DATE_LIMIT = 2;
-        final int SELECT_BY_VIEWED_LIMIT = 3;
+        final int SELECT_BY_RANDOM_LIMIT = 2;
+        final int SELECT_BY_PUBLISH_DATE_LIMIT = 3;
+        final int SELECT_BY_VIEWED_LIMIT = 5;
 
         for (String channelName : channels) {
             List<Object> lectures = new ArrayList<>();
@@ -78,10 +83,10 @@ public class RecommendationService {
             lectures.addAll(videoRepository.getLatestOrderByChannel(channelName, SELECT_BY_PUBLISH_DATE_LIMIT));
             lectures.addAll(playlistRepository.getLatestOrderByChannel(channelName, SELECT_BY_PUBLISH_DATE_LIMIT));
 
-            recommendLecturesByChannel.addAll(getRecommendLectures(lectures));
+            recommendLectureSetByChannel.addAll(getRecommendLectures(lectures));
         }
 
-        return recommendLecturesByChannel;
+        return new ArrayList<>(recommendLectureSetByChannel);
     }
 
     public List<RecommendLecture> getRecommendLectures(List<?> lectures) {
