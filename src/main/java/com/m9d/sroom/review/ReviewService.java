@@ -228,7 +228,6 @@ public class ReviewService {
     public void updateRating() {
         int updateVideoCount = videoRepository.updateRating();
         int updatePlaylistCount = playlistRepository.updateRating();
-        log.info("update rating.");
-        log.info("updated video count = {}, updated playlist count = {}",updateVideoCount, updatePlaylistCount);
+        log.info("Update Rating : updated video count = {}, updated playlist count = {}",updateVideoCount, updatePlaylistCount);
     }
 }
