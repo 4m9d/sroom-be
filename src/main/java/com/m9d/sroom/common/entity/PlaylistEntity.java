@@ -41,6 +41,8 @@ public class PlaylistEntity {
 
     private Timestamp updatedAt;
 
+    private Float average_rating;
+
     public static RowMapper<PlaylistEntity> getRowMapper() {
         return (rs, rowNum) -> PlaylistEntity.builder()
                 .playlistId(rs.getLong("playlist_id"))
@@ -56,6 +58,7 @@ public class PlaylistEntity {
                 .title(rs.getString("title"))
                 .publishedAt(rs.getTimestamp("published_at"))
                 .videoCount(rs.getInt("video_count"))
+                .average_rating(rs.getFloat("average_rating"))
                 .build();
     }
 

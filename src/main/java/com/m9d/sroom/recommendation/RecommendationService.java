@@ -40,8 +40,8 @@ public class RecommendationService {
         List<RecommendLecture> generalRecommendLectureList = new ArrayList<>();
         List<RecommendLecture> channelRecommendLectureList = getRecommendsByChannel(memberId);
 
-        generalRecommendLectureList.addAll(getRecommendLectures(videoService.getTopRatedVideos(10)));
-        generalRecommendLectureList.addAll(getRecommendLectures(playlistService.getTopRatedPlaylists(10)));
+        generalRecommendLectureList.addAll(getRecommendLectures(videoService.getTopRatedVideos(20)));
+        generalRecommendLectureList.addAll(getRecommendLectures(playlistService.getTopRatedPlaylists(20)));
 
         Set<String> enrolledLectureSet = lectureService.getEnrolledLectures(memberId);
 
@@ -53,7 +53,9 @@ public class RecommendationService {
         Collections.shuffle(generalRecommendLectureList);
         Collections.shuffle(channelRecommendLectureList);
         Recommendations recommendations = Recommendations.builder()
-                .generalRecommendations(generalRecommendLectureList)
+                .generalRecommendations(generalRecommendLectureList.stream()
+                        .limit(20)
+                        .collect(Collectors.toList()))
                 .channelRecommendations(channelRecommendLectureList.stream()
                         .limit(20)
                         .collect(Collectors.toList()))

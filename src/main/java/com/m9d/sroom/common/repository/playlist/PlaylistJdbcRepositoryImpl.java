@@ -64,6 +64,7 @@ public class PlaylistJdbcRepositoryImpl implements PlaylistRepository {
                 playlist.getTitle(),
                 playlist.getPublishedAt(),
                 playlist.getVideoCount(),
+                playlist.getAverage_rating(),
                 playlistId);
         return getById(playlistId);
 
@@ -93,5 +94,10 @@ public class PlaylistJdbcRepositoryImpl implements PlaylistRepository {
     @Override
     public List<PlaylistEntity> getLatestOrderByChannel(String channel, int limit) {
         return jdbcTemplate.query(PlaylistRepositorySql.GET_LATEST_ORDER_BY_CHANNEL, PlaylistEntity.getRowMapper(), channel, limit);
+    }
+
+    @Override
+    public Integer updateRating() {
+        return jdbcTemplate.update(PlaylistRepositorySql.UPDATE_RATING);
     }
 }

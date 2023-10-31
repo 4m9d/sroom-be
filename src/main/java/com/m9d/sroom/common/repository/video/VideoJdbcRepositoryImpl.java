@@ -89,6 +89,7 @@ public class VideoJdbcRepositoryImpl implements VideoRepository {
                 video.getPublishedAt(),
                 video.isMembership(),
                 video.getMaterialStatus(),
+                video.getAverage_rating(),
                 video.getVideoId());
         return getByCode(video.getVideoCode());
     }
@@ -117,5 +118,10 @@ public class VideoJdbcRepositoryImpl implements VideoRepository {
     @Override
     public List<VideoEntity> getLatestOrderByChannel(String channel, int limit) {
         return jdbcTemplate.query(VideoRepositorySql.GET_LATEST_ORDER_BY_CHANNEL, VideoEntity.getRowMapper(), channel, limit);
+    }
+
+    @Override
+    public Integer updateRating() {
+        return jdbcTemplate.update(VideoRepositorySql.UPDATE_RATING);
     }
 }

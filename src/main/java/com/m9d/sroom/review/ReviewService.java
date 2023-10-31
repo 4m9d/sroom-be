@@ -1,4 +1,4 @@
-package com.m9d.sroom.review.service;
+package com.m9d.sroom.review;
 
 import com.m9d.sroom.common.entity.*;
 import com.m9d.sroom.common.repository.coursevideo.CourseVideoRepository;
@@ -222,5 +222,13 @@ public class ReviewService {
 
     public List<ReviewBrief> getReviewInfo(String videoCode, int offset, int limit) {
         return reviewRepository.getBriefListByCode(videoCode, offset, limit);
+    }
+
+    @Transactional
+    public void updateRating() {
+        int updateVideoCount = videoRepository.updateRating();
+        int updatePlaylistCount = playlistRepository.updateRating();
+        log.info("update rating.");
+        log.info("updated video count = {}, updated playlist count = {}",updateVideoCount, updatePlaylistCount);
     }
 }
