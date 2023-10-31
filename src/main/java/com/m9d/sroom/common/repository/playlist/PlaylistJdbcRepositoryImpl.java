@@ -64,7 +64,7 @@ public class PlaylistJdbcRepositoryImpl implements PlaylistRepository {
                 playlist.getTitle(),
                 playlist.getPublishedAt(),
                 playlist.getVideoCount(),
-                playlist.getAverage_rating(),
+                playlist.getAverageRating(),
                 playlistId);
         return getById(playlistId);
 

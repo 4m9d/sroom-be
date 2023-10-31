@@ -89,7 +89,7 @@ public class VideoJdbcRepositoryImpl implements VideoRepository {
                 video.getPublishedAt(),
                 video.isMembership(),
                 video.getMaterialStatus(),
-                video.getAverage_rating(),
+                video.getAverageRating(),
                 video.getVideoId());
         return getByCode(video.getVideoCode());
     }
