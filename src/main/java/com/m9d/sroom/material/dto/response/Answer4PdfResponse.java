@@ -9,4 +9,5 @@ public class Answer4PdfResponse {
     private int videoIndex;
     private int quizIndex;
     private String answer;
+    private String answerStr;
 }

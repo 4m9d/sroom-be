@@ -138,8 +138,10 @@ public class MaterialService {
             summaryBrief = new SummaryBrief(summaryService.getSummary(courseVideo.getSummaryId()));
 
             for (Quiz quiz : quizService.getQuizList(courseVideo.getVideoId())) {
-                quizList.add(new Quiz4PdfResponse(quiz, quizIndex++));
-                answerList.add(new Answer4PdfResponse(courseVideo.getVideoIndex(), quizIndex, quiz.getAnswer()));
+                quizList.add(new Quiz4PdfResponse(quiz, quizIndex));
+                answerList.add(new Answer4PdfResponse(courseVideo.getVideoIndex(), quizIndex, quiz.getAnswer(),
+                        quiz.getOptionStrList().get(Integer.parseInt(quiz.getAnswer()) - 1)));
+                quizIndex++;
             }
         }
 
