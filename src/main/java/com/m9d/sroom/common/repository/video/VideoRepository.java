@@ -31,4 +31,6 @@ public interface VideoRepository {
     List<VideoEntity> getViewCountOrderByChannel(String channel, int limit);
 
     List<VideoEntity> getLatestOrderByChannel(String channel, int limit);
+
+    Integer updateRating();
 }

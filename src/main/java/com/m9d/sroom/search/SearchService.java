@@ -9,7 +9,7 @@ import com.m9d.sroom.search.dto.response.*;
 import com.m9d.sroom.search.exception.TwoOnlyParamTrueException;
 import com.m9d.sroom.search.exception.VideoIndexParamException;
 import com.m9d.sroom.playlist.PlaylistService;
-import com.m9d.sroom.review.service.ReviewService;
+import com.m9d.sroom.review.ReviewService;
 import com.m9d.sroom.video.VideoService;
 import com.m9d.sroom.youtube.vo.SearchInfo;
 import com.m9d.sroom.youtube.vo.SearchItemInfo;

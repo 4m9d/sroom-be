@@ -16,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.m9d.sroom.recommendation.constant.RecommendationConstant.TOP_RATED_LECTURES_COUNT;
+
 @Slf4j
 @Service
 public class RecommendationService {
@@ -40,8 +42,8 @@ public class RecommendationService {
         List<RecommendLecture> generalRecommendLectureList = new ArrayList<>();
         List<RecommendLecture> channelRecommendLectureList = getRecommendsByChannel(memberId);
 
-        generalRecommendLectureList.addAll(getRecommendLectures(videoService.getTopRatedVideos(10)));
-        generalRecommendLectureList.addAll(getRecommendLectures(playlistService.getTopRatedPlaylists(10)));
+        generalRecommendLectureList.addAll(getRecommendLectures(videoService.getTopRatedVideos(TOP_RATED_LECTURES_COUNT)));
+        generalRecommendLectureList.addAll(getRecommendLectures(playlistService.getTopRatedPlaylists(TOP_RATED_LECTURES_COUNT)));
 
         Set<String> enrolledLectureSet = lectureService.getEnrolledLectures(memberId);
 
@@ -53,7 +55,9 @@ public class RecommendationService {
         Collections.shuffle(generalRecommendLectureList);
         Collections.shuffle(channelRecommendLectureList);
         Recommendations recommendations = Recommendations.builder()
-                .generalRecommendations(generalRecommendLectureList)
+                .generalRecommendations(generalRecommendLectureList.stream()
+                        .limit(20)
+                        .collect(Collectors.toList()))
                 .channelRecommendations(channelRecommendLectureList.stream()
                         .limit(20)
                         .collect(Collectors.toList()))

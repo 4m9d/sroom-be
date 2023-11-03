@@ -1,9 +1,9 @@
-package com.m9d.sroom.review.controller;
+package com.m9d.sroom.review;
 
 import com.m9d.sroom.review.dto.LectureBriefList4Review;
 import com.m9d.sroom.review.dto.ReviewSubmitRequest;
 import com.m9d.sroom.review.dto.ReviewSubmitResponse;
-import com.m9d.sroom.review.service.ReviewService;
+import com.m9d.sroom.review.ReviewService;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
 import io.swagger.v3.oas.annotations.Operation;

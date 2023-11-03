@@ -13,7 +13,7 @@ class VideoRepositorySql {
         SELECT 
         video_id, video_code, duration, channel, thumbnail, accumulated_rating, review_count, summary_id, 
         is_available, description, chapter_usage, title, language, license, updated_at, view_count, published_at, 
-        membership, material_status
+        membership, material_status, average_rating
         FROM VIDEO
         WHERE video_code = ?
     """
@@ -22,7 +22,7 @@ class VideoRepositorySql {
         SELECT 
         video_id, video_code, duration, channel, thumbnail, accumulated_rating, review_count, summary_id, 
         is_available, description, chapter_usage, title, language, license, updated_at, view_count, published_at, 
-        membership, material_status
+        membership, material_status, average_rating
         FROM VIDEO
         WHERE video_id = ?
     """
@@ -31,13 +31,9 @@ class VideoRepositorySql {
         SELECT 
         video_id, video_code, duration, channel, thumbnail, accumulated_rating, review_count, summary_id, 
         is_available, description, chapter_usage, title, language, license, updated_at, view_count, published_at, 
-        membership, material_status,
-            CASE
-                WHEN review_count = 0 THEN 0
-                ELSE CAST(accumulated_rating AS DOUBLE) / review_count
-            END AS rating
+        membership, material_status, average_rating
         FROM VIDEO 
-        ORDER BY rating DESC
+        ORDER BY average_rating DESC
         LIMIT ? 
     """
 
@@ -45,7 +41,7 @@ class VideoRepositorySql {
         UPDATE VIDEO
         SET duration = ?, channel = ?, thumbnail = ?, accumulated_rating = ?, review_count = ?, summary_id = ?,
         is_available = ?, description = ?, chapter_usage = ?, title = ?, language = ?, license = ?, updated_at = ?, 
-        view_count = ?, published_at = ?, membership = ?, material_status = ?
+        view_count = ?, published_at = ?, membership = ?, material_status = ?, average_rating = ?
         WHERE video_id = ?
     """
 
@@ -53,7 +49,7 @@ class VideoRepositorySql {
         SELECT
         v.video_id, v.video_code, v.duration, v.channel, v.thumbnail, v.accumulated_rating, v.review_count,
         v.summary_id, v.is_available, v.description, v.chapter_usage, v.title, v.language, v.license, v.updated_at, 
-        v.view_count, v.published_at, v.membership, v.material_status, pv.video_index
+        v.view_count, v.published_at, v.membership, v.material_status, pv.video_index, v.average_rating
         FROM VIDEO v
         JOIN PLAYLISTVIDEO pv
         ON v.video_id = pv.video_id
@@ -70,8 +66,8 @@ class VideoRepositorySql {
     public static final String GET_RANDOM_BY_CHANNEL = """
         SELECT 
         video_id, video_code, duration, channel, thumbnail, accumulated_rating, review_count, summary_id, 
-        is_available, description, chapter_usage, title, language, license, updated_at, view_count, published_at, 
-        membership, material_status 
+        is_available, description, chapter_usage, title, language, license, updated_at, view_count, published_at,
+        membership, material_status, average_rating
         FROM VIDEO
         WHERE channel = ?
         ORDER BY RAND()
@@ -82,7 +78,7 @@ class VideoRepositorySql {
         SELECT 
         video_id, video_code, duration, channel, thumbnail, accumulated_rating, review_count, summary_id, 
         is_available, description, chapter_usage, title, language, license, updated_at, view_count, published_at, 
-        membership, material_status 
+        membership, material_status, average_rating
         FROM VIDEO
         WHERE channel = ?
         ORDER BY view_count DESC
@@ -93,10 +89,16 @@ class VideoRepositorySql {
         SELECT 
         video_id, video_code, duration, channel, thumbnail, accumulated_rating, review_count, summary_id, 
         is_available, description, chapter_usage, title, language, license, updated_at, view_count, published_at, 
-        membership, material_status 
+        membership, material_status, average_rating
         FROM VIDEO
         WHERE channel = ?
         ORDER BY published_at DESC
         LIMIT ?
+    """
+
+    public static final String UPDATE_RATING = """
+        UPDATE VIDEO
+        SET average_rating = accumulated_rating / review_count
+        WHERE review_count > 0;
     """
 }

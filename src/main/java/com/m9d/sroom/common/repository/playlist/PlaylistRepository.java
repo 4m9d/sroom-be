@@ -25,4 +25,6 @@ public interface PlaylistRepository {
     List<PlaylistEntity> getViewCountOrderByChannel(String channel, int limit);
 
     List<PlaylistEntity> getLatestOrderByChannel(String channel, int limit);
+
+    Integer updateRating();
 }
