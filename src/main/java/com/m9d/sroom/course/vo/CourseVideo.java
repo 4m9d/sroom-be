@@ -81,7 +81,13 @@ public class CourseVideo {
             status.setFullyWatched(false);
         }
 
-        status.setTimeGap(Math.max(viewDuration - maxDuration, 0));
+        if (isMarkedAsCompleted) {
+            status.setTimeGap(videoDuration - maxDuration);
+            status.setViewDuration(videoDuration - 1);
+        } else {
+            status.setTimeGap(Math.max(viewDuration - maxDuration, 0));
+            status.setViewDuration(viewDuration);
+        }
 
         return status;
     }

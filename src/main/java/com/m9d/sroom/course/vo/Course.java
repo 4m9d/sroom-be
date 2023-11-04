@@ -113,4 +113,8 @@ public class Course {
                 .mapToInt(CourseVideo::getMaxDuration)
                 .sum();
     }
+
+    public boolean hasUnpreparedVideo(){
+        return courseVideoList.stream().anyMatch(video -> video.getSummaryId() == 0);
+    }
 }

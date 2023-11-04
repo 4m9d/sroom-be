@@ -2,7 +2,7 @@ package com.m9d.sroom.common.repository.coursevideo;
 
 import com.m9d.sroom.course.dto.VideoInfoForSchedule;
 import com.m9d.sroom.common.entity.CourseVideoEntity;
-import com.m9d.sroom.search.dto.response.LastVideoInfo;
+import com.m9d.sroom.search.dto.response.VideoInfo;
 import com.m9d.sroom.search.dto.response.VideoWatchInfo;
 
 import java.util.List;
@@ -31,8 +31,8 @@ public interface CourseVideoRepository {
     void deleteByCourseId(Long courseId);
 
     Optional<CourseVideoEntity> findByCourseIdAndPrevIndex(Long courseId, int videoIndex);
-
-    LastVideoInfo getLastInfoByCourseId(Long courseId);
+    
+    VideoInfo getLastInfoByCourseId(Long courseId);
 
     List<VideoWatchInfo> getWatchInfoListByCourseIdAndSection(Long courseId, int section);
 

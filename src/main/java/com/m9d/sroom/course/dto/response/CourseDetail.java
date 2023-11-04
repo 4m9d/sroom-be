@@ -1,8 +1,7 @@
 package com.m9d.sroom.course.dto.response;
 
 import com.m9d.sroom.common.entity.CourseEntity;
-import com.m9d.sroom.course.vo.Course;
-import com.m9d.sroom.search.dto.response.LastVideoInfo;
+import com.m9d.sroom.search.dto.response.VideoInfo;
 import com.m9d.sroom.search.dto.response.Section;
 import com.m9d.sroom.search.dto.response.VideoWatchInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -52,13 +51,13 @@ public class CourseDetail {
     private int progress;
 
     @Schema(description = "강의에서 마지막으로 시청한 비디오 정보")
-    private LastVideoInfo lastViewVideo;
+    private VideoInfo lastViewVideo;
 
     @Schema(description = "강의 일정의 주 리스트")
     private List<Section> sections;
 
     public CourseDetail(CourseEntity courseEntity, Set<String> channels, List<Section> sectionList,
-                        LastVideoInfo lastVideoInfo) {
+                        VideoInfo videoInfo) {
         this.courseId = courseEntity.getCourseId();
         this.courseTitle = courseEntity.getCourseTitle();
         this.useSchedule = courseEntity.isScheduled();
@@ -77,7 +76,7 @@ public class CourseDetail {
                         .count())
                 .sum();
         this.progress = courseEntity.getProgress();
-        this.lastViewVideo = lastVideoInfo;
+        this.lastViewVideo = videoInfo;
         this.sections = sectionList;
     }
 }
