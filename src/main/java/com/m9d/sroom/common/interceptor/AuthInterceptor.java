@@ -56,7 +56,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             }
 
             request.setAttribute("memberId", jwtDetail.get("memberId"));
-            log.info("Request memberId = {}, URI = {}, HTTP Method = {}", jwtDetail.get("memberId"), request.getRequestURI(), request.getMethod());
+            log.info("subject = request, memberId = {}, URI = {}, HTTP Method = {}", jwtDetail.get("memberId"), request.getRequestURI(), request.getMethod());
         } catch (Exception e) {
             log.error("Error validating token", e);
             throw new InvalidAccessTokenException();

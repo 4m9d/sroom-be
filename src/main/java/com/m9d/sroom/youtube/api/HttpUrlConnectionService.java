@@ -101,7 +101,7 @@ public class HttpUrlConnectionService implements YoutubeApi {
         };
 
         int index = new Random().nextInt(apiKeys.length);
-        log.info("youtube data api request. api-key = {}", index);
+        log.info("subject = youtube data api request, api-key = {}", index);
         return apiKeys[index];
     }
 

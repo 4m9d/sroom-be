@@ -72,10 +72,10 @@ public class CourseService {
     public EnrolledCourseInfo enroll(Long memberId, NewLecture newLecture, boolean useSchedule,
                                      EnrollContentInfo contentInfo) {
         Course course = courseCreator.create(newLecture, useSchedule, contentInfo);
-        log.info("course created. memberId = {}, schedule_used = {}, is_playlist = {}", memberId, useSchedule,
+        log.info("subject = course created, memberId = {}, scheduleUsed = {}, is_playlist = {}", memberId, useSchedule,
                 ValidateUtil.checkIfPlaylist(newLecture.getLectureCode()));
-        if(useSchedule){
-            log.info("daily target time in minute = {}, weeks = {}", newLecture.getDailyTargetTime(),
+        if (useSchedule) {
+            log.info("subject = schedule, daily target time in minute = {}, weeks = {}", newLecture.getDailyTargetTime(),
                     newLecture.getScheduling().size());
         }
         CourseEntity courseEntity = courseRepository.save(new CourseEntity(memberId, course));
@@ -105,7 +105,7 @@ public class CourseService {
     public EnrolledCourseInfo addLecture(Long memberId, Long courseId, EnrollContentInfo contentInfo) {
         Course course = courseServiceHelper.getCourse(courseId);
         addCourseVideo(course, contentInfo.getInnerContentList());
-        log.info("added lecture in course. memberId = {}, schedule_used = {}, is_playlist = {}", memberId,
+        log.info("subject = added lecture in course, memberId = {}, scheduleUsed = {}, isPlaylist = {}", memberId,
                 course.isScheduled(), contentInfo.isPlaylist());
 
         LectureEntity lectureEntity = lectureRepository.save(LectureEntity.builder()
@@ -199,11 +199,11 @@ public class CourseService {
         learningActivityUpdater.updateCourseVideoStatus(courseVideoEntity, status.getViewDuration(),
                 status.isCompleted());
 
-        if(isMarkedAsCompleted){
-            if(courseVideoEntity.isComplete()){
-                log.info("marked as completed in case fully_watched");
-            }else{
-                log.info("marked as completed in case not_fully_watched");
+        if (isMarkedAsCompleted) {
+            if (courseVideoEntity.isComplete()) {
+                log.info("subject = marked as completed, fully_watched = {}", true);
+            } else {
+                log.info("subject = marked as completed, fully_watched = {}", false);
             }
         }
 

@@ -81,7 +81,7 @@ public class AiService {
         try {
             resultVo = gson.fromJson(resultStr, MaterialVo.class);
             if (!resultVo.getResults().isEmpty()) {
-                log.info("received video material count is = {}", resultVo.getResults().size());
+                log.info("subject = received video material, video count = {}", resultVo.getResults().size());
             }
         } catch (JsonSyntaxException e) {
             log.error("Failed to parse JSON to MaterialVo. Input JSON: {}", resultStr, e);
