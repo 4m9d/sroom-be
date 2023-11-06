@@ -22,6 +22,7 @@ import com.m9d.sroom.search.dto.VideoCompletionStatus;
 import com.m9d.sroom.search.dto.response.CourseBrief;
 import com.m9d.sroom.search.dto.response.LectureStatus;
 import com.m9d.sroom.search.dto.response.Section;
+import com.m9d.sroom.util.ValidateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,6 +72,12 @@ public class CourseService {
     public EnrolledCourseInfo enroll(Long memberId, NewLecture newLecture, boolean useSchedule,
                                      EnrollContentInfo contentInfo) {
         Course course = courseCreator.create(newLecture, useSchedule, contentInfo);
+        log.info("subject = courseCreated, memberId = {}, scheduleUsed = {}, isPlaylist = {}", memberId, useSchedule,
+                ValidateUtil.checkIfPlaylist(newLecture.getLectureCode()));
+        if (useSchedule) {
+            log.info("subject = schedule, dailyTargetTimeInMinute = {}, weeks = {}", newLecture.getDailyTargetTime(),
+                    newLecture.getScheduling().size());
+        }
         CourseEntity courseEntity = courseRepository.save(new CourseEntity(memberId, course));
 
         LectureEntity lectureEntity = lectureRepository.save(LectureEntity.builder()
@@ -98,6 +105,8 @@ public class CourseService {
     public EnrolledCourseInfo addLecture(Long memberId, Long courseId, EnrollContentInfo contentInfo) {
         Course course = courseServiceHelper.getCourse(courseId);
         addCourseVideo(course, contentInfo.getInnerContentList());
+        log.info("subject = addedLectureInCourse, memberId = {}, scheduleUsed = {}, isPlaylist = {}", memberId,
+                course.isScheduled(), contentInfo.isPlaylist());
 
         LectureEntity lectureEntity = lectureRepository.save(LectureEntity.builder()
                 .memberId(memberId)
@@ -160,8 +169,10 @@ public class CourseService {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
 
-        return new CourseDetail(courseEntity, channels, getSectionList(courseId, courseEntity.getWeeks()),
+        CourseDetail courseDetail = new CourseDetail(courseEntity, channels, getSectionList(courseId, courseEntity.getWeeks()),
                 courseVideoRepository.getLastInfoByCourseId(courseId));
+        log.info("courseDetail. video_count = {}, channel_count = {}", courseDetail.getTotalVideoCount(), channels.size());
+        return courseDetail;
     }
 
     private List<Section> getSectionList(Long courseId, int weeks) {
@@ -187,6 +198,14 @@ public class CourseService {
 
         learningActivityUpdater.updateCourseVideoStatus(courseVideoEntity, status.getViewDuration(),
                 status.isCompleted());
+
+        if (isMarkedAsCompleted) {
+            if (courseVideoEntity.isComplete()) {
+                log.info("subject = markedAsCompleted, fullyWatched = {}", true);
+            } else {
+                log.info("subject = markedAsCompleted, fullyWatched = {}", false);
+            }
+        }
 
         if (!status.isRewound()) {
             learningActivityUpdater.updateCourseDailyLog(memberId, courseVideoEntity.getCourseId(), status);

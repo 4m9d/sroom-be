@@ -35,7 +35,10 @@ jwt:
   secret: '{cipher}AQICAHiJ3G9QsgoCm+bUcAPegP56f6tkFnNiijhZN1RaChF0LwGc2jCSXOKLpXH9AbE+sM7pAAAArTCBqgYJKoZIhvcNAQcGoIGcMIGZAgEAMIGTBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDLskTbG+H1v//rmDdwIBEIBmQd79gXGyiXRnQ5XfFQU5rvPjTjLsxKIXApPpMmpOuugMVuoLDNmdxyqSZiQDOCcGOd7lT9y2MbY+ofvu8Wu9oc+Wzy8tcY2/BFF7DkDTjU8D2N+WFVWKf0IYD2GCPEiKxLN47nIx'
 
 google:
-  cloud-api-key: '{cipher}AQICAHiJ3G9QsgoCm+bUcAPegP56f6tkFnNiijhZN1RaChF0LwEpziQLq+BOOEAyyXMx4JthAAAAhjCBgwYJKoZIhvcNAQcGoHYwdAIBADBvBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDOTUH0BrBym6xPiGGgIBEIBCUBQ1QrIeibVbPXWlan61o0pl853lDcOU1RJv5D8seykkg7Q4cmMPUc9D3FvkhQokKuJH9Vxo+TQdXnkpqJe8QiF5'
+  cloud-api-key-1: '{cipher}AQICAHiJ3G9QsgoCm+bUcAPegP56f6tkFnNiijhZN1RaChF0LwHRoo8cXEo8h1DtHJaaRcF0AAAAhjCBgwYJKoZIhvcNAQcGoHYwdAIBADBvBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDH1Le6q//ORaQusuWAIBEIBCzcGZ7iHDq2bPiluU8ty4LMlGRLnAHtfCp0D6KZk3NXic4hx1QONzq6VReNLQrHEvHS7xl08Qgt3pKrnLhDjHimFE'
+  cloud-api-key-2: '{cipher}AQICAHiJ3G9QsgoCm+bUcAPegP56f6tkFnNiijhZN1RaChF0LwGEd53pH0UxByqW6IxKokUbAAAAhjCBgwYJKoZIhvcNAQcGoHYwdAIBADBvBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDJ+ntZL9x1kW/sj+eAIBEIBCxfArm1TkNWEltEWtGgo/D1YwJdEEZEsP7VA2NDbBf1AaD8oV1H+bpFGJb8PPlM0kKWZnIbq4MRuAE3dMZrE7oAF4'
+  cloud-api-key-3: '{cipher}AQICAHiJ3G9QsgoCm+bUcAPegP56f6tkFnNiijhZN1RaChF0LwEk53nHJvGE0vXNMTR2KBGUAAAAhjCBgwYJKoZIhvcNAQcGoHYwdAIBADBvBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDHAWWjozlaHazSSz3AIBEIBCOGbtSkzMnW+WK2M6FlFvWkW6NAx12nrBaH+cW6hg3ijQO4HcUHdFZyPM/rWTeKV1lXL6NiN/lW/bc+PH6YWR2Ak8'
+  cloud-api-key-4: '{cipher}AQICAHiJ3G9QsgoCm+bUcAPegP56f6tkFnNiijhZN1RaChF0LwEO3pQI6UGU6OGNQb7MmwlJAAAAhjCBgwYJKoZIhvcNAQcGoHYwdAIBADBvBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDO8sVfl8XCtepNrtPgIBEIBCv61NMRffK5AXqB8OxPtdZvJdmTJj1S6IwKcGkCdDBZc7XJntwH6Ggwr+1suxCc5skhQ+GnaoeTdifmi0vaDfbw7K'
   client-id: '{cipher}AQICAHiJ3G9QsgoCm+bUcAPegP56f6tkFnNiijhZN1RaChF0LwG2yawOjNyeqfXayelhiJEDAAAAqzCBqAYJKoZIhvcNAQcGoIGaMIGXAgEAMIGRBgkqhkiG9w0BBwEwHgYJYIZIAWUDBAEuMBEEDM25bhVmkHjntleeNAIBEIBkEiutxJ+N7kpWa/wH1gziipOG6AXZ/PmRI1mnD6vF8zZvwZhsKXzjsm7G9INvVqjwk+jRY1cTdldXs7J0ZCDurx56d7JC47PfjCPAFwW5GFjZiaaebBu+md1ahNH4nwpySHs9uQ=='
 
 #Devtool
@@ -54,6 +57,7 @@ logging.level:
     SQL: debug
   com.m9d.sroom: info
 
+
 # logging.level:
 #   root: warn
 #   com.m9d:
@@ -63,3 +67,5 @@ logging.level:
 #   com.hibernate:
 #     SQL: warn
 #   com.m9d.sroom: warn
+logging:
+  config: classpath:logback-spring.xml

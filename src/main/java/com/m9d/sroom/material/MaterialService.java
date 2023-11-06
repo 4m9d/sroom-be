@@ -14,6 +14,7 @@ import com.m9d.sroom.material.model.MaterialStatus;
 import com.m9d.sroom.quiz.QuizService;
 import com.m9d.sroom.quiz.vo.Quiz;
 import com.m9d.sroom.summary.SummaryService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class MaterialService {
 
     private final CourseServiceHelper courseServiceHelper;
@@ -99,7 +101,9 @@ public class MaterialService {
             quizInfoResponseList.add(new SubmittedQuizInfoResponse(submittedQuizRequest.getQuizId(),
                     courseQuizEntity.getId()));
         }
-
+        log.info("subject = quizSubmitted, correctAnswerRate = {}",
+                ((double) submittedQuizList.stream().filter(SubmittedQuizRequest::getIsCorrect).count()
+                        / submittedQuizList.size()));
         return quizInfoResponseList;
     }
 
