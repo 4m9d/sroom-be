@@ -43,6 +43,7 @@ public class MemberService {
         GoogleIdToken idToken = verifyCredential(credential);
 
         MemberEntity member = findOrCreateMemberByMemberCode(idToken.getPayload().getSubject());
+        log.info("member login. memberId = {}", member.getMemberId());
         return generateLogin(member, (String) idToken.getPayload().get("picture"));
     }
 

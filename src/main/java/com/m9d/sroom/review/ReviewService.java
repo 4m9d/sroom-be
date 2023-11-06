@@ -8,6 +8,7 @@ import com.m9d.sroom.common.repository.review.ReviewRepository;
 import com.m9d.sroom.common.repository.video.VideoRepository;
 import com.m9d.sroom.search.dto.response.ReviewBrief;
 import com.m9d.sroom.review.dto.*;
+import com.m9d.sroom.util.ValidateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,8 +29,8 @@ public class ReviewService {
 
 
     public ReviewService(ReviewRepository reviewRepository, LectureRepository lectureRepository,
-                           PlaylistRepository playlistRepository, VideoRepository videoRepository,
-                           CourseVideoRepository courseVideoRepository) {
+                         PlaylistRepository playlistRepository, VideoRepository videoRepository,
+                         CourseVideoRepository courseVideoRepository) {
         this.reviewRepository = reviewRepository;
         this.lectureRepository = lectureRepository;
         this.playlistRepository = playlistRepository;
@@ -42,11 +43,10 @@ public class ReviewService {
         List<LectureEntity> lectureList = lectureRepository.getListByCourseId(courseId);
         List<LectureBrief4Review> lectures = new ArrayList<>();
 
-        for(LectureEntity lecture : lectureList) {
-            if(lecture.getPlaylist()) {
+        for (LectureEntity lecture : lectureList) {
+            if (lecture.getPlaylist()) {
                 lectures.add(getPlaylistLectureBrief4Review(lecture));
-            }
-            else {
+            } else {
                 lectures.add(getVideoLectureBrief4Review(lecture));
             }
         }
@@ -74,6 +74,9 @@ public class ReviewService {
 
         Long reviewId = reviewRepository.save(review).getReviewId();
 
+        log.info("review saved. isPlaylist = {}, grade = {}", ValidateUtil.checkIfPlaylist(lectureCode),
+                reviewSubmitRequest.getSubmittedRating());
+
         return ReviewSubmitResponse.builder()
                 .reviewId(reviewId)
                 .lectureId(lectureId)
@@ -93,8 +96,7 @@ public class ReviewService {
 
         if (review.getSubmittedDate() != null) {
             submittedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(review.getSubmittedDate());
-        }
-        else {
+        } else {
             submittedDate = null;
         }
 
@@ -122,7 +124,7 @@ public class ReviewService {
         VideoEntity video = videoRepository.getById(lecture.getSourceId());
         int progress = (courseVideo.getMaxDuration() * 100) / video.getDuration();
 
-        if(progress < 50 && courseVideo.isComplete())
+        if (progress < 50 && courseVideo.isComplete())
             progress = 100;
 
         ReviewEntity review = getReview(lecture);
@@ -130,8 +132,7 @@ public class ReviewService {
 
         if (review.getSubmittedDate() != null) {
             submittedDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(review.getSubmittedDate());
-        }
-        else {
+        } else {
             submittedDate = null;
         }
 
@@ -161,8 +162,7 @@ public class ReviewService {
             PlaylistEntity playlist = playlistRepository.getById(lecture.getSourceId());
             lectureCode = playlist.getPlaylistCode();
             applyReviewToPlaylist(reviewSubmitRequest, playlist);
-        }
-        else {
+        } else {
             VideoEntity video = videoRepository.getById(lecture.getSourceId());
             lectureCode = video.getVideoCode();
             applyReviewToVideo(reviewSubmitRequest, video);
@@ -198,7 +198,7 @@ public class ReviewService {
         review.setContent(null);
         review.setSubmittedDate(null);
 
-        if(lecture.getReviewed())
+        if (lecture.getReviewed())
             review = reviewRepository.getByLectureId(lecture.getId());
 
         return review;
@@ -228,6 +228,6 @@ public class ReviewService {
     public void updateRating() {
         int updateVideoCount = videoRepository.updateRating();
         int updatePlaylistCount = playlistRepository.updateRating();
-        log.info("Update Rating : updated video count = {}, updated playlist count = {}",updateVideoCount, updatePlaylistCount);
+        log.info("Update_Rating : updated_video_count = {}, updated_playlist_count = {}", updateVideoCount, updatePlaylistCount);
     }
 }

@@ -13,12 +13,15 @@ import com.m9d.sroom.youtube.dto.playlist.PlaylistDto;
 import com.m9d.sroom.youtube.dto.playlistitem.PlaylistVideoDto;
 import com.m9d.sroom.youtube.dto.search.SearchDto;
 import com.m9d.sroom.youtube.dto.video.VideoDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 @Service
+@Slf4j
 public class YoutubeMapper {
 
     private final YoutubeApi youtubeApi;
@@ -61,6 +64,8 @@ public class YoutubeMapper {
                 .pageToken(nextPageToken)
                 .build());
 
+        log.info("youtube search. keyword = {}, next_token_used = {}, filter = {}",
+                keyword, !Objects.equals(nextPageToken, ""), filter);
         return searchVo.toSearchInfo();
     }
 }

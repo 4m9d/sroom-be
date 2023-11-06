@@ -5,10 +5,12 @@ import com.m9d.sroom.common.repository.coursevideo.CourseVideoRepository;
 import com.m9d.sroom.common.repository.summary.SummaryRepository;
 import com.m9d.sroom.course.CourseServiceHelper;
 import com.m9d.sroom.material.exception.SummaryNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 public class SummaryService {
 
     private final SummaryRepository summaryRepository;
@@ -28,8 +30,12 @@ public class SummaryService {
 
         if (summaryEntity.isModified()) {
             updateContent(content, summaryEntity);
+            log.info("edit summary. modified_before. summary_length_became_longer = {}",
+                    content.length() > summaryEntity.getContent().length());
         } else {
             summaryEntity = summaryRepository.save(new SummaryEntity(videoId, content, true));
+            log.info("edit summary. not_modified. summary_length_became_longer = {}",
+                    content.length() > summaryEntity.getContent().length());
         }
 
         return summaryEntity.getId();
