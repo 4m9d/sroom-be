@@ -72,10 +72,10 @@ public class CourseService {
     public EnrolledCourseInfo enroll(Long memberId, NewLecture newLecture, boolean useSchedule,
                                      EnrollContentInfo contentInfo) {
         Course course = courseCreator.create(newLecture, useSchedule, contentInfo);
-        log.info("subject = course created, memberId = {}, scheduleUsed = {}, is_playlist = {}", memberId, useSchedule,
+        log.info("subject = courseCreated, memberId = {}, scheduleUsed = {}, isPlaylist = {}", memberId, useSchedule,
                 ValidateUtil.checkIfPlaylist(newLecture.getLectureCode()));
         if (useSchedule) {
-            log.info("subject = schedule, daily target time in minute = {}, weeks = {}", newLecture.getDailyTargetTime(),
+            log.info("subject = schedule, dailyTargetTimeInMinute = {}, weeks = {}", newLecture.getDailyTargetTime(),
                     newLecture.getScheduling().size());
         }
         CourseEntity courseEntity = courseRepository.save(new CourseEntity(memberId, course));
@@ -105,7 +105,7 @@ public class CourseService {
     public EnrolledCourseInfo addLecture(Long memberId, Long courseId, EnrollContentInfo contentInfo) {
         Course course = courseServiceHelper.getCourse(courseId);
         addCourseVideo(course, contentInfo.getInnerContentList());
-        log.info("subject = added lecture in course, memberId = {}, scheduleUsed = {}, isPlaylist = {}", memberId,
+        log.info("subject = addedLectureInCourse, memberId = {}, scheduleUsed = {}, isPlaylist = {}", memberId,
                 course.isScheduled(), contentInfo.isPlaylist());
 
         LectureEntity lectureEntity = lectureRepository.save(LectureEntity.builder()
@@ -171,7 +171,7 @@ public class CourseService {
 
         CourseDetail courseDetail = new CourseDetail(courseEntity, channels, getSectionList(courseId, courseEntity.getWeeks()),
                 courseVideoRepository.getLastInfoByCourseId(courseId));
-        log.info("course detail. video_count = {}, channel_count = {}", courseDetail.getTotalVideoCount(), channels.size());
+        log.info("courseDetail. video_count = {}, channel_count = {}", courseDetail.getTotalVideoCount(), channels.size());
         return courseDetail;
     }
 
@@ -201,9 +201,9 @@ public class CourseService {
 
         if (isMarkedAsCompleted) {
             if (courseVideoEntity.isComplete()) {
-                log.info("subject = marked as completed, fully_watched = {}", true);
+                log.info("subject = markedAsCompleted, fullyWatched = {}", true);
             } else {
-                log.info("subject = marked as completed, fully_watched = {}", false);
+                log.info("subject = markedAsCompleted, fullyWatched = {}", false);
             }
         }
 

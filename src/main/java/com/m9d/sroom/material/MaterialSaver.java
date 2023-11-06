@@ -70,7 +70,7 @@ public class MaterialSaver {
         videoRepository.updateById(videoEntity.getVideoId(), videoEntity);
         courseVideoRepository.updateSummaryId(videoEntity.getVideoId(), summaryId);
 
-        log.info("subject = material saved, quiz_count = {}", materialVo.getQuizList().size());
+        log.info("subject = materialSaved, quizCount = {}", materialVo.getQuizList().size());
     }
 
     private void saveQuiz(Long videoId, Quiz quiz) {

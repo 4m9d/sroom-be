@@ -65,7 +65,7 @@ public class VideoService {
 
         if (videoEntity.getMaterialStatus() == null
                 || videoEntity.getMaterialStatus() == MaterialStatus.NO_REQUEST.getValue()) {
-            log.info("subject = request to AI server, videoCode = {}, title = {}", video.getCode(), video.getTitle());
+            log.info("subject = requestToAIServer, videoCode = {}, title = {}", video.getCode(), video.getTitle());
             aiService.requestToFastApi(video.getCode(), video.getTitle());
             videoEntity.setMaterialStatus(MaterialStatus.CREATING.getValue());
             videoRepository.updateById(videoEntity.getVideoId(), videoEntity);

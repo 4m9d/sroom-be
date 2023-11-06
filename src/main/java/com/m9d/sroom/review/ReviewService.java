@@ -74,7 +74,7 @@ public class ReviewService {
 
         Long reviewId = reviewRepository.save(review).getReviewId();
 
-        log.info("subject = review saved, isPlaylist = {}, grade = {}", ValidateUtil.checkIfPlaylist(lectureCode),
+        log.info("subject = reviewSaved, isPlaylist = {}, grade = {}", ValidateUtil.checkIfPlaylist(lectureCode),
                 reviewSubmitRequest.getSubmittedRating());
 
         return ReviewSubmitResponse.builder()
@@ -228,6 +228,6 @@ public class ReviewService {
     public void updateRating() {
         int updateVideoCount = videoRepository.updateRating();
         int updatePlaylistCount = playlistRepository.updateRating();
-        log.info("subject = Update_Rating, updated_video_count = {}, updated_playlist_count = {}", updateVideoCount, updatePlaylistCount);
+        log.info("subject = UpdateRating, updatedVideoCount = {}, updatedPlaylistCount = {}", updateVideoCount, updatePlaylistCount);
     }
 }

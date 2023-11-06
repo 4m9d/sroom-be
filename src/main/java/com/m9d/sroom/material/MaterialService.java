@@ -101,7 +101,7 @@ public class MaterialService {
             quizInfoResponseList.add(new SubmittedQuizInfoResponse(submittedQuizRequest.getQuizId(),
                     courseQuizEntity.getId()));
         }
-        log.info("subject = quiz submitted, correctAnswerRate = {}",
+        log.info("subject = quizSubmitted, correctAnswerRate = {}",
                 ((double) submittedQuizList.stream().filter(SubmittedQuizRequest::getIsCorrect).count()
                         / submittedQuizList.size()));
         return quizInfoResponseList;

@@ -30,11 +30,11 @@ public class SummaryService {
 
         if (summaryEntity.isModified()) {
             updateContent(content, summaryEntity);
-            log.info("subject = edit summary, modifiedSummary = {} summaryLengthBecameLonger = {}", true,
+            log.info("subject = editSummary, modifiedSummary = {} summaryLengthBecameLonger = {}", true,
                     content.length() > summaryEntity.getContent().length());
         } else {
             summaryEntity = summaryRepository.save(new SummaryEntity(videoId, content, true));
-            log.info("subject = edit summary, modifiedSummary = {} summaryLengthBecameLonger = {}", false,
+            log.info("subject = editSummary, modifiedSummary = {} summaryLengthBecameLonger = {}", false,
                     content.length() > summaryEntity.getContent().length());
         }
 

@@ -64,7 +64,7 @@ public class YoutubeMapper {
                 .pageToken(nextPageToken)
                 .build());
 
-        log.info("subject = youtube search, keyword = {}, next_token_used = {}, filter = {}",
+        log.info("subject = youtubeSearch, keyword = {}, nextTokenUsed = {}, filter = {}",
                 keyword, !Objects.equals(nextPageToken, ""), filter);
         return searchVo.toSearchInfo();
     }
