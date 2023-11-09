@@ -1,8 +1,10 @@
 package com.m9d.sroom.recommendation;
 
 import com.m9d.sroom.common.entity.PlaylistEntity;
+import com.m9d.sroom.common.entity.RecommendEntity;
 import com.m9d.sroom.common.entity.VideoEntity;
 import com.m9d.sroom.common.repository.playlist.PlaylistRepository;
+import com.m9d.sroom.common.repository.recommend.RecommendRepository;
 import com.m9d.sroom.common.repository.video.VideoRepository;
 import com.m9d.sroom.lecture.LectureService;
 import com.m9d.sroom.playlist.PlaylistService;
@@ -22,15 +24,21 @@ import static com.m9d.sroom.recommendation.constant.RecommendationConstant.TOP_R
 @Service
 public class RecommendationService {
 
+    private final DomainRecommendation domainRecommendation;
     private final PlaylistRepository playlistRepository;
+    private final RecommendRepository recommendRepository;
     private final VideoRepository videoRepository;
     private final LectureService lectureService;
     private final VideoService videoService;
     private final PlaylistService playlistService;
 
-    public RecommendationService(PlaylistRepository playlistRepository, VideoRepository videoRepository,
-                                 LectureService lectureService, VideoService videoService, PlaylistService playlistService) {
+    public RecommendationService(DomainRecommendation domainRecommendation,
+                                 PlaylistRepository playlistRepository, RecommendRepository recommendRepository,
+                                 VideoRepository videoRepository, LectureService lectureService, VideoService videoService,
+                                 PlaylistService playlistService) {
+        this.domainRecommendation = domainRecommendation;
         this.lectureService = lectureService;
+        this.recommendRepository = recommendRepository;
         this.playlistRepository = playlistRepository;
         this.videoRepository = videoRepository;
         this.videoService = videoService;
@@ -39,31 +47,62 @@ public class RecommendationService {
 
     @Transactional
     public Recommendations getRecommendations(Long memberId) {
-        List<RecommendLecture> generalRecommendLectureList = new ArrayList<>();
+        List<RecommendLecture> generalRecommendLectureList = getGeneralRecommends();
         List<RecommendLecture> channelRecommendLectureList = getRecommendsByChannel(memberId);
-
-        generalRecommendLectureList.addAll(getRecommendLectures(videoService.getTopRatedVideos(TOP_RATED_LECTURES_COUNT)));
-        generalRecommendLectureList.addAll(getRecommendLectures(playlistService.getTopRatedPlaylists(TOP_RATED_LECTURES_COUNT)));
+        List<RecommendLecture> societyRecommendLectureList = domainRecommendation.getSocietyRecommendations();
+        List<RecommendLecture> scienceRecommendLectureList = domainRecommendation.getScienceRecommendations();
+        List<RecommendLecture> economicRecommendLectureList = domainRecommendation.getEconomicRecommendations();
+        List<RecommendLecture> techRecommendLectureList = domainRecommendation.getTechRecommendations();
 
         Set<String> enrolledLectureSet = lectureService.getEnrolledLectures(memberId);
 
         for (String lectureCode : enrolledLectureSet) {
             generalRecommendLectureList.removeIf(recommendLecture -> (recommendLecture.getLectureCode().equals(lectureCode)));
             channelRecommendLectureList.removeIf(recommendLecture -> (recommendLecture.getLectureCode().equals(lectureCode)));
+            societyRecommendLectureList.removeIf(recommendLecture -> (recommendLecture.getLectureCode().equals(lectureCode)));
+            scienceRecommendLectureList.removeIf(recommendLecture -> (recommendLecture.getLectureCode().equals(lectureCode)));
+            economicRecommendLectureList.removeIf(recommendLecture -> (recommendLecture.getLectureCode().equals(lectureCode)));
+            techRecommendLectureList.removeIf(recommendLecture -> (recommendLecture.getLectureCode().equals(lectureCode)));
         }
 
         Collections.shuffle(generalRecommendLectureList);
         Collections.shuffle(channelRecommendLectureList);
+        Collections.shuffle(societyRecommendLectureList);
+        Collections.shuffle(scienceRecommendLectureList);
+        Collections.shuffle(economicRecommendLectureList);
+        Collections.shuffle(techRecommendLectureList);
+
         Recommendations recommendations = Recommendations.builder()
                 .generalRecommendations(generalRecommendLectureList.stream()
-                        .limit(20)
+                        .limit(10)
                         .collect(Collectors.toList()))
                 .channelRecommendations(channelRecommendLectureList.stream()
-                        .limit(20)
+                        .limit(10)
+                        .collect(Collectors.toList()))
+                .societyRecommendations(societyRecommendLectureList.stream()
+                        .limit(10)
+                        .collect(Collectors.toList()))
+                .scienceRecommendations(scienceRecommendLectureList.stream()
+                        .limit(10)
+                        .collect(Collectors.toList()))
+                .economicRecommendations(economicRecommendLectureList.stream()
+                        .limit(10)
+                        .collect(Collectors.toList()))
+                .techRecommendations(techRecommendLectureList.stream()
+                        .limit(10)
                         .collect(Collectors.toList()))
                 .build();
 
         return recommendations;
+    }
+
+    public List<RecommendLecture> getGeneralRecommends() {
+        List<RecommendLecture> generalRecommendLectureList = new ArrayList<>();
+
+        generalRecommendLectureList.addAll(getRecommendLectures(videoService.getTopRatedVideos(TOP_RATED_LECTURES_COUNT)));
+        generalRecommendLectureList.addAll(getRecommendLectures(playlistService.getTopRatedPlaylists(TOP_RATED_LECTURES_COUNT)));
+
+        return generalRecommendLectureList;
     }
 
 
@@ -71,9 +110,9 @@ public class RecommendationService {
         HashSet<RecommendLecture> recommendLectureSetByChannel = new HashSet<>();
         List<String> channels = lectureService.getMostEnrolledChannels(memberId);
 
-        final int SELECT_BY_RANDOM_LIMIT = 2;
-        final int SELECT_BY_PUBLISH_DATE_LIMIT = 3;
-        final int SELECT_BY_VIEWED_LIMIT = 5;
+        final int SELECT_BY_RANDOM_LIMIT = 1;
+        final int SELECT_BY_PUBLISH_DATE_LIMIT = 2;
+        final int SELECT_BY_VIEWED_LIMIT = 3;
 
         for (String channelName : channels) {
             List<Object> lectures = new ArrayList<>();
@@ -93,7 +132,22 @@ public class RecommendationService {
         return new ArrayList<>(recommendLectureSetByChannel);
     }
 
-    public List<RecommendLecture> getRecommendLectures(List<?> lectures) {
+    public List<RecommendLecture> getRecommendsByDomain(int domainId) {
+        List<RecommendEntity> recommendEntities = recommendRepository.getListByDomain(domainId);
+        List<Object> lectures = new ArrayList<>();
+
+        for (RecommendEntity recommendEntity : recommendEntities) {
+            if (recommendEntity.getIsPlaylist()) {
+                lectures.add(playlistRepository.getByCode(recommendEntity.getSourceCode()));
+            }
+            else {
+                lectures.add(videoRepository.getByCode(recommendEntity.getSourceCode()));
+            }
+        }
+        return getRecommendLectures(lectures);
+    }
+
+    private List<RecommendLecture> getRecommendLectures(List<?> lectures) {
         List<RecommendLecture> recommendLectures = new ArrayList<>();
 
         for (Object lecture : lectures) {
