@@ -21,6 +21,10 @@ public class QuizEntity {
 
     private Integer choiceAnswer;
 
+    private Integer positiveFeedbackCount;
+
+    private Integer negativeFeedbackCount;
+
     public static RowMapper<QuizEntity> getRowMapper() {
         return (rs, rowNum) -> QuizEntity.builder()
                 .id(rs.getLong("quiz_id"))
@@ -29,6 +33,8 @@ public class QuizEntity {
                 .question(rs.getString("question"))
                 .subjectiveAnswer(rs.getString("subjective_answer"))
                 .choiceAnswer(rs.getInt("choice_answer"))
+                .positiveFeedbackCount(rs.getInt("positive_feedback_count"))
+                .negativeFeedbackCount(rs.getInt("negative_feedback_count"))
                 .build();
     }
 
