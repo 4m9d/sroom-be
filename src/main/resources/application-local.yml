@@ -9,7 +9,8 @@ server:
     whitelabel:
       enabled: false
 spring:
-  #Mariadb
+  profiles:
+    active: local
   datasource:
     url: '{cipher}AQICAHiJ3G9QsgoCm+bUcAPegP56f6tkFnNiijhZN1RaChF0LwFgKaFUhb2270ABK3DnbJmdAAAAgTB/BgkqhkiG9w0BBwagcjBwAgEAMGsGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQM63tWuWz+AGNzEt6CAgEQgD5h5ko0Btj+wakVyWki4moxiVNxCaVCO85TfjW4r8/r7w1oH3SGTLhpIUMA4vsMpHpbEHU86oTA51CwM8UZMQ=='
     username: '{cipher}AQICAHiJ3G9QsgoCm+bUcAPegP56f6tkFnNiijhZN1RaChF0LwEQ6p1YRsmHhzcx/mDyocEGAAAAYjBgBgkqhkiG9w0BBwagUzBRAgEAMEwGCSqGSIb3DQEHATAeBglghkgBZQMEAS4wEQQMuy+zBtDQjkRuQM1BAgEQgB/z78W4hPAeVK23Uc53bCNO4eLxubnJDFr7h2LqglLf'
@@ -58,3 +59,5 @@ logging.level:
   com.hibernate:
     SQL: debug
   com.m9d.sroom: debug
+logging:
+  config: classpath:logback-local.xml
