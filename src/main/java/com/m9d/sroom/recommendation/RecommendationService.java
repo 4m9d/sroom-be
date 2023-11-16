@@ -49,10 +49,15 @@ public class RecommendationService {
     public Recommendations getRecommendations(Long memberId) {
         List<RecommendLecture> generalRecommendLectureList = getGeneralRecommends();
         List<RecommendLecture> channelRecommendLectureList = getRecommendsByChannel(memberId);
-        List<RecommendLecture> societyRecommendLectureList = domainRecommendation.getSocietyRecommendations();
-        List<RecommendLecture> scienceRecommendLectureList = domainRecommendation.getScienceRecommendations();
-        List<RecommendLecture> economicRecommendLectureList = domainRecommendation.getEconomicRecommendations();
-        List<RecommendLecture> techRecommendLectureList = domainRecommendation.getTechRecommendations();
+        List<RecommendLecture> societyRecommendLectureList = new ArrayList<>();
+        List<RecommendLecture> scienceRecommendLectureList = new ArrayList<>();
+        List<RecommendLecture> economicRecommendLectureList = new ArrayList<>();
+        List<RecommendLecture> techRecommendLectureList = new ArrayList<>();
+
+        societyRecommendLectureList.addAll(domainRecommendation.getSocietyRecommendations());
+        scienceRecommendLectureList.addAll(domainRecommendation.getScienceRecommendations());
+        economicRecommendLectureList.addAll(domainRecommendation.getEconomicRecommendations());
+        techRecommendLectureList.addAll(domainRecommendation.getTechRecommendations());
 
         Set<String> enrolledLectureSet = lectureService.getEnrolledLectures(memberId);
 
