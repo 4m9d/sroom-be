@@ -1,8 +1,7 @@
 package com.m9d.sroom.ai;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.m9d.sroom.ai.vo.MaterialResultsVo;
+import com.google.gson.*;
+import com.m9d.sroom.ai.vo.MaterialResultVo;
 import com.m9d.sroom.ai.vo.MaterialVo;
 import com.m9d.sroom.material.MaterialSaver;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +14,8 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -50,9 +51,7 @@ public class AiService {
             log.debug("response body from gpt server = {}", resultStr);
         }
 
-        MaterialVo resultVo = getMaterialVo(resultStr);
-
-        for (MaterialResultsVo materialVo : resultVo.getResults()) {
+        for (MaterialResultVo materialVo : getMaterialResults(resultStr)) {
             saveResultEach(materialVo);
         }
     }
@@ -89,7 +88,28 @@ public class AiService {
         return resultVo;
     }
 
-    public void saveResultEach(MaterialResultsVo materialVo) {
+    private List<MaterialResultVo> getMaterialResults(String resultStr) {
+        List<MaterialResultVo> resultsVoList = new ArrayList<>();
+
+        try {
+            JsonObject jsonObject = JsonParser.parseString(resultStr).getAsJsonObject();
+            JsonArray resultsArray = jsonObject.getAsJsonArray("results");
+
+            for (JsonElement resultElement : resultsArray) {
+                try {
+                    log.debug("fastApi response divided into each materialVo");
+                    resultsVoList.add(gson.fromJson(resultElement, MaterialResultVo.class));
+                } catch (JsonSyntaxException e) {
+                    log.error("Failed to parse JSON to MaterialResultVo: {}", resultElement.toString(), e);
+                }
+            }
+        } catch (Exception e) {
+            log.error("Failed to parse JSON to MaterialResultVo. Input JSON: {}", resultStr, e);
+        }
+        return resultsVoList;
+    }
+
+    public void saveResultEach(MaterialResultVo materialVo) {
         try {
             materialSaver.saveMaterials(materialVo);
         } catch (Exception e) {
