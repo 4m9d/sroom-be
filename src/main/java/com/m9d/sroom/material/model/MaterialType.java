@@ -1,6 +1,7 @@
 package com.m9d.sroom.material.model;
 
 import com.m9d.sroom.ai.exception.QuizTypeNotMatchException;
+import com.m9d.sroom.material.exception.MaterialTypeNotFoundException;
 
 public enum MaterialType {
 
@@ -33,7 +34,7 @@ public enum MaterialType {
         } else if (valueStr.equals("quiz")) {
             return QUIZ;
         } else {
-            throw new QuizTypeNotMatchException(valueStr);
+            throw new MaterialTypeNotFoundException(valueStr);
         }
     }
 
