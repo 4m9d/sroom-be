@@ -41,9 +41,20 @@ public class QuizJdbcRepositoryImpl implements QuizRepository {
     @Override
     public Optional<QuizEntity> findById(Long quizId) {
         try {
-            return Optional.ofNullable(jdbcTemplate.queryForObject(QuizRepositorySql.GET_BY_ID, QuizEntity.getRowMapper(), quizId));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(QuizRepositorySql.GET_BY_ID,
+                    QuizEntity.getRowMapper(), quizId));
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public void feedbackPositive(Long quizId) {
+        jdbcTemplate.update(QuizRepositorySql.UPDATE_POSITIVE_FEEDBACK_COUNT, quizId);
+    }
+
+    @Override
+    public void feedbackNegative(Long quizId) {
+        jdbcTemplate.update(QuizRepositorySql.UPDATE_NEGATIVE_FEEDBACK_COUNT, quizId);
     }
 }

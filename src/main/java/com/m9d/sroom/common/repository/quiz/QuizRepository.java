@@ -15,4 +15,8 @@ public interface QuizRepository {
     QuizEntity getById(Long quizId);
 
     Optional<QuizEntity> findById(Long quizId);
+
+    void feedbackPositive(Long quizId);
+
+    void feedbackNegative(Long quizId);
 }

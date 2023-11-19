@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Setter
 @RequiredArgsConstructor
 @Getter
-public class MaterialResultsVo {
+public class MaterialResultVo {
 
     private String video_id;
 

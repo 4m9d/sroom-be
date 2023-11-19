@@ -9,4 +9,8 @@ public class QuizTypeNotMatchException extends NotMatchException {
     public QuizTypeNotMatchException(int type) {
         super(MESSAGE + type);
     }
+
+    public QuizTypeNotMatchException(String message) {
+        super(MESSAGE + message);
+    }
 }

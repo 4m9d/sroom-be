@@ -27,4 +27,16 @@ class QuizRepositorySql {
         FROM QUIZ
         WHERE quiz_id = ?
     """
+
+    public static final String UPDATE_POSITIVE_FEEDBACK_COUNT = """
+        UPDATE QUIZ
+        SET positive_feedback_count = positive_feedback_count + 1
+        WHERE quiz_id = ?
+    """
+
+    public static final String UPDATE_NEGATIVE_FEEDBACK_COUNT = """
+        UPDATE QUIZ
+        SET negative_feedback_count = negative_feedback_count + 1
+        WHERE quiz_id = ?
+    """
 }

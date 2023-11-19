@@ -4,6 +4,7 @@ import com.m9d.sroom.common.entity.SummaryEntity;
 import com.m9d.sroom.common.repository.coursevideo.CourseVideoRepository;
 import com.m9d.sroom.common.repository.summary.SummaryRepository;
 import com.m9d.sroom.course.CourseServiceHelper;
+import com.m9d.sroom.material.dto.response.FeedbackInfo;
 import com.m9d.sroom.material.exception.SummaryNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -48,5 +49,9 @@ public class SummaryService {
 
     public Summary getSummary(Long summaryId) {
         return summaryRepository.getById(summaryId).toSummary();
+    }
+
+    public SummaryEntity getSummaryEntity(Long summaryId){
+        return summaryRepository.getById(summaryId);
     }
 }

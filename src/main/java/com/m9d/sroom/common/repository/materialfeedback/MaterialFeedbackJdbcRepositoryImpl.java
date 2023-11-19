@@ -1,9 +1,14 @@
 package com.m9d.sroom.common.repository.materialfeedback;
 
 import com.m9d.sroom.common.entity.MaterialFeedbackEntity;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Repository;
 
-public class MaterialFeedbackJdbcRepositoryImpl implements MaterialFeedbackRepository{
+import java.util.Optional;
+
+@Repository
+public class MaterialFeedbackJdbcRepositoryImpl implements MaterialFeedbackRepository {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -16,8 +21,8 @@ public class MaterialFeedbackJdbcRepositoryImpl implements MaterialFeedbackRepos
         jdbcTemplate.update(MaterialFeedbackRepositorySql.SAVE,
                 feedbackEntity.getMemberId(),
                 feedbackEntity.getContentId(),
-                feedbackEntity.getContentType(),
-                feedbackEntity.getRating());
+                feedbackEntity.getContentType().getValue(),
+                feedbackEntity.isSatisfactory());
         return getById(jdbcTemplate.queryForObject(MaterialFeedbackRepositorySql.GET_LAST_ID, Long.class));
     }
 
@@ -28,14 +33,14 @@ public class MaterialFeedbackJdbcRepositoryImpl implements MaterialFeedbackRepos
     }
 
     @Override
-    public Boolean checkQuizFeedbackExist(Long memberId, Long quizId) {
-        return jdbcTemplate.queryForObject(MaterialFeedbackRepositorySql.CHECK_BY_MEMBER_ID_AND_QUIZ_ID,
-                Boolean.class, memberId, quizId);
-    }
-
-    @Override
-    public Boolean checkSummaryFeedbackExist(Long memberId, Long summaryId) {
-        return jdbcTemplate.queryForObject(MaterialFeedbackRepositorySql.CHECK_BY_MEMBER_ID_AND_SUMMARY_ID,
-                Boolean.class, memberId, summaryId);
+    public Optional<MaterialFeedbackEntity> findByMemberIdAndTypeAndMaterialId(Long memberId, int materialType,
+                                                                               Long materialId) {
+        try {
+            return Optional.ofNullable(jdbcTemplate.queryForObject(
+                    MaterialFeedbackRepositorySql.GET_BY_MEMBER_ID_AND_TYPE_AND_MATERIAL_ID,
+                    MaterialFeedbackEntity.getRowMapper(), memberId, materialType, materialId));
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
     }
 }

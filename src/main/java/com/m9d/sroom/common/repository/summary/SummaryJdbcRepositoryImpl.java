@@ -47,4 +47,14 @@ public class SummaryJdbcRepositoryImpl implements SummaryRepository {
                 summaryId);
         return getById(summaryId);
     }
+
+    @Override
+    public void feedbackPositive(Long summaryId) {
+        jdbcTemplate.update(SummaryRepositorySql.UPDATE_POSITIVE_FEEDBACK_COUNT, summaryId);
+    }
+
+    @Override
+    public void feedbackNegative(Long summaryId) {
+        jdbcTemplate.update(SummaryRepositorySql.UPDATE_NEGATIVE_FEEDBACK_COUNT, summaryId);
+    }
 }

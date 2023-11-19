@@ -19,7 +19,7 @@ public class MaterialFeedbackEntity {
 
     private int contentType;
 
-    private int rating;
+    private boolean satisfactory;
 
     public static RowMapper<MaterialFeedbackEntity> getRowMapper() {
         return (rs, rowNum) -> MaterialFeedbackEntity.builder()
@@ -27,11 +27,21 @@ public class MaterialFeedbackEntity {
                 .memberId(rs.getLong("member_id"))
                 .contentId(rs.getLong("content_id"))
                 .contentType(rs.getInt("content_type"))
-                .rating(rs.getInt("rating"))
+                .satisfactory(rs.getBoolean("rating"))
                 .build();
     }
 
     public MaterialType getContentType() {
         return MaterialType.from(contentType);
+    }
+
+    public static MaterialFeedbackEntity createForSave(Long memberId, MaterialType type, Long contentId,
+                                                       boolean satisfactory) {
+        return MaterialFeedbackEntity.builder()
+                .memberId(memberId)
+                .contentType(type.getValue())
+                .contentId(contentId)
+                .satisfactory(satisfactory)
+                .build();
     }
 }

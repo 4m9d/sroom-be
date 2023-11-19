@@ -6,12 +6,14 @@ import com.m9d.sroom.common.entity.QuizEntity;
 import com.m9d.sroom.common.repository.coursequiz.CourseQuizRepository;
 import com.m9d.sroom.common.repository.quiz.QuizRepository;
 import com.m9d.sroom.common.repository.quizoption.QuizOptionRepository;
+import com.m9d.sroom.material.FeedbackService;
 import com.m9d.sroom.material.dto.request.SubmittedQuizRequest;
 import com.m9d.sroom.material.dto.response.QuizResponse;
 import com.m9d.sroom.material.exception.CourseQuizDuplicationException;
 import com.m9d.sroom.material.exception.QuizAnswerFormatNotValidException;
 import com.m9d.sroom.material.exception.QuizIdNotMatchException;
 import com.m9d.sroom.material.exception.QuizNotFoundException;
+import com.m9d.sroom.material.model.MaterialType;
 import com.m9d.sroom.quiz.vo.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -28,20 +30,23 @@ public class QuizService {
     private final QuizRepository quizRepository;
     private final CourseQuizRepository courseQuizRepository;
     private final QuizOptionRepository quizOptionRepository;
+    private final FeedbackService feedbackService;
 
     public QuizService(QuizRepository quizRepository, CourseQuizRepository courseQuizRepository,
-                       QuizOptionRepository quizOptionRepository) {
+                       QuizOptionRepository quizOptionRepository, FeedbackService feedbackService) {
         this.quizRepository = quizRepository;
         this.courseQuizRepository = courseQuizRepository;
         this.quizOptionRepository = quizOptionRepository;
+        this.feedbackService = feedbackService;
     }
 
-    public List<QuizResponse> getQuizResponseList(Long videoId, Long courseVideoId) {
+    public List<QuizResponse> getQuizResponseList(Long memberId, Long videoId, Long courseVideoId) {
         List<QuizResponse> quizResponseList = new ArrayList<>();
 
         for (QuizEntity quizEntity : quizRepository.getListByVideoId(videoId)) {
             quizResponseList.add(new QuizResponse(quizEntity.getId(), getQuiz(quizEntity),
-                    getSubmittedInfo(quizEntity.getId(), courseVideoId)));
+                    getSubmittedInfo(quizEntity.getId(), courseVideoId),
+                    feedbackService.getFeedbackInfo(memberId, MaterialType.QUIZ, quizEntity.getId())));
         }
         return quizResponseList;
     }

@@ -1,7 +1,7 @@
 package com.m9d.sroom.material.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.m9d.sroom.summary.Summary;
+import com.m9d.sroom.common.entity.SummaryEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +15,8 @@ import java.text.SimpleDateFormat;
 @AllArgsConstructor
 public class SummaryBrief {
 
+    private Long id;
+
     private String content;
 
     @JsonProperty("is_modified")
@@ -22,9 +24,23 @@ public class SummaryBrief {
 
     private String modifiedAt;
 
-    public SummaryBrief(Summary summary) {
-        this.content = summary.getContent();
-        this.modified = summary.isModified();
-        this.modifiedAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(summary.getUpdateAt());
+    private FeedbackInfo feedbackInfo;
+
+    public SummaryBrief(SummaryEntity summaryEntity, FeedbackInfo feedbackInfo) {
+        this.id = summaryEntity.getId();
+        this.content = summaryEntity.getContent();
+        this.modified = summaryEntity.isModified();
+        this.modifiedAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(summaryEntity.getUpdatedAt());
+        this.feedbackInfo = feedbackInfo;
+        if(modified){
+            this.feedbackInfo.setAvailable(false);
+        }
+    }
+
+    public SummaryBrief(SummaryEntity summaryEntity) {
+        this.id = summaryEntity.getId();
+        this.content = summaryEntity.getContent();
+        this.modified = summaryEntity.isModified();
+        this.modifiedAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(summaryEntity.getUpdatedAt());
     }
 }
