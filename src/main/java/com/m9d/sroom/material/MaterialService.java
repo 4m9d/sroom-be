@@ -145,12 +145,15 @@ public class MaterialService {
         if (courseVideo.getMaterialStatus().equals(MaterialStatus.CREATED)) {
             summaryBrief = new SummaryBrief(summaryService.getSummaryEntity(courseVideo.getSummaryId()));
 
+            Answer4PdfResponse answer4PdfResponse = Answer4PdfResponse.getDefault(courseVideo.getVideoIndex(),
+                    videoRepository.getById(courseVideo.getVideoId()).getTitle());
             for (Quiz quiz : quizService.getQuizList(courseVideo.getVideoId())) {
                 quizList.add(new Quiz4PdfResponse(quiz, quizIndex));
-                answerList.add(new Answer4PdfResponse(courseVideo.getVideoIndex(), quizIndex, quiz.getAnswer(),
+                answer4PdfResponse.getVideoAnswers().add(new VideoAnswer4PdfResponse(quizIndex, quiz.getAnswer(),
                         quiz.getOptionStrList().get(Integer.parseInt(quiz.getAnswer()) - 1)));
                 quizIndex++;
             }
+            answerList.add(answer4PdfResponse);
         }
 
         contentList.add(Content4PdfResponse.create(videoRepository.getById(courseVideo.getVideoId()), courseVideo,
