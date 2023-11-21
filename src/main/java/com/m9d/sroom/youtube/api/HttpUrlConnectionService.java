@@ -26,17 +26,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class HttpUrlConnectionService implements YoutubeApi {
 
-    @Value("${google.cloud-api-key-1}")
-    private String googleCloudApiKey1;
-
-    @Value("${google.cloud-api-key-2}")
-    private String googleCloudApiKey2;
-
-    @Value("${google.cloud-api-key-3}")
-    private String googleCloudApiKey3;
-
-    @Value("${google.cloud-api-key-4}")
-    private String googleCloudApiKey4;
+    @Value("${google.cloud-api-key}")
+    private String googleCloudApiKey;
 
 
     @Value("${youtube.base-url}")
@@ -87,23 +78,23 @@ public class HttpUrlConnectionService implements YoutubeApi {
 
         String url = baseUrl + endPoint + "?" + query;
         log.debug("youtube data api request. url = {}", url);
-        url = url.concat("&key=" + getRandomApiKey());
+        url = url.concat("&key=" + googleCloudApiKey);
 
         return url;
     }
 
-    private String getRandomApiKey() {
-        String[] apiKeys = new String[]{
-                googleCloudApiKey1,
-                googleCloudApiKey2,
-                googleCloudApiKey3,
-                googleCloudApiKey4
-        };
-
-        int index = new Random().nextInt(apiKeys.length);
-        log.info("subject = youtubeDataApiRequest, api-key = {}", index);
-        return apiKeys[index];
-    }
+//    private String getRandomApiKey() {
+//        String[] apiKeys = new String[]{
+//                googleCloudApiKey1,
+//                googleCloudApiKey2,
+//                googleCloudApiKey3,
+//                googleCloudApiKey4
+//        };
+//
+//        int index = new Random().nextInt(apiKeys.length);
+//        log.info("subject = youtubeDataApiRequest, api-key = {}", index);
+//        return apiKeys[index];
+//    }
 
     private HttpURLConnection establishConnection(String url) {
         try {
