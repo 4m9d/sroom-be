@@ -84,6 +84,7 @@ public class CourseVideo {
         if (isMarkedAsCompleted) {
             status.setTimeGap(videoDuration - maxDuration);
             status.setViewDuration(videoDuration - 1);
+            status.setRewound(false);
         } else {
             status.setTimeGap(Math.max(viewDuration - maxDuration, 0));
             status.setViewDuration(viewDuration);
