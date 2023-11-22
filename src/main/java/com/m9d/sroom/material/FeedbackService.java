@@ -1,12 +1,12 @@
 package com.m9d.sroom.material;
 
 import com.m9d.sroom.common.entity.MaterialFeedbackEntity;
-import com.m9d.sroom.common.entity.QuizEntity;
-import com.m9d.sroom.common.entity.SummaryEntity;
 import com.m9d.sroom.common.repository.materialfeedback.MaterialFeedbackRepository;
 import com.m9d.sroom.common.repository.quiz.QuizRepository;
 import com.m9d.sroom.common.repository.summary.SummaryRepository;
 import com.m9d.sroom.material.dto.response.FeedbackInfo;
+import com.m9d.sroom.material.exception.FeedbackUnavailableException;
+import com.m9d.sroom.material.exception.MaterialFeedbackDuplicateException;
 import com.m9d.sroom.material.exception.QuizNotFoundException;
 import com.m9d.sroom.material.exception.SummaryNotFoundException;
 import com.m9d.sroom.material.model.MaterialType;
@@ -34,15 +34,17 @@ public class FeedbackService {
                                  boolean satisfactory) {
         FeedbackInfo feedbackInfo = getFeedbackInfo(memberId, materialType, materialId);
 
-        if (feedbackInfo.isHasFeedback() || !available) {
-            feedbackInfo.setAvailable(false);
-            return feedbackInfo;
+        if (feedbackInfo.isHasFeedback()) {
+            throw new MaterialFeedbackDuplicateException();
+        } else if (!available) {
+            throw new FeedbackUnavailableException();
         } else {
             MaterialFeedbackEntity feedbackEntity = feedbackRepository.save(
                     MaterialFeedbackEntity.createForSave(memberId, materialType, materialId, satisfactory));
             updateFeedbackCount(materialType, materialId, satisfactory);
             return FeedbackInfo.createSubmittedInfo(feedbackEntity);
         }
+
     }
 
     public FeedbackInfo getFeedbackInfo(Long memberId, MaterialType materialType, Long materialId) {
