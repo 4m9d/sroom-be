@@ -11,6 +11,7 @@ import com.m9d.sroom.material.dto.request.SubmittedQuizRequest;
 import com.m9d.sroom.material.dto.response.*;
 import com.m9d.sroom.material.exception.CourseQuizDuplicationException;
 import com.m9d.sroom.material.model.MaterialStatus;
+import com.m9d.sroom.material.model.MaterialType;
 import com.m9d.sroom.quiz.QuizService;
 import com.m9d.sroom.quiz.vo.Quiz;
 import com.m9d.sroom.summary.SummaryService;
@@ -30,15 +31,17 @@ public class MaterialService {
     private final QuizService quizService;
     private final LearningActivityUpdater activityUpdater;
     private final VideoRepository videoRepository;
+    private final FeedbackService feedbackService;
 
     public MaterialService(CourseServiceHelper courseServiceHelper, SummaryService summaryService,
                            QuizService quizService, LearningActivityUpdater activityUpdater,
-                           VideoRepository videoRepository) {
+                           VideoRepository videoRepository, FeedbackService feedbackService) {
         this.courseServiceHelper = courseServiceHelper;
         this.summaryService = summaryService;
         this.quizService = quizService;
         this.activityUpdater = activityUpdater;
         this.videoRepository = videoRepository;
+        this.feedbackService = feedbackService;
     }
 
 
@@ -57,10 +60,11 @@ public class MaterialService {
                     .build();
         } else {
             List<QuizResponse> quizResponseList = quizService
-                    .getQuizResponseList(courseVideo.getVideoId(), courseVideoId);
+                    .getQuizResponseList(memberId, courseVideo.getVideoId(), courseVideoId);
             return Material.builder()
                     .status(MaterialStatus.CREATED.getValue())
-                    .summaryBrief(new SummaryBrief(summaryService.getSummary(courseVideo.getSummaryId())))
+                    .summaryBrief(new SummaryBrief(summaryService.getSummaryEntity(courseVideo.getSummaryId()),
+                            feedbackService.getFeedbackInfo(memberId, MaterialType.SUMMARY, courseVideo.getSummaryId())))
                     .quizzes(quizResponseList)
                     .totalQuizCount(quizResponseList.size())
                     .build();
@@ -139,14 +143,17 @@ public class MaterialService {
         List<Quiz4PdfResponse> quizList = new ArrayList<>();
 
         if (courseVideo.getMaterialStatus().equals(MaterialStatus.CREATED)) {
-            summaryBrief = new SummaryBrief(summaryService.getSummary(courseVideo.getSummaryId()));
+            summaryBrief = new SummaryBrief(summaryService.getSummaryEntity(courseVideo.getSummaryId()));
 
+            Answer4PdfResponse answer4PdfResponse = Answer4PdfResponse.getDefault(courseVideo.getVideoIndex(),
+                    videoRepository.getById(courseVideo.getVideoId()).getTitle());
             for (Quiz quiz : quizService.getQuizList(courseVideo.getVideoId())) {
                 quizList.add(new Quiz4PdfResponse(quiz, quizIndex));
-                answerList.add(new Answer4PdfResponse(courseVideo.getVideoIndex(), quizIndex, quiz.getAnswer(),
+                answer4PdfResponse.getVideoAnswers().add(new VideoAnswer4PdfResponse(quizIndex, quiz.getAnswer(),
                         quiz.getOptionStrList().get(Integer.parseInt(quiz.getAnswer()) - 1)));
                 quizIndex++;
             }
+            answerList.add(answer4PdfResponse);
         }
 
         contentList.add(Content4PdfResponse.create(videoRepository.getById(courseVideo.getVideoId()), courseVideo,

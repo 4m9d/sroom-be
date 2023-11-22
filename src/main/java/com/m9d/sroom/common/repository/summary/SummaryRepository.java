@@ -13,4 +13,8 @@ public interface SummaryRepository {
     Optional<SummaryEntity> findById(Long summaryId);
 
     SummaryEntity updateById(Long summaryId, SummaryEntity summary);
+
+    void feedbackPositive(Long summaryId);
+
+    void feedbackNegative(Long summaryId);
 }

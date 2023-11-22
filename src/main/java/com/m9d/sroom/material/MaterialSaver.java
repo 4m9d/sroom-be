@@ -2,7 +2,7 @@ package com.m9d.sroom.material;
 
 import com.m9d.sroom.ai.exception.QuizTypeNotMatchException;
 import com.m9d.sroom.ai.model.MaterialVaildStatus;
-import com.m9d.sroom.ai.vo.MaterialResultsVo;
+import com.m9d.sroom.ai.vo.MaterialResultVo;
 import com.m9d.sroom.common.entity.QuizEntity;
 import com.m9d.sroom.common.entity.QuizOptionEntity;
 import com.m9d.sroom.common.entity.SummaryEntity;
@@ -42,7 +42,7 @@ public class MaterialSaver {
     }
 
     @Transactional
-    public void saveMaterials(MaterialResultsVo materialVo) throws VideoNotFoundFromDBException {
+    public void saveMaterials(MaterialResultVo materialVo) throws VideoNotFoundFromDBException {
         VideoEntity videoEntity = videoRepository.findByCode(materialVo.getVideoId())
                 .orElseThrow(() -> {
                     log.warn("can't find video information from db. video code = {}", materialVo.getVideoId());

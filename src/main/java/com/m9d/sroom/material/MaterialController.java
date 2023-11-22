@@ -1,9 +1,14 @@
 package com.m9d.sroom.material;
 
 import com.m9d.sroom.course.CourseServiceHelper;
+import com.m9d.sroom.material.dto.request.FeedbackRequest;
 import com.m9d.sroom.material.dto.request.SubmittedQuizRequest;
 import com.m9d.sroom.material.dto.request.SummaryEditRequest;
 import com.m9d.sroom.material.dto.response.*;
+import com.m9d.sroom.material.exception.MaterialTypeNotFoundException;
+import com.m9d.sroom.material.model.MaterialType;
+import com.m9d.sroom.quiz.QuizService;
+import com.m9d.sroom.summary.SummaryService;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,6 +30,8 @@ public class MaterialController {
     private final JwtUtil jwtUtil;
     private final MaterialService materialService;
     private final CourseServiceHelper courseServiceHelper;
+    private final FeedbackService feedbackService;
+    private final SummaryService summaryService;
 
     @Auth
     @GetMapping("/materials/{courseVideoId}")
@@ -73,5 +80,24 @@ public class MaterialController {
     public Material4PdfResponse getMaterialsForConvertingPdf(@PathVariable("courseId") Long courseId) {
         courseServiceHelper.validateCourseForMember(jwtUtil.getMemberIdFromRequest(), courseId);
         return materialService.getCourseMaterials(courseId);
+    }
+
+    @Auth
+    @PostMapping("/materials/{materialId}/feedback")
+    @Tag(name = "수강 페이지")
+    @Operation(summary = "강의자료 사용자 피드백", description = "강의노트와 퀴즈에 대한 사용자 피드백을 저장합니다.")
+    @ApiResponse(responseCode = "200", description = "성공적으로 강의자료 피드백을 저장했습니다.", content = @Content(schema = @Schema(implementation = FeedbackInfo.class)))
+    public FeedbackInfo feedbackMaterial(@PathVariable("materialId") Long materialId,
+                                         @RequestParam(value = "type") String materialType,
+                                         @RequestBody FeedbackRequest feedbackRequest) {
+        boolean feedbackAvailable;
+        if(materialType.equals(MaterialType.SUMMARY.toStr())){
+            feedbackAvailable = !summaryService.getSummary(materialId).isModified();
+        }else{
+            feedbackAvailable = true;
+        }
+
+        return feedbackService.feedback(jwtUtil.getMemberIdFromRequest(), MaterialType.fromStr(materialType),
+                materialId, feedbackAvailable, feedbackRequest.isSatisfactory());
     }
 }

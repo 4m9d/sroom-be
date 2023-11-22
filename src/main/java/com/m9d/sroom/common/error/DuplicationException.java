@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 public abstract class DuplicationException extends RuntimeException {
 
-    private final int statusCode = HttpStatus.NOT_FOUND.value();
+    private final int statusCode = HttpStatus.BAD_REQUEST.value();
     private String message;
 
     public DuplicationException(String message) {

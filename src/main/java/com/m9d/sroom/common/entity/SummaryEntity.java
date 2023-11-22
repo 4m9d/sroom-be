@@ -24,6 +24,10 @@ public class SummaryEntity {
 
     private boolean modified;
 
+    private Integer positiveFeedbackCount;
+
+    private Integer negativeFeedbackCount;
+
     public static RowMapper<SummaryEntity> getRowMapper() {
         return (rs, rowNum) -> SummaryEntity.builder()
                 .id(rs.getLong("summary_id"))
@@ -31,6 +35,8 @@ public class SummaryEntity {
                 .content(rs.getString("content"))
                 .updatedAt(rs.getTimestamp("updated_time"))
                 .modified(rs.getBoolean("is_modified"))
+                .positiveFeedbackCount(rs.getInt("positive_feedback_count"))
+                .negativeFeedbackCount(rs.getInt("negative_feedback_count"))
                 .build();
     }
 

@@ -38,7 +38,9 @@ public class QuizResponse {
     @JsonProperty("is_scrapped")
     private boolean scrapped;
 
-    public QuizResponse (Long quizId, Quiz quiz, QuizSubmittedInfo submittedInfo) {
+    private FeedbackInfo feedbackInfo;
+
+    public QuizResponse (Long quizId, Quiz quiz, QuizSubmittedInfo submittedInfo, FeedbackInfo feedbackInfo) {
         this.id = quizId;
         this.type = quiz.getType().getValue();
         this.question = quiz.getQuestion();
@@ -55,5 +57,6 @@ public class QuizResponse {
             this.correct = false;
         }
         this.scrapped = submittedInfo.getIsScrapped();
+        this.feedbackInfo = feedbackInfo;
     }
 }

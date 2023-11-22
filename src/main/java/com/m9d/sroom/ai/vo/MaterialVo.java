@@ -7,5 +7,5 @@ import java.util.List;
 @Data
 public class MaterialVo {
 
-    private List<MaterialResultsVo> results;
+    private List<MaterialResultVo> results;
 }
