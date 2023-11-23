@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -154,6 +155,7 @@ public class RecommendationService {
 
     private List<RecommendLecture> getRecommendLectures(List<?> lectures) {
         List<RecommendLecture> recommendLectures = new ArrayList<>();
+        DecimalFormat decimalFormat = new DecimalFormat("#.#");
 
         for (Object lecture : lectures) {
             if (lecture instanceof VideoEntity) {
@@ -164,7 +166,8 @@ public class RecommendationService {
                         .channel(video.getChannel())
                         .lectureCode(video.getVideoCode())
                         .isPlaylist(false)
-                        .rating((double) video.getAccumulatedRating() / video.getReviewCount())
+                        .rating(Double.parseDouble(decimalFormat.format((double) video.getAccumulatedRating()
+                                / video.getReviewCount())))
                         .reviewCount(video.getReviewCount())
                         .thumbnail(video.getThumbnail())
                         .build());
@@ -176,7 +179,8 @@ public class RecommendationService {
                         .channel(playlist.getChannel())
                         .lectureCode(playlist.getPlaylistCode())
                         .isPlaylist(true)
-                        .rating((double) playlist.getAccumulatedRating() / playlist.getReviewCount())
+                        .rating(Double.parseDouble(decimalFormat.format((double) playlist.getAccumulatedRating()
+                                / playlist.getReviewCount())))
                         .reviewCount(playlist.getReviewCount())
                         .thumbnail(playlist.getThumbnail())
                         .build());
