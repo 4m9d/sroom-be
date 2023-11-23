@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 
 @Getter
 @Setter
@@ -63,6 +64,7 @@ public class PlaylistEntity {
     }
 
     public Playlist toPlaylist() {
+        DecimalFormat decimalFormat = new DecimalFormat("#.#");
         return Playlist.builder()
                 .code(playlistCode)
                 .title(title)
@@ -71,6 +73,9 @@ public class PlaylistEntity {
                 .description(description)
                 .publishedAt(publishedAt)
                 .videoCount(videoCount)
+                .reviewCount(reviewCount)
+                .rating(Double.parseDouble(decimalFormat.format((double) accumulatedRating
+                        / reviewCount)))
                 .build();
     }
 

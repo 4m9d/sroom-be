@@ -26,6 +26,10 @@ public class Playlist extends Content {
 
     private final Integer videoCount;
 
+    private final Integer reviewCount;
+
+    private final Double rating;
+
     @Override
     public Long getViewCount() {
         return -1L;

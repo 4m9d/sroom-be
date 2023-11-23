@@ -38,13 +38,18 @@ public class PlaylistService {
 
     public Playlist getRecentPlaylist(String playlistCode) {
         Optional<PlaylistEntity> playlistEntityOptional = playlistRepository.findByCode(playlistCode);
+        int reviewCount = 0;
+        int accumulatedRating = 0;
 
-        if (playlistEntityOptional.isPresent()
-                && DateUtil.hasRecentUpdate(playlistEntityOptional.get().getUpdatedAt(), PlaylistConstant.PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
-            return playlistEntityOptional.get().toPlaylist();
-        } else {
-            return youtubeService.getPlaylist(playlistCode);
+        if (playlistEntityOptional.isPresent()) {
+            reviewCount = playlistEntityOptional.get().getReviewCount();
+            accumulatedRating = playlistEntityOptional.get().getAccumulatedRating();
+            if(DateUtil.hasRecentUpdate(playlistEntityOptional.get().getUpdatedAt(), PlaylistConstant.PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
+                return playlistEntityOptional.get().toPlaylist();
+            }
         }
+        
+        return youtubeService.getPlaylist(playlistCode, reviewCount, accumulatedRating);
     }
 
     public PlaylistWithItemList getRecentPlaylistWithItemList(String playlistCode) {

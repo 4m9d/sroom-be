@@ -34,6 +34,10 @@ public class Video extends Content {
 
     private final Boolean membership;
 
+    private final Integer reviewCount;
+
+    private final Double rating;
+
     @Override
     public Integer getVideoCount() {
         return 1;

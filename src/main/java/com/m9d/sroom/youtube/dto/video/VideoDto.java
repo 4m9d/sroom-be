@@ -4,8 +4,11 @@ import com.m9d.sroom.video.vo.Video;
 import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.youtube.dto.global.ContentDto;
 import com.m9d.sroom.youtube.dto.global.PageInfoDto;
+import lombok.Data;
 import lombok.Getter;
 
+import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.util.List;
 
 import static com.m9d.sroom.youtube.YoutubeConstant.*;
@@ -19,8 +22,9 @@ public class VideoDto extends ContentDto {
 
     private List<VideoItemDto> items;
 
-    public Video toVideo() {
+    public Video toVideo(int reviewCount, int accumulatedRating) {
         VideoItemDto itemVo = items.get(FIRST_INDEX);
+        DecimalFormat decimalFormat = new DecimalFormat("#.#");
 
         String language;
         if (itemVo.getSnippet().getDefaultAudioLanguage() != null) {
@@ -47,6 +51,9 @@ public class VideoDto extends ContentDto {
                 .language(language)
                 .license(itemVo.getStatus().getLicense())
                 .membership(membership)
+                .reviewCount(reviewCount)
+                .rating(Double.parseDouble(decimalFormat.format((double) accumulatedRating
+                        / reviewCount)))
                 .build();
     }
 
