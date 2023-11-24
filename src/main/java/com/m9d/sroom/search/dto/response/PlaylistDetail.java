@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.web.util.HtmlUtils;
 
+import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Set;
@@ -60,6 +61,8 @@ public class PlaylistDetail {
 
     public PlaylistDetail(Playlist playlist, Set<String> enrolledLectureSet, List<CourseBrief> courseBriefList,
                           List<ReviewBrief> reviewList) {
+        DecimalFormat decimalFormat = new DecimalFormat("#.#");
+
         this.lectureCode = playlist.getCode();
         this.lectureTitle = playlist.getTitle();
         this.channel = playlist.getChannel();
@@ -74,10 +77,10 @@ public class PlaylistDetail {
         if (reviewList == null || reviewList.isEmpty()) {
             this.rating = 0.0;
         } else {
-            this.rating = reviewList.stream()
+            this.rating = Double.parseDouble(decimalFormat.format(reviewList.stream()
                     .mapToInt(ReviewBrief::getSubmittedRating)
                     .average()
-                    .orElse(0.0);
+                    .orElse(0.0)));
         }
         this.courses = courseBriefList;
     }

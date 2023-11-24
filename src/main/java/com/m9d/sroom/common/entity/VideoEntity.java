@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 
 @Getter
 @Setter
@@ -83,6 +84,8 @@ public class VideoEntity {
     }
 
     public Video toVideo() {
+        DecimalFormat decimalFormat = new DecimalFormat("#.#");
+
         return Video.builder()
                 .code(videoCode)
                 .title(title)
@@ -95,6 +98,9 @@ public class VideoEntity {
                 .language(language)
                 .license(license)
                 .membership(membership)
+                .reviewCount(reviewCount)
+                .rating(Double.parseDouble(decimalFormat.format((double) accumulatedRating
+                        / reviewCount)))
                 .build();
     }
 

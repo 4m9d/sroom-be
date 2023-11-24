@@ -18,7 +18,9 @@ public class PlaylistItem extends Video {
                 video.getPublishedAt(),
                 video.getLanguage(),
                 video.getLicense(),
-                video.getMembership());
+                video.getMembership(),
+                video.getReviewCount(),
+                video.getRating());
         this.index = index;
     }
 }

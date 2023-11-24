@@ -17,7 +17,9 @@ public class PlaylistWithItemList extends Playlist {
                 playlist.getThumbnail(),
                 playlist.getDescription(),
                 playlist.getPublishedAt(),
-                playlist.getVideoCount());
+                playlist.getVideoCount(),
+                playlist.getReviewCount(),
+                playlist.getRating());
         this.playlistItemList = playlistItemList;
     }
 

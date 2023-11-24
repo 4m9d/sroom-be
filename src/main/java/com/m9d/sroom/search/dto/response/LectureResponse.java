@@ -68,5 +68,7 @@ public class LectureResponse {
         this.lectureCount = content.getVideoCount();
         this.viewCount = content.getViewCount();
         this.thumbnail = content.getThumbnail();
+        this.rating = content.getRating();
+        this.reviewCount = content.getReviewCount();
     }
 }

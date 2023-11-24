@@ -41,13 +41,19 @@ public class VideoService {
 
     public Video getRecentVideo(String videoCode) {
         Optional<VideoEntity> videoEntityOptional = videoRepository.findByCode(videoCode);
+        int reviewCount = 0;
+        int accumulatedRating = 0;
 
-        if (videoEntityOptional.isPresent()
-                && DateUtil.hasRecentUpdate(videoEntityOptional.get().getUpdatedAt(), VideoConstant.VIDEO_UPDATE_THRESHOLD_HOURS)) {
-            return videoEntityOptional.get().toVideo();
-        } else {
-            return youtubeService.getVideo(videoCode);
+        if (videoEntityOptional.isPresent()) {
+            reviewCount = videoEntityOptional.get().getReviewCount();
+            accumulatedRating = videoEntityOptional.get().getAccumulatedRating();
+
+            if (DateUtil.hasRecentUpdate(videoEntityOptional.get().getUpdatedAt(), VideoConstant.VIDEO_UPDATE_THRESHOLD_HOURS)) {
+                return videoEntityOptional.get().toVideo();
+            }
         }
+
+        return youtubeService.getVideo(videoCode, reviewCount, accumulatedRating);
     }
 
     public void putVideo(Video video) {

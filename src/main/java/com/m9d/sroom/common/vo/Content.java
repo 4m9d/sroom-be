@@ -13,4 +13,8 @@ public abstract class Content {
     public abstract Boolean isPlaylist();
 
     public abstract String getCode();
+
+    public abstract Integer getReviewCount();
+
+    public abstract Double getRating();
 }
