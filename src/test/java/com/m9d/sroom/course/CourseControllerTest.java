@@ -1,4 +1,4 @@
-package com.m9d.sroom.course.controller;
+package com.m9d.sroom.course;
 
 import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.member.dto.response.Login;

@@ -1,4 +1,4 @@
-package com.m9d.sroom.dashboard.controller;
+package com.m9d.sroom.dashboard;
 
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.util.ControllerTest;

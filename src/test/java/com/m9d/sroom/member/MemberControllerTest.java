@@ -1,4 +1,4 @@
-package com.m9d.sroom.member.controller;
+package com.m9d.sroom.member;
 
 import com.m9d.sroom.member.dto.request.GoogleIdKey;
 import com.m9d.sroom.member.dto.request.RefreshToken;

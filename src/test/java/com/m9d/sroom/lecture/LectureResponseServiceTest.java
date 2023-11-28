@@ -1,4 +1,4 @@
-package com.m9d.sroom.lecture.service;
+package com.m9d.sroom.lecture;
 
 import com.m9d.sroom.common.entity.PlaylistEntity;
 import com.m9d.sroom.common.entity.VideoEntity;

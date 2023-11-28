@@ -3,12 +3,15 @@ package com.m9d.sroom.util;
 import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.course.dto.response.CourseDetail;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
+import com.m9d.sroom.member.MemberService;
 import com.m9d.sroom.search.dto.response.KeywordSearchResponse;
 import com.m9d.sroom.search.dto.response.PlaylistDetail;
 import com.m9d.sroom.common.entity.MemberEntity;
 import com.m9d.sroom.member.dto.response.Login;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +22,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 public class ControllerTest extends SroomTest {
+
+    @Autowired
+    protected MemberService memberService;
 
     protected Login getNewLogin() {
         MemberEntity member = getNewMember();

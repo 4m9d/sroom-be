@@ -1,4 +1,4 @@
-package com.m9d.sroom.member.service;
+package com.m9d.sroom.member;
 
 import com.m9d.sroom.common.entity.MemberEntity;
 import com.m9d.sroom.member.MemberService;

@@ -1,4 +1,4 @@
-package com.m9d.sroom.dashboard.service;
+package com.m9d.sroom.dashboard;
 
 
 import com.m9d.sroom.dashboard.dto.response.Dashboard;

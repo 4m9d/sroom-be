@@ -1,4 +1,4 @@
-package com.m9d.sroom.lecture.controller;
+package com.m9d.sroom.lecture;
 
 import com.m9d.sroom.search.dto.response.KeywordSearchResponse;
 import com.m9d.sroom.member.dto.response.Login;

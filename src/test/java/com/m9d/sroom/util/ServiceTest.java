@@ -1,11 +1,16 @@
 package com.m9d.sroom.util;
 
 import com.m9d.sroom.common.entity.MemberEntity;
+import com.m9d.sroom.member.MemberService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Timestamp;
 import java.util.UUID;
 
-public class ServiceTest extends SroomTest{
+public class ServiceTest extends SroomTest {
+
+    @Autowired
+    protected MemberService memberService;
 
     protected MemberEntity getNewMember() {
         UUID uuid = UUID.randomUUID();

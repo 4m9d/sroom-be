@@ -1,4 +1,4 @@
-package com.m9d.sroom.material.controller;
+package com.m9d.sroom.material;
 
 import com.m9d.sroom.course.dto.response.CourseDetail;
 import com.m9d.sroom.common.entity.MemberEntity;
