@@ -7,10 +7,14 @@ import com.m9d.sroom.util.ServiceTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 public class DashboardServiceTest extends ServiceTest {
+
+    @Autowired
+    DashboardService dashboardService;
 
     @Test
     @DisplayName("유저의 대시보드 정보를 불러옵니다")

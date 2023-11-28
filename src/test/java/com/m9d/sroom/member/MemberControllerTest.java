@@ -1,19 +1,24 @@
 package com.m9d.sroom.member;
 
+import com.m9d.sroom.common.entity.MemberEntity;
 import com.m9d.sroom.member.dto.request.GoogleIdKey;
+import com.m9d.sroom.member.dto.request.NameUpdateRequest;
 import com.m9d.sroom.member.dto.request.RefreshToken;
+import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.util.ControllerTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Transactional
 public class MemberControllerTest extends ControllerTest {
@@ -48,5 +53,24 @@ public class MemberControllerTest extends ControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(refreshTokenJson))
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("프로필 이름이 수정됩니다.")
+    void updateMemberName() throws Exception {
+        //given
+        Login login = getNewLogin();
+
+        //when
+        String newProfile = "수정된 멤버 닉네임";
+        NameUpdateRequest nameUpdateRequest = new NameUpdateRequest(newProfile);
+
+        //then
+        mockMvc.perform(put("/members/profile")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", login.getAccessToken())
+                        .content(objectMapper.writeValueAsString(nameUpdateRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name", is(newProfile)));
     }
 }

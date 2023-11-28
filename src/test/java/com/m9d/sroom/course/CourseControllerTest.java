@@ -3,6 +3,7 @@ package com.m9d.sroom.course;
 import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.util.ControllerTest;
+import com.m9d.sroom.util.TestConstant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -37,7 +38,7 @@ public class CourseControllerTest extends ControllerTest {
         //given
         Login login = getNewLogin();
         NewLecture newLecture = NewLecture.builder()
-                .lectureCode(VIDEO_CODE)
+                .lectureCode(TestConstant.VIDEO_CODE)
                 .build();
 
         String content = objectMapper.writeValueAsString(newLecture);
@@ -62,7 +63,7 @@ public class CourseControllerTest extends ControllerTest {
         Login login = getNewLogin();
         String expectedEndTime = "2023-07-29";
         NewLecture newLecture = NewLecture.builder()
-                .lectureCode(VIDEO_CODE)
+                .lectureCode(TestConstant.VIDEO_CODE)
                 .dailyTargetTime(30)
                 .scheduling(List.of(1))
                 .expectedEndDate(expectedEndTime)
@@ -89,7 +90,7 @@ public class CourseControllerTest extends ControllerTest {
         //given
         Login login = getNewLogin();
         NewLecture newLecture = NewLecture.builder()
-                .lectureCode(PLAYLIST_CODE)
+                .lectureCode(TestConstant.PLAYLIST_CODE)
                 .build();
 
         String content = objectMapper.writeValueAsString(newLecture);
@@ -114,7 +115,7 @@ public class CourseControllerTest extends ControllerTest {
         Login login = getNewLogin();
         String expectedEndTime = "2023-07-29";
         NewLecture newLecture = NewLecture.builder()
-                .lectureCode(VIDEO_CODE)
+                .lectureCode(TestConstant.VIDEO_CODE)
                 .dailyTargetTime(60)
                 .scheduling(List.of(1, 2, 3, 4))
                 .expectedEndDate(expectedEndTime)
@@ -142,7 +143,7 @@ public class CourseControllerTest extends ControllerTest {
         Login login = getNewLogin();
         Long courseId = enrollNewCourseWithVideo(login);
         NewLecture newLecture = new NewLecture();
-        newLecture.setLectureCode(VIDEO_CODE);
+        newLecture.setLectureCode(TestConstant.VIDEO_CODE);
 
         String content = objectMapper.writeValueAsString(newLecture);
 
@@ -164,7 +165,7 @@ public class CourseControllerTest extends ControllerTest {
         Login login = getNewLogin();
         Long courseId = enrollNewCourseWithVideo(login);
         NewLecture newLecture = new NewLecture();
-        newLecture.setLectureCode(PLAYLIST_CODE);
+        newLecture.setLectureCode(TestConstant.PLAYLIST_CODE);
 
         String content = objectMapper.writeValueAsString(newLecture);
 
@@ -208,7 +209,7 @@ public class CourseControllerTest extends ControllerTest {
                         .header("Authorization", login.getAccessToken()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.sections", hasSize(1)))
-                .andExpect(jsonPath("$.sections[0].videos", hasSize(PLAYLIST_VIDEO_COUNT)))
+                .andExpect(jsonPath("$.sections[0].videos", hasSize(TestConstant.PLAYLIST_VIDEO_COUNT)))
                 .andDo(print());
     }
 

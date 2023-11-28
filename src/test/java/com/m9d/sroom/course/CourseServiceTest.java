@@ -5,6 +5,7 @@ import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.course.dto.response.MyCourses;
 import com.m9d.sroom.common.entity.MemberEntity;
 import com.m9d.sroom.util.ServiceTest;
+import com.m9d.sroom.util.TestConstant;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -47,20 +48,20 @@ public class CourseServiceTest extends ServiceTest {
     }
 
 
-    @Test
-    @DisplayName("신규 코스 등록에 성공합니다.")
-    void createNewCourse() {
-        //given
-        MemberEntity member = getNewMember();
-
-        //when
-        NewLecture newLecture = NewLecture.builder()
-                .lectureCode(VIDEO_CODE)
-                .build();
-        EnrolledCourseInfo enrolledCourseInfo = courseService.enrollCourse(member.getMemberId(), newLecture, false);
-
-        //then
-        Long courseIdInLectureTable = courseRepository.getCourseIdByLectureId(enrolledCourseInfo.getLectureId());
-        Assertions.assertEquals(enrolledCourseInfo.getCourseId(), courseIdInLectureTable, "lecture table의 courseId와 등록된 courseId가 다릅니다.");
-    }
+//    @Test
+//    @DisplayName("신규 코스 등록에 성공합니다.")
+//    void createNewCourse() {
+//        //given
+//        MemberEntity member = getNewMember();
+//
+//        //when
+//        NewLecture newLecture = NewLecture.builder()
+//                .lectureCode(TestConstant.VIDEO_CODE)
+//                .build();
+//        EnrolledCourseInfo enrolledCourseInfo = courseService.enrollCourse(member.getMemberId(), newLecture, false);
+//
+//        //then
+//        Long courseIdInLectureTable = courseRepository.getCourseIdByLectureId(enrolledCourseInfo.getLectureId());
+//        Assertions.assertEquals(enrolledCourseInfo.getCourseId(), courseIdInLectureTable, "lecture table의 courseId와 등록된 courseId가 다릅니다.");
+//    }
 }

@@ -1,5 +1,6 @@
 package com.m9d.sroom.util;
 
+import com.m9d.sroom.course.CourseService;
 import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.course.dto.response.CourseDetail;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
@@ -10,8 +11,8 @@ import com.m9d.sroom.common.entity.MemberEntity;
 import com.m9d.sroom.member.dto.response.Login;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,20 +27,24 @@ public class ControllerTest extends SroomTest {
     @Autowired
     protected MemberService memberService;
 
+    @Autowired
+    protected JwtUtil jwtUtil;
+
+    @Autowired
+    protected CourseService courseService;
+
+    protected MemberEntity getNewMemberEntity() {
+        String memberCode = UUID.randomUUID().toString();
+        return memberService.findOrCreateMember(memberCode);
+    }
+
     protected Login getNewLogin() {
-        MemberEntity member = getNewMember();
-        return memberService.generateLogin(member, (String) idToken.getPayload().get("picture"));
+        MemberEntity memberEntity = getNewMemberEntity();
+        return memberService.generateLogin(memberEntity, TestConstant.MEMBER_PROFILE);
     }
 
     protected Login getNewLogin(MemberEntity member) {
-        return memberService.generateLogin(member, (String) idToken.getPayload().get("picture"));
-    }
-
-    protected MemberEntity getNewMember() {
-        UUID uuid = UUID.randomUUID();
-
-        String memberCode = uuid.toString();
-        return memberService.findOrCreateMemberByMemberCode(memberCode);
+        return memberService.generateLogin(member, TestConstant.MEMBER_PROFILE);
     }
 
     protected KeywordSearchResponse getKeywordSearch(Login login, String keyword) throws Exception {
@@ -72,9 +77,9 @@ public class ControllerTest extends SroomTest {
         Long memberId = Long.valueOf((String) obj);
 
         NewLecture newLecture = NewLecture.builder()
-                .lectureCode(VIDEO_CODE)
+                .lectureCode(TestConstant.VIDEO_CODE)
                 .build();
-        EnrolledCourseInfo courseId = courseService.enrollCourse(memberId, newLecture, false);
+        EnrolledCourseInfo courseId = courseService.enroll(memberId, newLecture, false, null);
         return courseId.getCourseId();
     }
 
@@ -82,12 +87,12 @@ public class ControllerTest extends SroomTest {
         Long memberId = Long.valueOf((String) jwtUtil.getDetailFromToken(login.getAccessToken()).get("memberId"));
 
         NewLecture newLecture = NewLecture.builder()
-                .lectureCode(PLAYLIST_CODE)
+                .lectureCode(TestConstant.PLAYLIST_CODE)
                 .scheduling(new ArrayList<>(Arrays.asList(2, 1, 2)))
                 .dailyTargetTime(20)
                 .expectedEndDate("2023-09-22")
                 .build();
-        EnrolledCourseInfo courseInfo = courseService.enrollCourse(memberId, newLecture, true);
+        EnrolledCourseInfo courseInfo = courseService.enroll(memberId, newLecture, true, null);
         return courseInfo.getCourseId();
     }
 
@@ -95,16 +100,17 @@ public class ControllerTest extends SroomTest {
         Long memberId = Long.valueOf((String) jwtUtil.getDetailFromToken(login.getAccessToken()).get("memberId"));
 
         NewLecture newLecture = NewLecture.builder()
-                .lectureCode(PLAYLIST_CODE)
+                .lectureCode(TestConstant.PLAYLIST_CODE)
                 .build();
-        EnrolledCourseInfo courseInfo = courseService.enrollCourse(memberId, newLecture, false);
+        EnrolledCourseInfo courseInfo = courseService.enroll(memberId, newLecture, false, null);
         return courseInfo.getCourseId();
     }
 
     protected CourseDetail registerNewVideo(Long memberId, String videoCode) {
-        EnrolledCourseInfo courseInfo = courseService.enrollCourse(memberId, getNewLectureWithoutSchedule(videoCode), false);
+        EnrolledCourseInfo courseInfo = courseService.enroll(memberId, getNewLectureWithoutSchedule(videoCode),
+                false, null);
 
-        CourseDetail courseDetail = courseService.getCourseDetail(memberId, courseInfo.getCourseId());
+        CourseDetail courseDetail = courseService.getCourseDetail(courseInfo.getCourseId());
 
         return courseDetail;
     }

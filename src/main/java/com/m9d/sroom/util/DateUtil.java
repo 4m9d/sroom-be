@@ -22,7 +22,7 @@ public class DateUtil {
     public static final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").withZone(ZoneId.of("Asia/Seoul"));
 
 
-    public Long convertTimeToSeconds(String time) {
+    public static Long convertTimeToSeconds(String time) {
         String[] parts = time.split(":");
         int length = parts.length;
 

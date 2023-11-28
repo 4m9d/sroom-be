@@ -1,6 +1,7 @@
 package com.m9d.sroom.global;
 
 import com.google.gson.Gson;
+import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.util.SroomTest;
 import com.m9d.sroom.youtube.dto.search.SearchDto;
 import org.junit.jupiter.api.Assertions;
@@ -20,11 +21,11 @@ public class UtilTest extends SroomTest {
         String hourDouble = "11:03:52";
 
         //when
-        Long onlySecondToSecond = dateUtil.convertTimeToSeconds(onlySecond);
-        Long minuteSingleToSecond = dateUtil.convertTimeToSeconds(minuteSingle);
-        Long minuteDoubleToSecond = dateUtil.convertTimeToSeconds(minuteDouble);
-        Long hourSingleToSecond = dateUtil.convertTimeToSeconds(hourSingle);
-        Long hourDoubleToSecond = dateUtil.convertTimeToSeconds(hourDouble);
+        Long onlySecondToSecond = DateUtil.convertTimeToSeconds(onlySecond);
+        Long minuteSingleToSecond = DateUtil.convertTimeToSeconds(minuteSingle);
+        Long minuteDoubleToSecond = DateUtil.convertTimeToSeconds(minuteDouble);
+        Long hourSingleToSecond = DateUtil.convertTimeToSeconds(hourSingle);
+        Long hourDoubleToSecond = DateUtil.convertTimeToSeconds(hourDouble);
 
         //then
         Assertions.assertEquals(onlySecondToSecond, 11L);

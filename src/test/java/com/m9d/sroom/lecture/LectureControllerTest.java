@@ -3,6 +3,7 @@ package com.m9d.sroom.lecture;
 import com.m9d.sroom.search.dto.response.KeywordSearchResponse;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.util.ControllerTest;
+import com.m9d.sroom.util.TestConstant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -13,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.hamcrest.Matchers.*;
 
-public class LectureResponseControllerTest extends ControllerTest {
+public class LectureControllerTest extends ControllerTest {
 
 
     @Test
@@ -86,7 +87,7 @@ public class LectureResponseControllerTest extends ControllerTest {
     void getVideoDetail200() throws Exception {
         //given
         Login login = getNewLogin();
-        String lectureCode = VIDEO_CODE;
+        String lectureCode = TestConstant.VIDEO_CODE;
 
         //expected
         mockMvc.perform(get("/lectures/{lectureCode}", lectureCode)
@@ -104,7 +105,7 @@ public class LectureResponseControllerTest extends ControllerTest {
     void getPlaylistDetail200() throws Exception {
         //given
         Login login = getNewLogin();
-        String lectureCode = PLAYLIST_CODE;
+        String lectureCode = TestConstant.PLAYLIST_CODE;
 
         //expected
         mockMvc.perform(get("/lectures/{lectureCode}", lectureCode)
@@ -180,13 +181,13 @@ public class LectureResponseControllerTest extends ControllerTest {
         String indexOnly = "true";
 
         //expected
-        mockMvc.perform(get("/lectures/{lectureCode}", PLAYLIST_CODE)
+        mockMvc.perform(get("/lectures/{lectureCode}", TestConstant.PLAYLIST_CODE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", login.getAccessToken())
                         .queryParam("is_playlist", isPlaylist)
                         .queryParam("index_only", indexOnly))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.index_list.length()", is(PLAYLIST_VIDEO_COUNT)));
+                .andExpect(jsonPath("$.index_list.length()", is(TestConstant.PLAYLIST_VIDEO_COUNT)));
     }
 
     @Test
