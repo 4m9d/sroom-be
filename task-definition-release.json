@@ -1,19 +1,10 @@
 {
   "ipcMode": null,
-  "executionRoleArn": "arn:aws:iam::224066583965:role/AWSECSTaskExecutionRole",
+  "executionRoleArn": "arn:aws:iam::804073597504:role/AWSECSTaskExecutionRole",
   "containerDefinitions": [
     {
       "dnsSearchDomains": null,
       "environmentFiles": null,
-      "logConfiguration": {
-        "logDriver": "awslogs",
-        "secretOptions": null,
-        "options": {
-          "awslogs-group": "/ecs/be-release",
-          "awslogs-region": "ap-northeast-2",
-          "awslogs-stream-prefix": "ecs"
-        }
-      },
       "entryPoint": null,
       "portMappings": [
         {
@@ -37,7 +28,7 @@
       "memoryReservation": 500,
       "volumesFrom": [],
       "stopTimeout": null,
-      "image": "224066583965.dkr.ecr.ap-northeast-2.amazonaws.com/be-repo:release",
+      "image": "804073597504.dkr.ecr.ap-northeast-2.amazonaws.com/be-repo:release",
       "startTimeout": null,
       "firelensConfiguration": null,
       "dependsOn": null,
@@ -59,7 +50,7 @@
   ],
   "placementConstraints": [],
   "memory": null,
-  "taskRoleArn": "arn:aws:iam::224066583965:role/AWSECSTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::804073597504:role/AWSECSTaskExecutionRole",
   "family": "be-release",
   "pidMode": null,
   "requiresCompatibilities": [
