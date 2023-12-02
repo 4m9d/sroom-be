@@ -26,8 +26,8 @@ spring:
 youtube:
   base-url: https://www.googleapis.com/youtube/v3
 ai:
-  request-url : http://13.124.186.167:8000
-  result-url: http://13.124.186.167:8000/results
+  request-url : http://52.78.250.177:8000
+  result-url: http://52.78.250.177:8000/results
 
 aws:
   kms:
