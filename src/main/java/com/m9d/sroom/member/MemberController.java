@@ -35,6 +35,7 @@ public class MemberController {
             @ApiResponse(responseCode = "401", description = "인증에 실패하였습니다.", content = @Content)
     })
     public Login login(@RequestBody GoogleIdKey googleIdKey) throws Exception {
+        log.info("member login request. credential = {}", googleIdKey.getCredential());
         return memberService.authenticateMember(googleIdKey.getCredential());
     }
 
