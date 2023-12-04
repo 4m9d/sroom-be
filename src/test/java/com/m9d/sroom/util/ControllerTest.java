@@ -9,6 +9,8 @@ import com.m9d.sroom.search.dto.response.KeywordSearchResponse;
 import com.m9d.sroom.search.dto.response.PlaylistDetail;
 import com.m9d.sroom.common.entity.MemberEntity;
 import com.m9d.sroom.member.dto.response.Login;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,6 +34,16 @@ public class ControllerTest extends SroomTest {
 
     @Autowired
     protected CourseService courseService;
+
+    @Test
+    @DisplayName("AWS health test를 통과합니다.")
+    void healthTest() throws Exception {
+
+        //expected
+        mockMvc.perform(get("/")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+    }
 
     protected MemberEntity getNewMemberEntity() {
         String memberCode = UUID.randomUUID().toString();
