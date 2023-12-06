@@ -4,6 +4,7 @@ import com.m9d.sroom.search.dto.response.KeywordSearchResponse;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.util.ControllerTest;
 import com.m9d.sroom.util.TestConstant;
+import com.m9d.sroom.util.constant.ContentConstant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -87,7 +88,7 @@ public class LectureControllerTest extends ControllerTest {
     void getVideoDetail200() throws Exception {
         //given
         Login login = getNewLogin();
-        String lectureCode = TestConstant.VIDEO_CODE;
+        String lectureCode = ContentConstant.VIDEO_CODE_LIST[0];
 
         //expected
         mockMvc.perform(get("/lectures/{lectureCode}", lectureCode)
@@ -105,7 +106,7 @@ public class LectureControllerTest extends ControllerTest {
     void getPlaylistDetail200() throws Exception {
         //given
         Login login = getNewLogin();
-        String lectureCode = TestConstant.PLAYLIST_CODE;
+        String lectureCode = ContentConstant.PLAYLIST_CODE;
 
         //expected
         mockMvc.perform(get("/lectures/{lectureCode}", lectureCode)
@@ -181,13 +182,13 @@ public class LectureControllerTest extends ControllerTest {
         String indexOnly = "true";
 
         //expected
-        mockMvc.perform(get("/lectures/{lectureCode}", TestConstant.PLAYLIST_CODE)
+        mockMvc.perform(get("/lectures/{lectureCode}", ContentConstant.PLAYLIST_CODE)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", login.getAccessToken())
                         .queryParam("is_playlist", isPlaylist)
                         .queryParam("index_only", indexOnly))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.index_list.length()", is(TestConstant.PLAYLIST_VIDEO_COUNT)));
+                .andExpect(jsonPath("$.index_list.length()", is(ContentConstant.VIDEO_CODE_LIST.length)));
     }
 
     @Test

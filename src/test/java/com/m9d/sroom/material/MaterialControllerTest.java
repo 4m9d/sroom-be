@@ -4,6 +4,7 @@ import com.m9d.sroom.course.dto.response.CourseDetail;
 import com.m9d.sroom.common.entity.MemberEntity;
 import com.m9d.sroom.util.ControllerTest;
 import com.m9d.sroom.util.TestConstant;
+import com.m9d.sroom.util.constant.ContentConstant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
@@ -22,9 +23,8 @@ public class MaterialControllerTest extends ControllerTest {
     void getMaterials200() throws Exception {
         //given
         MemberEntity member = getNewMemberEntity();
-        CourseDetail courseDetail = registerNewVideo(member.getMemberId(), TestConstant.VIDEO_CODE);
+        CourseDetail courseDetail = registerNewVideo(member.getMemberId(), ContentConstant.VIDEO_CODE_LIST[0]);
         Long videoId = courseDetail.getLastViewVideo().getVideoId();
-        insertSummaryAndQuizzes(courseDetail.getCourseId(), videoId);
 
         //expected
         mockMvc.perform(get("/materials/lectures/{videoId}", videoId)
@@ -46,7 +46,7 @@ public class MaterialControllerTest extends ControllerTest {
     void getMaterials202() throws Exception {
         //given
         MemberEntity member = getNewMemberEntity();
-        CourseDetail courseDetail = registerNewVideo(member.getMemberId(), TestConstant.VIDEO_CODE);
+        CourseDetail courseDetail = registerNewVideo(member.getMemberId(), ContentConstant.VIDEO_CODE_LIST[0]);
         Long videoId = courseDetail.getLastViewVideo().getVideoId();
 
         //expected
