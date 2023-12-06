@@ -25,7 +25,6 @@ public class CourseJdbcRepositoryImpl implements CourseRepository {
                 course.getMemberId(),
                 course.getCourseTitle(),
                 course.getDuration(),
-                course.getLastViewTime(),
                 course.getThumbnail(),
                 course.isScheduled(),
                 course.getWeeks(),

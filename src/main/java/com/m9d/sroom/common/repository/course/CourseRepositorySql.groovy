@@ -8,9 +8,9 @@ class CourseRepositorySql {
 
     public static final String SAVE = """
         INSERT
-        INTO COURSE (member_id, course_title, course_duration, last_view_time, thumbnail, is_scheduled, weeks, 
-        expected_end_date, daily_target_time)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INTO COURSE (member_id, course_title, course_duration, thumbnail, is_scheduled, weeks, expected_end_date, 
+        daily_target_time)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     """
 
     public static final String GET_BY_ID = """
