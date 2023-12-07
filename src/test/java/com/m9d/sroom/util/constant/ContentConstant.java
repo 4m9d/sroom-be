@@ -246,6 +246,10 @@ public class ContentConstant {
             "INSERT INTO VIDEO (video_code, duration, channel, thumbnail, accumulated_rating, review_count, summary_id, is_available, description, chapter_usage, title, language, license, updated_at, view_count, published_at, membership, material_status, average_rating) VALUES (?, 3995, '흥달쌤', 'https://i.ytimg.com/vi/Kc1xRWy3-rs/maxresdefault.jpg', 0, 0, 4, 1, '정보처리 기사 2020년 4회 실기 기출해설 특강입니다.', 0, '정보처리기사 실기 2020년 4회 - 기출해설특강', 'unknown', 'youtube', ?, 20087, '2022-05-03 02:02:12', 0, 1, 0);"
     };
 
+    public static final int[] VIDEO_DURATION_LIST = {4130, 3779, 3449, 3995};
+    public static final int[] QUIZ_COUNT_LIST = {2, 2, 2, 2};
+    public static final int[] QUIZ_OPTION_COUNT_LIST = {3, 3, 3, 3};
+
     public static final String[] SUMMARY_INSERT_SQL = {
             "INSERT INTO SUMMARY (video_id, content, updated_time, is_modified, positive_feedback_count, negative_feedback_count) VALUES (1, '\n" +
                     "### 데이터베이스 정규화 및 성능 향상\n" +

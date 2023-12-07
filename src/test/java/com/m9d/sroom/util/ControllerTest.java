@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.Arrays;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
@@ -77,39 +79,31 @@ public class ControllerTest extends SroomTest {
         return objectMapper.readValue(jsonContent, KeywordSearchResponse.class);
     }
 
-    protected Long enrollNewCourseWithVideo(Login login) {
-        Long memberId = Long.valueOf((String) jwtUtil.getDetailFromToken(login.getAccessToken()).get("memberId"));
-
-        NewLecture newLecture = NewLecture.builder()
-                .lectureCode(ContentConstant.VIDEO_CODE_LIST[0])
-                .build();
-        EnrolledCourseInfo courseInfo = courseService.enroll(memberId, newLecture, false,
-                videoService.getEnrollContentInfo(ContentConstant.VIDEO_CODE_LIST[0]));
-
-        return courseInfo.getCourseId();
+    protected void enrollNewCourseWithVideo(Login login) throws Exception {
+        mockMvc.perform(post("/courses")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", login.getAccessToken())
+                .queryParam("use_schedule", "false")
+                .content(objectMapper.writeValueAsString(
+                        NewLecture.createWithoutSchedule(ContentConstant.VIDEO_CODE_LIST[0]))));
     }
 
-    protected Long enrollNewCourseWithPlaylistSchedule(Login login) {
-        Long memberId = Long.valueOf((String) jwtUtil.getDetailFromToken(login.getAccessToken()).get("memberId"));
-
-        NewLecture newLecture = NewLecture.builder()
-                .lectureCode(ContentConstant.PLAYLIST_CODE)
-                .scheduling(new ArrayList<>(Arrays.asList(2, 1, 2)))
-                .dailyTargetTime(20)
-                .expectedEndDate("2023-09-22")
-                .build();
-        EnrolledCourseInfo courseInfo = courseService.enroll(memberId, newLecture, true, null);
-        return courseInfo.getCourseId();
+    protected void enrollNewCourseWithPlaylistSchedule(Login login, NewLecture newLecture) throws Exception {
+        mockMvc.perform(post("/courses")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", login.getAccessToken())
+                .queryParam("use_schedule", "true")
+                .content(objectMapper.writeValueAsString(newLecture)));
     }
 
-    protected Long enrollNewCourseWithPlaylist(Login login) {
-        Long memberId = Long.valueOf((String) jwtUtil.getDetailFromToken(login.getAccessToken()).get("memberId"));
-
-        NewLecture newLecture = NewLecture.builder()
-                .lectureCode(ContentConstant.PLAYLIST_CODE)
-                .build();
-        EnrolledCourseInfo courseInfo = courseService.enroll(memberId, newLecture, false, null);
-        return courseInfo.getCourseId();
+    protected void enrollNewCourseWithPlaylist(Login login) throws Exception {
+        MvcResult postResult = mockMvc.perform(post("/courses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", login.getAccessToken())
+                        .queryParam("use_schedule", "false")
+                        .content(objectMapper.writeValueAsString(
+                                NewLecture.createWithoutSchedule(ContentConstant.PLAYLIST_CODE))))
+                .andReturn();
     }
 
     protected CourseDetail registerNewVideo(Long memberId, String videoCode) {

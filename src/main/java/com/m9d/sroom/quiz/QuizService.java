@@ -88,7 +88,7 @@ public class QuizService {
 
     public void validateSubmittedQuizzes(Long videoId, Long courseVideoId,
                                          List<SubmittedQuizRequest> submittedQuizRequestList) {
-        QuizEntity quiz = quizRepository.findById(submittedQuizRequestList.get(0).getQuizId())
+        QuizEntity quiz = quizRepository.findById(submittedQuizRequestList.get(0).getId())
                 .orElseThrow(QuizNotFoundException::new);
 
         if (!quiz.getVideoId().equals(videoId)) {
@@ -96,7 +96,7 @@ public class QuizService {
         }
 
         for (SubmittedQuizRequest submittedQuiz : submittedQuizRequestList) {
-            if (courseQuizRepository.findByQuizIdAndCourseVideoId(submittedQuiz.getQuizId(),
+            if (courseQuizRepository.findByQuizIdAndCourseVideoId(submittedQuiz.getId(),
                     courseVideoId).isPresent()) {
                 throw new CourseQuizDuplicationException();
             }

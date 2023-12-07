@@ -2,6 +2,7 @@ package com.m9d.sroom.course;
 
 import com.m9d.sroom.course.dto.request.NewLecture;
 import com.m9d.sroom.member.dto.response.Login;
+import com.m9d.sroom.search.constant.SearchConstant;
 import com.m9d.sroom.search.dto.request.LectureTimeRecord;
 import com.m9d.sroom.util.ControllerTest;
 import com.m9d.sroom.util.constant.ContentConstant;
@@ -12,8 +13,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -141,17 +141,10 @@ public class CourseControllerTest extends ControllerTest {
         //given
         Login login = getNewLogin();
         saveContents();
-        MvcResult postResult = mockMvc.perform(post("/courses")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", login.getAccessToken())
-                        .queryParam("use_schedule", "false")
-                        .content(objectMapper.writeValueAsString(
-                                NewLecture.createWithoutSchedule(ContentConstant.PLAYLIST_CODE))))
-                .andReturn();
-        String courseId = objectMapper.readTree(postResult.getResponse().getContentAsString()).path("course_id").asText();
+        enrollNewCourseWithPlaylist(login);
 
         //when
-        mockMvc.perform(post("/courses/{courseId}", courseId)
+        mockMvc.perform(post("/courses/{courseId}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", login.getAccessToken())
                 .queryParam("use_schedule", "true")
@@ -159,7 +152,7 @@ public class CourseControllerTest extends ControllerTest {
                         NewLecture.createWithoutSchedule(ContentConstant.VIDEO_CODE_LIST[0]))));
 
         //expected
-        mockMvc.perform(get("/courses/{courseId}", courseId)
+        mockMvc.perform(get("/courses/{courseId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", login.getAccessToken()))
                 .andExpect(status().isOk())
@@ -177,24 +170,17 @@ public class CourseControllerTest extends ControllerTest {
         //given
         Login login = getNewLogin();
         saveContents();
-        MvcResult mvcResult = mockMvc.perform(post("/courses")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", login.getAccessToken())
-                        .queryParam("use_schedule", "false")
-                        .content(objectMapper.writeValueAsString(
-                                NewLecture.createWithoutSchedule(ContentConstant.PLAYLIST_CODE))))
-                .andReturn();
-        String courseId = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).path("course_id").asText();
+        enrollNewCourseWithPlaylist(login);
 
         //when
-        mockMvc.perform(post("/courses/{courseId}", courseId)
+        mockMvc.perform(post("/courses/{courseId}", 1)
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", login.getAccessToken())
                 .content(objectMapper.writeValueAsString(
                         NewLecture.createWithoutSchedule(ContentConstant.PLAYLIST_CODE))));
 
         //expected
-        mockMvc.perform(get("/courses/{courseId}", courseId)
+        mockMvc.perform(get("/courses/{courseId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", login.getAccessToken()))
                 .andExpect(status().isOk())
@@ -222,16 +208,10 @@ public class CourseControllerTest extends ControllerTest {
         saveContents();
 
         //when
-        MvcResult mvcResult = mockMvc.perform(post("/courses")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", login.getAccessToken())
-                        .queryParam("use_schedule", "true")
-                        .content(objectMapper.writeValueAsString(newLecture)))
-                .andReturn();
-        String courseId = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).path("course_id").asText();
+        enrollNewCourseWithPlaylistSchedule(login, newLecture);
 
         //then
-        mockMvc.perform(get("/courses/{courseId}", courseId)
+        mockMvc.perform(get("/courses/{courseId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", login.getAccessToken()))
                 .andExpect(status().isOk())
@@ -252,17 +232,10 @@ public class CourseControllerTest extends ControllerTest {
         saveContents();
 
         //when
-        MvcResult mvcResult = mockMvc.perform(post("/courses")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", login.getAccessToken())
-                        .queryParam("use_schedule", "false")
-                        .content(objectMapper.writeValueAsString(
-                                NewLecture.createWithoutSchedule(ContentConstant.PLAYLIST_CODE))))
-                .andReturn();
-        String courseId = objectMapper.readTree(mvcResult.getResponse().getContentAsString()).path("course_id").asText();
+        enrollNewCourseWithPlaylist(login);
 
         //then
-        mockMvc.perform(get("/courses/{courseId}", courseId)
+        mockMvc.perform(get("/courses/{courseId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", login.getAccessToken()))
                 .andExpect(status().isOk())
@@ -279,14 +252,11 @@ public class CourseControllerTest extends ControllerTest {
         //given
         Login login = getNewLogin();
 
-        Long courseId1 = enrollNewCourseWithPlaylist(login);
-        Long courseId2 = enrollNewCourseWithPlaylist(login);
-
-        System.out.println(courseId1);
-        System.out.println(courseId2);
+        enrollNewCourseWithPlaylist(login);
+        enrollNewCourseWithPlaylist(login);
 
         //expected
-        mockMvc.perform(delete("/courses/{courseId}", courseId1)
+        mockMvc.perform(delete("/courses/{courseId}", 1)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", login.getAccessToken()))
                 .andExpect(status().isOk())
@@ -301,13 +271,7 @@ public class CourseControllerTest extends ControllerTest {
         //given
         Login login = getNewLogin();
         saveContents();
-        mockMvc.perform(post("/courses")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", login.getAccessToken())
-                        .queryParam("use_schedule", "false")
-                        .content(objectMapper.writeValueAsString(
-                                NewLecture.createWithoutSchedule(ContentConstant.VIDEO_CODE_LIST[0]))))
-                .andReturn();
+        enrollNewCourseWithVideo(login);
         int viewDuration = 10;
 
         //when
@@ -323,6 +287,59 @@ public class CourseControllerTest extends ControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("sections[0].videos[0].last_view_duration", is(viewDuration)))
                 .andExpect(jsonPath("sections[0].videos[0].max_duration", is(viewDuration)))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("영상의 수강기준 이상을 시청하면 수강이 완료됩니다.")
+    void updateVideoCompletion() throws Exception {
+        //given
+        Login login = getNewLogin();
+        saveContents();
+        enrollNewCourseWithVideo(login);
+        int viewDuration = (int) ((SearchConstant.MINIMUM_VIEW_PERCENT_FOR_COMPLETION + 0.1)
+                * ContentConstant.VIDEO_DURATION_LIST[0]);
+
+        //when
+        mockMvc.perform(put("/lectures/{courseVideoId}/time", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", login.getAccessToken())
+                .content(objectMapper.writeValueAsString(new LectureTimeRecord(viewDuration))));
+
+        //then
+        mockMvc.perform(get("/courses/{courseId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", login.getAccessToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("sections[0].videos[0].is_completed", is(true)))
+                .andExpect(jsonPath("completed_video_count", is(1)))
+                .andExpect(jsonPath("$.progress", greaterThan(0)))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("'완료하기' 버튼을 누르면 영상 수강이 완료됩니다.")
+    void updateCompleteManually() throws Exception {
+        //given
+        Login login = getNewLogin();
+        saveContents();
+        enrollNewCourseWithVideo(login);
+
+        //when
+        mockMvc.perform(put("/lectures/{courseVideoId}/time", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", login.getAccessToken())
+                .param("isCompletedManually", "true")
+                .content(objectMapper.writeValueAsString(new LectureTimeRecord(0))));
+
+        //then
+        mockMvc.perform(get("/courses/{courseId}", 1)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", login.getAccessToken()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("sections[0].videos[0].is_completed", is(true)))
+                .andExpect(jsonPath("completed_video_count", is(1)))
+                .andExpect(jsonPath("$.progress", is(100)))
                 .andDo(print());
     }
 }
