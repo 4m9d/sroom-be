@@ -24,7 +24,7 @@ jobs:
       - name: Build with Gradle using dev profile
         run: ./gradlew clean build -x test -Dspring.profiles.active=dev
 
-  puch-to-ecr:
+  push-to-ecr:
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -65,7 +65,7 @@ jobs:
           task-definition: task-definition-test.json
           container-name: be-container
           image: ${{ env.IMAGE }}
-          
+
       ## ECS 실행
       - name: Deploy ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
