@@ -7,17 +7,17 @@
         </encoder>
     </appender>
 
-    <appender name="stash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
-        <destination>15.164.211.181:5000</destination>
-        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
-        </filter>
-    </appender>
+<!--    <appender name="stash" class="net.logstash.logback.appender.LogstashTcpSocketAppender">-->
+<!--        <destination>15.164.211.181:5000</destination>-->
+<!--        <encoder class="net.logstash.logback.encoder.LogstashEncoder" />-->
+<!--        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">-->
+<!--            <level>INFO</level>-->
+<!--        </filter>-->
+<!--    </appender>-->
 
     <root level="INFO">
         <appender-ref ref="console"/>
-        <appender-ref ref="stash"/>
+<!--        <appender-ref ref="stash"/>-->
     </root>
 
 </configuration>
