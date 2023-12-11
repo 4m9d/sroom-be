@@ -128,6 +128,7 @@ public class ControllerTest extends SroomTest {
         saveSummaryList();
         saveQuizList();
         saveQuizOptionList();
+        saveRecommend();
     }
 
     private void savePlaylist() {
@@ -163,6 +164,12 @@ public class ControllerTest extends SroomTest {
     private void saveQuizOptionList() {
         for (String quizOptionInsertSql : ContentConstant.QUIZ_OPTION_INSERT_SQL) {
             jdbcTemplate.update(quizOptionInsertSql);
+        }
+    }
+
+    private void saveRecommend() {
+        for (int i = 1; i <=4 ; i++) {
+            jdbcTemplate.update(ContentConstant.RECOMMEND_INSERT_SQL, i);
         }
     }
 }

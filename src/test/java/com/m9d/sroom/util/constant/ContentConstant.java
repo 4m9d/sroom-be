@@ -318,4 +318,6 @@ public class ContentConstant {
             "INSERT INTO QUIZ_OPTION (quiz_id, option_text, option_index) VALUES (8, '객체지향 프로그래밍 설계를 할 때 사용하는 패턴들의 모음', 2);",
             "INSERT INTO QUIZ_OPTION (quiz_id, option_text, option_index) VALUES (8, '시스템의 기능과 사용자 사이의 관계를 나타내는 다이어그램', 3);"
     };
+
+    public static final String RECOMMEND_INSERT_SQL = "INSERT INTO RECOMMEND (source_code, is_playlist, domain) VALUES ('lv4-n_s5AvI', false, ?)";
 }
