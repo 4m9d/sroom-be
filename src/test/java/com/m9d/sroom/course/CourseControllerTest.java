@@ -36,7 +36,7 @@ public class CourseControllerTest extends ControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.unfinished_course").isNotEmpty())
                 .andExpect(jsonPath("$.completion_rate").isNotEmpty())
-                .andExpect(jsonPath("$.courses", hasSize(1)))
+                .andExpect(jsonPath("$.courses[0].course_title").value(ContentConstant.VIDEO_TITLE))
                 .andDo(print());
     }
 
