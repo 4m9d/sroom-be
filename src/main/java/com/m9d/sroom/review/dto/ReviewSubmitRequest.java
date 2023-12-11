@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.relational.core.sql.In;
 
 @Data
 @Builder
@@ -15,4 +16,11 @@ public class ReviewSubmitRequest {
     private Integer submittedRating;
 
     private String reviewContent;
+
+    public static ReviewSubmitRequest createReview(Integer submittedRating, String reviewContent) {
+        return ReviewSubmitRequest.builder()
+                .submittedRating(submittedRating)
+                .reviewContent(reviewContent)
+                .build();
+    }
 }
