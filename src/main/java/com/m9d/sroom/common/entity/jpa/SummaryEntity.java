@@ -16,26 +16,18 @@ public class SummaryEntity {
     private Long summaryId;
 
     @OneToOne
-    @JoinColumn(name = "video_id", nullable = false)
+    @JoinColumn(name = "video_id")
     private VideoEntity video;
 
-    @Column(nullable = false)
     private String content;
 
-    @Column(nullable = false)
     @CreationTimestamp
     @UpdateTimestamp
     private Timestamp updatedAt;
 
-    @Column(nullable = false)
-    @ColumnDefault("false")
     private boolean modified;
 
-    @Column(nullable = false)
-    @ColumnDefault("0")
     private Integer positiveFeedbackCount;
 
-    @Column(nullable = false)
-    @ColumnDefault("0")
     private Integer negativeFeedbackCount;
 }

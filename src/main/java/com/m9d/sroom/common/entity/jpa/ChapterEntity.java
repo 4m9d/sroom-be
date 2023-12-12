@@ -13,16 +13,14 @@ public class ChapterEntity {
     private Long chapterId;
 
     @ManyToOne
-    @JoinColumn(name = "video_id", nullable = false)
+    @JoinColumn(name = "video_id")
     private VideoEntity video;
 
-    @Column(nullable = false)
     private int startTime;
 
-    @Column(nullable = false)
     private int duration;
 
     @OneToOne
-    @JoinColumn(name = "summary_id", nullable = false)
+    @JoinColumn(name = "summary_id")
     private SummaryEntity summary;
 }

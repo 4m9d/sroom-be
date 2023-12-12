@@ -12,13 +12,10 @@ public class QuizOptionEntity {
 
 
     @ManyToOne
-    @JoinColumn(name = "quiz_id", nullable = false)
+    @JoinColumn(name = "quiz_id")
     private QuizEntity quiz;
 
-
-    @Column(nullable = false)
     private String optionText;
 
-    @Column(nullable = false)
     private int optionIndex;
 }

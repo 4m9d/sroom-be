@@ -11,13 +11,12 @@ public class PlaylistVideoEntity {
     private Long playlistVideoId;
 
     @ManyToOne
-    @JoinColumn(name = "playlist_id", nullable = false)
+    @JoinColumn(name = "playlist_id")
     private PlaylistEntity playlist;
 
     @ManyToOne
-    @JoinColumn(name = "video_id", nullable = false)
+    @JoinColumn(name = "video_id")
     private VideoEntity video;
 
-    @Column(nullable = false)
     private Integer videoIndex;
 }
