@@ -44,4 +44,7 @@ public class PlaylistEntity {
     private Timestamp updatedAt;
 
     private Float averageRating;
+
+    @OneToMany(mappedBy = "playlist")
+    private List<PlaylistVideoEntity> playlistVideoEntityList = new ArrayList<PlaylistVideoEntity>();
 }
