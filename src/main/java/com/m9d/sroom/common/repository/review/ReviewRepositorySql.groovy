@@ -7,8 +7,8 @@ class ReviewRepositorySql {
 
     public static final String SAVE = """
         INSERT 
-        INTO REVIEW (source_code, member_id, lecture_id, submitted_rating, content, submitted_date)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INTO REVIEW (source_code, member_id, lecture_id, submitted_rating, content)
+        VALUES (?, ?, ?, ?, ?)
     """
 
     public static final String GET_BY_ID = """

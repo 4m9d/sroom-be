@@ -24,8 +24,7 @@ public class ReviewJdbcRepositoryImpl implements ReviewRepository {
                 review.getMemberId(),
                 review.getLectureId(),
                 review.getSubmittedRating(),
-                review.getContent(),
-                review.getSubmittedDate());
+                review.getContent());
         return getById(jdbcTemplate.queryForObject(LectureRepositorySql.GET_LAST_ID, Long.class));
     }
 

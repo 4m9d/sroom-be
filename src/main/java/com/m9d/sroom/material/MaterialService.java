@@ -95,14 +95,14 @@ public class MaterialService {
 
         List<SubmittedQuizInfoResponse> quizInfoResponseList = new ArrayList<>();
         for (SubmittedQuizRequest submittedQuizRequest : submittedQuizList) {
-            if (quizService.isSubmittedAlready(courseVideoId, submittedQuizRequest.getQuizId())) {
+            if (quizService.isSubmittedAlready(courseVideoId, submittedQuizRequest.getId())) {
                 throw new CourseQuizDuplicationException();
             }
 
             CourseQuizEntity courseQuizEntity = quizService.createCourseQuizEntity(courseVideoEntity.getCourseId(),
-                    courseVideoEntity.getVideoId(), courseVideoId, submittedQuizRequest.getQuizId(),
+                    courseVideoEntity.getVideoId(), courseVideoId, submittedQuizRequest.getId(),
                     submittedQuizRequest.toVo(), memberId);
-            quizInfoResponseList.add(new SubmittedQuizInfoResponse(submittedQuizRequest.getQuizId(),
+            quizInfoResponseList.add(new SubmittedQuizInfoResponse(submittedQuizRequest.getId(),
                     courseQuizEntity.getId()));
         }
         log.info("subject = quizSubmitted, correctAnswerRate = {}",

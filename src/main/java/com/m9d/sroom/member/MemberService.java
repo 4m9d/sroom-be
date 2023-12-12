@@ -42,9 +42,9 @@ public class MemberService {
     public Login authenticateMember(String credential) throws Exception {
         GoogleIdToken idToken = verifyCredential(credential);
 
-        MemberEntity member = findOrCreateMemberByMemberCode(idToken.getPayload().getSubject());
-        log.info("member login. memberId = {}", member.getMemberId());
-        return generateLogin(member, (String) idToken.getPayload().get("picture"));
+        MemberEntity memberEntity = findOrCreateMember(idToken.getPayload().getSubject());
+        log.info("member login. memberId = {}", memberEntity.getMemberId());
+        return generateLogin(memberEntity, (String) idToken.getPayload().get("picture"));
     }
 
     public GoogleIdToken verifyCredential(String credential) throws Exception {
@@ -62,7 +62,7 @@ public class MemberService {
         return idToken;
     }
 
-    public MemberEntity findOrCreateMemberByMemberCode(String memberCode) {
+    public MemberEntity findOrCreateMember(String memberCode) {
         return memberRepository.findByCode(memberCode)
                 .orElseGet(() -> createNewMember(memberCode));
     }
@@ -107,19 +107,19 @@ public class MemberService {
         return generateLogin(member, pictureUrl);
     }
 
-    public Login generateLogin(MemberEntity member, String picture) {
-        String accessToken = jwtUtil.generateAccessToken(member.getMemberId(), picture);
+    public Login generateLogin(MemberEntity memberEntity, String picture) {
+        String accessToken = jwtUtil.generateAccessToken(memberEntity.getMemberId(), picture);
 
-        member.setRefreshToken(jwtUtil.generateRefreshToken(member.getMemberId(), picture));
-        memberRepository.updateById(member.getMemberId(), member);
+        memberEntity.setRefreshToken(jwtUtil.generateRefreshToken(memberEntity.getMemberId(), picture));
+        memberRepository.updateById(memberEntity.getMemberId(), memberEntity);
 
         return Login.builder()
                 .accessToken(accessToken)
-                .refreshToken(member.getRefreshToken())
+                .refreshToken(memberEntity.getRefreshToken())
                 .accessExpiresAt((Long) jwtUtil.getDetailFromToken(accessToken).get(EXPIRATION_TIME))
-                .name(member.getMemberName())
+                .name(memberEntity.getMemberName())
                 .profile(picture)
-                .bio(member.getBio())
+                .bio(memberEntity.getBio())
                 .build();
     }
 

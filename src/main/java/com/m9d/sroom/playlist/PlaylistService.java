@@ -1,8 +1,11 @@
 package com.m9d.sroom.playlist;
 
 import com.m9d.sroom.common.entity.PlaylistEntity;
+import com.m9d.sroom.common.entity.PlaylistVideoEntity;
+import com.m9d.sroom.common.entity.VideoEntity;
 import com.m9d.sroom.common.repository.playlist.PlaylistRepository;
 import com.m9d.sroom.common.repository.playlistvideo.PlaylistVideoRepository;
+import com.m9d.sroom.common.repository.video.VideoRepository;
 import com.m9d.sroom.playlist.vo.Playlist;
 import com.m9d.sroom.video.vo.PlaylistItem;
 import com.m9d.sroom.playlist.vo.PlaylistWithItemList;
@@ -14,6 +17,7 @@ import com.m9d.sroom.video.constant.VideoConstant;
 import com.m9d.sroom.youtube.YoutubeMapper;
 import com.m9d.sroom.youtube.vo.PlaylistItemInfo;
 import com.m9d.sroom.youtube.vo.PlaylistVideoInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -21,18 +25,20 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class PlaylistService {
 
     private final PlaylistRepository playlistRepository;
-
     private final YoutubeMapper youtubeService;
     private final VideoService videoService;
+    private final VideoRepository videoRepository;
     private final PlaylistVideoRepository playlistVideoRepository;
 
-    public PlaylistService(PlaylistRepository playlistRepository, YoutubeMapper youtubeService, VideoService videoService, PlaylistVideoRepository playlistVideoRepository) {
+    public PlaylistService(PlaylistRepository playlistRepository, YoutubeMapper youtubeService, VideoService videoService, VideoRepository videoRepository, PlaylistVideoRepository playlistVideoRepository) {
         this.playlistRepository = playlistRepository;
         this.youtubeService = youtubeService;
         this.videoService = videoService;
+        this.videoRepository = videoRepository;
         this.playlistVideoRepository = playlistVideoRepository;
     }
 
@@ -44,11 +50,11 @@ public class PlaylistService {
         if (playlistEntityOptional.isPresent()) {
             reviewCount = playlistEntityOptional.get().getReviewCount();
             accumulatedRating = playlistEntityOptional.get().getAccumulatedRating();
-            if(DateUtil.hasRecentUpdate(playlistEntityOptional.get().getUpdatedAt(), PlaylistConstant.PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
+            if (DateUtil.hasRecentUpdate(playlistEntityOptional.get().getUpdatedAt(), PlaylistConstant.PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
                 return playlistEntityOptional.get().toPlaylist();
             }
         }
-        
+
         return youtubeService.getPlaylist(playlistCode, reviewCount, accumulatedRating);
     }
 
@@ -57,6 +63,12 @@ public class PlaylistService {
     }
 
     private List<PlaylistItem> getRecentPlaylistItemList(String playlistCode) {
+        Optional<PlaylistEntity> playlistEntityOptional = playlistRepository.findByCode(playlistCode);
+        if (playlistEntityOptional.isPresent() && DateUtil.hasRecentUpdate(playlistEntityOptional.get().getUpdatedAt(),
+                PlaylistConstant.PLAYLIST_UPDATE_THRESHOLD_HOURS)) {
+            return getPlaylistItemFromDB(playlistEntityOptional.get().getPlaylistId());
+        }
+
         String nextPageToken = null;
         int pageCount = PlaylistConstant.MAX_PLAYLIST_ITEM / PlaylistConstant.DEFAULT_INDEX_COUNT;
 
@@ -121,6 +133,16 @@ public class PlaylistService {
         for (PlaylistItem playlistItem : playlistWithItemList.getPlaylistItemList()) {
             videoService.putPlaylistItem(playlistEntity.getPlaylistId(), playlistItem);
         }
+    }
+
+    private List<PlaylistItem> getPlaylistItemFromDB(Long playlistId) {
+        List<VideoEntity> videoEntityList = videoRepository.getListByPlaylistId(playlistId);
+
+        List<PlaylistItem> playlistItemList = new ArrayList<>();
+        for (int i = 0; i < videoEntityList.size(); i++) {
+            playlistItemList.add(new PlaylistItem(videoEntityList.get(i).toVideo(), i));
+        }
+        return playlistItemList;
     }
 
     public EnrollContentInfo getEnrollContentInfo(String playlistCode) {
