@@ -36,48 +36,64 @@ sourceSets {
 }
 
 dependencies {
+    // web
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-    testCompileOnly 'org.projectlombok:lombok'
-    testAnnotationProcessor 'org.projectlombok:lombok'
+    // jpa
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 
+    // jdbc
+    // implementation "org.springframework.boot:spring-boot-starter-data-jdbc"
+
+    // validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // mariadb
+    implementation 'org.mariadb.jdbc:mariadb-java-client:3.0.8'
+
+    // test
     implementation 'junit:junit:4.13.2'
     testRuntimeOnly "com.h2database:h2"
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
 
-    implementation "io.jsonwebtoken:jjwt:0.9.1"
-
-    implementation "org.springframework.boot:spring-boot-starter-data-jdbc"
-    implementation 'org.mariadb.jdbc:mariadb-java-client:3.0.8'
-    //implementation("org.springframework.boot:spring-boot-starter-security")
-
+    // google-api
     implementation 'com.google.api-client:google-api-client:1.32.1'
     implementation 'com.google.http-client:google-http-client-jackson2:1.39.2'
-    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
 
-    implementation "org.springframework.boot:spring-boot-starter-webflux"
+    // jwt
+    implementation "io.jsonwebtoken:jjwt:0.9.1"
 
-    implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
-
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    implementation 'org.codehaus.groovy:groovy-all:3.0.8'
-
+    // gson
     implementation 'com.google.code.gson:gson:2.8.9'
 
-    //implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
-
-    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.0'
-
-
+    // aws
     implementation 'org.zalando:spring-cloud-config-aws-kms:5.1.2'
     implementation 'com.amazonaws:aws-java-sdk-core:1.12.551'
     implementation 'com.amazonaws:aws-java-sdk-kms:1.12.551'
     implementation 'com.amazonaws:jmespath-java:1.12.551'
 
+    // logstash
     implementation 'net.logstash.logback:logstash-logback-encoder:7.2'
+
+    // okhttp
+    implementation 'com.squareup.okhttp3:okhttp:4.10.0'
+
+    // webflux
+    implementation "org.springframework.boot:spring-boot-starter-webflux"
+
+    // springdoc
+    implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
+
+    // groovy
+    implementation 'org.codehaus.groovy:groovy-all:3.0.8'
+
+    // json
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.0'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {

@@ -1,15 +1,10 @@
 package com.m9d.sroom.material;
 
-import com.m9d.sroom.course.dto.request.NewLecture;
-import com.m9d.sroom.course.dto.response.CourseDetail;
-import com.m9d.sroom.common.entity.MemberEntity;
-import com.m9d.sroom.material.dto.request.FeedbackRequest;
 import com.m9d.sroom.material.dto.request.SubmittedQuizRequest;
 import com.m9d.sroom.material.dto.request.SummaryEditRequest;
 import com.m9d.sroom.material.model.MaterialStatus;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.util.ControllerTest;
-import com.m9d.sroom.util.TestConstant;
 import com.m9d.sroom.util.constant.ContentConstant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

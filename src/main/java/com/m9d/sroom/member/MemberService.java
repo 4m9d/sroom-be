@@ -4,7 +4,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
-import com.m9d.sroom.common.entity.MemberEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.MemberEntity;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.member.dto.response.NameUpdateResponse;
 import com.m9d.sroom.member.exception.*;

@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.playlistvideo;
 
-import com.m9d.sroom.common.entity.PlaylistVideoEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.PlaylistVideoEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 

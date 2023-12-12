@@ -1,6 +1,6 @@
 package com.m9d.sroom.util;
 
-import com.m9d.sroom.common.entity.MemberEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.MemberEntity;
 import com.m9d.sroom.course.CourseService;
 import com.m9d.sroom.member.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.coursedailylog;
 
-import com.m9d.sroom.common.entity.CourseDailyLogEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.CourseDailyLogEntity;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;

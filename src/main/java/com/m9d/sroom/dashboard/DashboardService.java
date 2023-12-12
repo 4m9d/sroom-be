@@ -1,6 +1,6 @@
 package com.m9d.sroom.dashboard;
 
-import com.m9d.sroom.common.entity.*;
+import com.m9d.sroom.common.entity.jdbctemplate.*;
 import com.m9d.sroom.common.repository.coursequiz.CourseQuizRepository;
 import com.m9d.sroom.common.repository.quiz.QuizRepository;
 import com.m9d.sroom.common.repository.quizoption.QuizOptionRepository;

@@ -1,4 +1,4 @@
-package com.m9d.sroom.common.entity;
+package com.m9d.sroom.common.entity.jdbctemplate;
 
 import com.m9d.sroom.quiz.vo.QuizOption;
 import lombok.AllArgsConstructor;

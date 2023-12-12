@@ -1,9 +1,9 @@
 package com.m9d.sroom.course;
 
 import com.m9d.sroom.common.LearningActivityUpdater;
-import com.m9d.sroom.common.entity.CourseEntity;
-import com.m9d.sroom.common.entity.CourseVideoEntity;
-import com.m9d.sroom.common.entity.LectureEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.CourseEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.CourseVideoEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.LectureEntity;
 import com.m9d.sroom.common.repository.course.CourseRepository;
 import com.m9d.sroom.common.repository.coursequiz.CourseQuizRepository;
 import com.m9d.sroom.common.repository.coursevideo.CourseVideoRepository;

@@ -1,12 +1,6 @@
 package com.m9d.sroom.member;
 
-import com.m9d.sroom.common.entity.MemberEntity;
-import com.m9d.sroom.member.dto.request.RefreshToken;
-import com.m9d.sroom.member.dto.response.Login;
-import com.m9d.sroom.member.exception.MemberNotMatchException;
-import com.m9d.sroom.member.exception.RefreshRenewedException;
 import com.m9d.sroom.util.ServiceTest;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,5 +1,5 @@
 package com.m9d.sroom.common.repository.playlist;
-import com.m9d.sroom.common.entity.PlaylistEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.PlaylistEntity;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;

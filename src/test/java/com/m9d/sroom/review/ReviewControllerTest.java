@@ -1,6 +1,6 @@
 package com.m9d.sroom.review;
 
-import com.m9d.sroom.common.entity.ReviewEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.ReviewEntity;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.review.dto.ReviewSubmitRequest;
 import com.m9d.sroom.util.ControllerTest;
@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.m9d.sroom.util.constant.ContentConstant.VIDEO_TITLE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @Transactional

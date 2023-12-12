@@ -1,4 +1,4 @@
-package com.m9d.sroom.common.entity;
+package com.m9d.sroom.common.entity.jdbctemplate;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -1,7 +1,7 @@
 package com.m9d.sroom.common.repository.quiz;
 
 
-import com.m9d.sroom.common.entity.QuizEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.QuizEntity;
 
 import java.util.List;
 import java.util.Optional;

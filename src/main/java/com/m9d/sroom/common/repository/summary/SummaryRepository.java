@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.summary;
 
-import com.m9d.sroom.common.entity.SummaryEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.SummaryEntity;
 
 import java.util.Optional;
 

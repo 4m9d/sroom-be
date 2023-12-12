@@ -1,6 +1,5 @@
 package com.m9d.sroom.member;
 
-import com.m9d.sroom.common.entity.MemberEntity;
 import com.m9d.sroom.member.dto.request.GoogleIdKey;
 import com.m9d.sroom.member.dto.request.NameUpdateRequest;
 import com.m9d.sroom.member.dto.request.RefreshToken;
@@ -8,12 +7,8 @@ import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.util.ControllerTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;

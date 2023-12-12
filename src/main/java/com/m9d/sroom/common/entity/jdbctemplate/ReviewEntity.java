@@ -1,4 +1,4 @@
-package com.m9d.sroom.common.entity;
+package com.m9d.sroom.common.entity.jdbctemplate;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

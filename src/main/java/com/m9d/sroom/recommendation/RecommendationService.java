@@ -1,8 +1,8 @@
 package com.m9d.sroom.recommendation;
 
-import com.m9d.sroom.common.entity.PlaylistEntity;
-import com.m9d.sroom.common.entity.RecommendEntity;
-import com.m9d.sroom.common.entity.VideoEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.PlaylistEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.RecommendEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.VideoEntity;
 import com.m9d.sroom.common.repository.playlist.PlaylistRepository;
 import com.m9d.sroom.common.repository.recommend.RecommendRepository;
 import com.m9d.sroom.common.repository.video.VideoRepository;

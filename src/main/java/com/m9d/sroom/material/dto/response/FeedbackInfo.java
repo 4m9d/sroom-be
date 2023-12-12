@@ -1,6 +1,6 @@
 package com.m9d.sroom.material.dto.response;
 
-import com.m9d.sroom.common.entity.MaterialFeedbackEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.MaterialFeedbackEntity;
 import com.m9d.sroom.material.model.MaterialType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

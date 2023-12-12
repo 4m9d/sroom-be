@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.quiz;
 
-import com.m9d.sroom.common.entity.QuizEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.QuizEntity;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
