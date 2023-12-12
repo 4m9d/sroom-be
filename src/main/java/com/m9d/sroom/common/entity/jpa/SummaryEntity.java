@@ -15,7 +15,7 @@ public class SummaryEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long summaryId;
 
-    @OneToOne
+    @OneToOne(mappedBy = "video")
     @JoinColumn(name = "video_id")
     private VideoEntity video;
 
