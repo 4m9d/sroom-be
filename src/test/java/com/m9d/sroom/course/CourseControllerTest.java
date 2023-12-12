@@ -251,17 +251,20 @@ public class CourseControllerTest extends ControllerTest {
     void deleteCourse200() throws Exception {
         //given
         Login login = getNewLogin();
+        enrollNewCourseWithPlaylist(login);
 
-        enrollNewCourseWithPlaylist(login);
-        enrollNewCourseWithPlaylist(login);
+        //when
+        mockMvc.perform(delete("/courses/{courseId}", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", login.getAccessToken()));
 
         //expected
-        mockMvc.perform(delete("/courses/{courseId}", 1)
+        mockMvc.perform(get("/courses")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", login.getAccessToken()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.courses", hasSize(1)))
-                .andExpect(jsonPath("$.courses[0]").isNotEmpty())
+                .andExpect(jsonPath("$.courses", hasSize(0)))
+                .andExpect(jsonPath("$.courses[0]").doesNotExist())
                 .andDo(print());
     }
 

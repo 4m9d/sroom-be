@@ -97,13 +97,12 @@ public class ControllerTest extends SroomTest {
     }
 
     protected void enrollNewCourseWithPlaylist(Login login) throws Exception {
-        MvcResult postResult = mockMvc.perform(post("/courses")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", login.getAccessToken())
-                        .queryParam("use_schedule", "false")
-                        .content(objectMapper.writeValueAsString(
-                                NewLecture.createWithoutSchedule(ContentConstant.PLAYLIST_CODE))))
-                .andReturn();
+        mockMvc.perform(post("/courses")
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", login.getAccessToken())
+                .queryParam("use_schedule", "false")
+                .content(objectMapper.writeValueAsString(
+                        NewLecture.createWithoutSchedule(ContentConstant.PLAYLIST_CODE))));
     }
 
     protected CourseDetail registerNewVideo(Long memberId, String videoCode) {
@@ -168,7 +167,7 @@ public class ControllerTest extends SroomTest {
     }
 
     private void saveRecommend() {
-        for (int i = 1; i <=4 ; i++) {
+        for (int i = 1; i <= 4; i++) {
             jdbcTemplate.update(ContentConstant.RECOMMEND_INSERT_SQL, i);
         }
     }
