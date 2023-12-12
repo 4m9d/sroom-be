@@ -1,5 +1,7 @@
 package com.m9d.sroom.common.entity.jpa;
 
+import com.m9d.sroom.common.entity.jpa.embedded.ContentInfo;
+import com.m9d.sroom.common.entity.jpa.embedded.Review;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -17,25 +19,10 @@ public class VideoEntity {
 
     private String videoCode;
 
-    private String title;
-
-    private String channel;
-
-    private String description;
-
-    private int duration;
-
-    private boolean playlist;
+    @Embedded
+    private ContentInfo contentInfo;
 
     private Long viewCount;
-
-    private Timestamp publishedAt;
-
-    private int accumulatedRating;
-
-    private int reviewCount;
-
-    private String thumbnail;
 
     private String language;
 
@@ -45,17 +32,16 @@ public class VideoEntity {
     @UpdateTimestamp
     private Timestamp updatedAt;
 
-    private boolean membership;
+    private Boolean membership;
+
+    @Embedded
+    private Review review;
 
     @OneToOne
     @JoinColumn(name = "summary_id")
     private SummaryEntity summary;
 
-    private boolean available;
-
-    private boolean chapterUse;
-
     private Integer materialStatus;
 
-    private Float averageRating;
+    private Boolean chapterUse;
 }

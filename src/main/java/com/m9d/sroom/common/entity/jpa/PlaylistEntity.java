@@ -1,5 +1,8 @@
 package com.m9d.sroom.common.entity.jpa;
 
+import com.m9d.sroom.common.entity.jpa.embedded.ContentInfo;
+import com.m9d.sroom.common.entity.jpa.embedded.Review;
+import com.m9d.sroom.recommendation.RecommendationScheduler;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -19,31 +22,17 @@ public class PlaylistEntity {
 
     private String playlistCode;
 
-    private String channel;
-
-    private String title;
-
-    private Integer duration;
-
-    private String description;
-
-    private Timestamp publishedAt;
+    @Embedded
+    private ContentInfo contentInfo;
 
     private Integer videoCount;
 
-    private Integer accumulatedRating;
-
-    private Boolean available;
-
-    private Integer reviewCount;
-
-    private String thumbnail;
+    @Embedded
+    private Review review;
 
     @CreationTimestamp
     @UpdateTimestamp
     private Timestamp updatedAt;
-
-    private Float averageRating;
 
     @OneToMany(mappedBy = "playlist")
     private List<PlaylistVideoEntity> playlistVideoEntityList = new ArrayList<PlaylistVideoEntity>();

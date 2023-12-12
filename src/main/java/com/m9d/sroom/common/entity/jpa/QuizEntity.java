@@ -1,7 +1,6 @@
 package com.m9d.sroom.common.entity.jpa;
 
-import com.m9d.sroom.video.vo.Video;
-import org.hibernate.annotations.ColumnDefault;
+import com.m9d.sroom.common.entity.jpa.embedded.Feedback;
 
 import javax.persistence.*;
 
@@ -25,7 +24,6 @@ public class QuizEntity {
 
     private Integer choiceAnswer;
 
-    private Integer positiveFeedbackCount;
-
-     private Integer negativeFeedbackCount;
+    @Embedded
+    private Feedback feedback;
 }

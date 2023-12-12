@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.entity.jpa;
 
-import org.hibernate.annotations.ColumnDefault;
+import com.m9d.sroom.common.entity.jpa.embedded.Feedback;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -27,7 +27,6 @@ public class SummaryEntity {
 
     private boolean modified;
 
-    private Integer positiveFeedbackCount;
-
-    private Integer negativeFeedbackCount;
+    @Embedded
+    private Feedback feedBack;
 }
