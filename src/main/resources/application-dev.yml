@@ -23,7 +23,7 @@ spring:
       suffix: .html
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
     properties:
       hibernate:
         database-platform: org.hibernate.dialect.MariaDB1011Dialect
