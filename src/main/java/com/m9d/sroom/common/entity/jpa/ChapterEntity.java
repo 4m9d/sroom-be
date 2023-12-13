@@ -9,7 +9,7 @@ import javax.persistence.*;
 public class ChapterEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long chapterId;
 
     @ManyToOne

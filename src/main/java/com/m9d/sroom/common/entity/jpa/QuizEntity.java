@@ -9,7 +9,7 @@ import javax.persistence.*;
 public class QuizEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long quizId;
 
     @ManyToOne
@@ -18,8 +18,10 @@ public class QuizEntity {
 
     private int type;
 
+    @Column(columnDefinition = "text")
     private String question;
 
+    @Column(columnDefinition = "text")
     private String subjectiveAnswer;
 
     private Integer choiceAnswer;

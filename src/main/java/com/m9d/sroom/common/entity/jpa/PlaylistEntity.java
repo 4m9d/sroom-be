@@ -17,7 +17,7 @@ import java.util.List;
 public class PlaylistEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long playlistId;
 
     private String playlistCode;
@@ -30,7 +30,6 @@ public class PlaylistEntity {
     @Embedded
     private Review review;
 
-    @CreationTimestamp
     @UpdateTimestamp
     private Timestamp updatedAt;
 

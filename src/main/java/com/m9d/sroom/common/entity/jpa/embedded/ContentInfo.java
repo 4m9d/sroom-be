@@ -1,5 +1,6 @@
 package com.m9d.sroom.common.entity.jpa.embedded;
 
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.sql.Timestamp;
 
@@ -10,11 +11,13 @@ public class ContentInfo {
 
     private String channel;
 
+    @Column(columnDefinition = "text")
     private String description;
 
+    @Column(columnDefinition = "text")
     private String thumbnail;
 
-    private Boolean available;
+    private Boolean isAvailable;
 
     private Integer duration;
 

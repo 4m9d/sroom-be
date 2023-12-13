@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class QuizOptionEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long quizOptionId;
 
 
@@ -15,6 +15,7 @@ public class QuizOptionEntity {
     @JoinColumn(name = "quiz_id")
     private QuizEntity quiz;
 
+    @Column(columnDefinition = "text")
     private String optionText;
 
     private int optionIndex;

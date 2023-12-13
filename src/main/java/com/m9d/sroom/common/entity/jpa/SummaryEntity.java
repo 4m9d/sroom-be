@@ -12,20 +12,20 @@ import java.sql.Timestamp;
 public class SummaryEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long summaryId;
 
-    @OneToOne(mappedBy = "video")
+    @OneToOne(mappedBy = "summary")
     @JoinColumn(name = "video_id")
     private VideoEntity video;
 
+    @Column(columnDefinition = "text")
     private String content;
 
-    @CreationTimestamp
     @UpdateTimestamp
-    private Timestamp updatedAt;
+    private Timestamp updatedTime;
 
-    private boolean modified;
+    private boolean isModified;
 
     @Embedded
     private Feedback feedBack;

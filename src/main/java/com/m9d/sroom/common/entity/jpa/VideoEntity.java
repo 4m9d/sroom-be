@@ -14,7 +14,7 @@ import java.sql.Timestamp;
 public class VideoEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long videoId;
 
     private String videoCode;
@@ -28,7 +28,6 @@ public class VideoEntity {
 
     private String license;
 
-    @CreationTimestamp
     @UpdateTimestamp
     private Timestamp updatedAt;
 
@@ -43,5 +42,5 @@ public class VideoEntity {
 
     private Integer materialStatus;
 
-    private Boolean chapterUse;
+    private Boolean chapterUsage;
 }
