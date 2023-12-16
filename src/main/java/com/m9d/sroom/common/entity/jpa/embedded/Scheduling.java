@@ -1,5 +1,6 @@
 package com.m9d.sroom.common.entity.jpa.embedded;
 
+import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.Embeddable;
@@ -8,6 +9,7 @@ import javax.persistence.TemporalType;
 import java.util.Date;
 
 @Embeddable
+@Data
 public class Scheduling {
 
     private Boolean isScheduled;

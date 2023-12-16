@@ -1,10 +1,13 @@
 package com.m9d.sroom.common.entity.jpa.embedded;
 
+import lombok.Data;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.sql.Timestamp;
 
 @Embeddable
+@Data
 public class ContentInfo {
 
     private String title;
