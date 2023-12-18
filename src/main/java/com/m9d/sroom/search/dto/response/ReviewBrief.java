@@ -1,5 +1,6 @@
 package com.m9d.sroom.search.dto.response;
 
+import com.m9d.sroom.common.entity.jpa.ReviewEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,6 +40,17 @@ public class ReviewBrief {
                 .reviewerName(rs.getString("member_name"))
                 .publishedAt(new SimpleDateFormat("yyyy-MM-dd")
                         .format(rs.getTimestamp("submitted_date")))
+                .build();
+    }
+
+    public static ReviewBrief mapper(ReviewEntity review, int index) {
+        return ReviewBrief.builder()
+                .index(index)
+                .reviewContent(review.getContent())
+                .submittedRating(review.getSubmittedRating())
+                .reviewerName(review.getMember().getMemberName())
+                .publishedAt(new SimpleDateFormat("yyyy-MM-dd")
+                        .format(review.getSubmittedDate()))
                 .build();
     }
 }
