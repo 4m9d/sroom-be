@@ -1,0 +1,32 @@
+package com.m9d.sroom.common.repository.quizoption;
+
+import com.m9d.sroom.common.entity.jpa.QuizOptionEntity;
+import org.springframework.stereotype.Repository;
+
+import javax.persistence.EntityManager;
+import java.util.List;
+
+@Repository
+public class QuizOptionJpaRepository {
+
+    private final EntityManager em;
+
+    public QuizOptionJpaRepository(EntityManager em) {
+        this.em = em;
+    }
+
+    QuizOptionEntity save(QuizOptionEntity quizOption) {
+        em.persist(quizOption);
+        return quizOption;
+    }
+
+    QuizOptionEntity getById(Long quizOptionId) {
+        return em.find(QuizOptionEntity.class, quizOptionId);
+    }
+
+    List<QuizOptionEntity> getListByQuizId(Long quizId) {
+        return em.createQuery("select qo from QuizOptionEntity qo where qo.quiz.id = :quizId", QuizOptionEntity.class)
+                .setParameter("quizId", quizId)
+                .getResultList();
+    }
+}
