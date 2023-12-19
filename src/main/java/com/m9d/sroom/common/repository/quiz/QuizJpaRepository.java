@@ -24,12 +24,6 @@ public class QuizJpaRepository {
         return quiz;
     }
 
-    List<QuizEntity> getListByVideoId(Long videoId) {
-        return em.createQuery("select q from QuizEntity q where q.video.id = :videoId", QuizEntity.class)
-                .setParameter("videoId", videoId)
-                .getResultList();
-    }
-
     QuizEntity getById(Long quizId) {
         try {
             return em.find(QuizEntity.class, quizId);

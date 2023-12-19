@@ -8,6 +8,8 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "VIDEO")
@@ -43,4 +45,7 @@ public class VideoEntity {
     private Integer materialStatus;
 
     private Boolean chapterUsage;
+
+    @OneToMany(mappedBy = "video_id")
+    private List<QuizEntity> quizzes = new ArrayList<QuizEntity>();
 }
