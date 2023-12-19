@@ -3,6 +3,8 @@ package com.m9d.sroom.common.entity.jpa;
 import com.m9d.sroom.common.entity.jpa.embedded.Feedback;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "QUIZ")
@@ -28,4 +30,7 @@ public class QuizEntity {
 
     @Embedded
     private Feedback feedback;
+
+    @OneToMany(mappedBy = "quiz_id")
+    private List<QuizOptionEntity> quizOptions = new ArrayList<QuizOptionEntity>();
 }
