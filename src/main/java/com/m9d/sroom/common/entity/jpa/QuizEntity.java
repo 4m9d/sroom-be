@@ -1,13 +1,19 @@
 package com.m9d.sroom.common.entity.jpa;
 
 import com.m9d.sroom.common.entity.jpa.embedded.Feedback;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static lombok.AccessLevel.PROTECTED;
+
 @Entity
 @Table(name = "QUIZ")
+@Getter
+@NoArgsConstructor(access = PROTECTED)
 public class QuizEntity {
 
     @Id

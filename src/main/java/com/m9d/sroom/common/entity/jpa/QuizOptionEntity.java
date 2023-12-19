@@ -1,9 +1,16 @@
 package com.m9d.sroom.common.entity.jpa;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
 import javax.persistence.*;
+
+import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Table(name = "QUIZ_OPTION")
+@Getter
+@NoArgsConstructor(access = PROTECTED)
 public class QuizOptionEntity {
 
     @Id

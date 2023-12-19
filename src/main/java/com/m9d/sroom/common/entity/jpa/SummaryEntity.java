@@ -1,14 +1,19 @@
 package com.m9d.sroom.common.entity.jpa;
 
 import com.m9d.sroom.common.entity.jpa.embedded.Feedback;
-import org.hibernate.annotations.CreationTimestamp;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 
+import static lombok.AccessLevel.PROTECTED;
+
 @Entity
 @Table(name = "SUMMARY")
+@Getter
+@NoArgsConstructor(access = PROTECTED)
 public class SummaryEntity {
 
     @Id
