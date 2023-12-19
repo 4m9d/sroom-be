@@ -58,6 +58,9 @@ public class MemberEntity {
     @OneToMany(mappedBy = "member")
     private List<CourseQuizEntity> courseQuizzes = new ArrayList<CourseQuizEntity>();
 
+    @OneToMany(mappedBy = "member")
+    private List<ReviewEntity> reviews = new ArrayList<ReviewEntity>();
+
     @Builder
     private MemberEntity(String memberCode, String memberName) {
         this.memberCode = memberCode;

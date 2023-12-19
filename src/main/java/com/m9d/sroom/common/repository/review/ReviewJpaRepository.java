@@ -23,9 +23,9 @@ public class ReviewJpaRepository{
         return em.find(ReviewEntity.class, reviewId);
     }
 
-    public List<ReviewEntity> getListByCode(String lectureCode, int reviewOffset, int reviewLimit) {
-        return em.createQuery("select r from ReviewEntity r where r.sourceCode = :lectureCode", ReviewEntity.class)
-                .setParameter("lectureCode", lectureCode)
+    public List<ReviewEntity> getListByCode(String sourceCode, int reviewOffset, int reviewLimit) {
+        return em.createQuery("select r from ReviewEntity r where r.sourceCode = :sourceCode", ReviewEntity.class)
+                .setParameter("sourceCode", sourceCode)
                 .setMaxResults(reviewLimit)
                 .setFirstResult(reviewOffset)
                 .getResultList();

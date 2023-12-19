@@ -35,4 +35,26 @@ public class ReviewEntity {
 
     @CreationTimestamp
     private Timestamp submittedDate;
+
+    private ReviewEntity(LectureEntity lecture, String sourceCode, int submittedRating, String content) {
+        setMember(lecture.getMember());
+        this.lecture = lecture;
+        this.sourceCode = sourceCode;
+        this.submittedRating = submittedRating;
+        this.content = content;
+        this.submittedDate = new Timestamp(System.currentTimeMillis());
+    }
+
+    private void setMember(MemberEntity member) {
+        if (this.member != null) {
+            this.member.getReviews().remove(this);
+        }
+
+        member.getReviews().add(this);
+        this.member = member;
+    }
+
+    public static ReviewEntity create(LectureEntity lecture, String sourceCode, int submittedRating, String content) {
+        return new ReviewEntity(lecture, sourceCode, submittedRating, content);
+    }
 }
