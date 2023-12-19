@@ -17,12 +17,12 @@ public class SummaryJpaRepository {
         this.em = em;
     }
 
-    SummaryEntity save(SummaryEntity summary) {
+    public SummaryEntity save(SummaryEntity summary) {
         em.persist(summary);
         return summary;
     }
 
-    SummaryEntity getById(Long summaryId) {
+    public SummaryEntity getById(Long summaryId) {
         try {
             return em.find(SummaryEntity.class, summaryId);
         } catch (NoResultException e) {

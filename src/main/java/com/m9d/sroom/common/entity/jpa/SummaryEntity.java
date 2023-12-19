@@ -20,7 +20,7 @@ public class SummaryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long summaryId;
 
-    @OneToOne(mappedBy = "summary")
+    @OneToOne
     @JoinColumn(name = "video_id")
     private VideoEntity video;
 
@@ -34,4 +34,25 @@ public class SummaryEntity {
 
     @Embedded
     private Feedback feedBack;
+
+    private SummaryEntity(VideoEntity video, String content) {
+        setVideo(video);
+        this.content = content;
+        this.updatedTime = new Timestamp(System.currentTimeMillis());
+        this.feedBack = new Feedback(0, 0);
+    }
+
+    private void setVideo(VideoEntity video) {
+        if (video.getSummary() == null) {
+            video.setSummary(this);
+            this.isModified = false;
+        } else {
+            this.isModified = true;
+        }
+        this.video = video;
+    }
+
+    public static SummaryEntity create(VideoEntity video, String content) {
+        return new SummaryEntity(video, content);
+    }
 }

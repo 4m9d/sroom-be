@@ -74,4 +74,8 @@ public class VideoEntity {
                 video.getPublishedAt()), video.getViewCount(), video.getLanguage(), video.getLicense(),
                 video.getMembership());
     }
+
+    public void setSummary(SummaryEntity summary) {
+        this.summary = summary;
+    }
 }
