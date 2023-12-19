@@ -15,12 +15,12 @@ public class QuizOptionJpaRepository {
         this.em = em;
     }
 
-    QuizOptionEntity save(QuizOptionEntity quizOption) {
+    public QuizOptionEntity save(QuizOptionEntity quizOption) {
         em.persist(quizOption);
         return quizOption;
     }
 
-    QuizOptionEntity getById(Long quizOptionId) {
+    public QuizOptionEntity getById(Long quizOptionId) {
         return em.find(QuizOptionEntity.class, quizOptionId);
     }
 }

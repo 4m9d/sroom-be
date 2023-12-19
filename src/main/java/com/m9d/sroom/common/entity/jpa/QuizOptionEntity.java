@@ -26,4 +26,23 @@ public class QuizOptionEntity {
     private String optionText;
 
     private int optionIndex;
+
+    private QuizOptionEntity(QuizEntity quiz, String optionText, int optionIndex) {
+        setQuiz(quiz);
+        this.optionIndex = optionIndex;
+        this.optionText = optionText;
+    }
+
+    private void setQuiz(QuizEntity quiz) {
+        if (this.quiz != null) {
+            this.quiz.getQuizOptions().remove(this);
+        }
+
+        quiz.getQuizOptions().add(this);
+        this.quiz = quiz;
+    }
+
+    public static QuizOptionEntity create(QuizEntity quiz, String optionText, int optionIndex) {
+        return new QuizOptionEntity(quiz, optionText, optionIndex);
+    }
 }
