@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import java.util.List;
 
 @Repository
 public class PlaylistVideoJpaRepository {
@@ -29,7 +30,16 @@ public class PlaylistVideoJpaRepository {
     }
 
     public void deleteByPlaylistId(Long playlistId) {
-        em.createQuery("delete from PlaylistVideoEntity pv where pv.playlist.playlistId = :playlistId")
-                .setParameter("playlistId", playlistId);
+        for(PlaylistVideoEntity playlistVideo : findListByPlaylistId(playlistId)){
+            em.remove(playlistVideo);
+        }
+    }
+
+    public List<PlaylistVideoEntity> findListByPlaylistId(Long playlistId) {
+        return em.createQuery(
+                        "select pv from PlaylistVideoEntity pv where pv.playlist.playlistId = :playlistId",
+                        PlaylistVideoEntity.class)
+                .setParameter("playlistId", playlistId)
+                .getResultList();
     }
 }
