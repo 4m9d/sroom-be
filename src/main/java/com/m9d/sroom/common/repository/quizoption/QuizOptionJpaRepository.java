@@ -23,10 +23,4 @@ public class QuizOptionJpaRepository {
     QuizOptionEntity getById(Long quizOptionId) {
         return em.find(QuizOptionEntity.class, quizOptionId);
     }
-
-    List<QuizOptionEntity> getListByQuizId(Long quizId) {
-        return em.createQuery("select qo from QuizOptionEntity qo where qo.quiz.id = :quizId", QuizOptionEntity.class)
-                .setParameter("quizId", quizId)
-                .getResultList();
-    }
 }
