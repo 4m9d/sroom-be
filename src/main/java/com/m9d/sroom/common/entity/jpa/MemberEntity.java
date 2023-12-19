@@ -87,4 +87,11 @@ public class MemberEntity {
                 .flatMap(course -> course.getDailyLogs().stream())
                 .collect(Collectors.toList());
     }
+
+    public Set<String> getVideoCodeSet() {
+        return courses.stream()
+                .flatMap(course -> course.getCourseVideos().stream())
+                .map(courseVideo -> courseVideo.getVideo().getVideoCode())
+                .collect(Collectors.toCollection(HashSet::new));
+    }
 }

@@ -22,7 +22,7 @@ public class PlaylistVideoJdbcRepositoryImpl implements PlaylistVideoRepository 
         return getById(jdbcTemplate.queryForObject(PlaylistVideoRepositorySql.GET_LAST_ID, Long.class));
     }
 
-    private PlaylistVideoEntity getById(Long playlistVideoId) {
+    public PlaylistVideoEntity getById(Long playlistVideoId) {
         return jdbcTemplate.queryForObject(PlaylistVideoRepositorySql.GET_BY_ID, PlaylistVideoEntity.getMapper(), playlistVideoId);
     }
 

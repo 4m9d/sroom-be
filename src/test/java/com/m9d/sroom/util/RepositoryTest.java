@@ -3,12 +3,20 @@ package com.m9d.sroom.util;
 import com.m9d.sroom.common.entity.jpa.CourseDailyLogEntity;
 import com.m9d.sroom.common.entity.jpa.CourseEntity;
 import com.m9d.sroom.common.entity.jpa.MemberEntity;
+import com.m9d.sroom.common.entity.jpa.VideoEntity;
 import com.m9d.sroom.common.repository.course.CourseJpaRepository;
 import com.m9d.sroom.common.repository.coursedailylog.CourseDailyLogJpaRepository;
 import com.m9d.sroom.common.repository.member.MemberJpaRepository;
+import com.m9d.sroom.common.repository.playlist.PlaylistJpaRepository;
+import com.m9d.sroom.common.repository.playlistvideo.PlaylistVideoJpaRepository;
+import com.m9d.sroom.common.repository.video.VideoJpaRepository;
+import com.m9d.sroom.util.constant.ContentConstant;
+import com.m9d.sroom.video.vo.Video;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.EntityManager;
+import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 
 public class RepositoryTest extends SroomTest {
@@ -24,6 +32,15 @@ public class RepositoryTest extends SroomTest {
 
     @Autowired
     protected CourseDailyLogJpaRepository courseDailyLogRepository;
+
+    @Autowired
+    protected VideoJpaRepository videoRepository;
+
+    @Autowired
+    protected PlaylistJpaRepository playlistRepository;
+
+    @Autowired
+    protected PlaylistVideoJpaRepository playlistVideoRepository;
 
     protected MemberEntity getMemberEntity() {
         Optional<MemberEntity> memberEntityOptional = memberRepository.findById(1L);
@@ -52,5 +69,23 @@ public class RepositoryTest extends SroomTest {
                         .quizCount(TestConstant.LOG_QUIZ_COUNT)
                         .lectureCount(TestConstant.LOG_LECTURE_COUNT)
                         .build()));
+    }
+
+    protected VideoEntity saveVideoEntity(String videoCode) {
+        return videoRepository.save(VideoEntity.create(Video.builder()
+                .code(videoCode)
+                .title(ContentConstant.VIDEO_TITLE)
+                .channel(TestConstant.PLAYLIST_CHANNEL)
+                .thumbnail(TestConstant.THUMBNAIL)
+                .description(TestConstant.PLAYLIST_DESCRIPTION)
+                .duration(100)
+                .viewCount(10000L)
+                .publishedAt(new Timestamp(System.currentTimeMillis()))
+                .language("ko")
+                .license("youtube")
+                .membership(false)
+                .reviewCount(0)
+                .rating(0.0)
+                .build()));
     }
 }
