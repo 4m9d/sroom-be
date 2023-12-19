@@ -34,6 +34,10 @@ public class LectureEntity {
 
     private String channel;
 
+    @OneToOne
+    @JoinColumn(name = "review_id")
+    private ReviewEntity review;
+
     @OneToMany(mappedBy = "lecture")
     private List<CourseVideoEntity> courseVideos = new ArrayList<CourseVideoEntity>();
 

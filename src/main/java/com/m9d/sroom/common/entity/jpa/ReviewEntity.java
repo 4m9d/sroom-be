@@ -1,19 +1,18 @@
 package com.m9d.sroom.common.entity.jpa;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
 
+import static lombok.AccessLevel.PROTECTED;
+
 @Entity
 @Table(name = "REVIEW")
 @Getter
-@NoArgsConstructor
-@DynamicInsert
+@NoArgsConstructor(access = PROTECTED)
 public class ReviewEntity {
 
     @Id
@@ -24,7 +23,7 @@ public class ReviewEntity {
     @JoinColumn(name = "member_id")
     private MemberEntity member;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "lecture_id")
     private LectureEntity lecture;
 

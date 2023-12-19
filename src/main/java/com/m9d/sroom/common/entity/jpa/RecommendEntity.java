@@ -2,15 +2,15 @@ package com.m9d.sroom.common.entity.jpa;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.DynamicInsert;
 
 import javax.persistence.*;
+
+import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Table(name = "RECOMMEND")
 @Getter
-@NoArgsConstructor
-@DynamicInsert
+@NoArgsConstructor(access = PROTECTED)
 public class RecommendEntity {
 
     @Id
