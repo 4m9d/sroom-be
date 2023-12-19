@@ -3,12 +3,14 @@ package com.m9d.sroom.util;
 import com.m9d.sroom.common.entity.jpa.*;
 import com.m9d.sroom.common.repository.course.CourseJpaRepository;
 import com.m9d.sroom.common.repository.coursedailylog.CourseDailyLogJpaRepository;
+import com.m9d.sroom.common.repository.coursequiz.CourseQuizJpaRepository;
 import com.m9d.sroom.common.repository.coursevideo.CourseVideoJpaRepository;
 import com.m9d.sroom.common.repository.lecture.LectureJpaRepository;
 import com.m9d.sroom.common.repository.materialfeedback.MaterialFeedbackJpaRepository;
 import com.m9d.sroom.common.repository.member.MemberJpaRepository;
 import com.m9d.sroom.common.repository.playlist.PlaylistJpaRepository;
 import com.m9d.sroom.common.repository.playlistvideo.PlaylistVideoJpaRepository;
+import com.m9d.sroom.common.repository.quiz.QuizJpaRepository;
 import com.m9d.sroom.common.repository.video.VideoJpaRepository;
 import com.m9d.sroom.util.constant.ContentConstant;
 import com.m9d.sroom.video.vo.Video;
@@ -50,6 +52,12 @@ public class RepositoryTest extends SroomTest {
     @Autowired
     protected CourseVideoJpaRepository courseVideoRepository;
 
+    @Autowired
+    protected QuizJpaRepository quizRepository;
+
+    @Autowired
+    protected CourseQuizJpaRepository courseQuizRepository;
+
     protected MemberEntity getMemberEntity() {
         Optional<MemberEntity> memberEntityOptional = memberRepository.findById(1L);
 
@@ -70,14 +78,13 @@ public class RepositoryTest extends SroomTest {
         Optional<CourseDailyLogEntity> courseDailyLogEntityOptional = courseDailyLogRepository.findById(1L);
 
         return courseDailyLogEntityOptional.orElseGet(() -> courseDailyLogRepository.save(
-                CourseDailyLogEntity.create(member, course, TestConstant.LOG_LEARNING_TIME, TestConstant.LOG_QUIZ_COUNT,
+                CourseDailyLogEntity.create(course, TestConstant.LOG_LEARNING_TIME, TestConstant.LOG_QUIZ_COUNT,
                         TestConstant.LOG_LECTURE_COUNT)));
     }
 
     protected LectureEntity getLectureEntity(Long sourceId) {
-        return  lectureRepository.save(LectureEntity.create(getMemberEntity(),
-                getCourseEntity(getMemberEntity()), sourceId, false, 1,
-                TestConstant.PLAYLIST_CHANNEL));
+        return  lectureRepository.save(LectureEntity.create(getCourseEntity(getMemberEntity()),
+                sourceId, false, 1, TestConstant.PLAYLIST_CHANNEL));
     }
 
     protected VideoEntity getVideoEntity(String videoCode) {
@@ -100,7 +107,7 @@ public class RepositoryTest extends SroomTest {
 
     protected CourseVideoEntity getCourseVideoEntity(VideoEntity video) {
         return courseVideoRepository.save(
-                CourseVideoEntity.createWithoutSummary(getMemberEntity(), getCourseEntity(getMemberEntity()),
-                        video, getLectureEntity(video.getVideoId()), 1, 1));
+                CourseVideoEntity.createWithoutSummary(getCourseEntity(getMemberEntity()), video,
+                        getLectureEntity(video.getVideoId()), 1, 1));
     }
 }

@@ -34,16 +34,15 @@ public class LectureEntity {
 
     private String channel;
 
-    @OneToOne
-    @JoinColumn(name = "review_id")
+    @OneToOne(mappedBy = "lecture")
     private ReviewEntity review;
 
     @OneToMany(mappedBy = "lecture")
     private List<CourseVideoEntity> courseVideos = new ArrayList<CourseVideoEntity>();
 
-    private LectureEntity(MemberEntity member, CourseEntity course, Long sourceId, Boolean isPlaylist,
-                          Integer lectureIndex, String channel) {
-        setMember(member);
+    private LectureEntity(CourseEntity course, Long sourceId, Boolean isPlaylist, Integer lectureIndex,
+                          String channel) {
+        setMember(course.getMember());
         setCourse(course);
         this.sourceId = sourceId;
         this.isPlaylist = isPlaylist;
@@ -70,8 +69,8 @@ public class LectureEntity {
         this.member = member;
     }
 
-    public static LectureEntity create(MemberEntity member, CourseEntity course, Long sourceId, Boolean isPlaylist,
-                                       Integer lectureIndex, String channel) {
-        return new LectureEntity(member, course, sourceId, isPlaylist, lectureIndex, channel);
+    public static LectureEntity create(CourseEntity course, Long sourceId, Boolean isPlaylist, Integer lectureIndex,
+                                       String channel) {
+        return new LectureEntity(course, sourceId, isPlaylist, lectureIndex, channel);
     }
 }

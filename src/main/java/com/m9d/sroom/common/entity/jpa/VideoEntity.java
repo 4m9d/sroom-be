@@ -51,7 +51,7 @@ public class VideoEntity {
 
     private Boolean chapterUsage;
 
-    @OneToMany(mappedBy = "video_id")
+    @OneToMany(mappedBy = "video")
     private List<QuizEntity> quizzes = new ArrayList<QuizEntity>();
 
     private VideoEntity(String videoCode, ContentInfo contentInfo, Long viewCount, String language, String license,

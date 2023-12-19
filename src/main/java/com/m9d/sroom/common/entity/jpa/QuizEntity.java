@@ -1,6 +1,7 @@
 package com.m9d.sroom.common.entity.jpa;
 
 import com.m9d.sroom.common.entity.jpa.embedded.Feedback;
+import com.m9d.sroom.quiz.QuizType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -37,6 +38,30 @@ public class QuizEntity {
     @Embedded
     private Feedback feedback;
 
-    @OneToMany(mappedBy = "quiz_id")
+    @OneToMany(mappedBy = "quiz")
     private List<QuizOptionEntity> quizOptions = new ArrayList<QuizOptionEntity>();
+
+    private QuizEntity(VideoEntity video, int quizType, String question, String subjectiveAnswer, Integer choiceAnswer) {
+        setVideo(video);
+        this.type = quizType;
+        this.question = question;
+        this.subjectiveAnswer = subjectiveAnswer;
+        this.choiceAnswer = choiceAnswer;
+        this.feedback = new Feedback(0, 0);
+    }
+
+    private void setVideo(VideoEntity video) {
+        if (this.video != null) {
+            this.video.getQuizzes().remove(this);
+        }
+
+        this.video = video;
+        video.getQuizzes().add(this);
+    }
+
+    public static QuizEntity creatChoiceType(VideoEntity video, String question, int choiceAnswer) {
+        return new QuizEntity(video, QuizType.MULTIPLE_CHOICE.getValue(), question, null, choiceAnswer);
+    }
+
+
 }

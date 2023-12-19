@@ -21,7 +21,7 @@ public class LectureRepositoryTest extends RepositoryTest {
         VideoEntity video = getVideoEntity(ContentConstant.VIDEO_CODE_LIST[0]);
 
         //when
-        LectureEntity lecture = LectureEntity.create(member, course, video.getVideoId(), false, 1,
+        LectureEntity lecture = LectureEntity.create(course, video.getVideoId(), false, 1,
                 video.getContentInfo().getChannel());
         lectureRepository.save(lecture);
 
@@ -40,7 +40,7 @@ public class LectureRepositoryTest extends RepositoryTest {
         MemberEntity member = getMemberEntity();
         CourseEntity course = getCourseEntity(member);
         VideoEntity video = getVideoEntity(ContentConstant.VIDEO_CODE_LIST[0]);
-        LectureEntity lecture = LectureEntity.create(member, course, video.getVideoId(), false, 1,
+        LectureEntity lecture = LectureEntity.create(course, video.getVideoId(), false, 1,
                 video.getContentInfo().getChannel());
         lectureRepository.save(lecture);
 

@@ -19,12 +19,12 @@ public class QuizJpaRepository {
         this.em = em;
     }
 
-    QuizEntity save(QuizEntity quiz) {
+    public QuizEntity save(QuizEntity quiz) {
         em.persist(quiz);
         return quiz;
     }
 
-    QuizEntity getById(Long quizId) {
+    public QuizEntity getById(Long quizId) {
         try {
             return em.find(QuizEntity.class, quizId);
         } catch (NoResultException e) {
@@ -32,7 +32,7 @@ public class QuizJpaRepository {
         }
     }
 
-    Optional<QuizEntity> findById(Long quizId) {
+    public Optional<QuizEntity> findById(Long quizId) {
         return Optional.ofNullable(getById(quizId));
     }
 }

@@ -16,10 +16,10 @@ public class CourseVideoRepositoryTest extends RepositoryTest {
         MemberEntity member = getMemberEntity();
         CourseEntity course = getCourseEntity(member);
         VideoEntity video = getVideoEntity(ContentConstant.VIDEO_CODE_LIST[0]);
-        LectureEntity lecture = lectureRepository.save(LectureEntity.create(member, course, video.getVideoId(), false, 1,
-                video.getContentInfo().getChannel()));
-        CourseVideoEntity courseVideo = CourseVideoEntity.createWithoutSummary(member, course, video, lecture,
-                1, 1);
+        LectureEntity lecture = lectureRepository.save(LectureEntity.create(course, video.getVideoId(),
+                false, 1, video.getContentInfo().getChannel()));
+        CourseVideoEntity courseVideo = CourseVideoEntity.createWithoutSummary(course, video, lecture, 1,
+                1);
 
         //when
         courseVideoRepository.save(courseVideo);

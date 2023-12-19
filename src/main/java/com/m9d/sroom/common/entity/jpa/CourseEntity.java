@@ -57,6 +57,9 @@ public class CourseEntity {
     @OneToMany(mappedBy = "course")
     private List<CourseDailyLogEntity> dailyLogs = new ArrayList<CourseDailyLogEntity>();
 
+    @OneToMany(mappedBy = "course")
+    private List<CourseQuizEntity> courseQuizzes = new ArrayList<CourseQuizEntity>();
+
     private CourseEntity(MemberEntity member, String courseTitle, String thumbnail, Scheduling scheduling) {
         this.courseTitle = courseTitle;
         this.courseDuration = 0;

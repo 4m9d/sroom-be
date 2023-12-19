@@ -50,13 +50,13 @@ public class MemberEntity {
     private List<CourseDailyLogEntity> dailyLogs = new ArrayList<CourseDailyLogEntity>();
 
     @OneToMany(mappedBy = "member")
-    private List<CourseQuizEntity> quizzes = new ArrayList<CourseQuizEntity>();
-
-    @OneToMany(mappedBy = "member")
     private List<MaterialFeedbackEntity> feedbacks = new ArrayList<MaterialFeedbackEntity>();
 
     @OneToMany(mappedBy = "member")
     private List<LectureEntity> lectures = new ArrayList<LectureEntity>();
+
+    @OneToMany(mappedBy = "member")
+    private List<CourseQuizEntity> courseQuizzes = new ArrayList<CourseQuizEntity>();
 
     @Builder
     private MemberEntity(String memberCode, String memberName) {
@@ -128,4 +128,11 @@ public class MemberEntity {
                 .collect(Collectors.toList());
     }
 
+    public List<CourseQuizEntity> getWrongQuizList(int limit) {
+        return courseQuizzes.stream()
+                .filter(q -> q.getGrading().getIsCorrect().equals(false))
+                .sorted(Comparator.comparing((CourseQuizEntity q) -> q.getGrading().getSubmittedTime()).reversed())
+                .limit(limit)
+                .collect(Collectors.toList());
+    }
 }

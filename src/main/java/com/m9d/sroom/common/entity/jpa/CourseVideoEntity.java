@@ -61,15 +61,15 @@ public class CourseVideoEntity {
         }
     }
 
-    private CourseVideoEntity(MemberEntity member, CourseEntity course, VideoEntity video, LectureEntity lecture,
-                              SummaryEntity summary, int section, int videoIndex) {
+    private CourseVideoEntity(CourseEntity course, VideoEntity video, LectureEntity lecture, SummaryEntity summary,
+                              int section, int videoIndex) {
         this.video = video;
         if (summary != null) {
             this.summary = summary;  // createWithoutSummary 메서드를 통해 생성된 courseVideo 의 summary_id 는 입력되지 않습니다.
         }
         this.sequence = new Sequence(section, videoIndex, lecture.getLectureIndex());
         this.status = new LearningStatus(0, false, null, 0);
-        setMember(member);
+        setMember(course.getMember());
         setCourse(course);
         setLecture(lecture);
     }
@@ -101,15 +101,15 @@ public class CourseVideoEntity {
         lecture.getCourseVideos().add(this);
     }
 
-    public static CourseVideoEntity createWithoutSummary(MemberEntity member, CourseEntity course, VideoEntity video,
+    public static CourseVideoEntity createWithoutSummary(CourseEntity course, VideoEntity video,
                                                          LectureEntity lecture, int section, int videoIndex) {
-        return new CourseVideoEntity(member, course, video, lecture, null, section, videoIndex);
+        return new CourseVideoEntity(course, video, lecture, null, section, videoIndex);
     }
 
-    public static CourseVideoEntity createWithSummary(MemberEntity member, CourseEntity course, VideoEntity video,
+    public static CourseVideoEntity createWithSummary(CourseEntity course, VideoEntity video,
                                                       LectureEntity lecture, SummaryEntity summary, int section,
                                                       int videoIndex) {
-        return new CourseVideoEntity(member, course, video, lecture, summary, section, videoIndex);
+        return new CourseVideoEntity(course, video, lecture, summary, section, videoIndex);
     }
 
     public Optional<CourseQuizEntity> findCourseQuizByQuizId(Long quizId) {

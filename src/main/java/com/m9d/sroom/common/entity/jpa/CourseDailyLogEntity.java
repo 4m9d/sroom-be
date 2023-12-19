@@ -38,9 +38,8 @@ public class CourseDailyLogEntity {
 
     private Integer lectureCount;
 
-    private CourseDailyLogEntity(MemberEntity member, CourseEntity course, Integer learningTime,
-                                 Integer quizCount, Integer lectureCount) {
-        setMember(member);
+    private CourseDailyLogEntity(CourseEntity course, Integer learningTime, Integer quizCount, Integer lectureCount) {
+        setMember(course.getMember());
         setCourse(course);
         this.dailyLogDate = new Date();
         this.learningTime = learningTime;
@@ -48,9 +47,9 @@ public class CourseDailyLogEntity {
         this.lectureCount = lectureCount;
     }
 
-    public static CourseDailyLogEntity create(MemberEntity member, CourseEntity course, Integer learningTime,
-                                              Integer quizCount, Integer lectureCount) {
-        return new CourseDailyLogEntity(member, course, learningTime, quizCount, lectureCount);
+    public static CourseDailyLogEntity create(CourseEntity course, Integer learningTime, Integer quizCount, Integer
+            lectureCount) {
+        return new CourseDailyLogEntity(course, learningTime, quizCount, lectureCount);
     }
 
     private void setMember(MemberEntity member) {

@@ -1,14 +1,17 @@
 package com.m9d.sroom.common.entity.jpa.embedded;
 
-import lombok.Data;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.Embeddable;
 import java.sql.Timestamp;
 
 @Embeddable
-@Data
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Grading {
 
     private String submittedAnswer;
