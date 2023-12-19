@@ -2,7 +2,9 @@ package com.m9d.sroom.member;
 
 import com.m9d.sroom.common.entity.jpa.CourseDailyLogEntity;
 import com.m9d.sroom.common.entity.jpa.CourseEntity;
+import com.m9d.sroom.common.entity.jpa.MaterialFeedbackEntity;
 import com.m9d.sroom.common.entity.jpa.MemberEntity;
+import com.m9d.sroom.material.model.MaterialType;
 import com.m9d.sroom.util.RepositoryTest;
 import com.m9d.sroom.util.TestConstant;
 import org.junit.jupiter.api.Assertions;
@@ -49,5 +51,20 @@ public class MemberEntityTest extends RepositoryTest {
         //then
         Assertions.assertEquals(member.getCoursesByLatestOrder().size(), 2);
         Assertions.assertEquals(member.getCoursesByLatestOrder().get(0), course2);
+    }
+
+    @Test
+    @DisplayName("해당 멤버가 남긴 피드백을 조회합니다.")
+    void getFeedbackByMember() {
+        //given
+        MemberEntity member = getMemberEntity();
+
+        //when
+        MaterialFeedbackEntity feedbackEntity = feedbackRepository.save(MaterialFeedbackEntity.create(member,
+                1L, MaterialType.QUIZ.getValue(), false));
+
+        //then
+        Assertions.assertEquals(member.getFeedbacks().size(), 1);
+        Assertions.assertEquals(member.getFeedbacks().get(0), feedbackEntity);
     }
 }

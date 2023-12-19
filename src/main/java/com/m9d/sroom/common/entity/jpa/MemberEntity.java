@@ -27,6 +27,15 @@ public class MemberEntity {
 
     private String refreshToken;
 
+    @Embedded
+    private MemberStats stats;
+
+    @CreationTimestamp
+    private Timestamp signUpTime;
+
+    private Boolean status;
+
+    private String bio;
 
     @OneToMany(mappedBy = "member")
     private List<CourseEntity> courses = new ArrayList<CourseEntity>();
@@ -39,16 +48,6 @@ public class MemberEntity {
 
     @OneToMany(mappedBy = "member")
     private List<MaterialFeedbackEntity> feedbacks = new ArrayList<MaterialFeedbackEntity>();
-
-    @Embedded
-    private MemberStats stats;
-
-    @CreationTimestamp
-    private Timestamp signUpTime;
-
-    private Boolean status;
-
-    private String bio;
 
     @Builder
     private MemberEntity(String memberCode, String memberName) {
@@ -94,4 +93,12 @@ public class MemberEntity {
                 .map(courseVideo -> courseVideo.getVideo().getVideoCode())
                 .collect(Collectors.toCollection(HashSet::new));
     }
+
+    public Optional<MaterialFeedbackEntity> findFeedbackByMaterialIdAndType(int materialType, Long materialId) {
+        return feedbacks.stream()
+                .filter(f -> f.getContentType().equals(materialType))
+                .filter(f -> f.getContentId().equals(materialId))
+                .findFirst();
+    }
+
 }

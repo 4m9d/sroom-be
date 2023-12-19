@@ -6,6 +6,7 @@ import com.m9d.sroom.common.entity.jpa.MemberEntity;
 import com.m9d.sroom.common.entity.jpa.VideoEntity;
 import com.m9d.sroom.common.repository.course.CourseJpaRepository;
 import com.m9d.sroom.common.repository.coursedailylog.CourseDailyLogJpaRepository;
+import com.m9d.sroom.common.repository.materialfeedback.MaterialFeedbackJpaRepository;
 import com.m9d.sroom.common.repository.member.MemberJpaRepository;
 import com.m9d.sroom.common.repository.playlist.PlaylistJpaRepository;
 import com.m9d.sroom.common.repository.playlistvideo.PlaylistVideoJpaRepository;
@@ -42,6 +43,9 @@ public class RepositoryTest extends SroomTest {
     @Autowired
     protected PlaylistVideoJpaRepository playlistVideoRepository;
 
+    @Autowired
+    protected MaterialFeedbackJpaRepository feedbackRepository;
+
     protected MemberEntity getMemberEntity() {
         Optional<MemberEntity> memberEntityOptional = memberRepository.findById(1L);
 
@@ -71,7 +75,7 @@ public class RepositoryTest extends SroomTest {
                         .build()));
     }
 
-    protected VideoEntity saveVideoEntity(String videoCode) {
+    protected VideoEntity getVideoEntity(String videoCode) {
         return videoRepository.save(VideoEntity.create(Video.builder()
                 .code(videoCode)
                 .title(ContentConstant.VIDEO_TITLE)
