@@ -2,6 +2,7 @@ package com.m9d.sroom.common.entity.jpa;
 
 import com.m9d.sroom.common.entity.jpa.embedded.Scheduling;
 import com.m9d.sroom.course.vo.CourseVideo;
+import com.m9d.sroom.search.dto.response.VideoWatchInfo;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -56,7 +57,7 @@ public class CourseEntity {
     @OneToMany(mappedBy = "course")
     private List<CourseDailyLogEntity> dailyLogs = new ArrayList<CourseDailyLogEntity>();
 
-    public CourseEntity(MemberEntity member, String courseTitle, String thumbnail, Scheduling scheduling) {
+    private CourseEntity(MemberEntity member, String courseTitle, String thumbnail, Scheduling scheduling) {
         this.courseTitle = courseTitle;
         this.courseDuration = 0;
         this.lastViewTime = new Timestamp(System.currentTimeMillis());
@@ -105,5 +106,66 @@ public class CourseEntity {
                             cal1.get(Calendar.DAY_OF_MONTH) == cal2.get(Calendar.DAY_OF_MONTH);
                 })
                 .findFirst();
+    }
+
+    public CourseVideoEntity getCourseVideoByIndex(int videoIndex) {
+        return courseVideos.stream()
+                .filter(v -> v.getSequence().getVideoIndex() == videoIndex)
+                .findFirst()
+                .orElse(null);
+    }
+
+    public List<CourseVideoEntity> getCourseVideoListOrderByIndex() {
+        return courseVideos.stream()
+                .sorted(Comparator.comparingInt(v -> v.getSequence().getVideoIndex()))
+                .collect(Collectors.toList());
+    }
+
+    public Optional<CourseVideoEntity> getCourseVideoByPrevIndex(int videoIndex) {
+        return courseVideos.stream()
+                .filter(v -> v.getSequence().getVideoIndex() > videoIndex)
+                .min(Comparator.comparingInt(v -> v.getSequence().getVideoIndex()));
+    }
+
+    public CourseVideoEntity getLastCourseVideo() {
+        List<CourseVideoEntity> courseVideosViewed = courseVideos.stream()
+                .filter(courseVideo -> courseVideo.getStatus().getLastViewTime() != null)
+                .collect(Collectors.toList());
+
+        if (!courseVideosViewed.isEmpty()) {
+            return courseVideosViewed.stream()
+                    .max(Comparator.comparing(courseVideo -> courseVideo.getStatus().getLastViewTime()))
+                    .get();
+        } else {
+            return courseVideos.stream()
+                    .min(Comparator.comparing(courseVideo -> courseVideo.getSequence().getVideoIndex()))
+                    .get();
+        }
+    }
+
+    public List<CourseVideoEntity> getCourseVideoBySection(int section) {
+        return courseVideos.stream()
+                .filter(v -> v.getSequence().getSection() == section)
+                .sorted(Comparator.comparingInt(v -> v.getSequence().getVideoIndex()))
+                .collect(Collectors.toList());
+    }
+
+    public int countCompletedVideo() {
+        return (int) courseVideos.stream()
+                .filter(courseVideo -> courseVideo.getStatus().getIsComplete())
+                .count();
+    }
+
+    public List<VideoWatchInfo> getWatchInfoListBySection(int section) {
+        return courseVideos.stream()
+                .filter(courseVideo -> courseVideo.getSequence().getSection() == section)
+                .map(CourseVideoEntity::toWatchInfo)
+                .collect(Collectors.toList());
+    }
+
+    public HashSet<String> getLectureChannelSet() {
+        return lectures.stream()
+                .map(LectureEntity::getChannel)
+                .collect(Collectors.toCollection(HashSet::new));
     }
 }

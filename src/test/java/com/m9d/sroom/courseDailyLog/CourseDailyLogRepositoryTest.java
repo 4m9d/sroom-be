@@ -22,13 +22,8 @@ public class CourseDailyLogRepositoryTest extends RepositoryTest {
         int learningTime = 100;
         MemberEntity member = getMemberEntity();
         CourseEntity course = getCourseEntity(member);
-        CourseDailyLogEntity dailyLog = CourseDailyLogEntity.builder()
-                .member(member)
-                .course(course)
-                .learningTime(learningTime)
-                .quizCount(2)
-                .lectureCount(1)
-                .build();
+        CourseDailyLogEntity dailyLog = CourseDailyLogEntity.create(member, course, learningTime, 2,
+                1);
 
         //when
         dailyLogRepository.save(dailyLog);

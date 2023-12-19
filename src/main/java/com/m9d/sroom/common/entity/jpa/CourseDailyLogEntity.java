@@ -38,16 +38,28 @@ public class CourseDailyLogEntity {
 
     private Integer lectureCount;
 
-    @Builder
     private CourseDailyLogEntity(MemberEntity member, CourseEntity course, Integer learningTime,
                                  Integer quizCount, Integer lectureCount) {
-        this.member = member;
-        this.course = course;
+        setMember(member);
+        setCourse(course);
         this.dailyLogDate = new Date();
         this.learningTime = learningTime;
         this.quizCount = quizCount;
         this.lectureCount = lectureCount;
-        this.course.getDailyLogs().add(this);
+    }
+
+    public static CourseDailyLogEntity create(MemberEntity member, CourseEntity course, Integer learningTime,
+                                              Integer quizCount, Integer lectureCount) {
+        return new CourseDailyLogEntity(member, course, learningTime, quizCount, lectureCount);
+    }
+
+    private void setMember(MemberEntity member) {
+        if (this.member != null) {
+            this.member.getDailyLogs().remove(this);
+        }
+
+        this.member = member;
+        member.getDailyLogs().add(this);
     }
 
     private void setCourse(CourseEntity course) {

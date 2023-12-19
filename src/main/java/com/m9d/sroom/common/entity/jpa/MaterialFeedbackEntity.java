@@ -27,7 +27,6 @@ public class MaterialFeedbackEntity {
 
     private Boolean rating;
 
-    @Builder
     private MaterialFeedbackEntity(MemberEntity member, Long contentId, Integer contentType, Boolean rating) {
         this.contentId = contentId;
         this.contentType = contentType;
@@ -45,11 +44,6 @@ public class MaterialFeedbackEntity {
     }
 
     public static MaterialFeedbackEntity create(MemberEntity member, Long contentId, int contentType, boolean rating) {
-        return MaterialFeedbackEntity.builder()
-                .member(member)
-                .contentId(contentId)
-                .contentType(contentType)
-                .rating(rating)
-                .build();
+        return new MaterialFeedbackEntity(member, contentId, contentType, rating);
     }
 }

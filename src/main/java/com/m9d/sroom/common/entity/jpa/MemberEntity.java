@@ -7,8 +7,11 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import java.lang.reflect.Member;
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Entity
@@ -41,6 +44,9 @@ public class MemberEntity {
     private List<CourseEntity> courses = new ArrayList<CourseEntity>();
 
     @OneToMany(mappedBy = "member")
+    private List<CourseVideoEntity> courseVideos = new ArrayList<CourseVideoEntity>();
+
+    @OneToMany(mappedBy = "member")
     private List<CourseDailyLogEntity> dailyLogs = new ArrayList<CourseDailyLogEntity>();
 
     @OneToMany(mappedBy = "member")
@@ -48,6 +54,9 @@ public class MemberEntity {
 
     @OneToMany(mappedBy = "member")
     private List<MaterialFeedbackEntity> feedbacks = new ArrayList<MaterialFeedbackEntity>();
+
+    @OneToMany(mappedBy = "member")
+    private List<LectureEntity> lectures = new ArrayList<LectureEntity>();
 
     @Builder
     private MemberEntity(String memberCode, String memberName) {
@@ -77,7 +86,8 @@ public class MemberEntity {
     public List<CourseEntity> getCoursesByLatestOrder() {
         return courses.stream()
                 .sorted(Comparator.comparing(CourseEntity::isCompleted)
-                        .thenComparing(CourseEntity::getLastViewTime, Comparator.reverseOrder()))
+                        .thenComparing(CourseEntity::getLastViewTime, Comparator.reverseOrder())
+                        .thenComparing(CourseEntity::getCourseId, Comparator.reverseOrder()))
                 .collect(Collectors.toList());
     }
 
@@ -99,6 +109,23 @@ public class MemberEntity {
                 .filter(f -> f.getContentType().equals(materialType))
                 .filter(f -> f.getContentId().equals(materialId))
                 .findFirst();
+    }
+
+    public List<String> getChannelListOrderByCount() {
+        Map<String, Integer> channelCounts = new HashMap<>();
+        for (LectureEntity lecture : lectures) {
+            channelCounts.put(
+                    lecture.getChannel(), channelCounts.getOrDefault(lecture.getChannel(), 0) + 1);
+        }
+
+        List<Map.Entry<String, Integer>> sortedEntryList = channelCounts.entrySet()
+                .stream()
+                .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                .collect(Collectors.toList());
+
+        return sortedEntryList.stream()
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
     }
 
 }

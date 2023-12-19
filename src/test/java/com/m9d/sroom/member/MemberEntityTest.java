@@ -1,9 +1,6 @@
 package com.m9d.sroom.member;
 
-import com.m9d.sroom.common.entity.jpa.CourseDailyLogEntity;
-import com.m9d.sroom.common.entity.jpa.CourseEntity;
-import com.m9d.sroom.common.entity.jpa.MaterialFeedbackEntity;
-import com.m9d.sroom.common.entity.jpa.MemberEntity;
+import com.m9d.sroom.common.entity.jpa.*;
 import com.m9d.sroom.material.model.MaterialType;
 import com.m9d.sroom.util.RepositoryTest;
 import com.m9d.sroom.util.TestConstant;
@@ -12,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Date;
+import java.util.List;
 
 public class MemberEntityTest extends RepositoryTest {
 
@@ -23,13 +21,8 @@ public class MemberEntityTest extends RepositoryTest {
         CourseEntity course = getCourseEntity(member);
 
         //when
-        courseDailyLogRepository.save(CourseDailyLogEntity.builder()
-                .member(member)
-                .course(course)
-                .learningTime(TestConstant.LOG_LEARNING_TIME)
-                .quizCount(TestConstant.LOG_QUIZ_COUNT)
-                .lectureCount(TestConstant.LOG_LECTURE_COUNT)
-                .build());
+        courseDailyLogRepository.save(CourseDailyLogEntity.create(member, course, TestConstant.LOG_LEARNING_TIME,
+                TestConstant.LOG_QUIZ_COUNT, TestConstant.LOG_LECTURE_COUNT));
 
         //then
         Assertions.assertEquals(member.getLogList().size(), 1);
@@ -47,6 +40,9 @@ public class MemberEntityTest extends RepositoryTest {
                 member, TestConstant.COURSE_TITLE, TestConstant.THUMBNAIL));
         CourseEntity course2 = courseRepository.save(CourseEntity.createWithSchedule(member, TestConstant.COURSE_TITLE, TestConstant.THUMBNAIL,
                 true, 2, new Date(), 30));
+
+        System.out.println(course1.getLastViewTime());
+        System.out.println(course2.getLastViewTime());
 
         //then
         Assertions.assertEquals(member.getCoursesByLatestOrder().size(), 2);
@@ -66,5 +62,28 @@ public class MemberEntityTest extends RepositoryTest {
         //then
         Assertions.assertEquals(member.getFeedbacks().size(), 1);
         Assertions.assertEquals(member.getFeedbacks().get(0), feedbackEntity);
+    }
+
+    @Test
+    @DisplayName("많이 등록된 채널 순서대로 리스트를 불러옵니다.")
+    void getChannelListOrderByCount() {
+        //given
+        MemberEntity member = getMemberEntity();
+        CourseEntity course = getCourseEntity(member);
+        String channelMany = "다수의 채널";
+        String channelFew = "소수의 채널";
+
+        //when
+        lectureRepository.save(LectureEntity.create(member, course, 1L, false, 1,
+                channelFew));
+        lectureRepository.save(LectureEntity.create(member, course, 1L, false, 1,
+                channelMany));
+        lectureRepository.save(LectureEntity.create(member, course, 1L, false, 1,
+                channelMany));
+
+        //then
+        List<String> channelList = member.getChannelListOrderByCount();
+        Assertions.assertEquals(channelList.size(), 2);
+        Assertions.assertEquals(channelList.get(0), channelMany);
     }
 }
