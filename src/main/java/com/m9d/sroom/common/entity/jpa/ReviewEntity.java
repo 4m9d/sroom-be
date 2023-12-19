@@ -24,7 +24,7 @@ public class ReviewEntity {
     @JoinColumn(name = "member_id")
     private MemberEntity member;
 
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "lecture_id")
     private LectureEntity lecture;
 

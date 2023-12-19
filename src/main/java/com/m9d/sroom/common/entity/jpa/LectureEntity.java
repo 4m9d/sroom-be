@@ -27,4 +27,8 @@ public class LectureEntity {
     private Boolean isReviewed;
 
     private String channel;
+
+    @OneToOne
+    @JoinColumn(name = "review_id")
+    private ReviewEntity review;
 }

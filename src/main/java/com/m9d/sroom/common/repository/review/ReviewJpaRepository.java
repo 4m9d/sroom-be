@@ -23,12 +23,6 @@ public class ReviewJpaRepository{
         return em.find(ReviewEntity.class, reviewId);
     }
 
-    public ReviewEntity getByLectureId(Long lectureId) {
-        return em.createQuery("select r from ReviewEntity r where r.lecture.lectureId = :lectureId", ReviewEntity.class)
-                .setParameter("lectureId", lectureId)
-                .getSingleResult();
-    }
-
     public List<ReviewEntity> getListByCode(String lectureCode, int reviewOffset, int reviewLimit) {
         return em.createQuery("select r from ReviewEntity r where r.sourceCode = :lectureCode", ReviewEntity.class)
                 .setParameter("lectureCode", lectureCode)
