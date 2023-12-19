@@ -1,12 +1,19 @@
 package com.m9d.sroom.common.entity.jpa;
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
 
+import static lombok.AccessLevel.PROTECTED;
+
 @Entity
 @Table(name = "COURSE_DAILY_LOG")
+@Getter
+@NoArgsConstructor(access = PROTECTED)
 public class CourseDailyLogEntity {
 
     @Id
@@ -30,4 +37,24 @@ public class CourseDailyLogEntity {
     private Integer quizCount;
 
     private Integer lectureCount;
+
+    @Builder
+    private CourseDailyLogEntity(MemberEntity member, CourseEntity course, Integer learningTime,
+                                 Integer quizCount, Integer lectureCount) {
+        this.member = member;
+        this.course = course;
+        this.dailyLogDate = new Date();
+        this.learningTime = learningTime;
+        this.quizCount = quizCount;
+        this.lectureCount = lectureCount;
+        this.course.getDailyLogs().add(this);
+    }
+
+    private void setCourse(CourseEntity course) {
+        if (this.course != null) {
+            this.course.getDailyLogs().remove(this);
+        }
+        this.course = course;
+        course.getDailyLogs().add(this);
+    }
 }

@@ -1,7 +1,7 @@
 package com.m9d.sroom.member;
 
 import com.m9d.sroom.common.entity.jpa.MemberEntity;
-import com.m9d.sroom.common.repository.member.MemberJpaRepositoryImpl;
+import com.m9d.sroom.common.repository.member.MemberJpaRepository;
 import com.m9d.sroom.util.SroomTest;
 import com.m9d.sroom.util.TestConstant;
 import org.junit.jupiter.api.Assertions;
@@ -14,7 +14,7 @@ import java.util.Optional;
 public class MemberRepositoryTest extends SroomTest {
 
     @Autowired
-    private MemberJpaRepositoryImpl memberJpaRepository;
+    private MemberJpaRepository memberJpaRepository;
 
     @Test
     @DisplayName("저장되지 않은 member는 Optional.isEmpty() = true 입니다.")
@@ -33,8 +33,8 @@ public class MemberRepositoryTest extends SroomTest {
     @DisplayName("저장된 member는 조회에 성공합니다.")
     void getMemberIfSaved() {
         MemberEntity memberEntity = MemberEntity.builder()
-                .memberCode(TestConstant.MEMBER_CODE)
                 .memberName(TestConstant.MEMBER_PROFILE)
+                .memberCode(TestConstant.MEMBER_CODE)
                 .build();
         memberJpaRepository.save(memberEntity);
 

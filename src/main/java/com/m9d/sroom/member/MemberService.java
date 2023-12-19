@@ -47,7 +47,7 @@ public class MemberService {
         return generateLogin(memberEntity, (String) idToken.getPayload().get("picture"));
     }
 
-    public GoogleIdToken verifyCredential(String credential) throws Exception {
+    private GoogleIdToken verifyCredential(String credential) throws Exception {
         GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(),
                 GsonFactory.getDefaultInstance())
                 .setAudience(Collections.singletonList(clientId))

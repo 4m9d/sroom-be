@@ -1,21 +1,20 @@
 package com.m9d.sroom.common.entity.jpa;
 
 import com.m9d.sroom.common.entity.jpa.embedded.MemberStats;
+import com.m9d.sroom.course.CourseMapper;
+import com.m9d.sroom.search.dto.response.CourseBrief;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.DynamicInsert;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "MEMBER")
 @Getter
-@NoArgsConstructor
-@DynamicInsert
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberEntity {
 
     @Id
@@ -28,6 +27,19 @@ public class MemberEntity {
 
     private String refreshToken;
 
+
+    @OneToMany(mappedBy = "member")
+    private List<CourseEntity> courses = new ArrayList<CourseEntity>();
+
+    @OneToMany(mappedBy = "member")
+    private List<CourseDailyLogEntity> dailyLogs = new ArrayList<CourseDailyLogEntity>();
+
+    @OneToMany(mappedBy = "member")
+    private List<CourseQuizEntity> quizzes = new ArrayList<CourseQuizEntity>();
+
+    @OneToMany(mappedBy = "member")
+    private List<MaterialFeedbackEntity> feedbacks = new ArrayList<MaterialFeedbackEntity>();
+
     @Embedded
     private MemberStats stats;
 
@@ -38,22 +50,41 @@ public class MemberEntity {
 
     private String bio;
 
-    @OneToMany(mappedBy = "member")
-    private List<CourseEntity> courses = new ArrayList<CourseEntity>();
-
-    public Integer countCompletedCourse() {
-        return (int) courses.stream()
-                .filter(courseEntity -> courseEntity.getProgress().equals(100))
-                .count();
-    }
-
     @Builder
-    public MemberEntity(String memberCode, String memberName) {
+    private MemberEntity(String memberCode, String memberName) {
         this.memberCode = memberCode;
         this.memberName = memberName;
+        this.refreshToken = "";
+        this.stats = new MemberStats(0, 0, 0, 0);
+        this.signUpTime = new Timestamp(System.currentTimeMillis());
+        this.status = true;
+        this.bio = "";
     }
 
     public void updateName(String newName) {
         this.memberName = newName;
+    }
+
+    public void updateRefreshToken(String newToken) {
+        this.refreshToken = newToken;
+    }
+
+    public List<CourseBrief> getCourseBriefList() {
+        return courses.stream()
+                .map(CourseMapper::getBriefByEntity)
+                .collect(Collectors.toList());
+    }
+
+    public List<CourseEntity> getCoursesByLatestOrder() {
+        return courses.stream()
+                .sorted(Comparator.comparing(CourseEntity::isCompleted)
+                        .thenComparing(CourseEntity::getLastViewTime, Comparator.reverseOrder()))
+                .collect(Collectors.toList());
+    }
+
+    public List<CourseDailyLogEntity> getLogList() {
+        return courses.stream()
+                .flatMap(course -> course.getDailyLogs().stream())
+                .collect(Collectors.toList());
     }
 }

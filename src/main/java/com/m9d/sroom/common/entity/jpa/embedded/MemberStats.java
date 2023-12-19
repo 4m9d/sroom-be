@@ -1,11 +1,13 @@
 package com.m9d.sroom.common.entity.jpa.embedded;
 
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.Embeddable;
 
 @Embeddable
-@Data
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberStats {
 
     private Integer totalSolvedCount;

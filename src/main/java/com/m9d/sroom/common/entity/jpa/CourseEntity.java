@@ -1,19 +1,23 @@
 package com.m9d.sroom.common.entity.jpa;
 
 import com.m9d.sroom.common.entity.jpa.embedded.Scheduling;
+import com.m9d.sroom.course.vo.CourseVideo;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "COURSE")
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class CourseEntity {
 
     @Id
@@ -45,4 +49,61 @@ public class CourseEntity {
 
     @OneToMany(mappedBy = "course")
     private List<CourseVideoEntity> courseVideos = new ArrayList<CourseVideoEntity>();
+
+    @OneToMany(mappedBy = "course")
+    private List<LectureEntity> lectures = new ArrayList<LectureEntity>();
+
+    @OneToMany(mappedBy = "course")
+    private List<CourseDailyLogEntity> dailyLogs = new ArrayList<CourseDailyLogEntity>();
+
+    public CourseEntity(MemberEntity member, String courseTitle, String thumbnail, Scheduling scheduling) {
+        this.courseTitle = courseTitle;
+        this.courseDuration = 0;
+        this.lastViewTime = new Timestamp(System.currentTimeMillis());
+        this.progress = 0;
+        this.thumbnail = thumbnail;
+        this.scheduling = scheduling;
+        this.startDate = new Date();
+        setMember(member);
+    }
+
+    private void setMember(MemberEntity member) {
+        if (this.member != null) {
+            this.member.getCourses().remove(this);
+        }
+        this.member = member;
+        member.getCourses().add(this);
+    }
+
+    public static CourseEntity createWithoutSchedule(MemberEntity member, String courseTitle, String thumbnail) {
+        return new CourseEntity(member, courseTitle, thumbnail,
+                new Scheduling(false, null, null, null));
+    }
+
+    public static CourseEntity createWithSchedule(MemberEntity member, String courseTitle, String thumbnail,
+                                                  boolean isScheduled, int weeks, Date expectedEndDate,
+                                                  int dailyTargetTime) {
+        return new CourseEntity(member, courseTitle, thumbnail, new Scheduling(isScheduled, weeks, expectedEndDate,
+                dailyTargetTime));
+    }
+
+    public Boolean isCompleted() {
+        return progress.equals(100);
+    }
+
+
+    public Optional<CourseDailyLogEntity> findDailyLogByDate(Date date) {
+        Calendar cal1 = Calendar.getInstance();
+        Calendar cal2 = Calendar.getInstance();
+        cal1.setTime(date);
+
+        return dailyLogs.stream()
+                .filter(dailyLog -> {
+                    cal2.setTime(dailyLog.getDailyLogDate());
+                    return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+                            cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH) &&
+                            cal1.get(Calendar.DAY_OF_MONTH) == cal2.get(Calendar.DAY_OF_MONTH);
+                })
+                .findFirst();
+    }
 }
