@@ -6,7 +6,6 @@ import com.m9d.sroom.common.entity.jpa.MemberEntity;
 import com.m9d.sroom.common.entity.jpa.ReviewEntity;
 import com.m9d.sroom.common.repository.review.ReviewJpaRepository;
 import com.m9d.sroom.util.RepositoryTest;
-import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-public class reviewRepositoryTest extends RepositoryTest {
+public class ReviewRepositoryTest extends RepositoryTest {
 
     @Autowired
     private ReviewJpaRepository reviewRepository;

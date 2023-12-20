@@ -32,28 +32,23 @@ public class MemberRepositoryTest extends SroomTest {
     @Test
     @DisplayName("저장된 member는 조회에 성공합니다.")
     void getMemberIfSaved() {
-        MemberEntity memberEntity = MemberEntity.builder()
-                .memberName(TestConstant.MEMBER_PROFILE)
-                .memberCode(TestConstant.MEMBER_CODE)
-                .build();
+        MemberEntity memberEntity = MemberEntity.create(TestConstant.MEMBER_PROFILE, TestConstant.MEMBER_CODE);
         memberJpaRepository.save(memberEntity);
 
         //when
         Optional<MemberEntity> memberEntityOptional = memberJpaRepository.findById(1L);
 
         //then
-        Assertions.assertNotEquals(memberEntityOptional, Optional.empty());
-        Assertions.assertEquals(memberEntityOptional.get().getMemberName(), TestConstant.MEMBER_PROFILE);
+        Assertions.assertTrue(memberEntityOptional.isPresent());
+        Assertions.assertNotNull(memberEntity.getMemberId());
+        Assertions.assertEquals(memberEntityOptional.get(), memberEntity);
     }
 
     @Test
     @DisplayName("jpa 사용하면 멤버 이름을 수정하기만 해도 db 에 반영됩니다.")
     void updateMemberName() {
         //given
-        MemberEntity memberEntity = MemberEntity.builder()
-                .memberCode(TestConstant.MEMBER_CODE)
-                .memberName(TestConstant.MEMBER_PROFILE)
-                .build();
+        MemberEntity memberEntity = MemberEntity.create(TestConstant.MEMBER_PROFILE, TestConstant.MEMBER_CODE);
         memberJpaRepository.save(memberEntity);
 
         //when

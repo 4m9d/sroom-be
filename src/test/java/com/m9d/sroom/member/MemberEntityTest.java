@@ -40,7 +40,7 @@ public class MemberEntityTest extends RepositoryTest {
         CourseEntity course1 = courseRepository.save(CourseEntity.createWithoutSchedule(
                 member, TestConstant.COURSE_TITLE, TestConstant.THUMBNAIL));
         CourseEntity course2 = courseRepository.save(CourseEntity.createWithSchedule(member, TestConstant.COURSE_TITLE, TestConstant.THUMBNAIL,
-                true, 2, new Date(), 30));
+                2, new Date(), 30));
 
         System.out.println(course1.getLastViewTime());
         System.out.println(course2.getLastViewTime());
