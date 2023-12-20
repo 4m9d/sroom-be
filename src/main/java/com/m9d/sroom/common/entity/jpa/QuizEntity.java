@@ -41,7 +41,8 @@ public class QuizEntity {
     @OneToMany(mappedBy = "quiz")
     private List<QuizOptionEntity> quizOptions = new ArrayList<QuizOptionEntity>();
 
-    private QuizEntity(VideoEntity video, int quizType, String question, String subjectiveAnswer, Integer choiceAnswer) {
+    private QuizEntity(VideoEntity video, int quizType, String question, String subjectiveAnswer,
+                       Integer choiceAnswer) {
         setVideo(video);
         this.type = quizType;
         this.question = question;
@@ -59,9 +60,7 @@ public class QuizEntity {
         video.getQuizzes().add(this);
     }
 
-    public static QuizEntity creatChoiceType(VideoEntity video, String question, int choiceAnswer) {
+    public static QuizEntity createChoiceType(VideoEntity video, String question, int choiceAnswer) {
         return new QuizEntity(video, QuizType.MULTIPLE_CHOICE.getValue(), question, null, choiceAnswer);
     }
-
-
 }

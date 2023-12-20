@@ -93,9 +93,9 @@ public class MemberEntityTest extends RepositoryTest {
         VideoEntity video = getVideoEntity(ContentConstant.VIDEO_CODE_LIST[0]);
         CourseVideoEntity courseVideo = getCourseVideoEntity(video);
         QuizEntity quiz1 = quizRepository.save(
-                QuizEntity.creatChoiceType(video, "넌 이름이 뭐니?", 3));
+                QuizEntity.createChoiceType(video, "넌 이름이 뭐니?", 3));
         QuizEntity quiz2 = quizRepository.save(
-                QuizEntity.creatChoiceType(video, "한국의 수도는?", 2));
+                QuizEntity.createChoiceType(video, "한국의 수도는?", 2));
 
         //when
         CourseQuizEntity courseQuiz1 = courseQuizRepository.save(CourseQuizEntity.create(courseVideo, quiz1,

@@ -1,7 +1,6 @@
 package com.m9d.sroom.courseQuiz;
 
 import com.m9d.sroom.common.entity.jpa.*;
-import com.m9d.sroom.common.vo.Content;
 import com.m9d.sroom.util.RepositoryTest;
 import com.m9d.sroom.util.constant.ContentConstant;
 import org.junit.jupiter.api.Assertions;
@@ -19,7 +18,7 @@ public class CourseQuizRepositoryTest extends RepositoryTest {
         VideoEntity video = getVideoEntity(ContentConstant.VIDEO_CODE_LIST[0]);
         CourseVideoEntity courseVideo = getCourseVideoEntity(video);
         QuizEntity quiz = quizRepository.save(
-                QuizEntity.creatChoiceType(video, "넌 이름이 뭐니?", 3));
+                QuizEntity.createChoiceType(video, "넌 이름이 뭐니?", 3));
 
         //when
         CourseQuizEntity courseQuiz = courseQuizRepository.save(CourseQuizEntity.create(courseVideo, quiz,
@@ -43,7 +42,7 @@ public class CourseQuizRepositoryTest extends RepositoryTest {
         VideoEntity video = getVideoEntity(ContentConstant.VIDEO_CODE_LIST[0]);
         CourseVideoEntity courseVideo = getCourseVideoEntity(video);
         QuizEntity quiz = quizRepository.save(
-                QuizEntity.creatChoiceType(video, "넌 이름이 뭐니?", 3));
+                QuizEntity.createChoiceType(video, "넌 이름이 뭐니?", 3));
         CourseQuizEntity courseQuiz = courseQuizRepository.save(CourseQuizEntity.create(courseVideo, quiz,
                 "알아서뭐함?", false));
 
