@@ -22,7 +22,7 @@ public class QuizRepositoryTest extends RepositoryTest {
         VideoEntity video = getVideoEntity(ContentConstant.VIDEO_CODE_LIST[0]);
 
         //when
-        quizRepository.save(QuizEntity.creatChoiceType(video, "QUIZ", 1));
+        quizRepository.save(QuizEntity.createChoiceType(video, "QUIZ", 1));
 
         //then
         Assertions.assertEquals(quizRepository.getById(1L).getQuestion(), "QUIZ");

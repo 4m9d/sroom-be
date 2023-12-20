@@ -21,7 +21,7 @@ public class quizOptionRepositoryTest extends RepositoryTest {
     void saveQuizOption() {
         //given
         VideoEntity video = getVideoEntity(ContentConstant.VIDEO_CODE_LIST[0]);
-        QuizEntity quiz = QuizEntity.creatChoiceType(video, "QUIZ", 1);
+        QuizEntity quiz = QuizEntity.createChoiceType(video, "QUIZ", 1);
         quizRepository.save(quiz);
 
         //when
