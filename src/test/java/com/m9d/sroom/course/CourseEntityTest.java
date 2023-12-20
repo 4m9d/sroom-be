@@ -4,12 +4,10 @@ import com.m9d.sroom.common.entity.jpa.*;
 import com.m9d.sroom.util.RepositoryTest;
 import com.m9d.sroom.util.TestConstant;
 import com.m9d.sroom.util.constant.ContentConstant;
-import com.m9d.sroom.video.vo.Video;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Set;
 
@@ -43,10 +41,10 @@ public class CourseEntityTest extends RepositoryTest {
         LectureEntity lecture = getLectureEntity(video1.getVideoId());
 
         //when
-        CourseVideoEntity courseVideo1 = courseVideoRepository.save(CourseVideoEntity.createWithoutSummary(course,
-                video1, lecture, 1, 1));
-        CourseVideoEntity courseVideo2 = courseVideoRepository.save(CourseVideoEntity.createWithoutSummary(course,
-                video2, lecture, 2, 2));
+        CourseVideoEntity courseVideo1 = courseVideoRepository.save(CourseVideoEntity.create(course,
+                video1, lecture, video1.getSummary(), 1, 1));
+        CourseVideoEntity courseVideo2 = courseVideoRepository.save(CourseVideoEntity.create(course,
+                video2, lecture, video2.getSummary(), 2, 2));
 
         //then
         Assertions.assertEquals(course.getCourseVideoByIndex(2), courseVideo2);
@@ -64,10 +62,10 @@ public class CourseEntityTest extends RepositoryTest {
         LectureEntity lecture = getLectureEntity(video1.getVideoId());
 
         //when
-        CourseVideoEntity courseVideo1 = courseVideoRepository.save(CourseVideoEntity.createWithoutSummary(course,
-                video1, lecture, 1, 1));
-        CourseVideoEntity courseVideo2 = courseVideoRepository.save(CourseVideoEntity.createWithoutSummary(course,
-                video2, lecture, 2, 2));
+        CourseVideoEntity courseVideo1 = courseVideoRepository.save(CourseVideoEntity.create(course,
+                video1, lecture, video1.getSummary(), 1, 1));
+        CourseVideoEntity courseVideo2 = courseVideoRepository.save(CourseVideoEntity.create(course,
+                video2, lecture, video2.getSummary(), 2, 2));
 
         //then
         Assertions.assertTrue(course.getCourseVideoByPrevIndex(1).isPresent());
@@ -85,10 +83,10 @@ public class CourseEntityTest extends RepositoryTest {
         LectureEntity lecture = getLectureEntity(video1.getVideoId());
 
         //when
-        CourseVideoEntity courseVideo1 = courseVideoRepository.save(CourseVideoEntity.createWithoutSummary(course,
-                video1, lecture, 1, 1));
-        CourseVideoEntity courseVideo2 = courseVideoRepository.save(CourseVideoEntity.createWithoutSummary(course,
-                video2, lecture, 2, 2));
+        CourseVideoEntity courseVideo1 = courseVideoRepository.save(CourseVideoEntity.create(course,
+                video1, lecture, video1.getSummary(), 1, 1));
+        CourseVideoEntity courseVideo2 = courseVideoRepository.save(CourseVideoEntity.create(course,
+                video2, lecture, video2.getSummary(), 2, 2));
 
         //then
         Assertions.assertEquals(course.getCourseVideoListOrderByIndex().size(), 2);
@@ -106,10 +104,10 @@ public class CourseEntityTest extends RepositoryTest {
         LectureEntity lecture = getLectureEntity(video1.getVideoId());
 
         //when
-        CourseVideoEntity courseVideo1 = courseVideoRepository.save(CourseVideoEntity.createWithoutSummary(course,
-                video1, lecture, 1, 1));
-        CourseVideoEntity courseVideo2 = courseVideoRepository.save(CourseVideoEntity.createWithoutSummary(course,
-                video2, lecture, 2, 2));
+        CourseVideoEntity courseVideo1 = courseVideoRepository.save(CourseVideoEntity.create(course,
+                video1, lecture, video1.getSummary(), 1, 1));
+        CourseVideoEntity courseVideo2 = courseVideoRepository.save(CourseVideoEntity.create(course,
+                video2, lecture, video2.getSummary(), 2, 2));
 
         //then
         Assertions.assertEquals(course.getLastCourseVideo(), courseVideo1);
@@ -126,10 +124,10 @@ public class CourseEntityTest extends RepositoryTest {
         LectureEntity lecture = getLectureEntity(video1.getVideoId());
 
         //when
-        CourseVideoEntity courseVideo1 = courseVideoRepository.save(CourseVideoEntity.createWithoutSummary(course,
-                video1, lecture, 1, 1));
-        CourseVideoEntity courseVideo2 = courseVideoRepository.save(CourseVideoEntity.createWithoutSummary(course,
-                video2, lecture, 2, 2));
+        CourseVideoEntity courseVideo1 = courseVideoRepository.save(CourseVideoEntity.create(course,
+                video1, lecture, video1.getSummary(), 1, 1));
+        CourseVideoEntity courseVideo2 = courseVideoRepository.save(CourseVideoEntity.create(course,
+                video2, lecture, video2.getSummary(), 2, 2));
 
         //then
         Assertions.assertEquals(course.getCourseVideoBySection(2).get(0), courseVideo2);
@@ -147,10 +145,10 @@ public class CourseEntityTest extends RepositoryTest {
         LectureEntity lecture = getLectureEntity(video1.getVideoId());
 
         //when
-        CourseVideoEntity courseVideo1 = courseVideoRepository.save(CourseVideoEntity.createWithoutSummary(course,
-                video1, lecture, 1, 1));
-        CourseVideoEntity courseVideo2 = courseVideoRepository.save(CourseVideoEntity.createWithoutSummary(course,
-                video2, lecture, 2, 2));
+        CourseVideoEntity courseVideo1 = courseVideoRepository.save(CourseVideoEntity.create(course,
+                video1, lecture, video1.getSummary(), 1, 1));
+        CourseVideoEntity courseVideo2 = courseVideoRepository.save(CourseVideoEntity.create(course,
+                video2, lecture, video2.getSummary(), 2, 2));
 
         //then
         Assertions.assertEquals(course.countCompletedVideo(), 0);
@@ -167,13 +165,13 @@ public class CourseEntityTest extends RepositoryTest {
         LectureEntity lecture = getLectureEntity(video1.getVideoId());
 
         //when
-        CourseVideoEntity courseVideo1 = courseVideoRepository.save(CourseVideoEntity.createWithoutSummary(course,
-                video1, lecture, 1, 1));
-        CourseVideoEntity courseVideo2 = courseVideoRepository.save(CourseVideoEntity.createWithoutSummary(course,
-                video2, lecture, 2, 2));
+        CourseVideoEntity courseVideo1 = courseVideoRepository.save(CourseVideoEntity.create(course,
+                video1, lecture, video1.getSummary(), 1, 1));
+        CourseVideoEntity courseVideo2 = courseVideoRepository.save(CourseVideoEntity.create(course,
+                video2, lecture, video2.getSummary(), 2, 2));
 
         //then
-        Assertions.assertNotNull(course.getWatchInfoListBySection(2));
+        Assertions.assertNotNull(CourseMapper.getWatchInfoListBySection(course, 2));
     }
 
     @Test

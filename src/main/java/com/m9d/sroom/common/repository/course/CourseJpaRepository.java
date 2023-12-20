@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -35,8 +36,12 @@ public class CourseJpaRepository {
 
     public void deleteById(Long courseId) {
         CourseEntity course = getById(courseId);
-        course.getMember().getCourses().remove(course);
 
         em.remove(course);
+    }
+
+    public List<CourseEntity> findAll() {
+        return em.createQuery("select c from CourseEntity c", CourseEntity.class)
+                .getResultList();
     }
 }

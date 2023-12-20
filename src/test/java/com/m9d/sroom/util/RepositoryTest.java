@@ -61,10 +61,8 @@ public class RepositoryTest extends SroomTest {
     protected MemberEntity getMemberEntity() {
         Optional<MemberEntity> memberEntityOptional = memberRepository.findById(1L);
 
-        return memberEntityOptional.orElseGet(() -> memberRepository.save(MemberEntity.builder()
-                .memberName(TestConstant.MEMBER_PROFILE)
-                .memberCode(TestConstant.MEMBER_CODE)
-                .build()));
+        return memberEntityOptional.orElseGet(() ->
+                memberRepository.save(MemberEntity.create(TestConstant.MEMBER_PROFILE,TestConstant.MEMBER_CODE)));
     }
 
     protected CourseEntity getCourseEntity(MemberEntity member) {
@@ -107,7 +105,7 @@ public class RepositoryTest extends SroomTest {
 
     protected CourseVideoEntity getCourseVideoEntity(VideoEntity video) {
         return courseVideoRepository.save(
-                CourseVideoEntity.createWithoutSummary(getCourseEntity(getMemberEntity()), video,
-                        getLectureEntity(video.getVideoId()), 1, 1));
+                CourseVideoEntity.create(getCourseEntity(getMemberEntity()), video,
+                        getLectureEntity(video.getVideoId()), video.getSummary(), 1, 1));
     }
 }

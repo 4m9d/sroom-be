@@ -1,9 +1,6 @@
 package com.m9d.sroom.common.entity.jpa.embedded;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Embeddable;
 
@@ -11,6 +8,7 @@ import javax.persistence.Embeddable;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
 public class Sequence {
 
     private Integer section;

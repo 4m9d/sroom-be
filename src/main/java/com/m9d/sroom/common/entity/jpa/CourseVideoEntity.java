@@ -65,7 +65,7 @@ public class CourseVideoEntity {
                               int section, int videoIndex) {
         this.video = video;
         if (summary != null) {
-            this.summary = summary;  // createWithoutSummary 메서드를 통해 생성된 courseVideo 의 summary_id 는 입력되지 않습니다.
+            this.summary = summary;  // @DynamicInsert를 통해 summary == null인 경우에는 입력되지 않습니다.
         }
         this.sequence = new Sequence(section, videoIndex, lecture.getLectureIndex());
         this.status = new LearningStatus(0, false, null, 0);
@@ -92,8 +92,9 @@ public class CourseVideoEntity {
         this.member = member;
         member.getCourseVideos().add(this);
     }
+
     private void setLecture(LectureEntity lecture) {
-        if(this.lecture !=null){
+        if (this.lecture != null) {
             this.lecture.getCourseVideos().remove(this);
         }
 
@@ -101,14 +102,8 @@ public class CourseVideoEntity {
         lecture.getCourseVideos().add(this);
     }
 
-    public static CourseVideoEntity createWithoutSummary(CourseEntity course, VideoEntity video,
-                                                         LectureEntity lecture, int section, int videoIndex) {
-        return new CourseVideoEntity(course, video, lecture, null, section, videoIndex);
-    }
-
-    public static CourseVideoEntity createWithSummary(CourseEntity course, VideoEntity video,
-                                                      LectureEntity lecture, SummaryEntity summary, int section,
-                                                      int videoIndex) {
+    public static CourseVideoEntity create(CourseEntity course, VideoEntity video,
+                                           LectureEntity lecture, SummaryEntity summary, int section, int videoIndex) {
         return new CourseVideoEntity(course, video, lecture, summary, section, videoIndex);
     }
 
@@ -118,17 +113,11 @@ public class CourseVideoEntity {
                 .findFirst();
     }
 
-    public VideoWatchInfo toWatchInfo() {
-        return VideoWatchInfo.builder()
-                .videoId(video.getVideoId())
-                .videoCode(video.getVideoCode())
-                .channel(video.getContentInfo().getChannel())
-                .videoTitle(video.getContentInfo().getTitle())
-                .completed(status.getIsComplete())
-                .lastViewDuration(status.getStartTime())
-                .videoDuration(video.getContentInfo().getDuration())
-                .courseVideoId(courseVideoId)
-                .maxDuration(status.getMaxDuration())
-                .build();
+    public void updateSection(int section) {
+        this.sequence.setSection(section);
+    }
+
+    public void updateStatus(LearningStatus learningStatus) {
+        this.status = learningStatus;
     }
 }

@@ -23,7 +23,7 @@ public class CourseRepositoryTest extends RepositoryTest {
         courseRepository.save(CourseEntity.createWithoutSchedule(member, TestConstant.COURSE_TITLE,
                 TestConstant.THUMBNAIL));
         courseRepository.save(CourseEntity.createWithSchedule(member, TestConstant.COURSE_TITLE, TestConstant.THUMBNAIL,
-                true, weeks, new Date(), 30));
+                weeks, new Date(), 30));
 
         //then
         Assertions.assertEquals(member.getCourses().size(), 2);
@@ -41,6 +41,6 @@ public class CourseRepositoryTest extends RepositoryTest {
         courseRepository.deleteById(course.getCourseId());
 
         //then
-        Assertions.assertTrue(member.getCourses().isEmpty());
+        Assertions.assertEquals(courseRepository.findAll().size(), 0);
     }
 }

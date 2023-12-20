@@ -7,11 +7,8 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
-import java.lang.reflect.Member;
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Entity
@@ -61,7 +58,6 @@ public class MemberEntity {
     @OneToMany(mappedBy = "member")
     private List<ReviewEntity> reviews = new ArrayList<ReviewEntity>();
 
-    @Builder
     private MemberEntity(String memberCode, String memberName) {
         this.memberCode = memberCode;
         this.memberName = memberName;
@@ -72,6 +68,10 @@ public class MemberEntity {
         this.bio = "";
     }
 
+    public static MemberEntity create(String memberCode, String memberName) {
+        return new MemberEntity(memberCode, memberName);
+    }
+
     public void updateName(String newName) {
         this.memberName = newName;
     }
@@ -80,11 +80,10 @@ public class MemberEntity {
         this.refreshToken = newToken;
     }
 
-    public List<CourseBrief> getCourseBriefList() {
-        return courses.stream()
-                .map(CourseMapper::getBriefByEntity)
-                .collect(Collectors.toList());
+    public void addLearningTime(int newLearningTime) {
+        this.stats.setTotalLearningTime(this.stats.getTotalLearningTime() + newLearningTime);
     }
+
 
     public List<CourseEntity> getCoursesByLatestOrder() {
         return courses.stream()

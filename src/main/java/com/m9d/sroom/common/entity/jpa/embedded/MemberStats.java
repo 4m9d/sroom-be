@@ -8,6 +8,7 @@ import javax.persistence.Embeddable;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Setter
 public class MemberStats {
 
     private Integer totalSolvedCount;

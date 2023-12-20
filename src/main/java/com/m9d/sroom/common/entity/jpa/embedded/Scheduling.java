@@ -3,6 +3,7 @@ package com.m9d.sroom.common.entity.jpa.embedded;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.Embeddable;
 import javax.persistence.Temporal;
@@ -13,6 +14,7 @@ import java.util.Date;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
 public class Scheduling {
 
     private Boolean isScheduled;

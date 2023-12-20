@@ -15,6 +15,10 @@ import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.m9d.sroom.course.constant.CourseConstant.ENROLL_DEFAULT_SECTION_SCHEDULE;
+import static com.m9d.sroom.util.DateUtil.DAYS_IN_WEEK;
+import static com.m9d.sroom.util.DateUtil.SECONDS_IN_MINUTE;
+
 @Entity
 @Table(name = "COURSE")
 @Getter
@@ -84,15 +88,29 @@ public class CourseEntity {
                 new Scheduling(false, null, null, null));
     }
 
-    public static CourseEntity createWithSchedule(MemberEntity member, String courseTitle, String thumbnail,
-                                                  boolean isScheduled, int weeks, Date expectedEndDate,
-                                                  int dailyTargetTime) {
-        return new CourseEntity(member, courseTitle, thumbnail, new Scheduling(isScheduled, weeks, expectedEndDate,
+    public static CourseEntity createWithSchedule(MemberEntity member, String courseTitle, String thumbnail, int weeks,
+                                                  Date expectedEndDate, int dailyTargetTime) {
+        return new CourseEntity(member, courseTitle, thumbnail, new Scheduling(true, weeks, expectedEndDate,
                 dailyTargetTime));
     }
 
     public Boolean isCompleted() {
         return progress.equals(100);
+    }
+
+    public void addDuration(Integer totalContentDuration) {
+        this.courseDuration += totalContentDuration;
+    }
+
+    public void updateLastViewTime() {
+        this.lastViewTime = new Timestamp(System.currentTimeMillis());
+    }
+
+    public int getLastLectureIndex() {
+        return lectures.stream()
+                .max(Comparator.comparing(LectureEntity::getLectureIndex))
+                .map(LectureEntity::getLectureIndex)
+                .orElse(0);
     }
 
 
@@ -159,16 +177,43 @@ public class CourseEntity {
                 .count();
     }
 
-    public List<VideoWatchInfo> getWatchInfoListBySection(int section) {
-        return courseVideos.stream()
-                .filter(courseVideo -> courseVideo.getSequence().getSection() == section)
-                .map(CourseVideoEntity::toWatchInfo)
-                .collect(Collectors.toList());
-    }
-
     public HashSet<String> getLectureChannelSet() {
         return lectures.stream()
                 .map(LectureEntity::getChannel)
                 .collect(Collectors.toCollection(HashSet::new));
+    }
+
+    public int getSumOfMaxDuration() {
+        return courseVideos.stream()
+                .mapToInt(courseVideo -> courseVideo.getStatus().getMaxDuration())
+                .sum();
+    }
+
+    public void reschedule() {
+        int weeklyTargetTimeForSecond = scheduling.getDailyTargetTime() * SECONDS_IN_MINUTE * DAYS_IN_WEEK;
+        int section = ENROLL_DEFAULT_SECTION_SCHEDULE;
+        int currentSectionTime = 0;
+        int lastSectionTime = 0;
+
+        for (CourseVideoEntity courseVideoEntity : courseVideos) {
+            if (currentSectionTime + (courseVideoEntity.getVideo().getContentInfo().getDuration() / 2)
+                    > weeklyTargetTimeForSecond) {
+                section++;
+                currentSectionTime = 0;
+            }
+
+            currentSectionTime += courseVideoEntity.getVideo().getContentInfo().getDuration();
+            lastSectionTime = currentSectionTime;
+            courseVideoEntity.updateSection(section);
+        }
+        int lastSectionDays =
+                (int) Math.ceil((double) lastSectionTime / scheduling.getDailyTargetTime() * SECONDS_IN_MINUTE);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(startDate);
+        calendar.add(Calendar.DATE, (section - 1) * DAYS_IN_WEEK + lastSectionDays);
+
+        this.scheduling.setWeeks(section);
+        this.scheduling.setExpectedEndDate(calendar.getTime());
     }
 }
