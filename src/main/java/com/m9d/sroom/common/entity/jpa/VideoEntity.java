@@ -12,6 +12,7 @@ import javax.persistence.*;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "VIDEO")
@@ -43,9 +44,10 @@ public class VideoEntity {
     @Embedded
     private Review review;
 
-    @OneToOne
-    @JoinColumn(name = "summary_id")
-    private SummaryEntity summary;
+    @OneToMany(mappedBy = "video")
+    private List<SummaryEntity> summaries = new ArrayList<SummaryEntity>();
+
+    private Long summaryId;
 
     private Integer materialStatus;
 
@@ -75,7 +77,16 @@ public class VideoEntity {
                 video.getMembership());
     }
 
+    public SummaryEntity getSummary() {
+        return summaries.stream()
+                .filter(summary -> !summary.isModified())
+                .filter(summary -> Objects.equals(summary.getSummaryId(), summaryId))
+                .findFirst()
+                .orElse(null);
+    }
+
     public void setSummary(SummaryEntity summary) {
-        this.summary = summary;
+        this.getSummaries().add(summary);
+        this.summaryId = summary.getSummaryId();
     }
 }

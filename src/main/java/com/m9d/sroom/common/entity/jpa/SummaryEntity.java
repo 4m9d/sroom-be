@@ -20,7 +20,7 @@ public class SummaryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long summaryId;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "video_id")
     private VideoEntity video;
 
