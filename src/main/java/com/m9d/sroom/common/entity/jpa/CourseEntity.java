@@ -1,10 +1,8 @@
 package com.m9d.sroom.common.entity.jpa;
 
 import com.m9d.sroom.common.entity.jpa.embedded.Scheduling;
-import com.m9d.sroom.course.vo.CourseVideo;
-import com.m9d.sroom.search.dto.response.VideoWatchInfo;
+import com.m9d.sroom.course.constant.CourseConstant;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -12,10 +10,12 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.m9d.sroom.course.constant.CourseConstant.ENROLL_DEFAULT_SECTION_SCHEDULE;
+import static com.m9d.sroom.search.constant.SearchConstant.LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS;
 import static com.m9d.sroom.util.DateUtil.DAYS_IN_WEEK;
 import static com.m9d.sroom.util.DateUtil.SECONDS_IN_MINUTE;
 
@@ -142,25 +142,23 @@ public class CourseEntity {
                 .collect(Collectors.toList());
     }
 
-    public Optional<CourseVideoEntity> getCourseVideoByPrevIndex(int videoIndex) {
+    public Optional<CourseVideoEntity> findCourseVideoByPrevIndex(int videoIndex) {
         return courseVideos.stream()
                 .filter(v -> v.getSequence().getVideoIndex() > videoIndex)
                 .min(Comparator.comparingInt(v -> v.getSequence().getVideoIndex()));
     }
 
-    public CourseVideoEntity getLastCourseVideo() {
+    public Optional<CourseVideoEntity> findLastCourseVideo() {
         List<CourseVideoEntity> courseVideosViewed = courseVideos.stream()
                 .filter(courseVideo -> courseVideo.getStatus().getLastViewTime() != null)
                 .collect(Collectors.toList());
 
         if (!courseVideosViewed.isEmpty()) {
             return courseVideosViewed.stream()
-                    .max(Comparator.comparing(courseVideo -> courseVideo.getStatus().getLastViewTime()))
-                    .get();
+                    .max(Comparator.comparing(courseVideo -> courseVideo.getStatus().getLastViewTime()));
         } else {
             return courseVideos.stream()
-                    .min(Comparator.comparing(courseVideo -> courseVideo.getSequence().getVideoIndex()))
-                    .get();
+                    .min(Comparator.comparing(courseVideo -> courseVideo.getSequence().getVideoIndex()));
         }
     }
 
@@ -215,5 +213,28 @@ public class CourseEntity {
 
         this.scheduling.setWeeks(section);
         this.scheduling.setExpectedEndDate(calendar.getTime());
+    }
+
+    public void updateProgress() {
+        if (courseVideos.size() == 1) {
+            int videoDuration = courseVideos.get(0).getVideo().getContentInfo().getDuration();
+            int courseDuration = courseVideos.get(0).getStatus().getMaxDuration();
+
+            if (videoDuration - CourseConstant.VIDEO_THRESHOLD_SECONDS_BEFORE_END < courseDuration) {
+                this.progress = 100;
+            } else {
+                this.progress = (int) ((double) courseDuration / videoDuration * 100);
+            }
+
+        } else {
+            this.progress = (int) ((double) countCompletedVideo() / courseVideos.size() * 100);
+        }
+    }
+
+    public void updateLastViewVideoToNext(Integer videoIndex) {
+        Optional<CourseVideoEntity> courseVideoOptional = findCourseVideoByPrevIndex(videoIndex);
+
+        courseVideoOptional.ifPresent(courseVideoEntity -> courseVideoEntity.updateLastViewTime(
+                Timestamp.valueOf(LocalDateTime.now().plusSeconds(LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS))));
     }
 }

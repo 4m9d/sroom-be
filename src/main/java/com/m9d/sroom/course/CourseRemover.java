@@ -6,6 +6,7 @@ import com.m9d.sroom.common.repository.coursequiz.CourseQuizJpaRepository;
 import com.m9d.sroom.common.repository.coursevideo.CourseVideoJpaRepository;
 import com.m9d.sroom.common.repository.lecture.LectureJpaRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CourseRemover {
@@ -25,10 +26,12 @@ public class CourseRemover {
         this.lectureRepository = lectureRepository;
     }
 
+    @Transactional
     public void remove(CourseEntity courseEntity) {
         courseQuizRepository.deleteByCourseId(courseEntity.getCourseId());
         courseVideoRepository.deleteByCourseId(courseEntity.getCourseId());
 
+        lectureRepository.deleteByCourseId(courseEntity.getCourseId());
         courseEntity.getMember().getCourses().remove(courseEntity);
         courseRepository.deleteById(courseEntity.getCourseId());
     }

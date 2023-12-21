@@ -120,4 +120,8 @@ public class CourseVideoEntity {
     public void updateStatus(LearningStatus learningStatus) {
         this.status = learningStatus;
     }
+
+    public void updateLastViewTime(Timestamp timestamp) {
+        this.status.setLastViewTime(timestamp);
+    }
 }

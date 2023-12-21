@@ -26,8 +26,8 @@ public class MemberEntityTest extends RepositoryTest {
                 TestConstant.LOG_QUIZ_COUNT, TestConstant.LOG_LECTURE_COUNT));
 
         //then
-        Assertions.assertEquals(member.getLogList().size(), 1);
-        Assertions.assertEquals(member.getLogList().get(0).getCourse(), course);
+        Assertions.assertEquals(member.getDailyLogs().size(), 1);
+        Assertions.assertEquals(member.getDailyLogs().get(0).getCourse(), course);
     }
 
     @Test

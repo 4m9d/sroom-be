@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -58,7 +60,7 @@ public class CourseCreatorVJpa {
     }
 
     private CourseEntity createCourseEntity(NewLecture newLecture, boolean useSchedule, EnrollContentInfo contentInfo,
-                                           MemberEntity memberEntity) {
+                                            MemberEntity memberEntity) {
         CourseEntity courseEntity;
         if (useSchedule) {
             log.info("subject = schedule, dailyTargetTimeInMinute = {}, weeks = {}", newLecture.getDailyTargetTime(),
@@ -77,11 +79,14 @@ public class CourseCreatorVJpa {
     public void saveCourseVideos(List<Integer> scheduling, boolean useSchedule, List<InnerContent> innerContentList,
                                  LectureEntity lectureEntity, CourseEntity courseEntity) {
         int[] sectionArr = getSectionArray(useSchedule, innerContentList.size(), scheduling);
-        int index = courseEntity.getLastLectureIndex() + 1;
-        for (InnerContent innerContent : innerContentList) {
-            VideoEntity videoEntity = videoRepository.getById(innerContent.getContentId());
+        int index = courseEntity.getCourseVideos().stream()
+                .mapToInt(courseVideoEntity -> courseVideoEntity.getSequence().getVideoIndex())
+                .max()
+                .orElse(0) + 1;
+        for (int i = 0; i < innerContentList.size(); i++) {
+            VideoEntity videoEntity = videoRepository.getById(innerContentList.get(i).getContentId());
             courseVideoRepository.save(CourseVideoEntity.create(lectureEntity.getCourse(), videoEntity, lectureEntity,
-                    videoEntity.getSummary(), sectionArr[index - 1], index++));
+                    videoEntity.getSummary(), sectionArr[i], index++));
         }
     }
 

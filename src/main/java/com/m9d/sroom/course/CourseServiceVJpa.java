@@ -1,9 +1,10 @@
 package com.m9d.sroom.course;
 
-import com.m9d.sroom.common.LearningActivityUpdater;
+import com.m9d.sroom.common.LearningActivityUpdaterVJpa;
 import com.m9d.sroom.common.entity.jpa.*;
 import com.m9d.sroom.common.entity.jpa.embedded.LearningStatus;
 import com.m9d.sroom.common.repository.course.CourseJpaRepository;
+import com.m9d.sroom.common.repository.coursevideo.CourseVideoJpaRepository;
 import com.m9d.sroom.common.repository.lecture.LectureJpaRepository;
 import com.m9d.sroom.course.dto.EnrollContentInfo;
 import com.m9d.sroom.course.dto.response.CourseDetail;
@@ -12,6 +13,7 @@ import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.course.dto.response.MyCourses;
 import com.m9d.sroom.course.exception.CourseNotFoundException;
 import com.m9d.sroom.course.exception.CourseNotMatchException;
+import com.m9d.sroom.course.exception.CourseVideoNotFoundException;
 import com.m9d.sroom.search.dto.VideoCompletionStatus;
 import com.m9d.sroom.search.dto.response.CourseBrief;
 import com.m9d.sroom.search.dto.response.LectureStatus;
@@ -21,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.m9d.sroom.search.constant.SearchConstant.LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS;
@@ -30,13 +33,15 @@ import static com.m9d.sroom.search.constant.SearchConstant.MINIMUM_VIEW_PERCENT_
 @Slf4j
 public class CourseServiceVJpa {
     private final CourseJpaRepository courseRepository;
+    private final CourseVideoJpaRepository courseVideoRepository;
     private final LectureJpaRepository lectureRepository;
     private final CourseCreatorVJpa courseCreator;
-    private final LearningActivityUpdater learningActivityUpdater;
+    private final LearningActivityUpdaterVJpa learningActivityUpdater;
 
-    public CourseServiceVJpa(CourseJpaRepository courseRepository, LectureJpaRepository lectureRepository,
-                             CourseCreatorVJpa courseCreator, CourseRemover courseRemover, LearningActivityUpdater learningActivityUpdater) {
+    public CourseServiceVJpa(CourseJpaRepository courseRepository, CourseVideoJpaRepository courseVideoRepository, LectureJpaRepository lectureRepository,
+                             CourseCreatorVJpa courseCreator, LearningActivityUpdaterVJpa learningActivityUpdater) {
         this.courseRepository = courseRepository;
+        this.courseVideoRepository = courseVideoRepository;
         this.lectureRepository = lectureRepository;
         this.courseCreator = courseCreator;
         this.learningActivityUpdater = learningActivityUpdater;
@@ -119,17 +124,22 @@ public class CourseServiceVJpa {
                 courseVideoEntity.getStatus().getMaxDuration())));
 
         if (!viewingStatus.isRewound()) {
-            // learningActivityUpdater.updateCourseDailyLog(memberId, courseVideoEntity.getCourseId(), status);
+            learningActivityUpdater.updateCourseDailyLog(courseVideoEntity.getCourse(), viewingStatus);
             courseVideoEntity.getMember().addLearningTime(Math.max(viewingStatus.getTimeGap(), 0));
         }
 
         if (viewingStatus.isCompletedNow() || !viewingStatus.isRewound()) {
             courseVideoEntity.getCourse().updateLastViewTime();
-            // learningActivityUpdater.updateCourseProgress(memberId, courseEntity);
+            courseVideoEntity.getCourse().updateProgress();
+
+            if (courseVideoEntity.getCourse().getProgress() == 100) {
+                courseVideoEntity.getMember().updateCompletionRate();
+            }
         }
 
         if (viewingStatus.isFullyWatched()) {
-            //learningActivityUpdater.updateLastViewVideoToNext(courseVideoEntity.getCourseId(), viewDuration);
+            courseVideoEntity.getCourse()
+                    .updateLastViewVideoToNext(courseVideoEntity.getSequence().getVideoIndex());
         }
 
         return LectureStatus.builder()
@@ -182,5 +192,16 @@ public class CourseServiceVJpa {
         return member.getCourses().stream()
                 .map(CourseMapper::getBriefByEntity)
                 .collect(Collectors.toList());
+    }
+
+    public CourseVideoEntity getCourseVideoEntity(MemberEntity memberEntity, Long courseVideoId) {
+        CourseVideoEntity courseVideoEntity = courseVideoRepository.findById(courseVideoId)
+                .orElseThrow(CourseVideoNotFoundException::new);
+
+        if (memberEntity.getCourses().contains(courseVideoEntity.getCourse())) {
+            return courseVideoEntity;
+        } else {
+            throw new CourseNotMatchException();
+        }
     }
 }

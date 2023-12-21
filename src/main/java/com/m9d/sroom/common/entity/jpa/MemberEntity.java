@@ -84,18 +84,20 @@ public class MemberEntity {
         this.stats.setTotalLearningTime(this.stats.getTotalLearningTime() + newLearningTime);
     }
 
+    public void updateCompletionRate() {
+        double completedCourseCount = (double) courses.stream()
+                .filter(courseEntity -> courseEntity.getProgress() == 100)
+                .count();
+
+        this.stats.setCompletionRate((int) (completedCourseCount / courses.size()));
+    }
+
 
     public List<CourseEntity> getCoursesByLatestOrder() {
         return courses.stream()
                 .sorted(Comparator.comparing(CourseEntity::isCompleted)
                         .thenComparing(CourseEntity::getLastViewTime, Comparator.reverseOrder())
                         .thenComparing(CourseEntity::getCourseId, Comparator.reverseOrder()))
-                .collect(Collectors.toList());
-    }
-
-    public List<CourseDailyLogEntity> getLogList() {
-        return courses.stream()
-                .flatMap(course -> course.getDailyLogs().stream())
                 .collect(Collectors.toList());
     }
 

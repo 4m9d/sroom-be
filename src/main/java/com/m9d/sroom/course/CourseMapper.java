@@ -2,12 +2,8 @@ package com.m9d.sroom.course;
 
 import com.m9d.sroom.common.entity.jpa.CourseEntity;
 import com.m9d.sroom.common.entity.jpa.CourseVideoEntity;
-import com.m9d.sroom.common.entity.jpa.MemberEntity;
-import com.m9d.sroom.common.entity.jpa.embedded.Scheduling;
-import com.m9d.sroom.course.constant.CourseConstant;
 import com.m9d.sroom.course.dto.response.CourseDetail;
 import com.m9d.sroom.course.dto.response.CourseInfo;
-import com.m9d.sroom.course.vo.Course;
 import com.m9d.sroom.search.dto.response.CourseBrief;
 import com.m9d.sroom.search.dto.response.Section;
 import com.m9d.sroom.search.dto.response.VideoInfo;
@@ -55,7 +51,7 @@ public class CourseMapper {
                 .totalVideoCount(courseEntity.getCourseVideos().size())
                 .completedVideoCount(courseEntity.countCompletedVideo())
                 .progress(courseEntity.getProgress())
-                .lastViewVideo(getVideoInfoByCourseVideo(courseEntity.getLastCourseVideo()))
+                .lastViewVideo(getVideoInfoByCourseVideo(courseEntity.findLastCourseVideo().get()))
                 .sections(getSectionList(courseEntity))
                 .build();
 
@@ -63,7 +59,7 @@ public class CourseMapper {
 
     private static List<Section> getSectionList(CourseEntity courseEntity) {
         List<Section> sectionList = new ArrayList<>();
-        if (courseEntity.getScheduling().getWeeks() == 0) {
+        if (courseEntity.getScheduling().getWeeks() == null) {
             sectionList.add(
                     new Section(CourseMapper.getWatchInfoListBySection(courseEntity, 0), 0));
         } else {

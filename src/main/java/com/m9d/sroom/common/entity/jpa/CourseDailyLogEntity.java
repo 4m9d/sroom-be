@@ -1,6 +1,5 @@
 package com.m9d.sroom.common.entity.jpa;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -67,5 +66,13 @@ public class CourseDailyLogEntity {
         }
         this.course = course;
         course.getDailyLogs().add(this);
+    }
+
+    public void addLearningTime(int learningTimeToAdd) {
+        this.learningTime = learningTime + learningTimeToAdd;
+    }
+
+    public void addLectureCount(int lectureCountToAdd) {
+        this.lectureCount = lectureCount + lectureCountToAdd;
     }
 }
