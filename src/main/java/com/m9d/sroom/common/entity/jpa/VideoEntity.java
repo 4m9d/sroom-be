@@ -1,5 +1,6 @@
 package com.m9d.sroom.common.entity.jpa;
 
+import com.m9d.sroom.ai.model.MaterialVaildStatus;
 import com.m9d.sroom.common.entity.jpa.embedded.ContentInfo;
 import com.m9d.sroom.common.entity.jpa.embedded.Review;
 import com.m9d.sroom.material.model.MaterialStatus;
@@ -88,5 +89,13 @@ public class VideoEntity {
     public void setSummary(SummaryEntity summary) {
         this.getSummaries().add(summary);
         this.summaryId = summary.getSummaryId();
+    }
+
+    public void setMaterialStatus(MaterialStatus status) {
+        this.materialStatus = status.getValue();
+
+        if (status.equals(MaterialStatus.CREATION_FAILED)) {
+            this.summaryId = (long) MaterialStatus.CREATION_FAILED.getValue();
+        }
     }
 }

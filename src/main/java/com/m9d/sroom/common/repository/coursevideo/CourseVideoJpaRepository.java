@@ -35,7 +35,7 @@ public class CourseVideoJpaRepository {
     }
 
     public void deleteByCourseId(Long courseId) {
-        for(CourseVideoEntity courseVideo : findListByCourseId(courseId)){
+        for (CourseVideoEntity courseVideo : findListByCourseId(courseId)) {
             em.remove(courseVideo);
         }
     }
@@ -47,5 +47,10 @@ public class CourseVideoJpaRepository {
                 .getResultList();
     }
 
-
+    public List<CourseVideoEntity> findListByVideoId(Long videoId) {
+        return em.createQuery("select cv from CourseVideoEntity cv where cv.video.videoId = :videoId",
+                        CourseVideoEntity.class)
+                .setParameter("videoId", videoId)
+                .getResultList();
+    }
 }

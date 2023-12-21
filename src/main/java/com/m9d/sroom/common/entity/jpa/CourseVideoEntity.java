@@ -107,6 +107,10 @@ public class CourseVideoEntity {
         return new CourseVideoEntity(course, video, lecture, summary, section, videoIndex);
     }
 
+    public void setSummary(SummaryEntity summary) {
+        this.summary = summary;
+    }
+
     public Optional<CourseQuizEntity> findCourseQuizByQuizId(Long quizId) {
         return courseQuizzes.stream()
                 .filter(courseQuiz -> courseQuiz.getQuiz().getQuizId().equals(quizId))

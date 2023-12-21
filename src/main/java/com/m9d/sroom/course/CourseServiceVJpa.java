@@ -120,7 +120,7 @@ public class CourseServiceVJpa {
                 getVideoCompletionStatus(courseVideoEntity, viewDuration, isMarkedAsCompleted);
 
         courseVideoEntity.updateStatus(new LearningStatus(viewingStatus.getViewDuration(), viewingStatus.isCompleted(),
-                new Timestamp(System.currentTimeMillis()), Math.max(viewDuration,
+                new Timestamp(System.currentTimeMillis()), Math.max(viewingStatus.getViewDuration(),
                 courseVideoEntity.getStatus().getMaxDuration())));
 
         if (!viewingStatus.isRewound()) {

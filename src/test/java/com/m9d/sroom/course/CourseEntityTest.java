@@ -110,7 +110,8 @@ public class CourseEntityTest extends RepositoryTest {
                 video2, lecture, video2.getSummary(), 2, 2));
 
         //then
-        Assertions.assertEquals(course.findLastCourseVideo(), courseVideo1);
+        Assertions.assertTrue(course.findLastCourseVideo().isPresent());
+        Assertions.assertEquals(course.findLastCourseVideo().get(), courseVideo1);
     }
 
     @Test

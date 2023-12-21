@@ -49,7 +49,7 @@ public class MaterialSaver {
                     return new VideoNotFoundFromDBException();
                 });
 
-        Summary summary = materialVo.getSummary();
+        Summary summary = materialVo.getSummaryVo();
 
         long summaryId;
         if (materialVo.getIsValid() == MaterialVaildStatus.IN_VALID.getValue()) {

@@ -31,7 +31,7 @@ public class MaterialResultVo {
         return is_valid;
     }
 
-    public Summary getSummary(){
+    public Summary getSummaryVo(){
         return new Summary(summary, new Timestamp(System.currentTimeMillis()), false);
     }
 
