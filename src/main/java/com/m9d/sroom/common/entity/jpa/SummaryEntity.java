@@ -55,4 +55,12 @@ public class SummaryEntity {
     public static SummaryEntity create(VideoEntity video, String content) {
         return new SummaryEntity(video, content);
     }
+
+    public void feedback(boolean isSatisfactory) {
+        if (isSatisfactory) {
+            this.feedBack.setPositiveFeedbackCount(feedBack.getPositiveFeedbackCount() + 1);
+        } else {
+            this.feedBack.setNegativeFeedbackCount(feedBack.getNegativeFeedbackCount() + 1);
+        }
+    }
 }

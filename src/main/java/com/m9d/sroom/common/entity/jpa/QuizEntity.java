@@ -63,4 +63,12 @@ public class QuizEntity {
     public static QuizEntity createChoiceType(VideoEntity video, String question, int choiceAnswer) {
         return new QuizEntity(video, QuizType.MULTIPLE_CHOICE.getValue(), question, null, choiceAnswer);
     }
+
+    public void feedback(boolean isSatisfactory) {
+        if (isSatisfactory) {
+            this.feedback.setPositiveFeedbackCount(feedback.getPositiveFeedbackCount() + 1);
+        } else {
+            this.feedback.setNegativeFeedbackCount(feedback.getNegativeFeedbackCount() + 1);
+        }
+    }
 }

@@ -30,7 +30,7 @@ public class SummaryJpaRepository {
         }
     }
 
-    Optional<SummaryEntity> findById(Long summaryId) {
+    public Optional<SummaryEntity> findById(Long summaryId) {
         return Optional.ofNullable(getById(summaryId));
     }
 }

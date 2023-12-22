@@ -2,6 +2,7 @@ package com.m9d.sroom.common.entity.jpa;
 
 import com.m9d.sroom.common.entity.jpa.embedded.MemberStats;
 import com.m9d.sroom.course.CourseMapper;
+import com.m9d.sroom.material.model.MaterialType;
 import com.m9d.sroom.search.dto.response.CourseBrief;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -108,9 +109,9 @@ public class MemberEntity {
                 .collect(Collectors.toCollection(HashSet::new));
     }
 
-    public Optional<MaterialFeedbackEntity> findFeedbackByMaterialIdAndType(int materialType, Long materialId) {
+    public Optional<MaterialFeedbackEntity> findFeedbackByMaterialIdAndType(MaterialType materialType, Long materialId) {
         return feedbacks.stream()
-                .filter(f -> f.getContentType().equals(materialType))
+                .filter(f -> f.getContentType().equals(materialType.getValue()))
                 .filter(f -> f.getContentId().equals(materialId))
                 .findFirst();
     }
