@@ -73,4 +73,8 @@ public class LectureEntity {
                                        String channel) {
         return new LectureEntity(course, sourceId, isPlaylist, lectureIndex, channel);
     }
+
+    public void updateIsReviewed() {
+        this.isReviewed = true;
+    }
 }

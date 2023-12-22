@@ -18,4 +18,9 @@ public class Review {
     private Integer reviewCount;
 
     private Double averageRating;
+
+    public void updateReview(int submittedRating) {
+        this.reviewCount++;
+        this.accumulatedRating += submittedRating;
+    }
 }

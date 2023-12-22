@@ -42,15 +42,4 @@ public class ReviewBrief {
                         .format(rs.getTimestamp("submitted_date")))
                 .build();
     }
-
-    public static ReviewBrief mapper(ReviewEntity review, int index) {
-        return ReviewBrief.builder()
-                .index(index)
-                .reviewContent(review.getContent())
-                .submittedRating(review.getSubmittedRating())
-                .reviewerName(review.getMember().getMemberName())
-                .publishedAt(new SimpleDateFormat("yyyy-MM-dd")
-                        .format(review.getSubmittedDate()))
-                .build();
-    }
 }
