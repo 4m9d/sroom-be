@@ -64,10 +64,15 @@ public class PlaylistJpaRepository {
         List<PlaylistEntity> playlistEntityList = em.createQuery(
                         "select p from PlaylistEntity p where p.contentInfo.channel = :channel", PlaylistEntity.class)
                 .setParameter("channel", channel)
-                .setMaxResults(limit)
                 .getResultList();
         Collections.shuffle(playlistEntityList);
-        return playlistEntityList.subList(0, limit);
+
+        if(playlistEntityList.size() >= limit) {
+            return playlistEntityList.subList(0, limit);
+        }
+        else {
+            return playlistEntityList;
+        }
     }
 
     public List<PlaylistEntity> getViewCountOrderByChannel(String channel, int limit) {
@@ -86,5 +91,10 @@ public class PlaylistJpaRepository {
                 .setParameter("channel", channel)
                 .setMaxResults(limit)
                 .getResultList();
+    }
+
+    public int updateRating() {
+        return em.createQuery("update PlaylistEntity p set p.review.averageRating = p.review.accumulatedRating / " +
+                "p.review.reviewCount where p.review.reviewCount > 0").executeUpdate();
     }
 }

@@ -53,7 +53,7 @@ public class VideoJpaRepository {
     }
 
     public List<VideoEntity> getTopRatedOrder(int limit) {
-        return em.createQuery("select p from PlaylistEntity p order by p.review.averageRating desc",
+        return em.createQuery("select v from VideoEntity v order by v.review.averageRating desc",
                         VideoEntity.class)
                 .setMaxResults(limit)
                 .getResultList();
@@ -63,10 +63,15 @@ public class VideoJpaRepository {
         List<VideoEntity> videoEntityList = em.createQuery(
                         "select v from VideoEntity v where v.contentInfo.channel = :channel", VideoEntity.class)
                 .setParameter("channel", channel)
-                .setMaxResults(limit)
                 .getResultList();
         Collections.shuffle(videoEntityList);
-        return videoEntityList.subList(0, limit);
+
+        if (videoEntityList.size() >= limit) {
+            return videoEntityList.subList(0, limit);
+        }
+        else {
+            return videoEntityList;
+        }
     }
 
     public List<VideoEntity> getViewCountOrderByChannel(String channel, int limit) {
@@ -84,5 +89,10 @@ public class VideoJpaRepository {
                 .setParameter("channel", channel)
                 .setMaxResults(limit)
                 .getResultList();
+    }
+
+    public int updateRating() {
+        return em.createQuery("update VideoEntity v set v.review.averageRating = v.review.accumulatedRating / " +
+                "v.review.reviewCount where v.review.reviewCount > 0").executeUpdate();
     }
 }
