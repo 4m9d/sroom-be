@@ -3,6 +3,7 @@ package com.m9d.sroom.review;
 import com.m9d.sroom.common.entity.jdbctemplate.ReviewEntity;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.review.dto.ReviewSubmitRequest;
+import com.m9d.sroom.search.dto.request.LectureTimeRecord;
 import com.m9d.sroom.util.ControllerTest;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -55,8 +56,10 @@ public class ReviewControllerTest extends ControllerTest {
 
 
         //when
-        String updateMaxDurationQuery = "UPDATE COURSEVIDEO SET max_duration = ? WHERE course_video_id = ?";
-        jdbcTemplate.update(updateMaxDurationQuery, 3000, 1); //course1 만 50% 이상 수강
+        mockMvc.perform(put("/lectures/{courseVideoId}/time", 1)
+                .contentType(MediaType.APPLICATION_JSON)
+                .header("Authorization", login.getAccessToken())
+                .content("{\"view_duration\" : 3000}"));
 
         //expected
         mockMvc.perform(get("/reviews/courses/{course_id}", 1)
