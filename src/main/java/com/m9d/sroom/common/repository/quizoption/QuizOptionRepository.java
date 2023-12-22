@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.quizoption;
 
-import com.m9d.sroom.common.entity.QuizOptionEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.QuizOptionEntity;
 
 import java.util.List;
 

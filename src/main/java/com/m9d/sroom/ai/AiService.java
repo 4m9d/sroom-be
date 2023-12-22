@@ -4,6 +4,7 @@ import com.google.gson.*;
 import com.m9d.sroom.ai.vo.MaterialResultVo;
 import com.m9d.sroom.ai.vo.MaterialVo;
 import com.m9d.sroom.material.MaterialSaver;
+import com.m9d.sroom.material.MaterialSaverVJpa;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,7 +31,7 @@ public class AiService {
 
     private final WebClient webClient;
 
-    private final MaterialSaver materialSaver;
+    private final MaterialSaverVJpa materialSaver;
 
     private final Gson gson;
 

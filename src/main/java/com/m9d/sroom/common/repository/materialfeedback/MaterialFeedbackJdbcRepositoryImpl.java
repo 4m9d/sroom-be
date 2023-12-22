@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.materialfeedback;
 
-import com.m9d.sroom.common.entity.MaterialFeedbackEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.MaterialFeedbackEntity;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;

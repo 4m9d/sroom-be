@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.recommend;
 
-import com.m9d.sroom.common.entity.RecommendEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.RecommendEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 

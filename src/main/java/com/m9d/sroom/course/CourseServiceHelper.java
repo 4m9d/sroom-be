@@ -1,8 +1,8 @@
 package com.m9d.sroom.course;
 
-import com.m9d.sroom.common.entity.CourseEntity;
-import com.m9d.sroom.common.entity.CourseQuizEntity;
-import com.m9d.sroom.common.entity.CourseVideoEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.CourseEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.CourseQuizEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.CourseVideoEntity;
 import com.m9d.sroom.common.repository.course.CourseRepository;
 import com.m9d.sroom.common.repository.coursequiz.CourseQuizRepository;
 import com.m9d.sroom.common.repository.coursevideo.CourseVideoRepository;
@@ -16,13 +16,11 @@ import com.m9d.sroom.course.vo.Course;
 import com.m9d.sroom.course.vo.CourseVideo;
 import com.m9d.sroom.search.dto.VideoCompletionStatus;
 import com.m9d.sroom.material.exception.CourseQuizNotFoundException;
-import com.m9d.sroom.search.dto.response.VideoInfo;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class CourseServiceHelper {

@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class MemberController {
 
-    private final MemberService memberService;
+    private final MemberServiceVJpa memberService;
     private final JwtUtil jwtUtil;
 
     @PostMapping("/login")

@@ -1,7 +1,7 @@
 package com.m9d.sroom.material.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.m9d.sroom.common.entity.SummaryEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.SummaryEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

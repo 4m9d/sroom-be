@@ -1,6 +1,6 @@
 package com.m9d.sroom.review;
 
-import com.m9d.sroom.common.entity.*;
+import com.m9d.sroom.common.entity.jdbctemplate.*;
 import com.m9d.sroom.common.repository.coursevideo.CourseVideoRepository;
 import com.m9d.sroom.common.repository.lecture.LectureRepository;
 import com.m9d.sroom.common.repository.playlist.PlaylistRepository;

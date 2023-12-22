@@ -1,6 +1,6 @@
 package com.m9d.sroom.course.dto.response;
 
-import com.m9d.sroom.common.entity.CourseEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.CourseEntity;
 import com.m9d.sroom.search.dto.response.VideoInfo;
 import com.m9d.sroom.search.dto.response.Section;
 import com.m9d.sroom.search.dto.response.VideoWatchInfo;

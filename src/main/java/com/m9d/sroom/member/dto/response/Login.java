@@ -1,5 +1,6 @@
 package com.m9d.sroom.member.dto.response;
 
+import com.m9d.sroom.common.entity.jpa.MemberEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +22,7 @@ public class Login {
     @Schema(description = "멤버 이름", example = "user_978538")
     private String name;
 
-    @Schema(description = "멤버 프로필 사진" ,example = "https://lh3.googleusercontent.com/a/ACg8ocI-Fz8cwMOHu2AJttFMt-s-25lPa--EUakuTRgvqfi-bA=s96-c")
+    @Schema(description = "멤버 프로필 사진", example = "https://lh3.googleusercontent.com/a/ACg8ocI-Fz8cwMOHu2AJttFMt-s-25lPa--EUakuTRgvqfi-bA=s96-c")
     private String profile;
 
     @Schema(description = "사용자 한줄소개")

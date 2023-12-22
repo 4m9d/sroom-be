@@ -1,5 +1,6 @@
 package com.m9d.sroom.search.dto.response;
 
+import com.m9d.sroom.common.entity.jpa.ReviewEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

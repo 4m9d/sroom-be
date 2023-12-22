@@ -1,6 +1,6 @@
 package com.m9d.sroom.material.dto.response;
 
-import com.m9d.sroom.common.entity.VideoEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.VideoEntity;
 import com.m9d.sroom.course.vo.CourseVideo;
 import com.m9d.sroom.material.model.MaterialStatus;
 import lombok.AllArgsConstructor;

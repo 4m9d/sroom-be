@@ -1,7 +1,7 @@
 package com.m9d.sroom.common.repository.coursevideo;
 
 import com.m9d.sroom.course.dto.VideoInfoForSchedule;
-import com.m9d.sroom.common.entity.CourseVideoEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.CourseVideoEntity;
 import com.m9d.sroom.search.dto.response.VideoInfo;
 import com.m9d.sroom.search.dto.response.VideoWatchInfo;
 

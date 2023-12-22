@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.playlist;
 
-import com.m9d.sroom.common.entity.PlaylistEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.PlaylistEntity;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;

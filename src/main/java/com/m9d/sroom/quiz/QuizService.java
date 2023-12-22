@@ -1,8 +1,8 @@
 package com.m9d.sroom.quiz;
 
 import com.m9d.sroom.ai.exception.QuizTypeNotMatchException;
-import com.m9d.sroom.common.entity.CourseQuizEntity;
-import com.m9d.sroom.common.entity.QuizEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.CourseQuizEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.QuizEntity;
 import com.m9d.sroom.common.repository.coursequiz.CourseQuizRepository;
 import com.m9d.sroom.common.repository.quiz.QuizRepository;
 import com.m9d.sroom.common.repository.quizoption.QuizOptionRepository;

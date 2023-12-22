@@ -1,7 +1,6 @@
 package com.m9d.sroom.dashboard;
 
 import com.m9d.sroom.dashboard.dto.response.Dashboard;
-import com.m9d.sroom.dashboard.DashboardService;
 import com.m9d.sroom.util.JwtUtil;
 import com.m9d.sroom.util.annotation.Auth;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class DashboardController {
 
-    private final DashboardService dashboardService;
+    private final DashboardServiceVJpa dashboardService;
     private final JwtUtil jwtUtil;
 
     @Auth

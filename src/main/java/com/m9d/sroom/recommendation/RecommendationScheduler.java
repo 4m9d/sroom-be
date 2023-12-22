@@ -14,7 +14,7 @@ import static com.m9d.sroom.recommendation.constant.RecommendationConstant.*;
 @RequiredArgsConstructor
 public class RecommendationScheduler {
 
-    private final RecommendationService recommendationService;
+    private final RecommendationServiceVJpa recommendationService;
 
     private final DomainRecommendation domainRecommendation;
 

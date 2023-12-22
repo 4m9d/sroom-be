@@ -1,8 +1,8 @@
 package com.m9d.sroom.video;
 
 import com.m9d.sroom.ai.AiService;
-import com.m9d.sroom.common.entity.PlaylistVideoEntity;
-import com.m9d.sroom.common.entity.VideoEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.PlaylistVideoEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.VideoEntity;
 import com.m9d.sroom.common.repository.playlistvideo.PlaylistVideoRepository;
 import com.m9d.sroom.common.repository.video.VideoRepository;
 import com.m9d.sroom.video.vo.PlaylistItem;

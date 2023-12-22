@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.video;
 
-import com.m9d.sroom.common.entity.VideoEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.VideoEntity;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
