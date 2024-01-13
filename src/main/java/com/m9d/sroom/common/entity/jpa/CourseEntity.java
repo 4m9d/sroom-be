@@ -237,4 +237,9 @@ public class CourseEntity {
         courseVideoOptional.ifPresent(courseVideoEntity -> courseVideoEntity.updateLastViewTime(
                 Timestamp.valueOf(LocalDateTime.now().plusSeconds(LAST_VIEW_TIME_ADJUSTMENT_IN_SECONDS))));
     }
+
+    public boolean hasUnpreparedMaterial() {
+        return courseVideos.stream()
+                .anyMatch(courseVideoEntity -> courseVideoEntity.getSummary() == null);
+    }
 }

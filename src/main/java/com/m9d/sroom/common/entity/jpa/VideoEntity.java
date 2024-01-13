@@ -1,12 +1,10 @@
 package com.m9d.sroom.common.entity.jpa;
 
-import com.m9d.sroom.ai.model.MaterialVaildStatus;
 import com.m9d.sroom.common.entity.jpa.embedded.ContentInfo;
 import com.m9d.sroom.common.entity.jpa.embedded.Review;
 import com.m9d.sroom.material.model.MaterialStatus;
 import com.m9d.sroom.video.vo.Video;
 import lombok.*;
-import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -19,7 +17,6 @@ import java.util.Objects;
 @Table(name = "VIDEO")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@DynamicInsert
 public class VideoEntity {
 
     @Id
@@ -69,6 +66,7 @@ public class VideoEntity {
         this.review = new Review(0, 0, 0.0);
         this.materialStatus = MaterialStatus.NO_REQUEST.getValue();
         this.chapterUsage = false;
+        this.summaryId = null;
     }
 
     public static VideoEntity create(Video video) {

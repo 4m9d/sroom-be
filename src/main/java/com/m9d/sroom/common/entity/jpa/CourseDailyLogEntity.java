@@ -75,4 +75,8 @@ public class CourseDailyLogEntity {
     public void addLectureCount(int lectureCountToAdd) {
         this.lectureCount = lectureCount + lectureCountToAdd;
     }
+
+    public void addQuizCount(int submittedQuizCount) {
+        this.quizCount = quizCount + submittedQuizCount;
+    }
 }

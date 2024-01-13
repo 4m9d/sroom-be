@@ -1,9 +1,7 @@
 package com.m9d.sroom.common.entity.jpa;
 
 import com.m9d.sroom.common.entity.jpa.embedded.MemberStats;
-import com.m9d.sroom.course.CourseMapper;
 import com.m9d.sroom.material.model.MaterialType;
-import com.m9d.sroom.search.dto.response.CourseBrief;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
@@ -139,5 +137,13 @@ public class MemberEntity {
                 .sorted(Comparator.comparing((CourseQuizEntity q) -> q.getGrading().getSubmittedTime()).reversed())
                 .limit(limit)
                 .collect(Collectors.toList());
+    }
+
+    public void addQuizCount(int submittedQuizCount) {
+        this.stats.setTotalSolvedCount(stats.getTotalSolvedCount() + submittedQuizCount);
+    }
+
+    public void addCorrectQuizCount(int submittedQuizRequestStream) {
+        this.stats.setTotalCorrectCount(stats.getTotalCorrectCount() + submittedQuizRequestStream);
     }
 }

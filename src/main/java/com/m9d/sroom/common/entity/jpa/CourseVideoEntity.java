@@ -2,6 +2,7 @@ package com.m9d.sroom.common.entity.jpa;
 
 import com.m9d.sroom.common.entity.jpa.embedded.LearningStatus;
 import com.m9d.sroom.common.entity.jpa.embedded.Sequence;
+import com.m9d.sroom.material.model.MaterialStatus;
 import com.m9d.sroom.search.dto.response.VideoWatchInfo;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -18,7 +19,6 @@ import java.util.Optional;
 @Table(name = "COURSEVIDEO")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@DynamicInsert
 public class CourseVideoEntity {
 
     @Id
@@ -64,9 +64,7 @@ public class CourseVideoEntity {
     private CourseVideoEntity(CourseEntity course, VideoEntity video, LectureEntity lecture, SummaryEntity summary,
                               int section, int videoIndex) {
         this.video = video;
-        if (summary != null) {
-            this.summary = summary;  // @DynamicInsert를 통해 summary == null인 경우에는 입력되지 않습니다.
-        }
+        this.summary = summary;
         this.sequence = new Sequence(section, videoIndex, lecture.getLectureIndex());
         this.status = new LearningStatus(0, false, null, 0);
         setMember(course.getMember());
@@ -127,5 +125,13 @@ public class CourseVideoEntity {
 
     public void updateLastViewTime(Timestamp timestamp) {
         this.status.setLastViewTime(timestamp);
+    }
+
+    public MaterialStatus getMaterialStatus() {
+        if(summary == null){
+            return MaterialStatus.CREATING;
+        }else{
+            return MaterialStatus.from(summary.getSummaryId());
+        }
     }
 }

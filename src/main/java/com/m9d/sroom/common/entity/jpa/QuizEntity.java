@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -70,5 +71,11 @@ public class QuizEntity {
         } else {
             this.feedback.setNegativeFeedbackCount(feedback.getNegativeFeedbackCount() + 1);
         }
+    }
+
+    public List<String> getOptionsStr(){
+        return quizOptions.stream()
+                .map(QuizOptionEntity::getOptionText)
+                .collect(Collectors.toList());
     }
 }

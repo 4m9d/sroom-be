@@ -2,6 +2,7 @@ package com.m9d.sroom.common;
 
 import com.m9d.sroom.common.entity.jpa.CourseDailyLogEntity;
 import com.m9d.sroom.common.entity.jpa.CourseEntity;
+import com.m9d.sroom.common.entity.jpa.MemberEntity;
 import com.m9d.sroom.common.repository.coursedailylog.CourseDailyLogJpaRepository;
 import com.m9d.sroom.search.dto.VideoCompletionStatus;
 import org.springframework.stereotype.Service;
@@ -32,5 +33,15 @@ public class LearningActivityUpdaterVJpa {
         }
     }
 
+    public void updateDailyQuizCount(CourseEntity courseEntity, int submittedQuizCount){
+        Optional<CourseDailyLogEntity> dailyLogOptional = courseEntity.findDailyLogByDate(new Date());
+        if(dailyLogOptional.isEmpty()){
+            dailyLogRepository.save(CourseDailyLogEntity.create(courseEntity, 0, submittedQuizCount,
+                    0));
+        }else{
+            CourseDailyLogEntity dailyLog = dailyLogOptional.get();
+            dailyLog.addQuizCount(submittedQuizCount);
+        }
+    }
 
 }

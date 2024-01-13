@@ -92,4 +92,9 @@ public class CourseQuizEntity {
                                           boolean isCorrect) {
         return new CourseQuizEntity(courseVideo, quiz, submittedAnswer, isCorrect);
     }
+
+    public boolean scrap() {
+        this.isScrapped = !isScrapped;
+        return isScrapped;
+    }
 }

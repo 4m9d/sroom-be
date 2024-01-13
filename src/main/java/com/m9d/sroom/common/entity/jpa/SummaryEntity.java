@@ -63,4 +63,9 @@ public class SummaryEntity {
             this.feedBack.setNegativeFeedbackCount(feedBack.getNegativeFeedbackCount() + 1);
         }
     }
+
+    public void update(String content) {
+        this.content = content;
+        this.updatedTime = new Timestamp(System.currentTimeMillis());
+    }
 }

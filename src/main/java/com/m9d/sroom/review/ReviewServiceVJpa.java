@@ -122,11 +122,8 @@ public class ReviewServiceVJpa {
     }
 
     LectureBrief4Review getVideoLectureBrief4Review(LectureEntity lecture) {
-
         CourseVideoEntity courseVideo = lecture.getCourseVideos()
                 .get(0);
-
-        System.out.println(courseVideo.getStatus().getMaxDuration());
 
         VideoEntity video = videoRepository.getById(lecture.getSourceId());
         int progress = (courseVideo.getStatus().getMaxDuration() * 100) / video.getContentInfo().getDuration();
