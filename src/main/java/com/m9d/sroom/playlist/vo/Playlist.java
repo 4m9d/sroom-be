@@ -1,11 +1,13 @@
 package com.m9d.sroom.playlist.vo;
 
+import com.m9d.sroom.common.entity.jpa.embedded.Review;
 import com.m9d.sroom.common.vo.Content;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 
 @Builder
 @AllArgsConstructor
@@ -26,9 +28,17 @@ public class Playlist extends Content {
 
     private final Integer videoCount;
 
-    private final Integer reviewCount;
+    private Integer reviewCount;
 
-    private final Double rating;
+    private Double rating;
+
+    public void setReviewInfo(Review review) {
+        DecimalFormat decimalFormat = new DecimalFormat("#.#");
+
+        this.reviewCount = review.getReviewCount();
+        this.rating = Double.parseDouble(decimalFormat.format((double) review.getAccumulatedRating()
+                / reviewCount));
+    }
 
     @Override
     public Long getViewCount() {

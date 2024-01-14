@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ContentDto {
-    protected String selectThumbnailInVo(ThumbnailDto thumbnailDto) {
+    public String selectThumbnailInVo(ThumbnailDto thumbnailDto) {
         String selectedThumbnailUrl = "";
 
 

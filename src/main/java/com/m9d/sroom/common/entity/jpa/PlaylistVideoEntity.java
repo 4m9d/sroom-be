@@ -31,4 +31,14 @@ public class PlaylistVideoEntity {
         this.video = video;
         this.videoIndex = index;
     }
+
+    private PlaylistVideoEntity(PlaylistEntity playlist, VideoEntity video, Integer videoIndex) {
+        this.playlist = playlist;
+        this.video = video;
+        this.videoIndex = videoIndex;
+    }
+
+    public static PlaylistVideoEntity create(PlaylistEntity playlist, VideoEntity videoEntity, int index) {
+        return new PlaylistVideoEntity(playlist, videoEntity, index);
+    }
 }

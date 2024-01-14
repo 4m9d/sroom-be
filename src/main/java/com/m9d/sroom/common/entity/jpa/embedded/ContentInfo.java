@@ -1,9 +1,7 @@
 package com.m9d.sroom.common.entity.jpa.embedded;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.springframework.stereotype.Service;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -13,6 +11,7 @@ import java.sql.Timestamp;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
+@Setter
 public class ContentInfo {
 
     private String title;

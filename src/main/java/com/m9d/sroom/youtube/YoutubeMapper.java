@@ -30,20 +30,20 @@ public class YoutubeMapper {
         this.youtubeApi = youtubeApi;
     }
 
-    public Playlist getPlaylist(String code, int reviewCount, int accumulatedRating) {
+    public Playlist getPlaylist(String code) {
         PlaylistDto playlistVo = youtubeApi.getPlaylistDto(PlaylistReq.builder()
                 .playlistCode(code)
                 .build());
 
-        return playlistVo.toPlaylist(reviewCount, accumulatedRating);
+        return playlistVo.toPlaylist();
     }
 
-    public Video getVideo(String code, int reviewCount, int accumulatedRating) {
+    public Video getVideo(String code) {
         VideoDto videoVo = youtubeApi.getVideoDto(VideoReq.builder()
                 .videoCode(code)
                 .build());
 
-        return videoVo.toVideo(reviewCount, accumulatedRating);
+        return videoVo.toVideo();
     }
 
     public PlaylistItemInfo getPlaylistItemInfo(String code, String nextPageToken, int limit) {
