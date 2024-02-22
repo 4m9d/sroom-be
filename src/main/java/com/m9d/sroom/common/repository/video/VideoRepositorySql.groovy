@@ -51,7 +51,7 @@ class VideoRepositorySql {
         v.summary_id, v.is_available, v.description, v.chapter_usage, v.title, v.language, v.license, v.updated_at, 
         v.view_count, v.published_at, v.membership, v.material_status, pv.video_index, v.average_rating
         FROM video v
-        JOIN PLAYLISTVIDEO pv
+        JOIN playlistvideo pv
         ON v.video_id = pv.video_id
         WHERE pv.playlist_id = ?
         ORDER BY pv.video_index
@@ -59,7 +59,7 @@ class VideoRepositorySql {
 
     public static final String GET_CODE_SET_BY_MEMBER_ID = """
         SELECT v.video_code 
-        FROM COURSEVIDEO cv JOIN VIDEO v ON cv.video_id = v.video_id 
+        FROM coursevideo cv JOIN VIDEO v ON cv.video_id = v.video_id 
         WHERE cv.member_id = ?
     """
 
