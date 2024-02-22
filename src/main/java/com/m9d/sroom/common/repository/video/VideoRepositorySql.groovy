@@ -59,7 +59,7 @@ class VideoRepositorySql {
 
     public static final String GET_CODE_SET_BY_MEMBER_ID = """
         SELECT v.video_code 
-        FROM coursevideo cv JOIN VIDEO v ON cv.video_id = v.video_id 
+        FROM coursevideo cv JOIN video v ON cv.video_id = v.video_id 
         WHERE cv.member_id = ?
     """
 
