@@ -4,7 +4,7 @@ class VideoRepositorySql {
 
     public static final String SAVE = """
         INSERT
-        INTO VIDEO (video_code, duration, channel, thumbnail, summary_id, description, title, language, license, 
+        INTO video (video_code, duration, channel, thumbnail, summary_id, description, title, language, license, 
         view_count, published_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """
@@ -14,7 +14,7 @@ class VideoRepositorySql {
         video_id, video_code, duration, channel, thumbnail, accumulated_rating, review_count, summary_id, 
         is_available, description, chapter_usage, title, language, license, updated_at, view_count, published_at, 
         membership, material_status, average_rating
-        FROM VIDEO
+        FROM video
         WHERE video_code = ?
     """
 
@@ -23,7 +23,7 @@ class VideoRepositorySql {
         video_id, video_code, duration, channel, thumbnail, accumulated_rating, review_count, summary_id, 
         is_available, description, chapter_usage, title, language, license, updated_at, view_count, published_at, 
         membership, material_status, average_rating
-        FROM VIDEO
+        FROM video
         WHERE video_id = ?
     """
 
@@ -32,13 +32,13 @@ class VideoRepositorySql {
         video_id, video_code, duration, channel, thumbnail, accumulated_rating, review_count, summary_id, 
         is_available, description, chapter_usage, title, language, license, updated_at, view_count, published_at, 
         membership, material_status, average_rating
-        FROM VIDEO 
+        FROM video 
         ORDER BY average_rating DESC
         LIMIT ? 
     """
 
     public static final String UPDATE_BY_ID = """
-        UPDATE VIDEO
+        UPDATE video
         SET duration = ?, channel = ?, thumbnail = ?, accumulated_rating = ?, review_count = ?, summary_id = ?,
         is_available = ?, description = ?, chapter_usage = ?, title = ?, language = ?, license = ?, updated_at = ?, 
         view_count = ?, published_at = ?, membership = ?, material_status = ?, average_rating = ?
@@ -50,7 +50,7 @@ class VideoRepositorySql {
         v.video_id, v.video_code, v.duration, v.channel, v.thumbnail, v.accumulated_rating, v.review_count,
         v.summary_id, v.is_available, v.description, v.chapter_usage, v.title, v.language, v.license, v.updated_at, 
         v.view_count, v.published_at, v.membership, v.material_status, pv.video_index, v.average_rating
-        FROM VIDEO v
+        FROM video v
         JOIN PLAYLISTVIDEO pv
         ON v.video_id = pv.video_id
         WHERE pv.playlist_id = ?
@@ -68,7 +68,7 @@ class VideoRepositorySql {
         video_id, video_code, duration, channel, thumbnail, accumulated_rating, review_count, summary_id, 
         is_available, description, chapter_usage, title, language, license, updated_at, view_count, published_at,
         membership, material_status, average_rating
-        FROM VIDEO
+        FROM video
         WHERE channel = ?
         ORDER BY RAND()
         LIMIT ?
@@ -79,7 +79,7 @@ class VideoRepositorySql {
         video_id, video_code, duration, channel, thumbnail, accumulated_rating, review_count, summary_id, 
         is_available, description, chapter_usage, title, language, license, updated_at, view_count, published_at, 
         membership, material_status, average_rating
-        FROM VIDEO
+        FROM video
         WHERE channel = ?
         ORDER BY view_count DESC
         LIMIT ?
@@ -90,14 +90,14 @@ class VideoRepositorySql {
         video_id, video_code, duration, channel, thumbnail, accumulated_rating, review_count, summary_id, 
         is_available, description, chapter_usage, title, language, license, updated_at, view_count, published_at, 
         membership, material_status, average_rating
-        FROM VIDEO
+        FROM video
         WHERE channel = ?
         ORDER BY published_at DESC
         LIMIT ?
     """
 
     public static final String UPDATE_RATING = """
-        UPDATE VIDEO
+        UPDATE video
         SET average_rating = accumulated_rating / review_count
         WHERE review_count > 0;
     """
