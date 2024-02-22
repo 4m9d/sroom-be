@@ -53,7 +53,7 @@ public class VideoService {
             }
         }
 
-        return youtubeService.getVideo(videoCode);
+        return youtubeService.getVideo(videoCode, reviewCount, accumulatedRating);
     }
 
     public void putVideo(Video video) {

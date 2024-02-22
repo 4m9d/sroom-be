@@ -22,7 +22,7 @@ public class VideoDto extends ContentDto {
 
     private List<VideoItemDto> items;
 
-    public Video toVideo() {
+    public Video toVideo(int reviewCount, int accumulatedRating) {
         VideoItemDto itemVo = items.get(FIRST_INDEX);
         DecimalFormat decimalFormat = new DecimalFormat("#.#");
 
@@ -51,6 +51,9 @@ public class VideoDto extends ContentDto {
                 .language(language)
                 .license(itemVo.getStatus().getLicense())
                 .membership(membership)
+                .reviewCount(reviewCount)
+                .rating(Double.parseDouble(decimalFormat.format((double) accumulatedRating
+                        / reviewCount)))
                 .build();
     }
 

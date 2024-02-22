@@ -54,7 +54,7 @@ public class PlaylistService {
             }
         }
 
-        return youtubeService.getPlaylist(playlistCode);
+        return youtubeService.getPlaylist(playlistCode, reviewCount, accumulatedRating);
     }
 
     public PlaylistWithItemList getRecentPlaylistWithItemList(String playlistCode) {

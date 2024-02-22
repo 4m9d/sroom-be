@@ -1,18 +1,11 @@
 package com.m9d.sroom.video.vo;
 
-import com.m9d.sroom.common.entity.jpa.embedded.Review;
 import com.m9d.sroom.common.vo.Content;
-import com.m9d.sroom.util.DateUtil;
-import com.m9d.sroom.youtube.dto.video.VideoDto;
-import com.m9d.sroom.youtube.dto.video.VideoItemDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.sql.Timestamp;
-import java.text.DecimalFormat;
-
-import static com.m9d.sroom.youtube.YoutubeConstant.*;
 
 @AllArgsConstructor
 @Builder
@@ -41,17 +34,9 @@ public class Video extends Content {
 
     private final Boolean membership;
 
-    private Integer reviewCount;
+    private final Integer reviewCount;
 
-    private Double rating;
-
-    public void setReviewInfo(Review review) {
-        DecimalFormat decimalFormat = new DecimalFormat("#.#");
-
-        this.reviewCount = review.getReviewCount();
-        this.rating = Double.parseDouble(decimalFormat.format((double) review.getAccumulatedRating()
-                / reviewCount));
-    }
+    private final Double rating;
 
     @Override
     public Integer getVideoCount() {
@@ -62,4 +47,6 @@ public class Video extends Content {
     public Boolean isPlaylist() {
         return false;
     }
+
+
 }

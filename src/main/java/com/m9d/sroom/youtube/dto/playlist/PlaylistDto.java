@@ -16,7 +16,7 @@ public class PlaylistDto extends ContentDto {
     private PageInfoDto pageInfo;
     private List<PlaylistItemDto> items;
 
-    public Playlist toPlaylist() {
+    public Playlist toPlaylist(int reviewCount, int accumulatedRating) {
         PlaylistItemDto itemVo = items.get(FIRST_INDEX);
         DecimalFormat decimalFormat = new DecimalFormat("#.#");
 
@@ -28,6 +28,9 @@ public class PlaylistDto extends ContentDto {
                 .description(itemVo.getSnippet().getDescription())
                 .publishedAt(DateUtil.convertISOToTimestamp(itemVo.getSnippet().getPublishedAt()))
                 .videoCount(itemVo.getContentDetails().getItemCount())
+                .reviewCount(reviewCount)
+                .rating(Double.parseDouble(decimalFormat.format((double) accumulatedRating
+                        / reviewCount)))
                 .build();
     }
 }

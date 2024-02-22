@@ -84,14 +84,6 @@ public class VideoEntity {
                 .orElse(null);
     }
 
-    public Long getSummaryId() {
-        if (summaryId == null) {
-            return 0L;
-        } else {
-            return summaryId;
-        }
-    }
-
     public void setSummary(SummaryEntity summary) {
         this.getSummaries().add(summary);
         this.summaryId = summary.getSummaryId();
@@ -102,20 +94,6 @@ public class VideoEntity {
 
         if (status.equals(MaterialStatus.CREATION_FAILED)) {
             this.summaryId = (long) MaterialStatus.CREATION_FAILED.getValue();
-        } else if (status.equals(MaterialStatus.CREATING)) {
-            this.summaryId = null;
         }
-    }
-
-    public void update(Video video) {
-        this.contentInfo.setTitle(video.getTitle());
-        this.contentInfo.setChannel(video.getChannel());
-        this.contentInfo.setThumbnail(video.getThumbnail());
-        this.contentInfo.setDescription(video.getDescription());
-        this.contentInfo.setDuration(video.getDuration());
-        this.viewCount = video.getViewCount();
-        this.contentInfo.setPublishedAt(video.getPublishedAt());
-        this.language = video.getLanguage();
-        this.membership = video.getMembership();
     }
 }
