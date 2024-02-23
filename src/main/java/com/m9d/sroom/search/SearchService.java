@@ -3,6 +3,7 @@ package com.m9d.sroom.search;
 import com.m9d.sroom.common.vo.Content;
 import com.m9d.sroom.playlist.vo.Playlist;
 import com.m9d.sroom.playlist.vo.PlaylistWithItemList;
+import com.m9d.sroom.review.ReviewServiceVJpa;
 import com.m9d.sroom.video.vo.Video;
 import com.m9d.sroom.search.dto.request.LectureDetailParam;
 import com.m9d.sroom.search.dto.response.*;
@@ -32,9 +33,9 @@ public class SearchService {
 
     private final PlaylistService playlistService;
     private final VideoService videoService;
-    private final ReviewService reviewService;
+    private final ReviewServiceVJpa reviewService;
 
-    public SearchService(PlaylistService playlistService, VideoService videoService, ReviewService reviewService) {
+    public SearchService(PlaylistService playlistService, VideoService videoService, ReviewServiceVJpa reviewService) {
         this.playlistService = playlistService;
         this.videoService = videoService;
         this.reviewService = reviewService;
