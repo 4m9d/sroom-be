@@ -1,6 +1,6 @@
 package com.m9d.sroom.material;
 
-import com.m9d.sroom.common.entity.MaterialFeedbackEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.MaterialFeedbackEntity;
 import com.m9d.sroom.common.repository.materialfeedback.MaterialFeedbackRepository;
 import com.m9d.sroom.common.repository.quiz.QuizRepository;
 import com.m9d.sroom.common.repository.summary.SummaryRepository;

@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.member;
 
-import com.m9d.sroom.common.entity.MemberEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.MemberEntity;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;

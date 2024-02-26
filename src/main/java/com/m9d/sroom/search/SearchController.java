@@ -1,7 +1,10 @@
 package com.m9d.sroom.search;
 
 
+import com.m9d.sroom.common.entity.jpa.MemberEntity;
 import com.m9d.sroom.course.CourseService;
+import com.m9d.sroom.course.CourseServiceVJpa;
+import com.m9d.sroom.member.MemberServiceVJpa;
 import com.m9d.sroom.search.dto.request.KeywordSearchParam;
 import com.m9d.sroom.search.dto.request.LectureDetailParam;
 import com.m9d.sroom.playlist.PlaylistService;
@@ -36,16 +39,16 @@ import java.util.Set;
 public class SearchController {
 
     private final SearchService searchService;
+    private final MemberServiceVJpa memberService;
     private final YoutubeMapper youtubeService;
     private final PlaylistService playlistService;
     private final VideoService videoService;
-    private final CourseService courseService;
+    private final CourseServiceVJpa courseService;
     private final JwtUtil jwtUtil;
 
-    public SearchController(SearchService searchService, YoutubeMapper youtubeService,
-                            PlaylistService playlistService, VideoService videoService,
-                            CourseService courseService, JwtUtil jwtUtil) {
+    public SearchController(SearchService searchService, MemberServiceVJpa memberService, YoutubeMapper youtubeService, PlaylistService playlistService, VideoService videoService, CourseServiceVJpa courseService, JwtUtil jwtUtil) {
         this.searchService = searchService;
+        this.memberService = memberService;
         this.youtubeService = youtubeService;
         this.playlistService = playlistService;
         this.videoService = videoService;
@@ -93,16 +96,17 @@ public class SearchController {
 
         Set<String> enrolledLectureSet = new HashSet<>(playlistService.getEnrolledCodeSet(memberId));
         enrolledLectureSet.addAll(videoService.getEnrolledCodeSet(memberId));
+        MemberEntity memberEntity = memberService.getMemberEntity(memberId);
 
         if (ValidateUtil.checkIfPlaylist(lectureCode) && !lectureDetailParam.isIndexOnly()) {
             return searchService.getContentDetail(playlistService.getRecentPlaylist(lectureCode),
-                    lectureDetailParam, enrolledLectureSet, courseService.getCourseBriedList(memberId));
+                    lectureDetailParam, enrolledLectureSet, courseService.getCourseBriefList(memberEntity));
         } else if (ValidateUtil.checkIfPlaylist(lectureCode)) {
             return searchService.getContentDetail(playlistService.getRecentPlaylistWithItemList(lectureCode),
-                    lectureDetailParam, enrolledLectureSet, courseService.getCourseBriedList(memberId));
+                    lectureDetailParam, enrolledLectureSet, courseService.getCourseBriefList(memberEntity));
         } else {
             return searchService.getContentDetail(videoService.getRecentVideo(lectureCode),
-                    lectureDetailParam, enrolledLectureSet, courseService.getCourseBriedList(memberId));
+                    lectureDetailParam, enrolledLectureSet, courseService.getCourseBriefList(memberEntity));
         }
     }
 }

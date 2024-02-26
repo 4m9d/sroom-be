@@ -19,6 +19,15 @@ spring:
     url: jdbc:h2:mem:test;MODE=MySQL
     username: sa
     password:
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        database-platform: org.hibernate.dialect.MariaDB1011Dialect
+        show_sql: true  # sql 쿼리를 보여줍니다.
+        format_sql: true  # sql query formatting
+        use_sql_comments: true  # sql 쿼리의 추가정보를 보여줍니다.
 
 youtube:
   base-url: https://www.googleapis.com/youtube/v3

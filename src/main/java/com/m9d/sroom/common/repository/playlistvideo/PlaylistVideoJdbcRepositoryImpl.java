@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.playlistvideo;
 
-import com.m9d.sroom.common.entity.PlaylistVideoEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.PlaylistVideoEntity;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -22,7 +22,7 @@ public class PlaylistVideoJdbcRepositoryImpl implements PlaylistVideoRepository 
         return getById(jdbcTemplate.queryForObject(PlaylistVideoRepositorySql.GET_LAST_ID, Long.class));
     }
 
-    private PlaylistVideoEntity getById(Long playlistVideoId) {
+    public PlaylistVideoEntity getById(Long playlistVideoId) {
         return jdbcTemplate.queryForObject(PlaylistVideoRepositorySql.GET_BY_ID, PlaylistVideoEntity.getMapper(), playlistVideoId);
     }
 

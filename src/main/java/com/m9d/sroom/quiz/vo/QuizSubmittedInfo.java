@@ -1,6 +1,6 @@
 package com.m9d.sroom.quiz.vo;
 
-import com.m9d.sroom.common.entity.CourseQuizEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.CourseQuizEntity;
 import lombok.Getter;
 
 import java.sql.Timestamp;

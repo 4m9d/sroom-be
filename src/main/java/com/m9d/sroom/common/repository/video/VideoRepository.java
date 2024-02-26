@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.video;
 
-import com.m9d.sroom.common.entity.VideoEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.VideoEntity;
 
 import java.util.List;
 import java.util.Optional;

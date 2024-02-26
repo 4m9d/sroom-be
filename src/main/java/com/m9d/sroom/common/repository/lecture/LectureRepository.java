@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.lecture;
 
-import com.m9d.sroom.common.entity.LectureEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.LectureEntity;
 
 import java.util.HashSet;
 import java.util.List;

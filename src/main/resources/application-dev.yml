@@ -21,6 +21,12 @@ spring:
   mvc:
     view:
       suffix: .html
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        database-platform: org.hibernate.dialect.MariaDB1011Dialect
 
 
 youtube:

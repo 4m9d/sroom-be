@@ -16,7 +16,7 @@ public enum MaterialStatus {
         return value;
     }
 
-    public static MaterialStatus from(long summaryId) {
+    public static MaterialStatus from(Long summaryId) {
         if (summaryId == CREATING.getValue()) {
             return MaterialStatus.CREATING;
         } else if (summaryId == CREATION_FAILED.getValue()) {

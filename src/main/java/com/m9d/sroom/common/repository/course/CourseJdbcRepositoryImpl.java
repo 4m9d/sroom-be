@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.course;
 
-import com.m9d.sroom.common.entity.CourseEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.CourseEntity;
 import com.m9d.sroom.search.dto.response.CourseBrief;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;

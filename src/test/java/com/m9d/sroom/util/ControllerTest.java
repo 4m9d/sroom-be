@@ -6,7 +6,7 @@ import com.m9d.sroom.course.dto.response.CourseDetail;
 import com.m9d.sroom.course.dto.response.EnrolledCourseInfo;
 import com.m9d.sroom.member.MemberService;
 import com.m9d.sroom.search.dto.response.KeywordSearchResponse;
-import com.m9d.sroom.common.entity.MemberEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.MemberEntity;
 import com.m9d.sroom.member.dto.response.Login;
 import com.m9d.sroom.util.constant.ContentConstant;
 import com.m9d.sroom.video.VideoService;
@@ -15,13 +15,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.web.servlet.MvcResult;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.UUID;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;

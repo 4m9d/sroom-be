@@ -1,6 +1,6 @@
 package com.m9d.sroom.common.repository.materialfeedback;
 
-import com.m9d.sroom.common.entity.MaterialFeedbackEntity;
+import com.m9d.sroom.common.entity.jdbctemplate.MaterialFeedbackEntity;
 
 import java.util.Optional;
 
