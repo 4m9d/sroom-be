@@ -94,6 +94,10 @@ public class CourseVideo {
     }
 
     public MaterialStatus getMaterialStatus() {
-        return MaterialStatus.from(summaryId);
+        if(summaryId != null){
+            return MaterialStatus.CREATED;
+        }else{
+            return MaterialStatus.CREATION_FAILED;
+        }
     }
 }

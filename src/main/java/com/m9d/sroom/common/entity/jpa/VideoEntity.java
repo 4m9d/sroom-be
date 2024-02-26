@@ -85,15 +85,19 @@ public class VideoEntity {
     }
 
     public void setSummary(SummaryEntity summary) {
-        this.getSummaries().add(summary);
-        this.summaryId = summary.getSummaryId();
+        if(summary != null){
+            this.getSummaries().add(summary);
+            this.summaryId = summary.getSummaryId();
+        }else{
+            this.summaryId = null;
+        }
     }
 
     public void setMaterialStatus(MaterialStatus status) {
         this.materialStatus = status.getValue();
+    }
 
-        if (status.equals(MaterialStatus.CREATION_FAILED)) {
-            this.summaryId = (long) MaterialStatus.CREATION_FAILED.getValue();
-        }
+    public MaterialStatus getMaterialStatus(){
+        return MaterialStatus.getByInt(materialStatus);
     }
 }
