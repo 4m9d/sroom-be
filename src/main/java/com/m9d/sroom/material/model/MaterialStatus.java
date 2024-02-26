@@ -16,13 +16,12 @@ public enum MaterialStatus {
         return value;
     }
 
-    public static MaterialStatus from(Long summaryId) {
-        if (summaryId == CREATING.getValue()) {
-            return MaterialStatus.CREATING;
-        } else if (summaryId == CREATION_FAILED.getValue()) {
-            return MaterialStatus.CREATION_FAILED;
-        } else {
-            return MaterialStatus.CREATED;
+    public static MaterialStatus getByInt(int value){
+        for (MaterialStatus status : MaterialStatus.values()) {
+            if (status.getValue() == value) {
+                return status;
+            }
         }
+        return null;
     }
 }

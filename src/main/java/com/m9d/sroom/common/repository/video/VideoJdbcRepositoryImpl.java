@@ -26,7 +26,6 @@ public class VideoJdbcRepositoryImpl implements VideoRepository {
                 video.getDuration(),
                 video.getChannel(),
                 video.getThumbnail(),
-                video.getSummaryId(),
                 video.getDescription(),
                 video.getTitle(),
                 video.getLanguage(),

@@ -45,6 +45,7 @@ public class MaterialSaverVJpa {
 
         if (materialVo.getIsValid() == MaterialVaildStatus.IN_VALID.getValue()) {
             videoEntity.setMaterialStatus(MaterialStatus.CREATION_FAILED);
+            videoEntity.setSummary(null);
         } else {
             videoEntity.setMaterialStatus(MaterialStatus.CREATED);
             videoEntity.setSummary(summaryRepository.save(SummaryEntity.create(videoEntity, materialVo.getSummary())));

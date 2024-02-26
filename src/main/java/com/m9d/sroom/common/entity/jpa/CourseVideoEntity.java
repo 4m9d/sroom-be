@@ -128,10 +128,6 @@ public class CourseVideoEntity {
     }
 
     public MaterialStatus getMaterialStatus() {
-        if(summary == null){
-            return MaterialStatus.CREATING;
-        }else{
-            return MaterialStatus.from(summary.getSummaryId());
-        }
+        return video.getMaterialStatus();
     }
 }

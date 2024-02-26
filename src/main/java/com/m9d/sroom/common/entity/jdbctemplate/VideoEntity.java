@@ -58,6 +58,14 @@ public class VideoEntity {
 
     private Float averageRating;
 
+    public Long getSummaryId() {
+        if (summaryId == 0) {
+            return null;
+        } else {
+            return summaryId;
+        }
+    }
+
     public static RowMapper<VideoEntity> getRowMapper() {
         return (rs, rowNum) -> VideoEntity.builder()
                 .videoId(rs.getLong("video_id"))

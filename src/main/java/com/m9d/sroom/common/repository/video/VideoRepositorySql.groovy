@@ -4,9 +4,9 @@ class VideoRepositorySql {
 
     public static final String SAVE = """
         INSERT
-        INTO video (video_code, duration, channel, thumbnail, summary_id, description, title, language, license, 
+        INTO video (video_code, duration, channel, thumbnail, description, title, language, license, 
         view_count, published_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     """
 
     public static final String GET_BY_CODE = """
