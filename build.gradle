@@ -92,6 +92,10 @@ dependencies {
     // json
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.11.0'
 
+    // ehcache
+    implementation 'org.springframework.boot:spring-boot-starter-cache'
+    implementation 'net.sf.ehcache:ehcache'
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 }
