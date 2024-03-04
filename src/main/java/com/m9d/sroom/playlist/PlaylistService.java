@@ -17,6 +17,7 @@ import com.m9d.sroom.youtube.YoutubeMapper;
 import com.m9d.sroom.youtube.vo.PlaylistItemInfo;
 import com.m9d.sroom.youtube.vo.PlaylistVideoInfo;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -41,6 +42,7 @@ public class PlaylistService {
         this.playlistVideoRepository = playlistVideoRepository;
     }
 
+    @Cacheable(value = "PlaylistInfoGetter")
     public Playlist getRecentPlaylist(String playlistCode) {
         Optional<PlaylistEntity> playlistEntityOptional = playlistRepository.findByCode(playlistCode);
         int reviewCount = 0;

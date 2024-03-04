@@ -14,6 +14,7 @@ import com.m9d.sroom.util.DateUtil;
 import com.m9d.sroom.video.constant.VideoConstant;
 import com.m9d.sroom.youtube.YoutubeMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class VideoService {
         this.aiService = aiService;
     }
 
-
+    @Cacheable(value = "VideoInfoGetter")
     public Video getRecentVideo(String videoCode) {
         Optional<VideoEntity> videoEntityOptional = videoRepository.findByCode(videoCode);
         int reviewCount = 0;
