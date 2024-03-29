@@ -1,4 +1,4 @@
-# 생성형 AI를 활용한 유튜브 강의강의 플랫폼, '스룸' BackEnd Repo
+# 생성형 AI를 활용한 유튜브 강의관리 플랫폼, '스룸' BackEnd Repo
 
 #### 배포 URL : [www.sroom.kr](https://www.sroom.kr)
 
