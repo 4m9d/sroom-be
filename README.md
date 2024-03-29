@@ -1,9 +1,12 @@
 # 생성형 AI를 활용한 유튜브 강의강의 플랫폼, '스룸' BackEnd Repo
 
-- 배포 URL : [나만을 위한 유튜브 강의관리 플랫폼, 스룸](https://www.sroom.kr)
-- 스룸 Organization : [4m9d Organization](https://github.com/4m9d)
-- FrontEnd Repo : [github.com/4m9d/sroom-fe](https://github.com/4m9d/sroom-fe)
-- AI Repo : [github.com/4m9d/sroom-ai](https://github.com/4m9d/sroom-ai)
+#### 배포 URL : [www.sroom.kr](https://www.sroom.kr)
+
+#### 스룸 Organization : [4m9d Organization](https://github.com/4m9d)
+
+#### FrontEnd Repo : [github.com/4m9d/sroom-fe](https://github.com/4m9d/sroom-fe)
+
+#### AI Repo : [github.com/4m9d/sroom-ai](https://github.com/4m9d/sroom-ai)
 
 <br>
 
@@ -46,55 +49,72 @@
 
 ## 개발 방식
 
-#### API 버전관리
-- [SwaggerHub](https://app.swaggerhub.com/apis/sroom/api.sroom.com/2.0.0)
-- yaml 파일로 작성, 현재 2.0.0 ver
+> ### API 버전관리
 
+- [SwaggerHub](https://app.swaggerhub.com/apis/sroom/api.sroom.com/2.0.0) 사용
+- yaml 파일로 작성, 현재(2024.03) 2.0.0 ver
 
-#### 스크럼 - 2주 단위 스프린트
+<br>
+
+> ### 스크럼 - 2주 단위 스프린트
+
 - Jira 칸반보드 사용 
 
 - Confluence 사용한 스프린트 플래닝, 데일리 스크럼, KPT 회고, 백로그 작성
 
+<br>
 
-#### 이슈 및 PR 생성
-- [이슈 템플릿](https://github.com/4m9d/sroom-be/blob/main/.github/ISSUE_TEMPLATE.md)에 따라 개요, 이유, 세부사항 작성
+> ### 이슈 및 PR 생성
+- 지라 백로그 기반으로 [이슈 템플릿](https://github.com/4m9d/sroom-be/blob/main/.github/ISSUE_TEMPLATE.md)에 따라 개요, 이유, 세부사항 작성
 
 - [PR 템플릿](https://github.com/4m9d/sroom-be/blob/main/.github/PULL_REQUEST_TEMPLATE.md)에 따라 Motivation, Key changes, To reviewers 작성
 
+<br>
 
-#### MockAPI 사용
+> ### MockAPI 사용
+
 - Postman MockAPI 사용
 
 - 프론트엔드 팀원에게 원활한 개발환경을 제공
 
+<br>
 
-#### 이슈관리
+> ### 이슈관리
+
 - Slack의 스레드 생성해 논의
 
 - 필요하다면 백로그 추가
 
+<br>
 
-#### 테스트 서버 구축
+> ### 테스트 서버 구축
+
 - 프로덕션 환경과 같은 환경으로 테스트 서버 구축
 
 - Pull Request 할 시 테스트서버 반영하여 디버깅
 
+<br>
 
-#### 브랜치 전략
+> ### 브랜치 전략
+
 - Github-flow 방식 채택
 
 - 생성된 지라이슈 티켓으로 브랜치 생성, 개발 완료시 Main으로 PR, Merge
 
+<br>
 
-#### 테스트 코드 작성
+> ### 테스트 코드 작성
+
 - 기능개발 전, 테스트코드를 먼저 작성
 
 - Service, Repository, Entity 계층의 유닛 테스트 코드 작성, API 단위의 통합테스트 작성
 
-- 기능구현 후 테스트 요구사항 만족했는지 쉽게 확인 가능, 리팩토링 시 기존기능이 잘 작동하는지 쉽게 확인 가능했음
+- 기능구현 후 테스트 요구사항 만족했는지 쉽게 확인 가능
+  
+- 리팩토링 시 기존기능이 잘 작동하는지 쉽게 확인 가능
 
 - 총 76개의 테스트 코드 작성
+
 
 
 <br>
@@ -128,6 +148,4 @@
 |/lectures/{lectureCode}|[강의 상세검색](https://github.com/4m9d/sroom-be/pull/7)|index_only, review_only, index_limit, review_limit, index_next_token|[정두원](https://github.com/D-w-nJ)|
 
 .. 이어서 작성하겠습니다.
-
-
 
