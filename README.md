@@ -128,15 +128,15 @@
 |`2023-06-27`|API 개발|유튜브 컨텐츠 검색기능 구현| [SWM-214](https://github.com/4m9d/sroom-be/pull/51) <br> - Youtube Data API(3rd-party API) 사용|
 |`2023-07-06`|기능개발|구글 소셜 로그인| [SWM-103](https://github.com/4m9d/sroom-be/pull/14) <br> - google id token, jwt 사용 <br> - accessToken, refreshToken 발급<br>|
 |`2023-07-24`|리팩토링|현직자 코드리뷰, 학습내용 적용| [SWM-177](https://github.com/4m9d/sroom-be/pull/32) <br> - 테스트DB H2사용 <br> - SQL문은 Groovy 클래스에 선언 <br> - 상태코드 및 서비스 계층 문자열은 모두 상수처리 <br> - 서버에러 발생시 로그생성 <br> - 무분별한 트랜잭션 어노테이션 수정 <br> - 클린코드 스터디 적용(적절한 함수명, 변수명)<br>|
-|`2023-08-03`|성능개선|http라이브러리 성능비교| [SWM-214](https://github.com/4m9d/sroom-be/pull/51) <br> - Youtube Data API 사용하여 키워드검색, 상세검색하는 인터페이스 구현 <br> - 자바 http 라이브러리인 HttpUrlConnection, OkHttpClient,<br>&ensp;&ensp; WebClient 사용하는 클래스 구현, 성능비교|
-|`2023-09-10`|API개발|chatGPT사용 AI서버 연동|[SWM-230](https://github.com/4m9d/sroom-be/pull/82) <br> - FastAPI에게 강의자료 생성 요청, 즉각 202 Response <br> - 자바 스케줄러를 통해 일정시간마다 Celery에서 처리된 task를 확인하고<br>&ensp;&ensp; 강의자료를 받아와 저장 <br> - 이 방법을 통해 chatGPT를 사용하는 동안 스레드가 불필요하게<br>&ensp;&ensp; 물려있는 현상을 해결|
-|`2023-09-16`|운영|KMS 암호화 적용| [SWM-299](https://github.com/4m9d/sroom-be/pull/98) <br> - AWS KMS(Key Management Service) 사용하여 DB url, username,<br>&ensp;&ensp; pw, jwt secret, google client key 등을 암호화|
-|`2023-09-27`|CI/CD|Github Action 사용 배포| [SWM-296](https://github.com/4m9d/sroom-be/pull/104) <br> - Github Action, AWS ECS, ECR 사용한 CI/CD 구축 <br> - 프로덕션 환경과 같은 환경의 테스트 서버 구축|
-|`2023-10-30`|리팩토링|객체의 협력과 책임을 고려한 프로그래밍| [SWM-361](https://github.com/4m9d/sroom-be/pull/128) <br> - '오브젝트'책을 읽고 책임주도 설계를 적용시키고자 함 <br> - 객체에게 적절한 책임을 부과하고 협력하게끔 코드작성 <br> - 기존 Service 계층 코드길이가 200줄 이상되었던 문제점 해결|
-|`2023-11-03`|성능개선|강의추천을 위한 rating방법 개선| [SWM-388](https://github.com/4m9d/sroom-be/pull/134) <br> - 기존에 리뷰개수와 리뷰총합으로 계산, 정렬해오던 강의추천방식을 개선 <br> - rating칼럼을 생성하고, 일정주기로 accumulated_rating, review_count를<br>&ensp;&ensp; 사용해 계산, 업데이트하여 추천될 때마다 rating을 인덱스로 하는 DB 리스트<br>&ensp;&ensp; 업데이트를 최소화|
-|`2023-11-06`|운영|ELK 구축| [SWM-385](https://github.com/4m9d/sroom-be/pull/136) <br> - ELK(Elasticsearch, Logstash, Kibana) 로그저장, 모니터링 툴 설치 <br> - 로그 내용을 Elasticsearch에서 사용 가능한 json 형태로 바꾸기 위해<br>&ensp;&ensp; Logstash에서 Grok 필터를 사용하여 해결|
-|`2024-01-26`|리팩토링|JPA 사용| [SWM-412](https://github.com/4m9d/sroom-be/pull/148) <br> - 기존 JdbcTemplate을 직접 사용하던 방식에서 JPA사용으로 리팩토링 <br> - 영속성 컨텍스트에 대한 쓰임 이해|
-|`2024-02-27`|성능개선|로컬 캐시 적용| [SWM-426](https://github.com/4m9d/sroom-be/pull/152) <br> - 서로다른 사용자가 같은 유튜브 강의를 검색할 때, 해당 영상정보를 불러오기<br>&ensp;&ensp; 위한 Youtube Data API 중복 호출하는 문제점 해결 <br> - tps 측정 가능한 nginder, 컴퓨터 리소스 모니터링 가능한 scouter<br>&ensp;&ensp;사용하여 성능 확인 <br> - 1시간 이내 같은 키워드를 검색하는 경우 Latency 60% 감소|
+|`2023-08-03`|성능개선|http라이브러리 성능비교| [SWM-214](https://github.com/4m9d/sroom-be/pull/51) <br> - Youtube Data API 사용하여 키워드검색,<br>&ensp;&ensp; 상세검색하는 인터페이스 구현 <br> - 자바 http 라이브러리인 HttpUrlConnection, <br>&ensp;&ensp;OkHttpClient, WebClient 사용하는<br>&ensp;&ensp;클래스 구현, 성능비교|
+|`2023-09-10`|API개발|chatGPT사용 AI서버 연동|[SWM-230](https://github.com/4m9d/sroom-be/pull/82) <br> - FastAPI에게 강의자료 생성 요청, 즉각 202응답 <br> - 자바 스케줄러를 통해 일정시간마다<br>&ensp;&ensp; Celery에서 처리된 task를 확인하고<br>&ensp;&ensp; 강의자료를 받아와 저장 <br> - 이 방법을 통해 chatGPT를 사용하는 동안<br>&ensp;&ensp; 스레드가 불필요하게 물려있는 현상을 해결|
+|`2023-09-16`|운영|KMS 암호화 적용| [SWM-299](https://github.com/4m9d/sroom-be/pull/98) <br> - AWS KMS(Key Management Service) 사용하여<br>&ensp;&ensp; DB url, username,pw, jwt secret, google<br>&ensp;&ensp; client key 등을 암호화|
+|`2023-09-27`|CI/CD|Github Action 사용 배포| [SWM-296](https://github.com/4m9d/sroom-be/pull/104) <br> - Github Action, AWS ECS, ECR 사용 구축 <br> - 프로덕션 환경과 같은 환경의 테스트 서버 구축|
+|`2023-10-30`|리팩토링|객체의 협력과 책임을 고려한 프로그래밍| [SWM-361](https://github.com/4m9d/sroom-be/pull/128) <br> - '오브젝트'책을 읽고 책임주도 설계를 적용 <br> - 객체에게 적절한 책임을 부과, 협력하게끔 코드작성 <br> - 기존 Service 계층 코드길이가 200줄 이상되었던<br>&ensp;&ensp; 문제점 해결|
+|`2023-11-03`|성능개선|강의추천을 위한 rating방법 개선| [SWM-388](https://github.com/4m9d/sroom-be/pull/134) <br> - 기존에 리뷰개수와 리뷰총합으로 계산,<br>&ensp;&ensp; 정렬해오던 강의추천방식을 개선 <br> - rating칼럼을 생성하고, 일정주기로<br>&ensp;&ensp; accumulated_rating, review_count를<br>&ensp;&ensp; 사용해 계산, 업데이트하여 추천될 때마다<br>&ensp;&ensp;rating을 인덱스로 하는 DB 리스트<br>&ensp;&ensp; 업데이트를 최소화|
+|`2023-11-06`|운영|ELK 구축| [SWM-385](https://github.com/4m9d/sroom-be/pull/136) <br> - ELK(Elasticsearch, Logstash, Kibana)<br>&ensp;&ensp; 로그저장, 모니터링 툴 설치 <br> - 로그 내용을 Elasticsearch에서 사용<br>&ensp;&ensp; 가능한 json 형태로 바꾸기 위해<br>&ensp;&ensp; Logstash에서 Grok 필터를 사용하여 해결|
+|`2024-01-26`|리팩토링|JPA 사용| [SWM-412](https://github.com/4m9d/sroom-be/pull/148) <br> - 기존 JdbcTemplate을 직접 사용하던<br>&ensp;&ensp; 방식에서 JPA사용으로 리팩토링 <br> - 영속성 컨텍스트에 대한 쓰임 이해|
+|`2024-02-27`|성능개선|로컬 캐시 적용| [SWM-426](https://github.com/4m9d/sroom-be/pull/152) <br> - 서로다른 사용자가 같은 유튜브 강의를 검색할 때,<br>&ensp;&ensp; 해당 영상정보를 불러오기 위한 Youtube Data<br>&ensp;&ensp; API 중복 호출하는 문제점 해결 <br> - tps 측정 가능한 nginder, 컴퓨터 리소스 모니터링<br>&ensp;&ensp; 가능한 사용하여 성능 확인 <br> - 1시간 이내 같은 키워드를 검색하는 경우<br>&ensp;&ensp; Latency 60% 감소|
 
 
 <br>
