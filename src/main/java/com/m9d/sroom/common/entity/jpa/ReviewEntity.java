@@ -57,4 +57,8 @@ public class ReviewEntity {
     public static ReviewEntity create(LectureEntity lecture, String sourceCode, int submittedRating, String content) {
         return new ReviewEntity(lecture, sourceCode, submittedRating, content);
     }
+
+    public void removeLecture() {
+        this.lecture = null;
+    }
 }
