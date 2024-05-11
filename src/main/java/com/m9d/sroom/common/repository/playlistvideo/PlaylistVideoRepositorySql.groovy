@@ -8,20 +8,20 @@ class PlaylistVideoRepositorySql {
 
     public static final String SAVE = """
         INSERT
-        INTO PLAYLISTVIDEO (playlist_id, video_id, video_index)
+        INTO playlistvideo (playlist_id, video_id, video_index)
         VALUES (?, ?, ?)
     """
 
     public static final String GET_BY_ID = """
         SELECT
         playlist_video_id, playlist_id, video_id, video_index
-        FROM PLAYLISTVIDEO
+        FROM playlistvideo
         WHERE playlist_video_id = ?
     """
 
     public static final String DELETE_BY_PLAYLIST_ID = """
         DELETE
-        FROM PLAYLISTVIDEO
+        FROM playlistvideo
         WHERE playlist_id = ?
     """
     public static final String GET_LIST_BY_PLAYLIST_ID = """
