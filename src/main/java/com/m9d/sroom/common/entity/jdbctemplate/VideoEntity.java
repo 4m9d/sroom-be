@@ -127,7 +127,7 @@ public class VideoEntity {
         this.summaryId = summaryId;
     }
 
-    public VideoEntity updateByYoutube(Video video, long summaryId) {
+    public VideoEntity updateByYoutube(Video video, Long summaryId) {
         this.title = video.getTitle();
         this.channel = video.getChannel();
         this.thumbnail = video.getThumbnail();
